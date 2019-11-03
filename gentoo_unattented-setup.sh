@@ -1,7 +1,12 @@
 #!/bin/bash
 
-
-# 0.0 Info
+# 0.0 INFO 
+# Welcome, this is an aweosme script, may not works here and there as expected but its awesome, so how about helping me with this?! Bug reports, suggestions, commits welcome :)
+# Since you already know that this is intentended as one file gentoo setup this is going to be easy as eating a delicious dinner.
+# Lets start with the index, i wrote it to help organize the whole thing in logical sections and remain flexible to integrate deployment variables.
+# THERE ARE 2 PLACES FOR VARIABLES: 1. 
+# btw, tr -d '\015' < awesome.sh > deploy-gentoo.sh # convert to unix file format in case the host deploys it differently.
+# :)
 
 BANNER () { # 0.1 BANNER
 	echo "${bold}
@@ -21,6 +26,242 @@ BANNER () { # 0.1 BANNER
 	${normal}"
 }
 
+# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#  ___ _   _ ____  _______  __
+# |_ _| \ | |  _ \| ____\ \/ /
+#  | ||  \| | | | |  _|  \  / 
+#  | || |\  | |_| | |___ /  \ 
+# |___|_| \_|____/|_____/_/\_\
+#                             
+# /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+# 0.0 INFO 
+# 0.1 BANNER
+# 0.2 INDEX
+# 0.3 OPTIONS / VARIABLES
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# 1.0 DEPLOY_BASESYS
+	# 1.1 TIMEUPD # ... update the system time ... !important
+	# 1.2 MODPROBE # ... load kernel modules for the chroot isntall process ...
+	# 1.3 PARTITIONING
+		# 1.4 PARTED
+		# 1.4 PTABLES
+		# 1.4 MAKEFS_BOOT
+	# 1.4 CRYPTSETUP
+	# 1.5 LVMONLUKS
+		# 1.5.1 LVM_PV
+		# 1.5.2 LVM_VG
+		# 1.5.3 LVM_LV
+		# 1.5.4 MAKEFS_LVM
+		# 1.5.5 MOUNT_LVM_LV
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# 2.0 PREPARE_CHROOT
+	# 2.1 DL_STAGE
+	# 2.2 EBUILD
+	# 2.3 RESOLVCONF
+	# 2.4 BASHRC
+	# 2.5 MNTFS
+		# 2.5.1 MOUNT_BASESYS
+		# 2.5.2 .2SETMODE_DEVSHM
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# 3.0 CHROOT
+	# 3.1 VARIABLES CHROOT
+	# 3.2 BASE SYSTEM
+		# 3.2.1 CONFIG_PORTAGE
+		# 3.2.2 INSTALL_PCIUTILS
+		# 3.2.3 INSTALL_MULTIPATH
+		# 3.2.4 INSTALL_GNUPG	
+		# 3.2.5 EMERGE_SYNC
+		# 3.2.6 CHOOSE_PROFILE
+		# 3.2.7 WORLDSET
+		# 3.2.8 MAKECONF
+			# 3.2.8.1 MAKECONF_VARIABLES
+		# 3.2.9 SYSTEMTIME
+			# 3.2.9.1 SET_TIMEZONE
+				# 3.2.9.1.1 TIMEZONE_OPENRC
+				# 3.2.9.1.2 TIMEZONE_SYSTEMCTL
+			# 3.2.9.2 SYSTEMCLOCK
+				# 3.2.9.2.1 OPENRC_SYSTEMCLOCK
+					# 3.2.9.2.1.1 OPENRC_SYSCLOCK_MANUAL
+						# 3.2.9.2.1.1.1 OPENRC_SYSTEMCLOCK
+				# 3.2.9.2.2 OPENRC_OPENNTPD
+					# 3.2.9.2.2.1 EMERGE_OPENTPD
+					# 3.2.9.2.2.2 SYSSTART_OPENNTPD
+			# 3.2.9.3 HWCLOCK
+				# 3.2.9.3.1 HWCLOCK_OPENRC
+				# 3.2.9.3.2 HWCLOCK_SYSTEMD
+		# 3.2.10 CONF_LOCALES
+			# 3.2.10.1 CONF_LOCALEGEN
+			# 3.2.10.2 GEN_LOCALE
+			# 3.2.10.3 SYS_LOCALE
+			# 3.2.10.4 RELOAD_LOCALE_ENV
+		# 3.2.11 INITSYSTEM
+			# 3.2.11.1 INITSYS_OPENRC
+				# 3.2.11.1.1 CONFIG_OPENRC
+				# 3.2.11.1.2 RCCONF
+			# 3.2.12.2 INITSYS_SYSTEMD
+				# 3.2.12.2.1 REMOVE_UDEV
+				# 3.2.12.2.2 REMOVE_OPENRC
+				# 3.2.12.2.3 EMERGE_SYSTEMDANDDEPS
+				# 3.2.12.2.4 ETCMTAB
+		# 3.2.12 FIRMWARE
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	# 3.2 INST_SYSAPP
+		# 3.3.1 INSTALL_CRYPTSETUP
+			# 3.3.1.1 SYSSTART_CRYPTSETUP_OPENRC
+			# 3.3.1.2 SYSSTART_CRYPTSETUP_SYSTEMD
+		# 3.3.2 INSTALL_LVM2
+			# 3.3.2.1 SYSSTART_LVM2
+				# 3.3.2.1.1 BOOT_START_LVM2_OPENRC
+				# 3.3.2.1.2 BOOT_START_LVM2_SYSTEMD
+			# 3.3.2.2 CONFIG_LVM2
+				# 3.3.2.2.1 LVM_CONF
+		# 3.3.3 INSTALL_SUDO
+		# 3.3.4 INST_LOGGER
+			# 3.3.4.1 LOGROTATION
+			# 3.3.4.2 SYSLOG
+				# 3.3.4.2.1 SYSLOGNG
+					# 3.3.4.2.1.1 SYSSTART_SYSLOGNG
+						# 3.3.4.2.1.1.1 SYSLOGNG_OPENRC
+						# 3.3.4.2.1.1.2 SYSLOGNG_SYSTEMD
+				# 3.3.4.2.2 SYSKLOGD
+					# 3.3.4.2.2.1 SYSSTART_SYSKLOGD
+						# 3.3.4.2.2.1.1 SYSKLOGD_OPENRC
+						# 3.3.4.2.2.1.2 SYSKLOGD_SYSTEMD
+		# 3.3.5 INST_CRON
+			# 3.3.5.1 CRON_CRONIE
+				# 2.5.1.1 CRONIE_OPENRC
+				# 2.5.1.2 CRONIE_SYSTEMD
+			# 3.3.5.2 CRON_DCRON
+				# 2.5.2.1 DCRON_OPENRC
+				# 2.5.2.2 DCRON_SYSTEMD
+			# 3.3.5.3 CRON_ANACRON
+				# 2.5.3.1 ANACRON_OPENRC
+				# 2.5.3.2 ANACRON_SYSTEMD
+			# 3.3.5.4 CRON_FCRON
+				# 2.5.4.1 FCRON_OPENRC
+				# 2.5.4.2 FCRON_SYSTEMD
+			# 3.3.5.5 CRON_BCRON
+				# 2.5.5.1 BCRON_OPENRC
+				# 2.5.5.2 BCRON_SYSTEMD
+			# 3.3.5.6 CRON_VIXICRON
+				# 3.3.5.6.1 VIXICRON_OPENRC
+				# 3.3.5.6.2 VIXICRON_SYSTEMD
+		# 3.3.6 FILEINDEXING
+			# 3.3.6.1 mlocate
+		# 3.3.7 FSTOOLS # optional, add to variables at time.
+			# 3.3.7.1 e2fsps drogs
+			# 3.3.7.2 xfsprogs
+			# 3.3.7.3 reiserfsprogs
+			# 3.3.7.4 jfsutils
+			# 3.3.7.5 dosfstools
+			# 3.3.7.6 btrfs-progs
+		# 3.3.8 INSTALL_GIT
+		# 3.3.9 INSTALL_GIT
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	# 3.4.0 BUILD_KERNEL
+		# 3.4.1 KERNEL_SOURCE
+			# 3.4.1.1 KERN_SOURCES_EMERGE
+			# 3.1.2 KERN_SOURCES_TORVALDS
+		# 3.4.2 CONFIGURE_KERNEL
+			# 3.4.2.1 CONFKERN_MANUAL
+				# 3.4.2.1.1 CNFG_KERN_PASTE
+				# 3.4.2.1.2 MKERNBUILD
+			# 3.4.2.2 CONFKERN_AUTO
+				# 3.4.2.2.1 GENKERNEL
+					# 3.4.2.2.1.1 CKA_OPENRC
+						# 3.4.2.2.1.1.1 CONFGENKERNEL_OPENRC
+						# 3.4.2.2.1.1.2 RUNGENKERNEL_OPENRC
+					# 3.4.2.2.1.2 CKA_SYSTEMD
+						# 3.4.2.2.1.2.1 CONFGENKERNEL_SYSTEMD
+						# 3.4.2.2.1.2.2 RUNGENKERNEL_SYSTEMD
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	# 3.5.0 INITRAMFS
+		# 3.5.1 DRACUT
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+	# 3.6.0 FSTAB
+		# 3.6.1 FSTAB_LVMONLUKS_BIOS
+		# 3.6.2.1 FASTAB_LVMONLUKS_UEFI
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	# 3.7 KEYMAPS
+		# 3.7.1 KEYMAPS_SYSTEMD
+			# 3.7.1.1 VCONSOLE_CONF
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	# 3.8 NETWORKING
+		# 3.8.1 GENTOONET
+		# 3.8.2 HOSTSFILE
+		# 3.8.3 SYSTEMD_NETWORKD
+			# 3.8.3.1 REPLACE_RESOLVECONF
+			# 3.8.3.2 WIRED_DHCPD
+			# 3.8.3.3 WIRED_STATIC
+		# 3.8.4 INST_DHCP
+			# 3.8.4.1 EMERGE_DHCPD
+			# 3.8.4.2 SYSSTART_DHCPD_OPENRC
+			# 3.8.4.3 SYSSTART_DHCPD_SYSTEMD
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	# 3.9.0 BOOTLOAD
+		# 3.9.1 GRUB2_SETUP
+			# 3.9.1.1 GRUB2_OPENRC
+				# 3.9.1.1.1 GRUB2_BIOS_OPENRC
+				# 3.9.1.1.2 GRUB2_UEFI_OPENRC
+				# 3.9.1.1.3 CONF_GRUB2_OPENRC
+			# 3.9.1.2 GRUB2_SYSTEMD
+				# 3.9.1.2.1 GRUB2_BIOS_SYSTEMD
+				# 3.9.1.2.2 GRUB2_UEFI_SYSTEMD
+				# 3.9.1.2.3 CONF_GRUB2_SYSTEMD
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	# 3.10.0 DISPLAYVIDEO
+		# 3.10.1 SETUP_GPU # no default set
+			# 3.10.1.1 NVIDIA # no config yet, no nvda card here rn.
+			# 3.10.1.2 AMD
+		# 3.10.2 WINDOWSYS
+			# 3.10.2.1 X11 (default)
+		# 3.10.3 DISPLAYMGR
+			# 3.10.3.1 LIGHTDM
+			# 3.10.3.2 LXDM (default)
+				# 3.10.3.2.1 EMERGE_LXDM
+				# 3.10.3.2.2 AUTOSTART_LXDM
+					# 3.10.3.2.2.1 LXDM_OPENRC
+					# 3.10.3.2.2.2 LXDM_SYSTEMD
+				# 3.10.3.2.3 CONFIGURE_LXDM
+		# 3.10.4 DESKTOP_ENV
+			# 3.10.4.1 XFCE4
+				# 3.10.4.1.1 EMERGE_XFCE4
+					# 3.10.4.1.1.1 eselect profile set default/linux/amd64/17.0/desktop
+					# 3.10.4.1.1.2 app-text/poppler -qt5 # app-text/poppler have +qt5 by default
+					# 3.10.4.1.1.3 emerge "$EMERGE_VAR" xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
+					# 3.10.4.1.1.4 emerge "$EMERGE_VAR" --deselect=y xfce-extra/xfce4-notifyd
+					# 3.10.4.1.1.5 emerge "$EMERGE_VAR" xfce-base/xfwm4 xfce-base/xfce4-panel
+				# 3.10.4.1.2 W_DISPLAYMGR
+					# 3.10.4.1.2.1 XFCE4_LXDM
+				# 3.10.4.1.3 WO_DISPLAYMGR
+					# 3.10.4.1.3.1 XFCE_STARTX_OPENRC
+				# 3.10.4.1.4 XFCE4_MISC
+					# - xfce4-mount-plugin
+					# - xfce-base/thunar
+					# - x11-terms/xfce4-terminal
+					# - app-editors/mousepad
+					# - xfce4-pulseaudio-plugin
+					# - xfce-extra/xfce4-mixer 
+					# - xfce-extra/xfce4-alsa-plugin
+					# - xfce-extra/thunar-volman
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	# 3.11.0 AUDIO
+		# pavu placehold
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	# 3.12.0 USER
+		# - sysadmin
+		# - root
+	# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	# 3.13.0 EXIT_CHROOT
+		# - tidy up , leavechroot
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# 4.0 RUN ALL
+	# - run all the things
+
+# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #  ____   ____ ____  ___ ____ _____    ___  ____ _____ ___ ___  _   _ ____  
 # / ___| / ___|  _ \|_ _|  _ \_   _|  / _ \|  _ \_   _|_ _/ _ \| \ | / ___| 
 # \___ \| |   | |_) || || |_) || |   | | | | |_) || |  | | | | |  \| \___ \ 
@@ -55,7 +296,6 @@ BANNER () { # 0.1 BANNER
 	MAIN_SIZE="1G 100%" # primary partition start/end
 
 	CHROOTX=/mnt/gentoo # chroot directory, installer will create this recursively
-
 
 	# REGION=Europe # disabled for $SYSTEMTIMEZONE # # ls -la /usd/share/zoneinfo/$REGION/$CITY
 	# CITY=Berlin
@@ -100,7 +340,7 @@ BANNER () { # 0.1 BANNER
 #														      #
 # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage                                                      #
 #######################################################################################################################
-	INSTGETRBLL () { # 2.0
+	DEPLOY_BASESYS () { # 2.0
 		#  _____ ___ __  __ _____ 
 		# |_   _|_ _|  \/  | ____|
 		#   | |  | || |\/| |  _|  
@@ -150,12 +390,10 @@ BANNER () { # 0.1 BANNER
 				parted -s $HDD1 name 3 mainfs
 				parted -s $HDD1 set 3 lvm on
 			}
-
 			PTABLES () {
 				partx -u $HDD1
 				partprobe $HDD1
 			}
-
 			MAKEFS_BOOT () {
 				mkfs.$BOOT_FS $BOOT_PART
 			}
@@ -346,8 +584,7 @@ EOF
 				# When using non-Gentoo installation media, this might not be sufficient. Some distributions make /dev/shm a symbolic link to /run/shm/ which, after the chroot, becomes invalid. Making /dev/shm/ a proper tmpfs mount up front can fix this:
 				# test -L /dev/shm && rm /dev/shm && mkdir /dev/shm
 				# mount --types tmpfs --options nosuid,nodev,noexec shm /dev/shm
-			}
-				 
+			}	 
 			SETMODE_DEVSHM () {	
 				chmod 1777 /dev/shm
 			}
@@ -386,213 +623,7 @@ export PS1="(autochroot) \$PS1" # Not that the user will see this.
 
 # lets start with a very simple default configuration to simplify things a little and provide a platform to experiment.
 
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-# 1.0 base system
-	# 1.1 CONFIG_PORTAGE	
-	# 1.2 INSTALL_PCIUTILS
-	# 1.3 INSTALL_MULTIPATH
-	# 1.4 INSTALL_GNUPG	
-	# 1.5 EMERGE_SYNC
-	# 1.6 CHOOSE_PROFILE
-	# 1.7 WORLDSET
-	# 1.8 MAKECONF
-		# 1.8.1 MAKECONF_VARIABLES
-	# 1.9 SYSTEMTIME
-		# 1.9.1 SET_TIMEZONE
-			# 1.9.1.1 TIMEZONE_OPENRC
-			# 1.9.1.2 TIMEZONE_SYSTEMCTL
-		# 1.9.2 SYSTEMCLOCK
-			# 1.9.2.1 OPENRC_SYSTEMCLOCK
-				# 1.9.2.1.1 OPENRC_SYSCLOCK_MANUAL
-					# 1.9.2.2.1.1.1 OPENRC_SYSTEMCLOCK
-			# 1.9.2.2 OPENRC_OPENNTPD
-				# 1.9.2.2.1 EMERGE_OPENTPD
-				# 1.9.2.2.2 SYSSTART_OPENNTPD
-		# 1.9.3 HWCLOCK
-			# 1.9.3.1 HWCLOCK_OPENRC
-			# 1.9.3.2 HWCLOCK_SYSTEMD
-	# 1.10 CONF_LOCALES
-		# 1.10.1 CONF_LOCALEGEN
-		# 1.10.2 GEN_LOCALE
-		# 1.10.3 SYS_LOCALE
-		# 1.10.4 RELOAD_LOCALE_ENV
-	# 1.11 INITSYSTEM
-		# 1.11.1 INITSYS_OPENRC
-			# 1.11.1.1 CONFIG_OPENRC
-			# 1.11.1.2 RCCONF
-		# 1.12.2 INITSYS_SYSTEMD
-			# 1.12.2.1 REMOVE_UDEV
-			# 1.12.2.2 REMOVE_OPENRC
-			# 1.12.2.3 EMERGE_SYSTEMDANDDEPS
-			# 1.12.2.4 ETCMTAB
-	# 1.12 FIRMWARE
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-# 2.0 INST_SYSAPP
-	# 2.1 INSTALL_CRYPTSETUP
-		# 2.1.1 SYSSTART_CRYPTSETUP_OPENRC
-		# 2.1.2 SYSSTART_CRYPTSETUP_SYSTEMD
-	# 2.2 INSTALL_LVM2
-		# 2.2.1 SYSSTART_LVM2
-			# 2.2.1.1 BOOT_START_LVM2_OPENRC
-			# 2.2.1.2 BOOT_START_LVM2_SYSTEMD
-		# 2.2.2 CONFIG_LVM2
-			# 2.2.2.1 LVM_CONF
-	# 2.3 INSTALL_SUDO
-	# 2.4 INST_LOGGER
-		# 2.4.1 LOGROTATION
-		# 2.4.2 SYSLOG
-			# 2.4.2.1 SYSLOGNG
-				# 2.4.2.1.1 SYSSTART_SYSLOGNG
-					# 2.4.2.1.1.1 SYSLOGNG_OPENRC
-					# 2.4.2.1.1.2 SYSLOGNG_SYSTEMD
-			# 2.4.2.2 SYSKLOGD
-				# 2.4.2.2.1 SYSSTART_SYSKLOGD
-					# 2.4.2.2.1.1 SYSKLOGD_OPENRC
-					# 2.4.2.2.1.2 SYSKLOGD_SYSTEMD
-	# 2.5 INST_CRON
-		# 2.5.1 CRON_CRONIE
-			# 2.5.1.1 CRONIE_OPENRC
-			# 2.5.1.2 CRONIE_SYSTEMD
-		# 2.5.2 CRON_DCRON
-			# 2.5.2.1 DCRON_OPENRC
-			# 2.5.2.2 DCRON_SYSTEMD
-		# 2.5.3 CRON_ANACRON
-			# 2.5.3.1 ANACRON_OPENRC
-			# 2.5.3.2 ANACRON_SYSTEMD
-		# 2.5.4 CRON_FCRON
-			# 2.5.4.1 FCRON_OPENRC
-			# 2.5.4.2 FCRON_SYSTEMD
-		# 2.5.5 CRON_BCRON
-			# 2.5.5.1 BCRON_OPENRC
-			# 2.5.5.2 BCRON_SYSTEMD
-		# 2.5.6 CRON_VIXICRON
-			# 2.5.6.1 VIXICRON_OPENRC
-			# 2.5.6.2 VIXICRON_SYSTEMD
-	# 2.6 FILEINDEXING
-		# 2.6.1 mlocate
-	# 2.7 FSTOOLS # optional, add to variables at time.
-		# 2.7.1 e2fsps drogs
-		# 2.7.2 xfsprogs
-		# 2.7.3 reiserfsprogs
-		# 2.7.4 jfsutils
-		# 2.7.5 dosfstools
-		# 2.7.6 btrfs-progs
-	# 2.8 INSTALL_GIT
-	# 2.9 INSTALL_GIT
-
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-# 3.0 BUILD_KERNEL
-	# 3.1 KERNEL_SOURCE
-		# 3.1.1 KERN_SOURCES_EMERGE
-		# 3.1.2 KERN_SOURCES_TORVALDS
-	# 3.2 CONFIGURE_KERNEL
-		# 3.2.1 CONFKERN_MANUAL
-			# 3.2.1.1 CNFG_KERN_PASTE
-			# 3.2.1.2 MKERNBUILD
-		# 3.2.2 CONFKERN_AUTO
-			# 3.2.2.1 GENKERNEL
-				# 3.2.2.1.1 CKA_OPENRC
-					# 3.2.2.1.1.1 CONFGENKERNEL_OPENRC
-					# 3.2.2.1.1.2 RUNGENKERNEL_OPENRC
-				# 3.2.2.1.2 CKA_SYSTEMD
-					# 3.2.2.1.2.1 CONFGENKERNEL_SYSTEMD
-					# 3.2.2.1.2.2 RUNGENKERNEL_SYSTEMD
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-# 4.0 INITRAMFS
-	# 4.1 DRACUT
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-# 5.0 FSTAB
-	# 5.1 FSTAB_LVMONLUKS_BIOS
-	# 1.9.2.1 FASTAB_LVMONLUKS_UEFI
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-# 6.0 KEYMAPS
-	# 6.1 KEYMAPS_SYSTEMD
-		# 6.1.1 VCONSOLE_CONF
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-# 7.0 NETWORKING
-	# 7.1 GENTOONET
-	# 7.2 HOSTSFILE
-	# 7.3 SYSTEMD_NETWORKD
-		# 7.3.1 REPLACE_RESOLVECONF
-		# 7.3.2 WIRED_DHCPD
-		# 7.3.3 WIRED_STATIC
-	# 7.4 INST_DHCP
-		# 7.4.1 EMERGE_DHCPD
-		# 7.4.2 SYSSTART_DHCPD_OPENRC
-		# 7.4.3 SYSSTART_DHCPD_SYSTEMD
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-# 8.0 BOOTLOAD
-	# 8.1 GRUB2_SETUP
-		# 8.1.1 GRUB2_OPENRC
-			# 8.1.1.1 GRUB2_BIOS_OPENRC
-			# 8.1.1.2 GRUB2_UEFI_OPENRC
-			# 8.1.1.3 CONF_GRUB2_OPENRC
-		# 8.1.2 GRUB2_SYSTEMD
-			# 8.1.2.1 GRUB2_BIOS_SYSTEMD
-			# 8.1.2.2 GRUB2_UEFI_SYSTEMD
-			# 8.1.2.3 CONF_GRUB2_SYSTEMD
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-# 9.0 DISPLAYVIDEO
-	# 9.1 SETUP_GPU
-		# 9.1.1 NVIDIA
-		# 9.1.2 AMD
-	# 9.2 WINDOWSYS
-		# 9.2.1 X11
-	# 9.3 DISPLAYMGR
-		# 9.3.1 LIGHTDM
-		# 9.3.2 LXDM
-			# 9.3.2.1 EMERGE_LXDM
-			# 9.3.2.2 AUTOSTART_LXDM
-				# 9.3.2.2.1 LXDM_OPENRC
-				# 9.3.2.2.2 LXDM_SYSTEMD
-			# 9.3.2.3 CONFIGURE_LXDM
-		# 9.3.3 DESKTOP_ENV
-			# 9.3.3.1 XFCE4
-				# 9.3.3.1.1 EMERGE_XFCE4
-					# 9.3.3.1.1.1 eselect profile set default/linux/amd64/17.0/desktop
-					# 9.3.3.1.1.2 app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-					# 9.3.3.1.1.3 emerge "$EMERGE_VAR" xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-					# 9.3.3.1.1.4 emerge "$EMERGE_VAR" --deselect=y xfce-extra/xfce4-notifyd
-					# 9.3.3.1.1.5 emerge "$EMERGE_VAR" xfce-base/xfwm4 xfce-base/xfce4-panel
-				# 9.3.3.1.2 W_DISPLAYMGR
-					# 9.3.3.1.2.1 XFCE4_LXDM
-				# 9.3.3.1.3 WO_DISPLAYMGR
-					# 9.3.3.1.3.1 XFCE_STARTX_OPENRC
-				# 9.3.3.1.4 XFCE4_MISC
-					# - xfce4-mount-plugin
-					# - xfce-base/thunar
-					# - x11-terms/xfce4-terminal
-					# - app-editors/mousepad
-					# - xfce4-pulseaudio-plugin
-					# - xfce-extra/xfce4-mixer 
-					# - xfce-extra/xfce4-alsa-plugin
-					# - xfce-extra/thunar-volman
-
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-# 10.0 AUDIO
-	# pavu placehold
-
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-# 11.0 USER
-	# - sysadmin
-	# - root
-
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-# 12.0 EXIT_CHROOT
-	# - tidy up , leavechroot
-
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-# 13.0 RUN ALL
-	# - run all the things
-
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
 SYSLOCALE="de_DE.UTF-8"
@@ -1792,8 +1823,8 @@ INNERSCRIPT
 
 #### RUN ALL
 
-BANNER 			&& echo "${bold}BANNER - END, proceeding to INSTGETRBLL ....${normal}"			# 0.0 Banner / Intro
-INSTGETRBLL 		&& echo "${bold}INSTGETRBLL - END, proceeding to PREPARE_CHROOT ....${normal}" 		# 2.0 Install stage tarball.
+BANNER 			&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"			# 0.0 Banner / Intro
+DEPLOY_BASESYS 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}" 		# 2.0 Install stage tarball.
 PREPARE_CHROOT		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"		# 3.0 Prepare the Chroot.
 
 echo "$INNER_SCRIPT" > /mnt/gentoo/chroot_run.sh && chmod +x /mnt/gentoo/chroot_run.sh  && chroot /mnt/gentoo/ /bin/bash ./chroot_run.sh	# 4.0 Inner Chroot.
