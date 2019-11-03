@@ -5,7 +5,8 @@
 -  intended as fully or "mostly fully ;)" unattended modular gentoo initial setup blueprint. 
 
 ## Script-Index
-- see top of the main script file.
+- index for the entire script yet to be compelted.
+- index for the CHROOT on top of the CHROOT section LINE NR 391.
 
 
 
