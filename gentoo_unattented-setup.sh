@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# 0.0 INFO 
 
+# 0.0 INFO 
+#
+# STATUS: prototype - some things work - # 1.0 DEPLOY_BASESYS && # 2.0 PREPARE_CHROOT works, for the rest everything is experimental.
+#
 # Welcome, this is an aweosme script, may not works here and there as expected but its awesome, so how about helping me with this?! Bug reports, suggestions, commits welcome - documentation isnt this awesome but i try :)
 #
 # Since you already know that this is intentended as one file gentoo setup this is going to be easy as eating a delicious dinner!
