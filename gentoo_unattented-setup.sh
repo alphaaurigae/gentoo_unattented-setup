@@ -2,12 +2,12 @@
 
 # 0.0 INFO 
 
-# Welcome, this is an aweosme script, may not works here and there as expected but its awesome, so how about helping me with this?! Bug reports, suggestions, commits welcome :)
-# Since you already know that this is intentended as one file gentoo setup this is going to be easy as eating a delicious dinner.
+# Welcome, this is an aweosme script, may not works here and there as expected but its awesome, so how about helping me with this?! Bug reports, suggestions, commits welcome - documentation isnt this awesome but i try :)
+#
+# Since you already know that this is intentended as one file gentoo setup this is going to be easy as eating a delicious dinner!
+#
 # Lets start with the index, i wrote it to help organize the whole thing in logical sections and remain flexible to integrate deployment variables.
-# THERE ARE 2 PLACES FOR VARIABLES: 1. 
-# btw, tr -d '\015' < awesome.sh > deploy-gentoo.sh # convert to unix file format in case the host deploys it differently.
-# :)
+# THERE ARE 2 PLACES FOR VARIABLES: # 0.4 && # 3.1 - see index.
 
 BANNER () { # 0.1 BANNER
 	echo "${bold}
@@ -18,8 +18,8 @@ BANNER () { # 0.1 BANNER
 	+  | |_| | |___| |\  | | || |_| | |_| | | |___ | || |\  | |_| |/  \   +
 	+   \____|_____|_| \_| |_| \___/ \___/  |_____|___|_| \_|\___//_/\_\  +
 	+								      +
-	+  gentoo linux - LVM2 on LUKS					      +
-	+  Init 06.12.2019						      +
+	+  gentoo linux - by default LVM2 on LUKS, BIOS, GPT, SYSTEMD, XFCE   +
+	+  Init commit 12.06.2019 					      +
 	+  Script by https://github.com/alphaaurigae			      +
 	+								      +
 	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -27,18 +27,12 @@ BANNER () { # 0.1 BANNER
 	${normal}"
 }
 
-## Deployment Instructions
+## Deployment Instructions:
 # - short, simply run the script with your settings (considered all bugs have been solved (will be printed on top)
-### EXAMPLE:
 # 1. Deploy virtualbox gentoo minimal
-# 2. Configure the script or run the default as study sandbox.
-# 3. For sake of simplicity - use some paste host.
-# 4. Fire up gentoo vm
-# 5. wget -O awesome.sh https://....
-# 6. tr -d '\015' < awesome.sh > deploy-gentoo.sh # convert to unix file format in case the host deploys it differently.
-# 7. chmod +x deploy-gentoo.sh
-# 8. ,/deploy-gentoo.sh
-# > Depending on variables set there will be prompted for luks & root + user passwords
+# 2. wget -O awesome.sh https://....
+# 3. tr -d '\015' < awesome.sh > deploy-gentoo.sh # convert to unix file format in case the host deploys it differently.
+# > Depending on variables set there will be prompted for luks & root + user passwords and for verification of those - dont mess this steps up, there is no feature to as for repeat entry yet!!!
 # > Depending on variables set kernel may requires semi manual configuration.
 # > Depending on variables set all kinds of bad things can happen which may lead to a failure of the entire installation - thats a true pity if you waited a couple of hours. For this reason its highly suggested to not runthe script all at once unless you know the STACK will work together, running the bottom script functions one by one may help debugging.
 
