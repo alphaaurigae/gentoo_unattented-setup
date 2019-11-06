@@ -21,8 +21,8 @@ BANNER () { # 0.1 BANNER
 	+   | |_| | |___| |\  | | || |_| | |_| | | |___ | || |\  | |_| |/  \    +
 	+    \____|_____|_| \_| |_| \___/ \___/  |_____|___|_| \_|\___//_/\_\   +
 	+ 								        +
-	+   gentoo linux - modular, by default LVM2 on LUKS, BIOS, GPT, SYSTEMD +
-	+   Init commit 12.06.2019 					        +
+	+   gentoo linux - modular						+
+	+   by default LVM2 on LUKS, BIOS, GPT, SYSTEMD				+
 	+   Script by https://github.com/alphaaurigae			        +
 	+								        +
 	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -101,7 +101,7 @@ BANNER () { # 0.1 BANNER
 		# 3.2.9 SYSTEMTIME
 			# 3.2.9.1 SET_TIMEZONE (! $SYSTIMEZONE_SET)
 				# 3.2.9.1.1 TIMEZONE_OPENRC 
-				# 3.2.9.1.2 TIMEZONE_SYSTEMCTL 
+				# 3.2.9.1.2 TIMEZONE_SYSTEMD 
 			# 3.2.9.2 SYSTEMCLOCK (! systemd-timesyncd)
 				# 3.2.9.2.1 OPENRC_SYSTEMCLOCK
 					# 3.2.9.2.1.1 OPENRC_SYSCLOCK_MANUAL
@@ -317,45 +317,14 @@ BANNER () { # 0.1 BANNER
 
 	CHROOTX=/mnt/gentoo # chroot directory, installer will create this recursively
 
-	# REGION=Europe # disabled for $SYSTEMTIMEZONE # # ls -la /usd/share/zoneinfo/$REGION/$CITY
-	# CITY=Berlin
-	VCONSOLE_KEYMAP=de-latin1 # console keymap
-	VCONSOLE_FONT=eurlatgr
-	LOCALE_GEN_a1="en_US ISO-8859-1"
-	LOCALE_GEN_a2="en_US.UTF-8 UTF-8"
-	LOCALE_GEN_b1="de_DE ISO-8859-1"
-	LOCALE_GEN_b2="de_DE.UTF-8 UTF-8"
-	LOCALE_CONF="en_US.UTF-8"
-	X11KEYMAP="de" # keymap for desktop environment 
-	HOSTNAME=p1p1 # define hostname
-	DOMAIN=p1p1 # define domain
-	SYSTIMEZONE=utc # utc or localtime # ls -la /usd/share/zoneinfo
 
-	# NETWORK # https://en.wikipedia.org/wiki/Public_recursive_name_server
-	NAMESERVER1_IPV4=1.1.1.1 # cloudflare ipv4
-	NAMESERVER1_IPV6=2606:4700:4700::1111 # cloudflare ipv6
-	NAMESERVER2_IPV4=1.0.0.1 # cloudflare ipv4
-	NAMESERVER2_IPV6=2606:4700:4700::1001 # cloudflare ipv6
-
-
-	DISPLAYSERV=XORG # see options
-	DESKTOPENV=XFCE4 # see options
-	DISPLAYMGR=LXDM # see options
-
-	SYSUSERNAME=gentoo # name of the login user
-
-	INITRAMFSVAR="--lvm --mdadm"
-
-	GPU_DRIVER=amdgpu # amdgpu, radeon
 	# VARIABLES END
 
 	# MISC STATIC
 	bold=$(tput bold) # staticvar bold text
 	normal=$(tput sgr0) # # staticvar reverse to normal text
 
-	EMERGE_VAR="--quiet --complete-graph --verbose " # !Must keep trailing space!
-
-	STAGE3DEFAULT=AMD64_DEFAULT # AMD64_DEFAULT (default)
+	STAGE3DEFAULT=AMD64_SYSTEMD # AMD64_DEFAULT (default)
 #######################################################################################################################
 #  ___ _   _ ____ _____  _    _     _       ____ _____  _    ____ _____   _____  _    ____  ____    _    _     _      #
 # |_ _| \ | / ___|_   _|/ \  | |   | |     / ___|_   _|/ \  / ___| ____| |_   _|/ \  |  _ \| __ )  / \  | |   | |     #
@@ -511,8 +480,8 @@ BANNER () { # 0.1 BANNER
 			}
 
 			STAGE3_LATEST_AMD64_SYSTEMD () {
-				wget -O $CHROOTX/stage3.tar.xz http://distfiles.gentoo.org/releases/amd64/autobuilds/"$(curl -s http://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage3-amd64-systemd.txt | sed '/^#/ d' | awk '{print $1}')"
-				tar xvJpf $CHROOTX/stage3.tar.xz --xattrs-include='*.*' --numeric-owner -C $CHROOTX 
+				wget -O $CHROOTX/stage3.tar.bz2 http://distfiles.gentoo.org/releases/amd64/autobuilds/"$(curl -s http://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage3-amd64-systemd.txt | sed '/^#/ d' | awk '{print $1}')"
+				tar xvfj $CHROOTX/stage3.tar.bz2 --xattrs-include='*.*' --numeric-owner -C $CHROOTX 
 			}
 			STAGE3_LATEST_AMD64_NOMULTILIB () {
 				wget -O $CHROOTX/stage3.tar.xz http://distfiles.gentoo.org/releases/amd64/autobuilds/"$(curl -s http://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage3-amd64-nomultilib.txt | sed '/^#/ d' | awk '{print $1}')"
@@ -644,8 +613,81 @@ EOF
 			SETMODE_DEVSHM () {	
 				chmod 1777 /dev/shm
 			}
+			#  __  __    _    _  _______   ____ ___  _   _ _____ 
+			# |  \/  |  / \  | |/ / ____| / ___/ _ \| \ | |  ___|
+			# | |\/| | / _ \ | ' /|  _|  | |  | | | |  \| | |_   
+			# | |  | |/ ___ \| . \| |___ | |__| |_| | |\  |  _|  
+			# |_|  |_/_/   \_\_|\_\_____(_)____\___/|_| \_|_|    
+			#
+			MAKECONF () { # https://wiki.gentoo.org/wiki//etc/portage/make.conf
+				echo "${bold}MAKECONF${normal}"
+				PRESET_MAKE="-j$(nproc) --quiet"
+				MAKECONF_VARIABLES () {
+					PRESET_INPUTEVICE="libinput keyboard"
+					PRESET_VIDEODRIVER='amdgpu radeonsi radeon'
+					PRESET_LICENCES="-* @FREE" # Only accept licenses in the FREE license group (i.e. Free Software)
+					
+					# https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/USE
+					# systemd
+					# LVM2
+					# X11
+					# grub
+					# sudo
+					# audio
+					# video
+					# SSL
+					# CPU FLAGS
+					# encryption
+					# compressions
+					# NO KDE
+							
+					PRESET_USEFLAG='X a52 aac aalib acl acpi adns alsa apparmor atm audit bash-completion berkdb bidi blas boost branding bzip2 \
+							cairo cdda caps cpudetection cjk cracklib crypt cryptsetup css curl cvs cxx dbi dbus debug device-mapper dns-over-tls dga elfutils \
+							efiemu emacs encode exif expat fam ffmpeg filecaps flac fonts fortran ftp geoip gcrypt gd gif git gnuefi gnutls gnuplot \
+							hardened highlight gzip ipv6 initramfs int64 introspection idn jack jpeg jemalloc kernel kms lame latex ldap libcaca libressl lm_sensors \
+							lua lzma lzo lz4 m17n-lib matroska memcached mhash modules mount nettle numa mp3 mp4 mpeg mtp nls ocaml opengl openssl opus osc oss \
+							pcre perl png policykit posix pulseaudio python raw readline resolvconf qt5 recode ruby sound seccomp sasl sockets \
+							socks5 ssl sssd static-libs sqllite sqlite3 svg systemd sysv-utils szip symlink tcl tcpd themes thin truetype threads tiff udev \
+			 				udisks unicode utils xkb xvid zip zlib \
+							-kde -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet'
+					PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup clean-logs collision-protect \
+							compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
+							network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
+					PRESET_GENTOMIRRORS="https://ftp.snt.utwente.nl/pub/os/linux/gentoo/ https://mirror.isoc.org.il/pub/gentoo/ \
+								https://mirrors.lug.mtu.edu/gentoo/ https://mirror.csclub.uwaterloo.ca/gentoo-distfiles/ \
+								https://ftp.jaist.ac.jp/pub/Linux/Gentoo/"
+
+					#cp /etc/portage/make.conf /etc/portage/make.Aconf_backup_$(date +%F_%R)
+					cat << EOF > /etc/portage/make.conf
+					COMMON_CPUFLAGS="$(lscpu | grep Flags: | sed -e 's/Flags:               //g')"
+					COMMON_FLAGS="-march=native -O2 -pipe" # set
+					CPU_FLAGS_X86="$(lscpu | grep Flags: | sed -e 's/Flags:               //g')"
+					CFLAGS="-march=native -O2 -pipe" # clone
+					CXXFLAGS="-march=native -O2 -pipe" # clone https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#CFLAGS_and_CXXFLAGS
+					FCFLAGS="-march=native -O2 -pipe"
+					FFLAGS="-march=native -O2 -pipe"
+					MAKEOPTS="$PRESET_MAKE"
+					INPUT_DEVICES="$PRESET_INPUTEVICE"
+					VIDEO_CARDS="$PRESET_VIDEODRIVER"
+					ACCEPT_LICENSE="$PRESET_LICENCES"
+					FEATURES="$PRESET_FEATURES"
+					USE="$(lscpu | grep Flags: | sed -e 's/Flags:               //g') $PRESET_USEFLAG"
+					# https://www.gentoo.org/downloads/mirrors/
+					GENTOO_MIRRORS="$PRESET_GENTOMIRRORS"
+					# RSYNC MIRRORS https://www.gentoo.org/support/rsync-mirrors
+					PORTDIR="/var/db/repos/gentoo"
+					DISTDIR="var/cache/distfiles"
+					PKGDIR="/var/cache/binpkgs"
+					LC_MESSAGE=C
+					CURL_SSL="openssl"
+EOF
+				}			                         
+				MAKECONF_VARIABLES
+				# emerge $EMERGE_VAR --changed-use @world
+			}
 			MOUNT_BASESYS && echo "${bold}MOUNT_BASESYS - END, proceeding to SETMODE_DEVSHM ....${normal}"
 			SETMODE_DEVSHM && echo "${bold}SETMODE_DEVSHM - END ...${normal}"
+			MAKECONF echo "${bold}MAKECONF done${normal}"
 		}
 		DL_STAGE			&& echo "${bold}DL_STAGE - END, proceeding to EBUILD ....${normal}"
 		EBUILD				&& echo "${bold}EBUILD - END, proceeding to RESOLVCONF ....${normal}"
@@ -674,11 +716,57 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		# export PS1="(autochroot) \$PS1" # Not that the user will see this.
 		export PS1="(chroot) $PS1" 
 
-		#### option variables start (note!: not all variables are active, depending on the module choices you take! (if there is no docs yet, just read down, very simple  :) ... ) 
-		## this is a blueprint prototype for a unified modular gento installation, as script, in one file for easy use 
-		# FE: "run virtualbox >> gentominimal https://www.gentoo.org/downloads/ >> wget awesome script >> convert to unix FF >> ./run-awesome.sh  >> awesome new gento install".
+		# MAKEFILE EX
+		# REGION=Europe # disabled for $SYSTEMTIMEZONE # # ls -la /usd/share/zoneinfo/$REGION/$CITY
+		# CITY=Berlin
 
-		# lets start with a very simple default configuration to simplify things a little and provide a platform to experiment.
+		# DRIVES & PARTITIONS
+		HDD1=/dev/sda # OS DRIVE - the drive you want to install gentoo to.
+		# GRUB_PART=/dev/sda1 # bios grub
+		BOOT_PART=/dev/sda2 # boot # unencrypted unless required changes are made - see CRYPTSETUP_BOOT 
+		MAIN_PART=/dev/sda3 # mainfs - lukscrypt cryptsetup container with LVM env inside
+
+		# - SWAP IS DISABLED -- SEE VAR & LVM SECTION TO ENABLE!
+		# SWAP0=swap0 # LVM swap NAME for sorting of swap partitions.
+		# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART - mainhdd only has boot & fainfs
+		# SWAP_FS=linux-swap # swapfs, couldnt have guessed it
+
+		BOOT_FS=ext2 # boot filesystem
+		MAIN_FS=ext4 # main filesystem for the OS
+
+		# LVM
+		PV_MAIN=pv0_main # LVM PV physical volume
+		VG_MAIN=vg0_main # LVM VG volume group
+		LV_MAIN=lv0_main # LVM LV logical volume
+
+		VCONSOLE_KEYMAP=de-latin1 # console keymap
+		VCONSOLE_FONT=eurlatgr
+		LOCALE_GEN_a1="en_US ISO-8859-1"
+		LOCALE_GEN_a2="en_US.UTF-8 UTF-8"
+		LOCALE_GEN_b1="de_DE ISO-8859-1"
+		LOCALE_GEN_b2="de_DE.UTF-8 UTF-8"
+		LOCALE_CONF="en_US.UTF-8"
+		X11KEYMAP="de" # keymap for desktop environment 
+		HOSTNAME=p1p1 # define hostname
+		DOMAIN=p1p1 # define domain
+		SYSTIMEZONE=utc # utc or localtime # ls -la /usd/share/zoneinfo
+
+		# NETWORK # https://en.wikipedia.org/wiki/Public_recursive_name_server
+		NAMESERVER1_IPV4=1.1.1.1 # cloudflare ipv4
+		NAMESERVER1_IPV6=2606:4700:4700::1111 # cloudflare ipv6
+		NAMESERVER2_IPV4=1.0.0.1 # cloudflare ipv4
+		NAMESERVER2_IPV6=2606:4700:4700::1001 # cloudflare ipv6
+
+
+		DISPLAYSERV=XORG # see options
+		DESKTOPENV=XFCE4 # see options
+		DISPLAYMGR=LXDM # see options
+
+		SYSUSERNAME=gentoo # name of the login user
+
+		INITRAMFSVAR="--lvm --mdadm"
+
+		GPU_DRIVER=amdgpu # amdgpu, radeon
 
 		SYSLOCALE="de_DE.UTF-8"
 		SYSDATE_SET=AUTO
@@ -686,50 +774,22 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		SYSCLOCK_SET=AUTO # USE MANUAL OR AUTO -- WITH MANUAL YOU DONT GET TIMESYNCED SERVICE
 		SYSCLOCK_MAN="1969-07-16 04:55:42"
 		SYSTIMEZONE_SET="Europe/Berlin" # Europe/Berlin format for SYSTEMD ; Europe/Brussels foiormat for OPENRC
-		PRESET_INPUTEVICE="libinput keyboard"
-		PRESET_VIDEODRIVER='amdgpu radeonsi radeon'
-		PRESET_LICENCES="-* @FREE" # Only accept licenses in the FREE license group (i.e. Free Software)
-		# https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/USE
-		# systemd
-		# LVM2
-		# X11
-		# grub
-		# sudo
-		# audio
-		# video
-		# SSL
-		# CPU FLAGS
-		# encryption
-		# compressions
-		# NO KDE		
-		PRESET_USEFLAG='X a52 aac aalib acl acpi adns alsa atm audit bash-completion berkdb bidi blas boost branding bzip2 \
-					cairo cdda caps cpudetection cjk cracklib crypt cryptsetup css curl cvs cxx dbi dbus device-mapper dns-over-tls dga elfutils \
-					efiemu emacs encode exif expat fam ffmpeg filecaps flac fonts fortran ftp geoip gcrypt gd gif git gnuefi gnutls gnuplot \
-					hardened highlight gzip ipv6 int64 introspection idn jack jpeg jemalloc kernel kms lame latex ldap libcaca libressl lm_sensors \
-					lua lzma lzo lz4 m17n-lib matroska memcached mhash modules mount nettle numa mp3 mp4 mpeg mtp nls ocaml opengl openssl opus osc oss \
-					pcre perl png policykit posix pulseaudio python raw readline resolvconf qt5 recode ruby sound seccomp sasl sockets \
-					socks5 ssl sssd static-libs sqllite sqlite3 svg systemd sysv-utils szip symlink tcl tcpd themes thin truetype threads tiff udev udisks unicode xkb xvid zip zlib \
-					-kde -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet'
-		PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup clean-logs collision-protect \
-						compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
-						network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
-		PRESET_GENTOMIRRORS="https://ftp.snt.utwente.nl/pub/os/linux/gentoo/ https://mirror.isoc.org.il/pub/gentoo/ \
-						https://mirrors.lug.mtu.edu/gentoo/ https://mirror.csclub.uwaterloo.ca/gentoo-distfiles/ \
-						https://ftp.jaist.ac.jp/pub/Linux/Gentoo/"
-
+		
 		SYSINITVAR=SYSTEMD # SYSTEMD (default) OR OPENRC - MUST BE ALL CAPS TO MATCH VARIABLE, set and enjoy magig (OPENRC NOT SUPPORTED YET; FEELS FREE TO MAKE OPENRC WORK AND PUSH TO GITHUB :))
-		CONFIGKERN=MANUAL # AUTO / MANUAL
+		CONFIGKERN=AUTO # AUTO (genkernel) / MANUAL (
 		NETWORK_NET=DHCPD # DHCPD or STATIC, config static on your own in the network section.	
 		KERNVERS=5.3-rc4
 		KERNSOURCES=EMERGE # EMERGE (DEFAULT) ; TORVALDS (git repository)
 		CRONSET=CRONIE # CRONIE, DCRON, ANACRON ..... see on your own 
 		
+		DISPLAYMGR=lxdm
 		# MISC STATIC
 			bold=$(tput bold) # staticvar bold text
 			normal=$(tput sgr0) # # staticvar reverse to normal text
-			EMERGE_VAR="--quiet --complete-graph --verbose " # !Must keep trailing space!
+			EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse " # !Must keep trailing space!
 
 		BASE_SYSTEM () {
+
 			#  _____ ____  _   _ ___ _     ____    ____  _   _    _    ____  ____  _   _  ___ _____ 
 			# | ____| __ )| | | |_ _| |   |  _ \  / ___|| \ | |  / \  |  _ \/ ___|| | | |/ _ \_   _|
 			# |  _| |  _ \| | | || || |   | | | | \___ \|  \| | / _ \ | |_) \___ \| |_| | | | || |  
@@ -740,19 +800,6 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 				echo "${bold}CONFIG_PORTAGE${normal}"
 				mkdir /usr/portage
 				emerge-webrsync
-			}
-			INSTALL_PCIUTILS () {
-				echo "${bold}INSTALL_PCIUTILS${normal}"
-				emerge $EMERGE_VAR sys-apps/pciutils 
-			}
-			INSTALL_MULTIPATH () {
-				echo "${bold}INSTALL_MULTIPATH${normal}"
-				emerge $EMERGE_VAR sys-fs/multipath-tools
-			}
-			INSTALL_GNUPG () {
-				echo "${bold}INSTALL_GNUPG${normal}"
-				emerge $EMERGE_VAR app/crypt/gnupg
-				gpg --full-gen-key
 			}
 			#  ______   ___   _  ____ 
 			# / ___\ \ / / \ | |/ ___|
@@ -787,168 +834,10 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 			#                                                    
 			WORLDSET () { # https://wiki.gentoo.org/wiki/World_set_(Portage)
 				echo "${bold}WORLDSET${normal}"
-				emerge $EMERGE_VAR --update --deep --newuse @world
+				# emerge --sync
+				emerge --quiet --complete-graph --verbose --update --deep --newuse @world
+				emerge --oneshot virtual/udev virtual/libudev # If your system set provides sys-fs/eudev, virtual/udev and virtual/libudev may be preventing systemd.  https://wiki.gentoo.org/wiki/Systemd
 				echo "${bold}WORLDSET done${normal}"
-			}
-			#  __  __    _    _  _______   ____ ___  _   _ _____ 
-			# |  \/  |  / \  | |/ / ____| / ___/ _ \| \ | |  ___|
-			# | |\/| | / _ \ | ' /|  _|  | |  | | | |  \| | |_   
-			# | |  | |/ ___ \| . \| |___ | |__| |_| | |\  |  _|  
-			# |_|  |_/_/   \_\_|\_\_____(_)____\___/|_| \_|_|    
-			#
-			MAKECONF () { # https://wiki.gentoo.org/wiki//etc/portage/make.conf
-				echo "${bold}MAKECONF${normal}"
-				PRESET_MAKE="-j$(nproc) --quiet"
-				MAKECONF_VARIABLES () {
-					#cp /etc/portage/make.conf /etc/portage/make.Aconf_backup_$(date +%F_%R)
-					cat << EOF > /etc/portage/make.conf
-					COMMON_CPUFLAGS="$(lscpu | grep Flags: | sed -e 's/Flags:               //g')"
-					COMMON_FLAGS="-march=native -O2 -pipe" # set
-					CPU_FLAGS_X86="$(lscpu | grep Flags: | sed -e 's/Flags:               //g')"
-					CFLAGS="-march=native -O2 -pipe" # clone
-					CXXFLAGS="-march=native -O2 -pipe" # clone https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#CFLAGS_and_CXXFLAGS
-					FCFLAGS="-march=native -O2 -pipe"
-					FFLAGS="-march=native -O2 -pipe"
-					MAKEOPTS="$PRESET_MAKE"
-					INPUT_DEVICES="$PRESET_INPUTEVICE"
-					VIDEO_CARDS="$PRESET_VIDEODRIVER"
-					ACCEPT_LICENSE="$PRESET_LICENCES"
-					FEATURES="$PRESET_FEATURES"
-					USE="${COMMON_CPUFLAGS} $PRESET_USEFLAG"
-					# https://www.gentoo.org/downloads/mirrors/
-					GENTOO_MIRRORS="$PRESET_GENTOMIRRORS"
-					# RSYNC MIRRORS https://www.gentoo.org/support/rsync-mirrors
-					PORTDIR="/var/db/repos/gentoo"
-					DISTDIR="var/cache/distfiles"
-					PKGDIR="/var/cache/binpkgs"
-					LC_MESSAGE=C
-EOF
-				}			                         
-				MAKECONF_VARIABLES
-				emerge $EMERGE_VAR --changed-use @world
-				echo "${bold}MAKECONF done${normal}"
-			}
-			#  ______   ______ _____ _____ __  __   _____ ___ __  __ _____ 
-			# / ___\ \ / / ___|_   _| ____|  \/  | |_   _|_ _|  \/  | ____|
-			# \___ \\ V /\___ \ | | |  _| | |\/| |   | |  | || |\/| |  _|  
-			#  ___) || |  ___) || | | |___| |  | |   | |  | || |  | | |___ 
-			# |____/ |_| |____/ |_| |_____|_|  |_|   |_| |___|_|  |_|_____|
-			#                                                             
-			SYSTEMTIME () { # https://wiki.gentoo.org/wiki/System_time
-				echo "${bold}SYSTEMTIME${normal}"
-				#  _____ ___ __  __ _____ ________  _   _ _____ 
-				# |_   _|_ _|  \/  | ____|__  / _ \| \ | | ____|
-				#   | |  | || |\/| |  _|   / / | | |  \| |  _|  
-				#   | |  | || |  | | |___ / /| |_| | |\  | |___ 
-				#   |_| |___|_|  |_|_____/____\___/|_| \_|_____|
-				#                                              
-				SET_TIMEZONE () { # https://wiki.gentoo.org/wiki/System_time#Time_zone
-					TIMEZONE_OPENRC () { # openrc switch (option variables top)  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Timezone
-						echo "$SYSTIMEZONE_SET" > /etc/timezone
-						emerge --config sys-libs/timezone-data
-					}
-					TIMEZONE_SYSTEMD () {
-						timedatectl set-timezone $SYSTIMEZONE_SET
-					}
-					TIMEZONE_$SYSINITVAR
-				}
-				#  ______   ______ _____ _____ __  __    ____ _     ___   ____ _  __
-				# / ___\ \ / / ___|_   _| ____|  \/  |  / ___| |   / _ \ / ___| |/ /
-				# \___ \\ V /\___ \ | | |  _| | |\/| | | |   | |  | | | | |   | ' / 
-				#  ___) || |  ___) || | | |___| |  | | | |___| |__| |_| | |___| . \ 
-				# |____/ |_| |____/ |_| |_____|_|  |_|  \____|_____\___/ \____|_|\_\
-				#                                                                  
-				SYSTEMCLOCK () { # https://wiki.gentoo.org/wiki/System_time#System_clock
-					echo "${bold}SYSTEMCLOCK${normal}"
-					OPENRC_SYSTEMCLOCK () {
-						OPENRC_SYSCLOCK_MANUAL () { # switch to manual configuration (option variables top)
-							OPENRC_SYSTEMCLOCK () {
-								date $SYSDATE_MAN
-							}
-							OPENRC_SYSTEMCLOCK
-						}
-						OPENRC_OPENNTPD () {
-							EMERGE_OPENTPD () {
-								emerge $EMERGE_VAR net-misc/openntpd
-							}
-							SYSSTART_OPENNTPD () {
-								/etc/init.d/ntpd start
-								rc-update add ntpd default
-							}
-							EMERGE_OPENTPD
-							SYSSTART_OPENNTPD
-						}
-						# OPENRC_SYSCLOCK_MANUAL # only 1 can be set
-						OPENRC_OPENNTPD
-					}
-					SYSTEMCTL_SYSTEMCLOCK () { # https://wiki.gentoo.org/wiki/System_time#Hardware_clock
-						SYSTEMCTL_SYSCLOCK_MANUAL () { # switch to manual configuration (option variables top)
-							timedatectl set-time "$SYSCLOCK_MAN"
-						}
-						SYSTEMCTL_SYSCLOCK_AUTO () { # switch to auto (option variables top)
-							SYSSTART_TIMESYND () {
-								systemctl enable systemd-timesyncd
-								systemctl start systemd-timesyncd
-							}
-							SYSSTART_TIMESYND
-						}
-						SYSTEMCTL_SYSCLOCK_$SYSCLOCK_SET
-					}
-					SYSTEMCLOCK_$SYSINITVAR
-				}
-				#  _   ___        ______ _     ___   ____ _  __
-				# | | | \ \      / / ___| |   / _ \ / ___| |/ /
-				# | |_| |\ \ /\ / / |   | |  | | | | |   | ' / 
-				# |  _  | \ V  V /| |___| |__| |_| | |___| . \ 
-				# |_| |_|  \_/\_/  \____|_____\___/ \____|_|\_\
-				#                                             
-				HWCLOCK () {
-					echo "${bold}HWCLOCK${normal}"
-					HWCLOCK_OPENRC () { # openrc switch (option variables top) 
-						echo 'placeholder'
-					}
-					HWCLOCK_SYSTEMD () { # systemd switch (option variables top) 
-						timedatectl set-local-rtc 0 # set UTC
-					}
-					HWCLOCK_$SYSINITVAR
-				}
-				TIMEZONE
-				SYSTEMCLOCK
-				HWCLOCK
-			}
-			#  _     ___   ____    _    _     _____ ____  
-			# | |   / _ \ / ___|  / \  | |   | ____/ ___| 
-			# | |  | | | | |     / _ \ | |   |  _| \___ \ 
-			# | |__| |_| | |___ / ___ \| |___| |___ ___) |
-			# |_____\___/ \____/_/   \_\_____|_____|____/ 
-			#                                       
-			CONF_LOCALES () { # https://wiki.gentoo.org/wiki/Localization/Guide
-				echo "${bold}CONF_LOCALES${normal}"
-				CONF_LOCALEGEN () {
-					cat << EOF > /etc/locale.gen
-					$LOCALE_GEN_a1
-					$LOCALE_GEN_a2
-					$LOCALE_GEN_b1
-					$LOCALE_GEN_b2
-EOF
-				}
-				GEN_LOCALE () {
-					locale-gen
-				}
-				SYS_LOCALE () {
-					cat << EOF > /etc/env.d/02locale
-					LANG="$SYSLOCALE"
-					LC_COLLATE="C"
-EOF
-				}
-				RELOAD_LOCALE_ENV () {
-					env-update && source /etc/profile && export PS1="(chroot) ${PS1}" # reload
-				}
-				CONF_LOCALEGEN
-				GEN_LOCALE
-				# YS_LOCALE
-				RELOAD_LOCALE_ENV
-				echo "${bold}CONF_LOCALES end${normal}"
 			}
 			#  ___ _   _ ___ _____ ______   ______ _____ _____ __  __ 
 			# |_ _| \ | |_ _|_   _/ ___\ \ / / ___|_   _| ____|  \/  |
@@ -1015,6 +904,130 @@ EOF
 				INITSYS_$SYSINITVAR
 				echo "${bold}INITSYSTEM end${normal}"
 			}
+
+			#  ______   ______ _____ _____ __  __   _____ ___ __  __ _____ 
+			# / ___\ \ / / ___|_   _| ____|  \/  | |_   _|_ _|  \/  | ____|
+			# \___ \\ V /\___ \ | | |  _| | |\/| |   | |  | || |\/| |  _|  
+			#  ___) || |  ___) || | | |___| |  | |   | |  | || |  | | |___ 
+			# |____/ |_| |____/ |_| |_____|_|  |_|   |_| |___|_|  |_|_____|
+			#                                                             
+			SYSTEMTIME () { # https://wiki.gentoo.org/wiki/System_time
+				echo "${bold}SYSTEMTIME${normal}"
+				#  _____ ___ __  __ _____ ________  _   _ _____ 
+				# |_   _|_ _|  \/  | ____|__  / _ \| \ | | ____|
+				#   | |  | || |\/| |  _|   / / | | |  \| |  _|  
+				#   | |  | || |  | | |___ / /| |_| | |\  | |___ 
+				#   |_| |___|_|  |_|_____/____\___/|_| \_|_____|
+				#                                              
+				SET_TIMEZONE () { # https://wiki.gentoo.org/wiki/System_time#Time_zone
+					TIMEZONE_OPENRC () { # openrc switch (option variables top)  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Timezone
+						echo "$SET_TIMEZONE" > /etc/timezone
+						emerge --config sys-libs/timezone-data
+					}
+					TIMEZONE_SYSTEMD () {
+						timedatectl set-timezone $SYSTIMEZONE_SET
+					}
+					TIMEZONE_$SYSINITVAR
+				}
+				#  ______   ______ _____ _____ __  __    ____ _     ___   ____ _  __
+				# / ___\ \ / / ___|_   _| ____|  \/  |  / ___| |   / _ \ / ___| |/ /
+				# \___ \\ V /\___ \ | | |  _| | |\/| | | |   | |  | | | | |   | ' / 
+				#  ___) || |  ___) || | | |___| |  | | | |___| |__| |_| | |___| . \ 
+				# |____/ |_| |____/ |_| |_____|_|  |_|  \____|_____\___/ \____|_|\_\
+				#                                                                  
+				SET_SYSTEMCLOCK () { # https://wiki.gentoo.org/wiki/System_time#System_clock
+					echo "${bold}SYSTEMCLOCK${normal}"
+					SYSTEMCLOCK_OPENRC () {
+						OPENRC_SYSCLOCK_MANUAL () { # switch to manual configuration (option variables top)
+							OPENRC_SYSTEMCLOCK () {
+								date $SYSDATE_MAN
+							}
+							OPENRC_SYSTEMCLOCK
+						}
+						OPENRC_OPENNTPD () {
+							EMERGE_OPENTPD () {
+								emerge $EMERGE_VAR net-misc/openntpd
+							}
+							SYSSTART_OPENNTPD () {
+								/etc/init.d/ntpd start
+								rc-update add ntpd default
+							}
+							EMERGE_OPENTPD
+							SYSSTART_OPENNTPD
+						}
+						# OPENRC_SYSCLOCK_MANUAL # only 1 can be set
+						OPENRC_OPENNTPD
+					}
+					SYSTEMCLOCK_SYSTEMD () { # https://wiki.gentoo.org/wiki/System_time#Hardware_clock
+						SYSTEMD_SYSCLOCK_MANUAL () { # switch to manual configuration (option variables top)
+							timedatectl set-time "$SYSCLOCK_MAN"
+						}
+						SYSTEMD_SYSCLOCK_AUTO () { # switch to auto (option variables top)
+							SYSSTART_TIMESYND () {
+								SYSTEMD enable systemd-timesyncd
+								SYSTEMD start systemd-timesyncd
+							}
+							SYSSTART_TIMESYND
+						}
+						SYSTEMD_SYSCLOCK_$SYSCLOCK
+					}
+					SYSTEMCLOCK_$SYSINITVAR
+				}
+				#  _   ___        ______ _     ___   ____ _  __
+				# | | | \ \      / / ___| |   / _ \ / ___| |/ /
+				# | |_| |\ \ /\ / / |   | |  | | | | |   | ' / 
+				# |  _  | \ V  V /| |___| |__| |_| | |___| . \ 
+				# |_| |_|  \_/\_/  \____|_____\___/ \____|_|\_\
+				#                                             
+				SET_HWCLOCK () {
+					echo "${bold}HWCLOCK${normal}"
+					HWCLOCK_OPENRC () { # openrc switch (option variables top) 
+						echo 'placeholder'
+					}
+					HWCLOCK_SYSTEMD () { # systemd switch (option variables top) 
+						timedatectl set-local-rtc 0 # set UTC
+					}
+					HWCLOCK_$SYSINITVAR
+				}
+				SET_TIMEZONE
+				#SET_SYSTEMCLOCK
+				#SET_HWCLOCK
+			}
+			#  _     ___   ____    _    _     _____ ____  
+			# | |   / _ \ / ___|  / \  | |   | ____/ ___| 
+			# | |  | | | | |     / _ \ | |   |  _| \___ \ 
+			# | |__| |_| | |___ / ___ \| |___| |___ ___) |
+			# |_____\___/ \____/_/   \_\_____|_____|____/ 
+			#                                       
+			CONF_LOCALES () { # https://wiki.gentoo.org/wiki/Localization/Guide
+				echo "${bold}CONF_LOCALES${normal}"
+				CONF_LOCALEGEN () {
+					cat << EOF > /etc/locale.gen
+					$LOCALE_GEN_a1
+					$LOCALE_GEN_a2
+					$LOCALE_GEN_b1
+					$LOCALE_GEN_b2
+EOF
+				}
+				GEN_LOCALE () {
+					locale-gen
+				}
+				SYS_LOCALE () {
+					cat << EOF > /etc/env.d/02locale
+					LANG="$SYSLOCALE"
+					LC_COLLATE="C"
+EOF
+				}
+				RELOAD_LOCALE_ENV () {
+					env-update && source /etc/profile && export PS1="(chroot) ${PS1}" # reload
+				}
+				CONF_LOCALEGEN
+				GEN_LOCALE
+				# YS_LOCALE
+				RELOAD_LOCALE_ENV
+				echo "${bold}CONF_LOCALES end${normal}"
+			}
+
 			#  _____ ___ ____  __  ____        ___    ____  _____ 
 			# |  ___|_ _|  _ \|  \/  \ \      / / \  |  _ \| ____|
 			# | |_   | || |_) | |\/| |\ \ /\ / / _ \ | |_) |  _|  
@@ -1025,21 +1038,19 @@ EOF
 				echo "${bold}FIRMWARE${normal}"
 				LINUX_FIRMWARE () { # https://wiki.gentoo.org/wiki/Linux_firmware
 					emerge $EMERGE_VAR sys-kernel/linux-firmware
+					etc-update --automode -3 # (automode -3 = merge all)
 				}
 				LINUX_FIRMWARE
 				echo "${bold}FIRMWARE end${normal}"
 			}
 			CONFIG_PORTAGE		&& echo "${bold}CONFIG_PORTAGE - END ....${normal}"
-			MAKECONF		&& echo "${bold}MAKECONF - END ....${normal}"
-			INSTALL_PCIUTILS	&& echo "${bold}INSTALL_PCIUTILS - END ....${normal}"
-			INSTALL_MULTIPATH	&& echo "${bold}INSTALL_MULTIPATH - END ....${normal}"
-			EMERGE_SYNC		&& echo "${bold}EMERGE_SYNC - END ....${normal}"
+			##EMERGE_SYNC		&& echo "${bold}EMERGE_SYNC - END ....${normal}"
 			SELECT_PROFILE		&& echo "${bold}SELECT_PROFILE - END ....${normal}"
 			WORLDSET		&& echo "${bold}WORLDSET - END ....${normal}"
-			# SYSTEMTIME		&& echo "${bold}SYSTEMTIME - END ....${normal}"
-			# CONF_LOCALES		&& echo "${bold}CONF_LOCALES - END ....${normal}"
 			## INITSYSTEM		&& echo "${bold}INITSYSTEM - END ....${normal}"
-			# FIRMWARE		&& echo "${bold}FIRMWARE - END, proceeding to CHROOT ....${normal}"
+			## SYSTEMTIME		&& echo "${bold}SYSTEMTIME - END ....${normal}"
+			CONF_LOCALES		&& echo "${bold}CONF_LOCALES - END ....${normal}"
+			FIRMWARE		&& echo "${bold}FIRMWARE - END, proceeding to CHROOT ....${normal}"
 			echo "${bold}BASE_SYSTEM end${normal}"
 		}
 		INST_SYSAPP () {
@@ -1096,6 +1107,49 @@ EOF
 				emerge $EMERGE_VAR app-admin/sudo # must keep trailing
 				cp /etc/sudoers /etc/sudoers_bak
 				sed -i -e 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
+			}
+			#  ____   ____ ___ _   _ _____ ___ _     ____  
+			# |  _ \ / ___|_ _| | | |_   _|_ _| |   / ___| 
+			# | |_) | |    | || | | | | |  | || |   \___ \ 
+			# |  __/| |___ | || |_| | | |  | || |___ ___) |
+			# |_|    \____|___|\___/  |_| |___|_____|____/ 
+			#                                             
+			#
+			INSTALL_PCIUTILS () {
+				echo "${bold}INSTALL_PCIUTILS${normal}"
+				emerge $EMERGE_VAR sys-apps/pciutils 
+			}
+			#  __  __ _   _ _   _____ ___ ____   _  _____ _   _ 
+			# |  \/  | | | | | |_   _|_ _|  _ \ / \|_   _| | | |
+			# | |\/| | | | | |   | |  | || |_) / _ \ | | | |_| |
+			# | |  | | |_| | |___| |  | ||  __/ ___ \| | |  _  |
+			# |_|  |_|\___/|_____|_| |___|_| /_/   \_\_| |_| |_|
+			#                                                    
+			INSTALL_MULTIPATH () { # https://wiki.gentoo.org/wiki/Multipath
+				echo "${bold}INSTALL_MULTIPATH${normal}"
+				emerge $EMERGE_VAR sys-fs/multipath-tools
+			}
+			#   ____ _   _ _   _ ____   ____ 
+			#  / ___| \ | | | | |  _ \ / ___|
+			# | |  _|  \| | | | | |_) | |  _ 
+			# | |_| | |\  | |_| |  __/| |_| |
+			#  \____|_| \_|\___/|_|    \____|
+			#                               
+			#
+			INSTALL_GNUPG () {
+				echo "${bold}INSTALL_GNUPG${normal}"
+				emerge $EMERGE_VAR app/crypt/gnupg
+				gpg --full-gen-key
+			}
+			#   ___  ____        ____  ____   ___  ____  _____ ____  
+			#  / _ \/ ___|      |  _ \|  _ \ / _ \| __ )| ____|  _ \ 
+			# | | | \___ \ _____| |_) | |_) | | | |  _ \|  _| | |_) |
+			# | |_| |___) |_____|  __/|  _ <| |_| | |_) | |___|  _ < 
+			#  \___/|____/      |_|   |_| \_\\___/|____/|_____|_| \_\
+			#                                                       
+			#
+			INSTALL_OSPROBER () {
+				emerge $EMERGE_VAR sys-boot/os-prober
 			}
 			#  ______   ______  _     ___   ____ 
 			# / ___\ \ / / ___|| |   / _ \ / ___|
@@ -1210,8 +1264,8 @@ EOF
 						rc-update add bcron default
 					}
 					BCRON_SYSTEMD () { # systemd switch (option variables top) 
-					systemctl enable bcron
-					systemctl start bcron 
+					SYSTEMD enable bcron
+					SYSTEMD start bcron 
 					}
 				BCRON_$SYSINITVAR
 				}
@@ -1258,31 +1312,40 @@ EOF
 				## emerge $EMERGE_VAR sys-fs/dosfstools # VFAT (FAT32, ...) 	
 				# emerge $EMERGE_VAR sys-fs/btrfs-progs # Btrfs 
 			}
+			#   ____ ___ _____ 
+			#  / ___|_ _|_   _|
+			# | |  _ | |  | |  
+			# | |_| || |  | |  
+			#  \____|___| |_|  
+			#                 
+			#
 			INSTALL_GIT () {
 				emerge $EMERGE_VAR dev-vcs/git
 			}
-			INSTALL_GIT
 			INSTALL_CRYPTSETUP
 			INSTALL_LVM2
 			INSTALL_SUDO
+			INSTALL_PCIUTILS	&& echo "${bold}INSTALL_PCIUTILS - END ....${normal}"
+			INSTALL_MULTIPATH	&& echo "${bold}INSTALL_MULTIPATH - END ....${normal}"
+			INSTALL_OSPROBER
 			INST_LOGGER
 			INST_CRON
-			# FILEINDEXING
+			FILEINDEXING
 			FSTOOLS
+			INSTALL_GIT
 		}
-			# sys-apps/pciutils  	app-crypt/gnupg sys-fs/multipath-tools
 			#  _  _______ ____  _   _ _____ _     
 			# | |/ / ____|  _ \| \ | | ____| |    
 			# | ' /|  _| | |_) |  \| |  _| | |    
 			# | . \| |___|  _ <| |\  | |___| |___ 
 			# |_|\_\_____|_| \_\_| \_|_____|_____|
 			#                           
-			BUILD_KERNEL () { # https://wiki.gentoo.org/wiki/Kernel
-				KERNEL_SOURCE () { # we need some sources, kinda obv xD
-					KERN_SOURCES_EMERGE () { # so shall it be the gentoo kernel?
+			BUILDKERN () { # https://wiki.gentoo.org/wiki/Kernel
+				KERSRC_SET () { # we need some sources, kinda obv xD
+					KERSRC_EMERGE () { # so shall it be the gentoo kernel?
 						emerge $EMERGE_VAR sys-kernel/gentoo-sources
 					}
-					KERN_SOURCES_TORVALDS () { # or lets fetch one of f some stranger github profile? (hope you installed git :) )
+					KERSRC_TORVALDS () { # or lets fetch one of f some stranger github profile? (hope you installed git :) )
 						git clone https://github.com/torvalds/linux # clone to usr src linux
 						rm -rf /usr/src/linux
 						mv linux /usr/src/linux
@@ -1290,9 +1353,9 @@ EOF
 						git fetch && git fetch --tags
 						git checkout v$KERNVERS
 					}
-					KERN_SOURCES_$KERNSOURCES
+					KERSRC_$KERNSOURCES
 				}
-				CONFIGURE_KERNEL () {
+				CONFKERN_SET () {
 					CONFKERN_MANUAL () { # switch to manual configuration (option variables top) # guess an initramfs needs to be generated with dracut or the like? still new to gentoo, using genkernel for testing.
 					lsmod # active modules by install medium.
 						CNFG_KERN_PASTE () { # lets paste our own config here (maybe this should go to auto afterall)
@@ -1314,7 +1377,7 @@ EOF
 						MKERNBUILD
 					}
 					CONFKERN_AUTO () { # switch to auto (option variables top) # switch to auto configuration (option variables top)
-						GENKERNEL () {
+						GENKERNEL_NEXT () {
 							CKA_OPENRC () { # openrc switch (option variables top)  # ONLY SAMPLE; FIX ON YOUR OWN OERR USE SYSTEMD # config kernel with genkernel for openrc		
 								emerge $EMERGE_VAR sys-kernel/genkernel
 								CONFGENKERNEL_OPENRC () { # openrc switch (option variables top) 
@@ -1331,8 +1394,9 @@ EOF
 							}
 							CKA_SYSTEMD () { # systemd switch (option variables top)  # config kernel with genkernel-next for systemd
 								emerge $EMERGE_VAR sys-kernel/genkernel-next
-								CONFGENKERNEL_SYSTEMD () { # systemd switch (option variables top) 
-									cat < 'EOF' > /etc/genkernel.conf
+								CONFGENKERNEL_SYSTEMD () { # systemd switch (option variables top)
+									touch /etc/genkernel.conf
+									cat << 'EOF' > /etc/genkernel.conf
 									INSTALL="yes"
 									MOUNTBOOT="yes"
 									OLDCONFIG="yes"
@@ -1340,6 +1404,7 @@ EOF
 									NCONFIG="no"
 									CLEAN="yes"
 									MRPROPER="yes"
+									MOUNTBOOT="yes"
 									SYMLINK="yes"
 									SAVE_CONFIG="yes"
 									USECOLOR="yes"
@@ -1353,11 +1418,12 @@ EOF
 									#MDADM="no"
 									BUSYBOX="yes"
 									UDEV="yes"
-									MULTIPATH="yes"
-									ISCSI="yes"
+									MULTIPATH="no" # https://wiki.gentoo.org/wiki/Multipath disabled, dont want to trail and error on this one now.
+									ISCSI="no"
 									E2FSPROGS="yes"
-									FIRMWARE="yes"
-									FIRMWARE_SRC="/lib/firmware"
+									# FIRMWARE="yes" # skipping this firmware part for now, note to look after later.
+									# FIRMWARE_SRC="/lib/firmware"
+									BOOTLOADER="grub2"
 									SPLASH="no"
 									SPLASH_THEME="gentoo"
 									SAVE_CONFIG="yes"
@@ -1373,42 +1439,41 @@ EOF
 									DEFAULT_KERNEL_SOURCE="/usr/src/linux"
 									COMPRESS_INITRD="yes"
 									COMPRESS_INITRD_TYPE="best"
-									BOOTLOADER="grub2"
 									#INTEGRATED_INITRAMFS="1"
 									#ALLRAMDISKMODULES="1"
 EOF
 								}
-								RUNGENKERNEL_SYSTEMD () { # systemd switch (option variables top) 
-										# genkernel-next  # generate kernel WITHOUT initramfs
-										genkernel-next all # generate kernel and initramfs
+								GENKERNELNEXT_SYSTEMD () { # systemd switch (option variables top) 
+										# genkernel  # generate kernel WITHOUT initramfs
+										genkernel --config=/etc/genkernel.conf  all # generate kernel and initramfs
 								}
 								CONFGENKERNEL_SYSTEMD
-								RUN_GENKERNELNEXT_SYSTEMD
+								GENKERNELNEXT_SYSTEMD
 							}
 							CKA_$SYSINITVAR && echo "${bold}CKA_$SYSINITVAR - END ....${normal}"
-						} # genkernel end
-						GENKERNEL
+						}
+						GENKERNEL_NEXT
 					}
 					CONFKERN_$CONFIGKERN
 					cd /
 				}
-				KERNEL_SOURCE # a source is required, the variable can be set on top in the option variable section.
-				CONFIGURE_KERNEL # this is a little more compex and probably not 100% implemented yet. select auto or manual in the variable section - you can paste, run menuconfig, copy default generic and so on, depending on how far this script has gone.
+				KERSRC_SET # a source is required, the variable can be set on top in the option variable section.
+				CONFKERN_SET # this is a little more complex and probably not 100% implemented yet. select auto or manual in the variable section - you can paste, run menuconfig, copy default generic and so on, depending on how far this script has gone.
 			}
-			#  ___ _   _ ___ ____      _    __  __ _____ ____  
-			# |_ _| \ | |_ _|  _ \    / \  |  \/  |  ___/ ___| 
-			#  | ||  \| || || |_) |  / _ \ | |\/| | |_  \___ \ 
-			#  | || |\  || ||  _ <  / ___ \| |  | |  _|  ___) |
-			# |___|_| \_|___|_| \_\/_/   \_\_|  |_|_|   |____/ 
-			#                                                  
+			#  ___ _   _ ___ _____ ____      _    __  __ _____ ____  
+			# |_ _| \ | |_ _|_   _|  _ \    / \  |  \/  |  ___/ ___| 
+			#  | ||  \| || |  | | | |_) |  / _ \ | |\/| | |_  \___ \ 
+			#  | || |\  || |  | | |  _ <  / ___ \| |  | |  _|  ___) |
+			# |___|_| \_|___| |_| |_| \_\/_/   \_\_|  |_|_|   |____/ 
+			#                                                       
 			INITRAMFS () { # https://wiki.gentoo.org/wiki/Initramfs
 				# IF GENKERNEL USED WITH "INITRAMFS VAR SKIP THIS, OR REMOVE VAR AND USE DRACUT
 				DRACUT () { 
 					emerge $EMERGE_VAR sys-kernel/dracut
-					cat < 'EOF' >> /etc/dracut.conf.d/usrmount.conf
+					cat << 'EOF' >> /etc/dracut.conf.d/usrmount.conf
 					add_dracutmodules+="usrmount" # Dracut modules to add to the default
 EOF
-					cat < 'EOF' >> /etc/dracut.conf
+					cat << 'EOF' >> /etc/dracut.conf
 					hostonly="yes" # Equivalent to -H
 					dracutmodules+="dash i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg gensplash lvm multipath plymouth selinux" # Equivalent to -m "module module module"
 EOF
@@ -1427,7 +1492,8 @@ EOF
 				FSTAB_LVMONLUKS_BIOS () { # bios switch (option variables top)
 					cat << EOF > /etc/fstab
 					# /dev/mapper/vg0-root:
-					UUID="$(blkid -o value -s UUID /dev/mapper/$VG_MAIN--$LV_MAIN)"	/	ext4	rw,relatime	0 1
+					UUID="$(blkid -o value -s UUID /dev/mapper/$VG_MAIN-$LV_MAIN)"	/	ext4	rw,relatime	0 1
+					#/dev/mapper/$VG_MAIN-$LV_MAIN	/	ext4	rw,relatime	0 1
 					# /dev/sdb2:
 					UUID="$(blkid -o value -s UUID $BOOT_PART)"	/boot	ext2	rw,relatime	0 2
 EOF
@@ -1448,7 +1514,7 @@ EOF
 			KEYMAPS () {
 				KEYMAPS_SYSTEMD () { # systemd switch (option variables top) 
 					VCONSOLE_CONF () { # https://wiki.archlinux.org/index.php/Keyboard_configuration_in_console
-						cat << EOF > etc/vconsole.conf
+						cat << EOF > /etc/vconsole.conf
 						KEYMAP=$VCONSOLE_KEYMAP
 						FONT=$VCONSOLE_FONT
 EOF
@@ -1457,79 +1523,7 @@ EOF
 				}
 				KEYMAPS_$SYSINITVAR
 			}
-			#  _   _ _____ _______        _____  ____  _  __
-			# | \ | | ____|_   _\ \      / / _ \|  _ \| |/ /
-			# |  \| |  _|   | |  \ \ /\ / / | | | |_) | ' / 
-			# | |\  | |___  | |   \ V  V /| |_| |  _ <| . \ 
-			# |_| \_|_____| |_|    \_/\_/  \___/|_| \_\_|\_\
-			#                                            
-			NETWORKING () {
-				GENTOONET () {
-					emerge $EMERGE_VAR --noreplace net-misc/netifrc
-					# Please read /usr/share/doc/netifrc-*/net.example.bz2 for a list of all available options. Be sure to also read up on the DHCP client man page if specific DHCP options need to be set. 
-					cat << 'EOF' >> /ETC/conf.d/net 
-					config_eth0="dhcp"
-EOF
-				}
-				HOSTSFILE () {
-					echo "$HOSTNAME" > /etc/hostname
-					echo "127.0.0.1	localhost
-					::1		localhost
-					127.0.1.1	$HOSTNAME.$DOMAIN	$HOSTNAME" > /etc/hosts
-				}
-				SYSTEMD_NETWORKD () { # https://wiki.archlinux.org/index.php/Systemd-networkd
-					systemctl enable systemd-networkd.service
-					systemctl start systemd-networkd.service 
-					REPLACE_RESOLVECONF () {
-						ln -snf /run/systemd/resolve/resolv.conf /etc/resolv.conf
-						systemctl enable systemd-resolved.service
-						systemctl start systemd-resolved.service 
-					}
-					WIRED_DHCPD () {
-						cat < 'EOF' > etc/systemd/network/20-wired.network
-						[ Match ]
-						Name=enp1s0
 
-						[ Network ]
-						DHCP=ipv4
-EOF
-					}
-					WIRED_STATIC () {
-						cat < 'EOF' > etc/systemd/network/20-wired.network
-						[ Match ]
-						Name=enp1s0
-
-						[ Network ]
-						Address=10.1.10.9/24
-						Gateway=10.1.10.1
-						DNS=10.1.10.1
-						#DNS=8.8.8.8
-EOF
-					}
-					REPLACE_RESOLVECONF
-					WIRED_$NETWORK_NET
-					
-				}
-				INST_DHCP () { # https://wiki.gentoo.org/wiki/Dhcpcd
-					EMERGE_DHCPD () {
-						emerge $EMERGE_VAR net-misc/dhcpcd
-					}
-					SYSSTART_DHCPD_OPENRC () { # openrc switch (option variables top) 
-						rc-update add dhcpcd default
-						/etc/init.d/dhcpcd start 
-					}
-					SYSSTART_DHCPD_SYSTEMD () { # systemd switch (option variables top) 
-						systemctl enable dhcpcd
-						systemctl start dhcpcd 
-					}
-					EMERGE_DHCPD
-					SYSSTART_DHCPD_$SYSINITVAR
-				}
-				GENTOONET
-				HOSTSFILE
-				SYSTEMD_NETWORKD
-				# INST_DHCP
-			}
 			#  ____   ___   ___ _____ _     ___    _    ____  _____ ____  
 			# | __ ) / _ \ / _ \_   _| |   / _ \  / \  |  _ \| ____|  _ \ 
 			# |  _ \| | | | | | || | | |  | | | |/ _ \ | | | |  _| | |_) |
@@ -1691,6 +1685,7 @@ EOF
 					#  7. SLiM (Simple Login Manager) 
 					#  8. WDM (WINGs Display Manager) 
 					#  9. XDM (X Display Manager) 
+					
 					#  _     ___ ____ _   _ _____ ____  __  __ 
 					# | |   |_ _/ ___| | | |_   _|  _ \|  \/  |
 					# | |    | | |  _| |_| | | | | | | | |\/| |
@@ -1706,7 +1701,7 @@ EOF
 							/etc/init.d/dbus start
 							/etc/init.d/xdm start
 						}
-						LIGHTDM_SYSTEMCTL () {
+						LIGHTDM_SYSTEMD () {
 							systemctl enable lightdm
 							systemctl start lightdm
 						}
@@ -1742,7 +1737,24 @@ EOF
 						INSTALL_LXDM
 						CONFIGURE_LXDM
 					}
-					LXDM
+					AUTOSTARTDISPLMGR () {
+						cat << EOF > /etc/conf.d/xdm
+						DISPLAYMANAGER="$DISPLAYMGR"
+EOF
+						SET_DISPLAYMGRSTR_OPENRC () {
+							rc-update add $DISPLAYMGR default
+							rc-service $DISPLAYMGR start
+
+						}
+						SET_DISPLAYMGRSTR_SYSTEMD () {
+							systemctl enable $DISPLAYMGR.service
+							systemctl start $DISPLAYMGR
+						}
+						SET_DISPLAYMGRSTR_$SYSINITVAR
+					}
+					# LIGHTDM
+					LXDM	
+					AUTOSTARTDISPLMGR
 				}
 				#  ____  _____ ____  _  _______ ___  ____    _____ _   ___     __
 				# |  _ \| ____/ ___|| |/ /_   _/ _ \|  _ \  | ____| \ | \ \   / /
@@ -1778,7 +1790,7 @@ EOF
 							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
 							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
 						}
-						W_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
+						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							XFCE4_LXDM () {
 								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startxfce4;g' /etc/lxdm/lxdm.conf
 							}
@@ -1788,7 +1800,7 @@ EOF
 							# startx and startxfce4 -  starting Xfce without using a display manager.
 							# startx
 							XFCE_STARTX_OPENRC () { # openrc switch (option variables top) 
-								cat < 'EOF' > ~/.xinitrc 
+								cat << 'EOF' > ~/.xinitrc 
 								exec startxfce4
 EOF
 							}
@@ -1805,7 +1817,7 @@ EOF
 							# emerge $EMERGE_VAR xfce-extra/thunar-volman
 						}
 						EMERGE_XFCE4
-						W_DISPLAYMGR
+						W_DISPLAYMGR_LXDM
 						# WO_DISPLAYMGR
 						XFCE4_MISC
 					}
@@ -1824,6 +1836,85 @@ EOF
 			AUDIO () {
 				emerge $EMERGE_VAR media-sound/pavucontrol
 			}
+			#  _   _ _____ _______        _____  ____  _  __
+			# | \ | | ____|_   _\ \      / / _ \|  _ \| |/ /
+			# |  \| |  _|   | |  \ \ /\ / / | | | |_) | ' / 
+			# | |\  | |___  | |   \ V  V /| |_| |  _ <| . \ 
+			# |_| \_|_____| |_|    \_/\_/  \___/|_| \_\_|\_\
+			#                                            
+			NETWORKING () {
+				BASICNET () {
+					GENTOONET () {
+						emerge $EMERGE_VAR --noreplace net-misc/netifrc
+						# Please read /usr/share/doc/netifrc-*/net.example.bz2 for a list of all available options. Be sure to also read up on the DHCP client man page if specific DHCP options need to be set.
+						cat << 'EOF' > /etc/conf.d/net 
+						#config_eth0="dhcp"
+						config_enp1s0="dhcp"
+EOF
+					}
+					HOSTSFILE () {
+						echo "$HOSTNAME" > /etc/hostname
+						echo "127.0.0.1	localhost
+						::1		localhost
+						127.0.1.1	$HOSTNAME.$DOMAIN	$HOSTNAME" > /etc/hosts
+					}
+				GENTOONET
+				HOSTSFILE
+				}
+				NETWORKD () { # https://wiki.archlinux.org/index.php/Systemd-networkd
+					SET_SYSTEMD () {
+						systemctl enable systemd-networkd.service
+						systemctl start systemd-networkd.service 
+						REPLACE_RESOLVECONF () {
+							ln -snf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+							systemctl enable systemd-resolved.service
+							systemctl start systemd-resolved.service 
+						}
+						WIRED_DHCPD () {
+							cat << 'EOF' > /etc/systemd/network/20-wired.network
+							[ Match ]
+							Name=enp1s0
+
+							[ Network ]
+							DHCP=ipv4
+EOF
+						}
+						WIRED_STATIC () {
+							cat << 'EOF' > /etc/systemd/network/20-wired.network
+							[ Match ]
+							Name=enp1s0
+
+							[ Network ]
+							Address=10.1.10.9/24
+							Gateway=10.1.10.1
+							DNS=10.1.10.1
+							#DNS=8.8.8.8
+EOF
+						}
+					REPLACE_RESOLVECONF
+					WIRED_$NETWORK_NET
+					}
+					SET_$SYSINITVAR
+				}
+				INST_DHCPCD () { # https://wiki.gentoo.org/wiki/Dhcpcd
+					EMERGE_DHCPCD () {
+						emerge $EMERGE_VAR net-misc/dhcpcd
+					}
+					SYSSTART_DHCPD_OPENRC () { # openrc switch (option variables top) 
+						rc-update add dhcpcd default
+						/etc/init.d/dhcpcd start 
+					}
+					SYSSTART_DHCPD_SYSTEMD () { # systemd switch (option variables top) 
+						systemctl enable dhcpcd
+						systemctl start dhcpcd 
+					}
+					EMERGE_DHCPCD
+					SYSSTART_DHCPD_$SYSINITVAR
+				}
+				BASICNET
+				NETWORKD
+				# INST_DHCPCD
+			}
 			#  _   _ ____  _____ ____  
 			# | | | / ___|| ____|  _ \ 
 			# | | | \___ \|  _| | |_) |
@@ -1837,15 +1928,7 @@ EOF
 				echo "${bold}enter new root password${normal}"
 				passwd
 			}
-			#     _    ____  ____  _     ___ ____    _  _____ ___ ___  _   _ ____  
-			#    / \  |  _ \|  _ \| |   |_ _/ ___|  / \|_   _|_ _/ _ \| \ | / ___| 
-			#   / _ \ | |_) | |_) | |    | | |     / _ \ | |  | | | | |  \| \___ \ 
-			#  / ___ \|  __/|  __/| |___ | | |___ / ___ \| |  | | |_| | |\  |___) |
-			# /_/   \_\_|   |_|   |_____|___\____/_/   \_\_| |___\___/|_| \_|____/ 
-			#                                                                    
-			# APPLICATIONS () {
-			# 
-			# }
+
 			#**********************************************************************************
 			#  _______  _____ _____   _____ _   _ _____    ____ _   _ ____   ___   ___ _____  *
 			# | ____\ \/ /_ _|_   _| |_   _| | | | ____|  / ___| | | |  _ \ / _ \ / _ \_   _| *
@@ -1866,18 +1949,16 @@ EOF
 			#										 ~
 			#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			BASE_SYSTEM 		&& echo "${bold}BASE_SYSTEM - END${normal}"
-			#INST_SYSAPP		&& echo "${bold}INST_SYSAPP - END${normal}"
-			#BUILD_KERNEL		&& echo "${bold}BUILD_KERNEL - END${normal}"
-			#INITRAMFS		&& echo "${bold}INITRAMFS - END${normal}"
-			## INITSYSTEM		&& echo "${bold}INITSYSTEM - END${normal}" deactivatved for systemd profile - other profiels made issues with openrc removal.
-			#FSTAB			&& echo "${bold}FSTAB - END${normal}"
-			#KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
-			#NETWORKING		&& echo "${bold}NETWORKING - END${normal}"
-			#BOOTLOAD		&& echo "${bold}BOOTLOAD - END${normal}"
-			#DISPLAYVIDEO		&& echo "${bold}DISPLAYVIDEO - END${normal}"
+			INST_SYSAPP		&& echo "${bold}INST_SYSAPP - END${normal}"
+			BUILDKERN		&& echo "${bold}BUILD_KERNEL - END${normal}"
+			### INITRAMFS		&& echo "${bold}INITRAMFS - END${normal}"
+			FSTAB			&& echo "${bold}FSTAB - END${normal}"
+			KEYMAPS			&& echo "${bold}KEYMAPS - END${normal}"
+			BOOTLOAD		&& echo "${bold}BOOTLOAD - END${normal}"
+			DISPLAYVIDEO		&& echo "${bold}DISPLAYVIDEO - END${normal}"
 			#AUDIO			&& echo "${bold}AUDIO - END${normal}"
 			#USER			&& echo "${bold}USER - END${normal}"
-			#APPLICATIONS		&& echo "${bold}APPLICATIONS - END${normal}"
+			# NETWORKING		&& echo "${bold}NETWORKING - END${normal}"
 			#EXIT_CHROOT		&& echo "${bold}EXIT_CHROOT - END${normal}"
 			# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			#   ____ _   _ ____   ___   ___ _____   ____   ____ ____  ___ ____ _____   _____ _   _ ____   +
@@ -1891,18 +1972,19 @@ EOF
 
 INNERSCRIPT
 )
+RUNCHROOT () {
+	echo "$INNER_SCRIPT" > $CHROOTX/chroot_run.sh
+	chmod +x $CHROOTX/chroot_run.sh
+	chroot $CHROOTX /bin/bash ./chroot_run.sh
+}
 
 #### RUN ALL
 BANNER 			&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
-#DEPLOY_BASESYS 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
-#PREPARE_CHROOT		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
+DEPLOY_BASESYS 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
+PREPARE_CHROOT		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
+RUNCHROOT		&& echo "${bold}RUNCHROOT - END${normal}"
 
-echo "$INNER_SCRIPT" > $CHROOTX/chroot_run.sh
-chmod +x $CHROOTX/chroot_run.sh
-chroot $CHROOTX /bin/bash ./chroot_run.sh
-
-echo "${bold}CHROOT DONE - END${normal}"
-
+echo "${bold}Script finished all operations - END${normal}"
 
 
 
