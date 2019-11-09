@@ -49,6 +49,7 @@ BANNER () { # 0.1 BANNER
 #  | || |\  | |_| | |___ /  \ 
 # |___|_| \_|____/|_____/_/\_\
 #                             
+# the index somewhat dated but may helps ... work in progress!
 # script index and default application / setting notes in (...).
 # DEFAULT SETTING NOTES in (!...).
 # SYSTEMD is defaul script wide
@@ -2648,7 +2649,6 @@ BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal
 INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
 PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
 CHROOT		&& echo "${bold}RUNCHROOT - END${normal}"
-
 echo "${bold}Script finished all operations - END${normal}"
 
 
