@@ -565,7 +565,7 @@ BANNER () { # 0.1 BANNER
 			fi
 			if [ "$color_prompt" = yes ]; then
 			# PS1='${arch_chroot:+($arch_chroot)}\[\033[01;32m\]\u@\h\[\036[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ ' # default
-			PS1='${gentoo_chroot:+($debian_chroot)}\[\033[0;35m\][\[\033[0;32m\]\u\[\033[0;37m\]@\[\033[0;36m\]\h\[\033[0;37m\]:\[\033[0;37m\]\w\[\033[0;35m\]]\[\033[0;37m\]\$\[\033[0;37m\] ' # mod
+			PS1='${gentoo_chroot:+($debian_chroot)}\[\033[0;35m\][\[\033[0;32m\]\u\[\033[0;37m\]@\[\033[0;36m\]\h\[\033[0;37m\]:\[\033[0;37m\]\w\[\033[0;35m\]]\[\033[0;37m\]\$\[\033[01;38;5;220m\] ' # mod
 			else
 			    PS1='${gentoo_chroot:+($gentoo_chroot)}\u@\h:\w\$ '
 			fi
@@ -787,21 +787,6 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		DISPLAYMGR=LXDM # see options
 		DESKTOPENV=XFCE4 # see options
 
-		BUDGIEXEC=budgie-desktop
-		CINNAMONXEC=gnome-session-cinnamon
-		DDEXEC=startlxde
-		FVWMCRYSTALXEC=fvwm-crystal
-		GNOMEXEC=gnome-session-cinnamon
-		KDEXEC=startkde
-		LXDEXEC=startlxde
-		LXQTXEC=startlxqt
-		LUMINAXEC=start-lumina-desktop
-		MATEXEC=mate-session
-		PANTHEONXEC=mate-session
-		RAZORQT=razor-session
-		TDEXEC=tde-session
-
-
 		## USER
 		SYSUSERNAME=gentoo # (!changeme) name of the login user
 
@@ -813,7 +798,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		
 		## SYSTEM
 		### INITSYSTEM
-		SYSINITVAR=SYSTEMD # SYSTEMD (!default) / OPENRC
+		INITVAR=SYSTEMD # SYSTEMD (!default) / OPENRC
 		### KERNEL
 		CONFIGKERN=AUTO # AUTO (genkernel) / MANUAL 
 		KERNVERS=5.3-rc4 # for MANUAL setup
@@ -956,7 +941,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 					ETCMTAB
 					systemctl preset-all
 				}
-				INITSYS_$SYSINITVAR
+				INITSYS_$INITVAR
 				echo "${bold}INITSYSTEM end${normal}"
 			}
 			#  ______   ______ _____ _____ __  __   _____ ___ __  __ _____ 
@@ -983,7 +968,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 					TIMEZONE_SYSTEMD () {
 						timedatectl set-timezone $SYSTIMEZONE_SET
 					}
-					TIMEZONE_$SYSINITVAR
+					TIMEZONE_$INITVAR
 				}
 				#  ______   ______ _____ _____ __  __    ____ _     ___   ____ _  __
 				# / ___\ \ / / ___|_   _| ____|  \/  |  / ___| |   / _ \ / ___| |/ /
@@ -1028,7 +1013,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 						}
 						SYSTEMD_SYSCLOCK_$SYSCLOCK
 					}
-					SYSTEMCLOCK_$SYSINITVAR
+					SYSTEMCLOCK_$INITVAR
 				}
 				#  _   ___        ______ _     ___   ____ _  __
 				# | | | \ \      / / ___| |   / _ \ / ___| |/ /
@@ -1045,7 +1030,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 					HWCLOCK_SYSTEMD () { # systemd switch (option variables top) 
 						timedatectl set-local-rtc 0 # set UTC
 					}
-					HWCLOCK_$SYSINITVAR
+					HWCLOCK_$INITVAR
 				}
 				SET_TIMEZONE
 				#SET_SYSTEMCLOCK
@@ -1143,7 +1128,7 @@ EOF
 				SYSSTART_CRYPTSETUP_SYSTEMD () { # systemd switch (option variables top) 
 					rc-update add dmcrypt boot
 				}
-				SYSSTART_CRYPTSETUP_$SYSINITVAR	
+				SYSSTART_CRYPTSETUP_$INITVAR	
 			}
 			#  _ __     ____  __ ____  
 			# | |\ \   / /  \/  |___ \ 
@@ -1161,7 +1146,7 @@ EOF
 					BOOT_START_LVM2_SYSTEMD () { # systemd switch (option variables top) 
 						systemctl enable lvm2-monitor.service
 					}
-					BOOT_START_LVM2_$SYSINITVAR
+					BOOT_START_LVM2_$INITVAR
 				}
 				CONFIG_LVM2 () {
 					LVM_CONF () {
@@ -1250,7 +1235,7 @@ EOF
 								systemctl enable syslog-ng@default
 								systemctl start syslog-ng@default
 							}
-							SYSLOGNG_$SYSINITVAR
+							SYSLOGNG_$INITVAR
 						}
 						SYSSTART_SYSLOGNG
 					}
@@ -1265,7 +1250,7 @@ EOF
 								systemctl enable rsyslog
 								systemctl start rsyslog
 							}
-							SYSKLOGD_$SYSINITVAR
+							SYSKLOGD_$INITVAR
 						}
 						SYSSTART_SYSKLOGD
 					}
@@ -1307,7 +1292,7 @@ EOF
 						systemctl start cronie 
 						systemctl restart cronie 
 					}
-					CRONIE_$SYSINITVAR
+					CRONIE_$INITVAR
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CRON_DCRON () {
@@ -1320,7 +1305,7 @@ EOF
 						systemctl enable dcron
 						systemctl start dcron 
 					}
-				CRONIE_$SYSINITVAR
+				CRONIE_$INITVAR
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CRON_ANACRON () {
@@ -1333,7 +1318,7 @@ EOF
 						systemctl enable anacron
 						systemctl start anacron 
 					}
-				ANACRON_$SYSINITVAR
+				ANACRON_$INITVAR
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CRON_FCRON () {
@@ -1347,7 +1332,7 @@ EOF
 						systemctl enable fcron
 						systemctl start fcron 
 					}
-				FCRON_$SYSINITVAR
+				FCRON_$INITVAR
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CRON_BCRON () {
@@ -1360,7 +1345,7 @@ EOF
 					SYSTEMD enable bcron
 					SYSTEMD start bcron 
 					}
-				BCRON_$SYSINITVAR
+				BCRON_$INITVAR
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CRON_VIXICRON () {
@@ -1373,7 +1358,7 @@ EOF
 						systemctl enable vixi
 						systemctl start vixi 
 					}
-				VIXICRON_$SYSINITVAR
+				VIXICRON_$INITVAR
 				}
 				CRON_$CRONSET
 				crontab /etc/crontab
@@ -1549,7 +1534,7 @@ EOF
 								CONFGENKERNEL_SYSTEMD
 								GENKERNELNEXT_SYSTEMD
 							}
-							CKA_$SYSINITVAR && echo "${bold}CKA_$SYSINITVAR - END ....${normal}"
+							CKA_$INITVAR && echo "${bold}CKA_$INITVAR - END ....${normal}"
 						}
 						GENKERNEL_NEXT
 					}
@@ -1627,7 +1612,7 @@ EOF
 					}
 					VCONSOLE_CONF
 				}
-				KEYMAPS_$SYSINITVAR
+				KEYMAPS_$INITVAR
 			}
 
 			#  ____   ___   ___ _____ _     ___    _    ____  _____ ____  
@@ -1713,7 +1698,7 @@ EOF
 					GEN_GRUBCONF () {
 						grub-mkconfig -o /boot/grub/grub.cfg
 					}
-					GRUB2_$SYSINITVAR
+					GRUB2_$INITVAR
 					GEN_GRUBCONF
 				}
 				SETUP_$BOOTLOADER
@@ -1809,7 +1794,7 @@ EOF
 							echo placeholder	
 						}
 						EMERGE_CDM
-						AUTOSTART_CDM_$SYSINITVAR
+						AUTOSTART_CDM_$INITVAR
 						CONFIGURE_CDM
 					# 
 					#   ____ ____  __  __ 
@@ -1835,7 +1820,7 @@ EOF
 							echo placeholder
 						}
 						EMERGE_GDMDE
-						AUTOSTART_GDMDE_$SYSINITVAR
+						AUTOSTART_GDMDE_$INITVAR
 						CONFIGURE_GDM
 					#  _     ___ ____ _   _ _____ ____  __  __ 
 					# | |   |_ _/ ___| | | |_   _|  _ \|  \/  |
@@ -1862,7 +1847,7 @@ EOF
 							placeholder	
 						}
 						EMERGE_LXDM
-						AUTOSTART_LIGHTDM_$SYSINITVAR
+						AUTOSTART_LIGHTDM_$INITVAR
 						CONFIGURE_LXDM
 					}
 					#  _    __  ______  __  __ 
@@ -1888,7 +1873,7 @@ EOF
 							echo placeholder
 						}
 						EMERGE_LXDM
-						AUTOSTART_LXDM_$SYSINITVAR
+						AUTOSTART_LXDM_$INITVAR
 						CONFIGURE_LXDM
 					}
 					#   ___  ___ _   _  ______   __
@@ -1914,7 +1899,7 @@ EOF
 							qingy-keygen	
 						}
 						EMERGE_QINGY
-						AUTOSTART_QINGY_$SYSINITVAR
+						AUTOSTART_QINGY_$INITVAR
 						CONFIGURE_QINGY
 					}
 					#  ____ ____  ____  __  __ 
@@ -1940,7 +1925,7 @@ EOF
 							usermod -a -G video sddm	
 						}
 						EMERGE_SSDM
-						AUTOSTART_SSDM_$SYSINITVAR
+						AUTOSTART_SSDM_$INITVAR
 						CONFIGURE_SSDM
 					}
 					#  ____  _     ___ __  __ 
@@ -1967,7 +1952,7 @@ EOF
 							echo placeholder
 						}
 						EMERGE_SLIM
-						AUTOSTART_SLIM_$SYSINITVAR
+						AUTOSTART_SLIM_$INITVAR
 						CONFIGURE_SLIM
 					}
 					# __        ______  __  __ 
@@ -1994,7 +1979,7 @@ EOF
 							echo placeholder	
 						}
 						EMERGE_XDM
-						AUTOSTART_XDM_$SYSINITVAR
+						AUTOSTART_XDM_$INITVAR
 						CONFIGURE_WDM
 					}
 					# __  ______  __  __ 
@@ -2020,7 +2005,7 @@ EOF
 							echo placeholder
 						}
 						EMERGE_XDM
-						AUTOSTART_XDM_$SYSINITVAR
+						AUTOSTART_XDM_$INITVAR
 						CONFIGURE_XDM
 					}
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -2039,7 +2024,7 @@ EOF
 							systemctl enable $DISPLAYMGR.service
 							systemctl start $DISPLAYMGR
 						}
-						SET_DISPLAYMGRSTR_$SYSINITVAR
+						SET_DISPLAYMGRSTR_$INITVAR
 					}
 					$DISPLAYMGR	
 					AUTOSTART_$DISPLAYMGR
@@ -2052,20 +2037,8 @@ EOF
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				DESKTOP_ENV () { # https://wiki.gentoo.org/wiki/Desktop_environment	
-					########################################## misc functions start
-					MAIN_DESKTPENV_OPENRC () {
-						rc-update add dbus default
-						rc-update add xdm default
-						rc-update add elogind boot # elogind The systemd project's "logind", extracted to a standalone package https://github.com/elogind/elogind
-					}
-					MAIN_DESKTPENV_SYSTEMD () {
-						enable systemd-logind.service
-						systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-					}
-
 					DISPLAYMGR=LXDM # see options
 					DESKTOPENV=BUDGIE
-
 					#  ____  _   _ ____   ____ ___ _____ 
 					# | __ )| | | |  _ \ / ___|_ _| ____|
 					# |  _ \| | | | | | | |  _ | ||  _|  
@@ -2073,11 +2046,9 @@ EOF
 					# |____/ \___/|____/ \____|___|_____|
 					#                                           
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                 
-
 					BUDGIE_DPMXEC=budgie_dpmexec
 					BUDGIE_DSKTPENVSTARTXXEC=budgie
 					BUDGIE_DSKTPENVEMRGE=budgie
-
 					#   ____ ___ _   _ _   _    _    __  __  ___  _   _ 
 					#  / ___|_ _| \ | | \ | |  / \  |  \/  |/ _ \| \ | |
 					# | |    | ||  \| |  \| | / _ \ | |\/| | | | |  \| |
@@ -2085,11 +2056,9 @@ EOF
 					#  \____|___|_| \_|_| \_/_/   \_\_|  |_|\___/|_| \_|
 					#                                                           
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-
 					CINNAMON_DPMXEC=gnome-session-cinnamon
 					CINNAMON_DSKTPENVSTARTXXEC=cinnamon-session
 					CINNAMON_DSKTPENVEMRGE=gnome-extra/cinnamon
-
 					#  ____  ____  _____ 
 					# |  _ \|  _ \| ____|
 					# | | | | | | |  _|  
@@ -2097,7 +2066,6 @@ EOF
 					# |____/|____/|_____|
 					#                  
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-
 					DDE_DPMXEC=DDE
 					DDE_DSKTPENVSTARTXXEC=DDE
 					DDE_DSKTPENVEMRGE=DDE
@@ -2108,12 +2076,9 @@ EOF
 					# |_|      \_/      \_/\_/  |_|  |_|\____|_| \_\|_| |____/ |_/_/   \_\_____|
 					#                                                                         
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-					
-
 					FVWMCRYSTAL_DPMXEC=fvwm-crystal
 					FVWMCRYSTAL_DSKTPENVSTARTXXEC=fvwm-crystal
 					FVWMCRYSTAL_DSKTPENVEMRGE=x11-themes/fvwm-crystal
-
 					#   ____ _   _  ___  __  __ _____ 
 					#  / ___| \ | |/ _ \|  \/  | ____|
 					# | |  _|  \| | | | | |\/| |  _|  
@@ -2121,12 +2086,9 @@ EOF
 					#  \____|_| \_|\___/|_|  |_|_____|
 					#                                 
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
-
 					GNOME_DPMXEC=gnome-session
 					GNOME_DSKTPENVSTARTXXEC=GNOME
 					GNOME_DSKTPENVEMRGE=gnome-base/gnome
-
 					#  _  ______  _____ 
 					# | |/ /  _ \| ____|
 					# | ' /| | | |  _|  
@@ -2134,11 +2096,9 @@ EOF
 					# |_|\_\____/|_____|
 					#                 
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
 					KDE_DPMXEC=kde-plasma/startkde
 					KDE_DSKTPENVSTARTXXEC=startkde
 					KDE_DSKTPENVEMRGE=kde-plasma/plasma-meta
-
 					#  _    __  ______  _____ 
 					# | |   \ \/ /  _ \| ____|
 					# | |    \  /| | | |  _|  
@@ -2146,11 +2106,9 @@ EOF
 					# |_____/_/\_\____/|_____|
 					#
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
 					LXDE_DPMXEC=lxde-meta
 					LXDE_DSKTPENVSTARTXXEC=lxde-meta
 					LXDE_DSKTPENVEMRGE=lxde-base/lxde-meta
-
 					#  _    __  _____ _____ 
 					# | |   \ \/ / _ \_   _|
 					# | |    \  / | | || |  
@@ -2158,11 +2116,9 @@ EOF
 					# |_____/_/\_\__\_\|_|  
 					#                       
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
 					LXQT_DPMXEC=startlxqt
 					LXQT_DSKTPENVSTARTXXEC=startlxqt
 					LXQT_DSKTPENVEMRGE=lxqt-base/lxqt-meta
-
 					#  _    _   _ __  __ ___ _   _    _    
 					# | |  | | | |  \/  |_ _| \ | |  / \   
 					# | |  | | | | |\/| || ||  \| | / _ \  
@@ -2170,11 +2126,9 @@ EOF
 					# |_____\___/|_|  |_|___|_| \_/_/   \_\
 					#
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
-
 					LUMINA_DPMXEC=start-lumina-desktop
 					LUMINA_DSKTPENVSTARTXXEC=start-lumina-desktop
 					LUMINA_DSKTPENVEMRGE=x11-wm/lumina
-
 					#  __  __    _  _____ _____ 
 					# |  \/  |  / \|_   _| ____|
 					# | |\/| | / _ \ | | |  _|  
@@ -2182,11 +2136,9 @@ EOF
 					# |_|  |_/_/   \_\_| |_____|
 					#                         
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
-
 					MATE_DPMXEC=mate-session
 					MATE_DSKTPENVSTARTXXEC=mate-session
 					MATE_DSKTPENVEMRGE=mate-base/mate
-
 					#  ____   _    _   _ _____ _   _ _____ ___  _   _ 
 					# |  _ \ / \  | \ | |_   _| | | | ____/ _ \| \ | |
 					# | |_) / _ \ |  \| | | | | |_| |  _|| | | |  \| |
@@ -2194,11 +2146,9 @@ EOF
 					# |_| /_/   \_\_| \_| |_| |_| |_|_____\___/|_| \_|
 					#                                                
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
 					PANTHEON_DPMXEC=PANTHEON
 					PANTHEON_DSKTPENVSTARTXXEC=PANTHEON
 					PANTHEON_DSKTPENVEMRGE=PANTHEON
-
 					#  ____      _     ________  ____     ___ _____ 
 					# |  _ \    / \   |__  / _ \|  _ \   / _ \_   _|
 					# | |_) |  / _ \    / / | | | |_) | | | | || |  
@@ -2206,11 +2156,9 @@ EOF
 					# |_| \_\/_/   \_\/____\___/|_| \_\  \__\_\|_|  
 					#       
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
 					RAZORQT_DPMXEC=razor-session
 					RAZORQT_DSKTPENVSTARTXXEC=razor-session
 					RAZORQT_DSKTPENVEMRGE=RAZORQT
-
 					#  _____ ____  _____ 
 					# |_   _|  _ \| ____|
 					#   | | | | | |  _|  
@@ -2218,11 +2166,9 @@ EOF
 					#   |_| |____/|_____|
 					#                   
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
 					TDE_DPMXEC=tde-session
 					TDE_DSKTPENVSTARTXXEC=tde-session
 					TDE_DSKTPENVEMRGE=trinity-base/tdebase-meta
-
 					# __  _______ ____ _____ _  _   
 					# \ \/ /  ___/ ___| ____| || |  
 					#  \  /| |_ | |   |  _| | || |_ 
@@ -2230,10 +2176,20 @@ EOF
 					# /_/\_\_|   \____|_____|  |_|  
 					#
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
 					XFCE4_DPMXEC=XFCE4-session
 					XFCE4_DSKTPENVSTARTXXEC=startxfce4
 					XFCE4_DSKTPENVEMRGE=xfce-base/xfce4-meta 
+
+
+					MAIN_DESKTPENV_OPENRC () {
+						rc-update add dbus default
+						rc-update add xdm default
+						rc-update add elogind boot # elogind The systemd project's "logind", extracted to a standalone package https://github.com/elogind/elogind
+					}
+					MAIN_DESKTPENV_SYSTEMD () {
+						enable systemd-logind.service
+						systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+					}
 
 					AWESOME () {
 					echo "desktop env set $DESKTOPENV"
@@ -2242,9 +2198,7 @@ EOF
 					echo $DSKTPENVDPMXEC 
 					echo $DSKTPENVSTARTXXEC
 					echo $DSKTPENVEMRGE
-
 					}
-
 
 					if [ "$DESKTOPENV" = "BUDGIE" ]; then
 					DSKTPENVDPMXEC=$DPMXEC && DSKTPENVSTARTXXEC=$DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$DSKTPENVEMRGE && AWESOME
@@ -2278,9 +2232,9 @@ EOF
 					echo wtf
 					fi
 					
-					DSKTENVSTP () { 
+					DSKTENVSTP () {
 						ADDREPO_DSKTPENV () {
-							if 
+							if [ "$DESKTOPENV" = "PANTHEON" ]; then
 							layman -a elementary
 							eselect repository enable elementary
 							emerge --sync elementary 
@@ -2319,25 +2273,24 @@ EOF
 							MISC_XFCE4
 
 							else
-							emerge --ask app-text/poppler -qt5 # app-text/poppler have +qt5 by default
 							emerge --ask $DSKTPENVEMRGE
-							env-update && source /etc/profile
 							fi
-
+							emerge --ask app-text/poppler -qt5 # app-text/poppler have +qt5 by default
+							env-update && source /etc/profile
 						}
-						W_D_MGR () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
+						W_D_MGR () {
 							WDMGR_LXDM () {
-								MAIN_LXDM_BUDGIE () {
+								MAIN_LXDM () {
 									sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/$DPMXEC;g' /etc/lxdm/lxdm.conf
 								}
-								MAIN_LXDM_BUDGIE
-								MAIN_DESKTPENV_$SYSINITVAR
+								MAIN_LXDM
+								MAIN_DESKTPENV_$INITVAR
 							}
 							WDMGR_$DISPLAYMGR
 						}
-						DESKTENV_SOLO () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager						
+						DESKTENV_SOLO () {					
 							DESKTENV_STARTX () { 
-								if luminba
+								if lumina
 								cat << 'EOF' > ~/.xinitrc 
 								[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
 								exec start-lumina-desktop
@@ -2348,7 +2301,6 @@ EOF
 								exec $DSKTPENVSTARTXXEC
 EOF
 								fi
-
 							}
 							DESKTENV_AUTOSTART_OPENRC () {
 								if [ "$DESKTOPENV" = "CINNAMON" ]; then
@@ -2360,18 +2312,15 @@ EOF
 								fi
 							}
 							DESKTENV_AUTOSTART_SYSTEMD () {
- 								systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+ 								echo placeholder
 							}
 							DESKTENV_STARTX
-							DESKTENV_AUTOSTART_$SYSINITVAR
+							DESKTENV_AUTOSTART_$INITVAR
 						}
+						MAIN_DESKTPENV_$INITVAR
 						ADDREPO_DSKTPENV
 						EMERGE_DSKTPENV
 						DISPLAYMGR_YESNO
-
-					
-					################## misc function end
-
 			}
 			#     _   _   _ ____ ___ ___  
 			#    / \ | | | |  _ \_ _/ _ \ 
@@ -2395,7 +2344,7 @@ EOF
 						ALSASOUND_SYSTEMD () {
 							systemctl status alsa-restore
 						}
-						ALSASOUND_$SYSINITVAR
+						ALSASOUND_$INITVAR
 					}
 					ALSA
 				}
@@ -2477,7 +2426,7 @@ EOF
 					REPLACE_RESOLVECONF
 					WIRED_$NETWORK_NET
 					}
-					SET_$SYSINITVAR
+					SET_$INITVAR
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				INST_DHCPCD () { # https://wiki.gentoo.org/wiki/Dhcpcd
@@ -2493,7 +2442,7 @@ EOF
 						systemctl start dhcpcd 
 					}
 					EMERGE_DHCPCD
-					SYSSTART_DHCPD_$SYSINITVAR
+					SYSSTART_DHCPD_$INITVAR
 				}
 				BASICNET # (! default)
 				NETWORKD # (! default)
@@ -2550,7 +2499,6 @@ EOF
 				}
 				ROOT
 				ADMIN
-
 			}
 			## (!changeme)
 			BUILDKERN	&& echo "${bold}BUILD_KERNEL - END${normal}"
@@ -2595,7 +2543,6 @@ EOF
 		#FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		# IMPORTANT INTENDATION - Must follow intendation, not only for the "innerscript" but across the entire script. Why? tell me if you figure, i didnt but it works and thats why im writing this ... :)
-
 INNERSCRIPT
 )
 RUNCHROOT () {
@@ -2604,17 +2551,12 @@ RUNCHROOT () {
 	chroot $CHROOTX /bin/bash ./chroot_run.sh
 }
 
-#### RUN ALL
-## (!changeme)
+#### RUN ALL ## (!changeme)
 BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
 INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
 PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
 CHROOT		&& echo "${bold}RUNCHROOT - END${normal}"
 echo "${bold}Script finished all operations - END${normal}"
-
-
-
-
 
 
 
