@@ -292,37 +292,37 @@ BANNER () { # 0.1 BANNER
 # Edit the variables, not the script ..... where possible ^^
 # 1.0 VARIABLES
 
-	# DRIVES & PARTITIONS
+	## DRIVES & PARTITIONS
 	HDD1=/dev/sda # OS DRIVE - the drive you want to install gentoo to.
-	# GRUB_PART=/dev/sda1 # bios grub
+	## GRUB_PART=/dev/sda1 # bios grub
 	BOOT_PART=/dev/sda2 # boot # unencrypted unless required changes are made - see CRYPTSETUP_BOOT 
 	MAIN_PART=/dev/sda3 # mainfs - lukscrypt cryptsetup container with LVM env inside
 
-	# - SWAP IS DISABLED -- SEE VAR & LVM SECTION TO ENABLE!
+	## SWAP - DISABLED -- SEE VAR & LVM SECTION TO ENABLE!
 	# SWAP0=swap0 # LVM swap NAME for sorting of swap partitions.
 	# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART - mainhdd only has boot & fainfs
 	# SWAP_FS=linux-swap # swapfs, couldnt have guessed it
 
+	## FILESYSTEMS
 	BOOT_FS=ext2 # boot filesystem
 	MAIN_FS=ext4 # main filesystem for the OS
 
-	# LVM
+	## LVM
 	PV_MAIN=pv0_main # LVM PV physical volume
 	VG_MAIN=vg0_main # LVM VG volume group
 	LV_MAIN=lv0_main # LVM LV logical volume
 
-	# PARTITION SIZE
-	GRUB_SIZE="1M 150M" # bios grub sector start/end M for megabytes, G for gigabytes
-	BOOT_SIZE="150M 1G" # boot sector start/end
-	MAIN_SIZE="1G 100%" # primary partition start/end
+	## PARTITION SIZE
+	GRUB_SIZE="1M 150M" # (!changeme) bios grub sector start/end M for megabytes, G for gigabytes
+	BOOT_SIZE="150M 1G" # (!changeme) boot sector start/end
+	MAIN_SIZE="1G 100%" # (!changeme) primary partition start/end
+
+	## PROFILE # default during dev of the script is systemd but prep openrc.	
+	STAGE3DEFAULT=AMD64_SYSTEMD # (!changeme) AMD64_DEFAULT (default)
 
 	CHROOTX=/mnt/gentoo # chroot directory, installer will create this recursively
-	
-	STAGE3DEFAULT=AMD64_SYSTEMD # AMD64_DEFAULT (default)
 
-	# VARIABLES END
-
-	# MISC STATIC
+	## MISC STATIC
 	bold=$(tput bold) # staticvar bold text
 	normal=$(tput sgr0) # # staticvar reverse to normal text
 
@@ -627,7 +627,7 @@ EOF
 			# | |\/| | / _ \ | ' /|  _|  | |  | | | |  \| | |_   
 			# | |  | |/ ___ \| . \| |___ | |__| |_| | |\  |  _|  
 			# |_|  |_/_/   \_\_|\_\_____(_)____\___/|_| \_|_|    
-			#
+			# # (!changeme)
 			MAKECONF () { # https://wiki.gentoo.org/wiki//etc/portage/make.conf
 				echo "${bold}MAKECONF${normal}"
 				PRESET_MAKE="-j$(nproc) --quiet"
@@ -652,10 +652,10 @@ EOF
 							
 					PRESET_USEFLAG='X a52 aac aalib acl acpi adns alsa apparmor atm audit bash-completion berkdb bidi blas boost branding bzip2 \
 							cairo cdda caps cpudetection cjk cracklib crypt cryptsetup css curl cvs cxx dbi dbus debug device-mapper dns-over-tls dga elfutils \
-							efiemu emacs encode exif expat fam ffmpeg filecaps flac fonts fortran ftp geoip gcrypt gd gif git gnuefi gnutls gnuplot \
+							efiemu emacs encode exif expat fam ffmpeg filecaps flac fonts fortran ftp geoip gcrypt gd gif git gtk gnuefi gnutls gnuplot \
 							hardened highlight gzip ipv6 initramfs int64 introspection idn jack jpeg jemalloc kernel kms lame latex ldap libcaca libressl lm_sensors \
 							lua lzma lzo lz4 m17n-lib matroska memcached mhash modules mount nettle numa mp3 mp4 mpeg mtp nls ocaml opengl openssl opus osc oss \
-							pcre perl png policykit posix pulseaudio python raw readline resolvconf qt5 recode ruby sound seccomp sasl sockets \
+							pcre perl png policykit posix pulseaudio python raw readline resolvconf qt5 recode ruby sound seccomp sasl sockets sox \
 							socks5 ssl sssd static-libs sqllite sqlite3 svg systemd sysv-utils szip symlink tcl tcpd themes thin truetype threads tiff udev \
 			 				udisks unicode utils xkb xvid zip zlib \
 							-kde -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet'
@@ -728,78 +728,94 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		# export PS1="(autochroot) \$PS1" # Not that the user will see this.
 		export PS1="(chroot) $PS1" 
 
-		# MAKEFILE EX
-		# REGION=Europe # disabled for $SYSTEMTIMEZONE # # ls -la /usd/share/zoneinfo/$REGION/$CITY
-		# CITY=Berlin
+		## MAKEFILE EX
+		# REGION=Europe # (!changeme) disabled for $SYSTEMTIMEZONE # # ls -la /usd/share/zoneinfo/$REGION/$CITY
+		# CITY=Berlin # (!changeme)
 
-		# DRIVES & PARTITIONS
+		## DRIVES & PARTITIONS
 		HDD1=/dev/sda # OS DRIVE - the drive you want to install gentoo to.
 		# GRUB_PART=/dev/sda1 # bios grub
 		BOOT_PART=/dev/sda2 # boot # unencrypted unless required changes are made - see CRYPTSETUP_BOOT 
 		MAIN_PART=/dev/sda3 # mainfs - lukscrypt cryptsetup container with LVM env inside
 
-		# - SWAP IS DISABLED -- SEE VAR & LVM SECTION TO ENABLE!
+		## SWAP - DISABLED -- SEE VAR & LVM SECTION TO ENABLE!
 		# SWAP0=swap0 # LVM swap NAME for sorting of swap partitions.
 		# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART - mainhdd only has boot & fainfs
 		# SWAP_FS=linux-swap # swapfs, couldnt have guessed it
 
+		## FILESYSTEMS
 		BOOT_FS=ext2 # boot filesystem
 		MAIN_FS=ext4 # main filesystem for the OS
 
-		# LVM
+		## LVM
 		PV_MAIN=pv0_main # LVM PV physical volume
 		VG_MAIN=vg0_main # LVM VG volume group
 		LV_MAIN=lv0_main # LVM LV logical volume
 
-		VCONSOLE_KEYMAP=de-latin1 # console keymap
-		VCONSOLE_FONT=eurlatgr
-		LOCALE_GEN_a1="en_US ISO-8859-1"
-		LOCALE_GEN_a2="en_US.UTF-8 UTF-8"
-		LOCALE_GEN_b1="de_DE ISO-8859-1"
-		LOCALE_GEN_b2="de_DE.UTF-8 UTF-8"
-		LOCALE_CONF="en_US.UTF-8"
-		X11KEYMAP="de" # keymap for desktop environment 
-		HOSTNAME=p1p1 # define hostname
-		DOMAIN=p1p1 # define domain
-		SYSTIMEZONE=utc # utc or localtime # ls -la /usd/share/zoneinfo
+		## LOCALES / TIME-DATE
+		VCONSOLE_KEYMAP=de-latin1 # (!changeme) console keymap
+		VCONSOLE_FONT=eurlatgr # (!changeme)
+		LOCALE_GEN_a1="en_US ISO-8859-1" # (!changeme)
+		LOCALE_GEN_a2="en_US.UTF-8 UTF-8" # (!changeme)
+		LOCALE_GEN_b1="de_DE ISO-8859-1" # (!changeme)
+		LOCALE_GEN_b2="de_DE.UTF-8 UTF-8" # (!changeme)
+		LOCALE_CONF="en_US.UTF-8" # (!changeme)
+		X11KEYMAP="de" # (!changeme) keymap for desktop environment 
+		SYSTIMEZONE=utc # (!changeme maybe) utc or localtime # ls -la /usd/share/zoneinfo
 
-		# NETWORK # https://en.wikipedia.org/wiki/Public_recursive_name_server
-		NAMESERVER1_IPV4=1.1.1.1 # cloudflare ipv4
-		NAMESERVER1_IPV6=2606:4700:4700::1111 # cloudflare ipv6
-		NAMESERVER2_IPV4=1.0.0.1 # cloudflare ipv4
-		NAMESERVER2_IPV6=2606:4700:4700::1001 # cloudflare ipv6
+		SYSLOCALE="de_DE.UTF-8" # (!changeme)
+		SYSDATE_SET=AUTO # (!default)
+		SYSDATE_MAN=071604551969 # hack time :)
+		SYSCLOCK_SET=AUTO # USE AUTO (!default) / MANUAL -- WITH MANUAL YOU DONT GET TIMESYNCED SERVICE
+		SYSCLOCK_MAN="1969-07-16 04:55:42" # hack time :)
+		SYSTIMEZONE_SET="Europe/Berlin" # (!changeme) Europe/Berlin format for SYSTEMD ; Europe/Brussels foiormat for OPENRC
 
+		## NETWORK - https://en.wikipedia.org/wiki/Public_recursive_name_server
+		HOSTNAME=p1p1 # (!changeme) define hostname
+		DOMAIN=p1p1 # (!changeme) define domain
+		NETWORK_NET=DHCPD # DHCPD or STATIC, config static on your own in the network section.	
 
-		DISPLAYSERV=XORG # see options
-		DESKTOPENV=XFCE4 # see options
+		## DNS
+		NAMESERVER1_IPV4=1.1.1.1 # (!changeme) cloudflare ipv4
+		NAMESERVER1_IPV6=2606:4700:4700::1111 # (!changeme)cloudflare ipv6
+		NAMESERVER2_IPV4=1.0.0.1 # (!changeme)cloudflare ipv4
+		NAMESERVER2_IPV6=2606:4700:4700::1001 # (!changeme)cloudflare ipv6
+
+		## DISPLAY
+		GPU_SET=NONE # NONE. AMD_V***. NVIDIA_V***
+		DISPLAYSERV=X11 # see options
 		DISPLAYMGR=LXDM # see options
+		DESKTOPENV=XFCE4 # see options
 
-		SYSUSERNAME=gentoo # name of the login user
+		## USER
+		SYSUSERNAME=gentoo # (!changeme) name of the login user
 
+		## KERNEL
 		INITRAMFSVAR="--lvm --mdadm"
 
-		GPU_DRIVER=amdgpu # amdgpu, radeon
+		## DISPLAY
+		GPU_DRIVER=amdgpu # (!changeme) amdgpu, radeon
+		
+		## SYSTEM
+		### INITSYSTEM
+		SYSINITVAR=SYSTEMD # SYSTEMD (!default) / OPENRC
+		### KERNEL
+		CONFIGKERN=AUTO # AUTO (genkernel) / MANUAL 
+		KERNVERS=5.3-rc4 # for MANUAL setup
+		KERNSOURCES=EMERGE # EMERGE (!default) ; TORVALDS (git repository)
 
-		SYSLOCALE="de_DE.UTF-8"
-		SYSDATE_SET=AUTO
-		SYSDATE_MAN=071604551969
-		SYSCLOCK_SET=AUTO # USE MANUAL OR AUTO -- WITH MANUAL YOU DONT GET TIMESYNCED SERVICE
-		SYSCLOCK_MAN="1969-07-16 04:55:42"
-		SYSTIMEZONE_SET="Europe/Berlin" # Europe/Berlin format for SYSTEMD ; Europe/Brussels foiormat for OPENRC
-		
-		SYSINITVAR=SYSTEMD # SYSTEMD (default) OR OPENRC - MUST BE ALL CAPS TO MATCH VARIABLE, set and enjoy magig (OPENRC NOT SUPPORTED YET; FEELS FREE TO MAKE OPENRC WORK AND PUSH TO GITHUB :))
-		CONFIGKERN=AUTO # AUTO (genkernel) / MANUAL (
-		NETWORK_NET=DHCPD # DHCPD or STATIC, config static on your own in the network section.	
-		KERNVERS=5.3-rc4
-		KERNSOURCES=EMERGE # EMERGE (DEFAULT) ; TORVALDS (git repository)
-		CRONSET=CRONIE # CRONIE, DCRON, ANACRON ..... see on your own 
-		
-		DISPLAYMGR=lxdm
+		## SYSAPP
+		### LOG
+		CRONSET=CRONIE # CRONIE (!default), DCRON, ANACRON ..... see on your own
+
+		## BOOT
+		BOOTLOADER=GRUB2 # GRUB2 (!default)
+		BOOTINITVAR=BIOS # BIOS (!default) / UEFI (!prototype)
 
 		# MISC
-			bold=$(tput bold) # staticvar bold text
-			normal=$(tput sgr0) # # staticvar reverse to normal text
-			EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse " # !Must keep trailing space!
+		bold=$(tput bold) # staticvar bold text
+		normal=$(tput sgr0) # # staticvar reverse to normal text
+		EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse " # !Must keep trailing space!
 		#
 		#  .----------------.  .----------------.  .----------------.  .----------------. 
 		# | .--------------. || .--------------. || .--------------. || .--------------. |
@@ -821,7 +837,6 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 			# |  __/| |_| |  _ < | |/ ___ \ |_| | |___ 
 			# |_|    \___/|_| \_\|_/_/   \_\____|_____|
 			#                                         
-			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			PORTAGE () { # https://wiki.gentoo.org/wiki/Portage#emerge-webrsync && https://dev.gentoo.org/~zmedico/portage/doc/man/emerge.1.html
 				echo "${bold}CONFIG_PORTAGE${normal}"
@@ -885,8 +900,8 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 				#  \___/|_|   |_____|_| \_|_| \_\\____|
 				#                                     
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				INITSYS_OPENRC () { # openrc switch (option variables top)  # https://wiki.gentoo.org/wiki/OpenRC
-					CONFIG_OPENRC () { # openrc switch (option variables top)                     
+				INITSYS_OPENRC () {  # https://wiki.gentoo.org/wiki/OpenRC
+					CONFIG_OPENRC () {                     
 						RCCONF () {
 							nano -w /etc/rc.conf
 						}
@@ -948,7 +963,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 				#                                              
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				SET_TIMEZONE () { # https://wiki.gentoo.org/wiki/System_time#Time_zone
-					TIMEZONE_OPENRC () { # openrc switch (option variables top)  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Timezone
+					TIMEZONE_OPENRC () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Timezone
 						echo "$SET_TIMEZONE" > /etc/timezone
 						emerge --config sys-libs/timezone-data
 					}
@@ -1011,7 +1026,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				SET_HWCLOCK () {
 					echo "${bold}HWCLOCK${normal}"
-					HWCLOCK_OPENRC () { # openrc switch (option variables top) 
+					HWCLOCK_OPENRC () { 
 						echo 'placeholder'
 					}
 					HWCLOCK_SYSTEMD () { # systemd switch (option variables top) 
@@ -1075,6 +1090,7 @@ EOF
 				LINUX_FIRMWARE
 				echo "${bold}FIRMWARE end${normal}"
 			}
+			## (!changeme)
 			PORTAGE			&& echo "${bold}CONFIG_PORTAGE - END ....${normal}"
 			##EMERGE_SYNC		&& echo "${bold}EMERGE_SYNC - END ....${normal}"
 			SELECT_PROFILE		&& echo "${bold}SELECT_PROFILE - END ....${normal}"
@@ -1108,7 +1124,7 @@ EOF
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			INSTALL_CRYPTSETUP () { # https://wiki.gentoo.org/wiki/Dm-crypt
 				emerge $EMERGE_VAR sys-fs/cryptsetup
-				SYSSTART_CRYPTSETUP_OPENRC () { # openrc switch (option variables top) 
+				SYSSTART_CRYPTSETUP_OPENRC () { 
 					rc-update add dmcrypt boot
 				}
 				SYSSTART_CRYPTSETUP_SYSTEMD () { # systemd switch (option variables top) 
@@ -1126,7 +1142,7 @@ EOF
 			INSTALL_LVM2 () { # https://wiki.gentoo.org/wiki/LVM/de
 				emerge $EMERGE_VAR sys-fs/lvm2
 				SYSSTART_LVM2 () {
-					BOOT_START_LVM2_OPENRC () { # openrc switch (option variables top) 
+					BOOT_START_LVM2_OPENRC () { 
 						rc-update add lvm boot
 					}
 					BOOT_START_LVM2_SYSTEMD () { # systemd switch (option variables top) 
@@ -1213,7 +1229,7 @@ EOF
 					SYSLOGNG () {
 						emerge $EMERGE_VAR app-admin/syslog-ng
 						SYSSTART_SYSLOGNG () {
-							SYSLOGNG_OPENRC () { # openrc switch (option variables top) 
+							SYSLOGNG_OPENRC () { 
 								rc-update add syslog-ng default
 								rc-service syslog-ng start
 							}
@@ -1229,7 +1245,7 @@ EOF
 						emerge $EMERGE_VAR app-admin/sysklogd
 						rc-update add sysklogd default
 						SYSSTART_SYSKLOGD () {
-							SYSKLOGD_OPENRC () { # openrc switch (option variables top) 
+							SYSKLOGD_OPENRC () { 
 								echo "palceholder"
 							}
 							SYSKLOGD_SYSTEMD () { # systemd switch (option variables top) 
@@ -1270,7 +1286,7 @@ EOF
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CRON_CRONIE () {
 					emerge $EMERGE_VAR sys-process/cronie
-					CRONIE_OPENRC () { # openrc switch (option variables top) 
+					CRONIE_OPENRC () { 
 						rc-update add cronie default
 					}
 					CRONIE_SYSTEMD () { # systemd switch (option variables top) 
@@ -1283,7 +1299,7 @@ EOF
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CRON_DCRON () {
 					emerge $EMERGE_VAR dcron
-					DCRON_OPENRC () { # openrc switch (option variables top) 
+					DCRON_OPENRC () { 
 						/etc/init.d/dcron start
 						rc-update add dcron default
 					}
@@ -1296,7 +1312,7 @@ EOF
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CRON_ANACRON () {
 					emerge $EMERGE_VAR anacron
-					ANACRON_OPENRC () { # openrc switch (option variables top) 
+					ANACRON_OPENRC () { 
 						/etc/init.d/anacron start
 						rc-update add anacron default
 					}
@@ -1310,7 +1326,7 @@ EOF
 				CRON_FCRON () {
 					emerge $EMERGE_VAR fcron
 					gpasswd -a $SYSUSERNAME fcron
-					FCRON_OPENRC () { # openrc switch (option variables top) 
+					FCRON_OPENRC () { 
 						/etc/init.d/fcron start
 						rc-update add fcron default
 					}
@@ -1323,7 +1339,7 @@ EOF
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CRON_BCRON () {
 					emerge $EMERGE_VAR bcron
-					BCRON_OPENRC () { # openrc switch (option variables top) 
+					BCRON_OPENRC () { 
 						/etc/init.d/bcron start
 						rc-update add bcron default
 					}
@@ -1336,7 +1352,7 @@ EOF
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CRON_VIXICRON () {
 					emerge $EMERGE_VAR fcron
-					VIXICRON_OPENRC () { # openrc switch (option variables top) 
+					VIXICRON_OPENRC () { 
 						/etc/init.d/vixi start
 						rc-update add vixi default
 					}
@@ -1366,7 +1382,7 @@ EOF
 			# |_|   |____/ |_| \___/ \___/|_____|____/ 
 			#                                         
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			FSTOOLS () {
+			FSTOOLS () { # (!changeme)
 				emerge $EMERGE_VAR sys-fs/e2fsprogs # Ext2, 3, and 4
 				# emerge $EMERGE_VAR sys-fs/xfsprogs # XFS 			
 				# emerge $EMERGE_VAR sys-fs/reiserfsprogs # ReiserFS	
@@ -1374,16 +1390,7 @@ EOF
 				## emerge $EMERGE_VAR sys-fs/dosfstools # VFAT (FAT32, ...) 	
 				# emerge $EMERGE_VAR sys-fs/btrfs-progs # Btrfs 
 			}
-			#   ____ ___ _____ 
-			#  / ___|_ _|_   _|
-			# | |  _ | |  | |  
-			# | |_| || |  | |  
-			#  \____|___| |_|  
-			#                 
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			INSTALL_GIT () {
-				emerge $EMERGE_VAR dev-vcs/git
-			}
+			## (!changeme)
 			INSTALL_CRYPTSETUP
 			INSTALL_LVM2
 			INSTALL_SUDO
@@ -1394,7 +1401,6 @@ EOF
 			INST_CRON
 			FILEINDEXING
 			FSTOOLS
-			INSTALL_GIT
 			}
 		#
 		#  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -1456,16 +1462,16 @@ EOF
 						# CNFG_KERN_PASTE
 						MKERNBUILD
 					}
-					CONFKERN_AUTO () { # switch to auto (option variables top) # switch to auto configuration (option variables top)
+					CONFKERN_AUTO () { # (!changeme) switch to auto (option variables top) # switch to auto configuration (option variables top)
 						GENKERNEL_NEXT () {
-							CKA_OPENRC () { # openrc switch (option variables top)  # ONLY SAMPLE; FIX ON YOUR OWN OERR USE SYSTEMD # config kernel with genkernel for openrc		
+							CKA_OPENRC () {  # ONLY SAMPLE; FIX ON YOUR OWN OERR USE SYSTEMD # config kernel with genkernel for openrc		
 								emerge $EMERGE_VAR sys-kernel/genkernel
-								CONFGENKERNEL_OPENRC () { # openrc switch (option variables top) 
+								CONFGENKERNEL_OPENRC () { 
 									cat < EOF > /etc/genkernel.conf
 									placeholder
 EOF
 								}
-								RUNGENKERNEL_OPENRC () { # openrc switch (option variables top) 
+								RUNGENKERNEL_OPENRC () { 
 									# genkernel "$GENKERNEL_ALL_VAR" # generate kernel WITHOUT initramfs
 									genkernel "$GENKERNEL_ALL_VAR" initramfs # generate kernel and initramfs
 								}
@@ -1627,20 +1633,30 @@ EOF
 				#  \____|_| \_\\___/|____/_____|
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				GRUB2_SETUP () {
+				SETUP_GRUB2 () {
 					emerge $EMERGE_VAR sys-boot/grub:2
-					GRUB2_OPENRC () { # openrc switch (option variables top)  # https://wiki.gentoo.org/wiki/GRUB2
-						GRUB2_BIOS_OPENRC () { # openrc switch (option variables top) 
+					GRUB2_BIOS () {
+						GRUB2_BIOS_OPENRC () { 
 							grub-install $HDD1
 						}
-						GRUB2_UEFI_OPENRC () { # openrc switch (option variables top) 
+					
+					}
+					GRUB2_UEFI () {
+
+					}
+
+					GRUB2_OPENRC () {  # https://wiki.gentoo.org/wiki/GRUB2
+						OPENRC_GRUB2_BIOS () { 
+							grub-install $HDD1
+						}
+						OPENRC_GRUB2_UEFI () { 
 							sed -i -e '/GRUB_PLATFORMS="efi-64/d' >> /etc/portage/make.conf
 							echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
 							grub-install --target=x86_64-efi --efi-directory=/boot
 							# mount -o remount,rw /sys/firmware/efi/efivars # If grub_install returns an error like Could not prepare Boot variable: Read-only file system, it may be necessary to remount the efivars special mount as read-write in order to succeed:
 							# grub-install --target=x86_64-efi --efi-directory=/boot --removable # # Some motherboard manufacturers seem to only support the /efi/boot/ directory location for the .EFI file in the EFI System Partition (ESP). 
 						}
-						CONF_GRUB2_OPENRC () { # openrc switch (option variables top)  # CONFIG REQUIRED, ONLY A COPY FROM SYSTEMD
+						CONF_GRUB2_OPENRC () {  # CONFIG REQUIRED, ONLY A COPY FROM SYSTEMD
 							cp /etc/default/grub /etc/default/grub_bak
 
 							sed -i -e 's#GRUB_CMDLINE_LINUX="#GRUB_CMDLINE_LINUX=#g' /etc/default/grub # remove quotation mark as sed wont handle it together with functions
@@ -1657,23 +1673,22 @@ EOF
 							sed -i -e 's/part_msdos//g' /etc/default/grub # disable grub UUID
 							sed -i -e 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT=""/g' /etc/default/grub # disable grub UUID
 						}
-						GRUB2_BIOS_OPENRC
-						# GRUB2_UEFI_OPENRC
+						OPENRC_GRUB2_$BOOTINITVAR
 						CONF_GRUB2_OPENRC
 						
 					}
 					GRUB2_SYSTEMD () { # systemd switch (option variables top)  # https://wiki.gentoo.org/wiki/GRUB2
-						GRUB2_BIOS_SYSTEMD () { # systemd switch (option variables top)
+						SYSTEMD_GRUB2_BIOS () {  # systemd switch (option variables top)
 							grub-install $HDD1
 						}
-						GRUB2_UEFI_SYSTEMD () { # systemd switch (option variables top) 
+						SYSTEMD_GRUB2_UEFI () {  # systemd switch (option variables top) 
 							sed -i -e '/GRUB_PLATFORMS="efi-64/d' >> /etc/portage/make.conf
 							echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
 							grub-install --target=x86_64-efi --efi-directory=/boot
 							# mount -o remount,rw /sys/firmware/efi/efivars # If grub_install returns an error like Could not prepare Boot variable: Read-only file system, it may be necessary to remount the efivars special mount as read-write in order to succeed:
 							# grub-install --target=x86_64-efi --efi-directory=/boot --removable # Some motherboard manufacturers seem to only support the /efi/boot/ directory location for the .EFI file in the EFI System Partition (ESP). 
 						}
-						CONF_GRUB2_SYSTEMD () { # systemd switch (option variables top) 
+						CONF_GRUB2_SYSTEMD () {  # systemd switch (option variables top) 
 							cp /etc/default/grub /etc/default/grub_bak
 
 							sed -i -e 's#GRUB_CMDLINE_LINUX="#GRUB_CMDLINE_LINUX=#g' /etc/default/grub # remove quotation mark as sed wont handle it together with functions
@@ -1690,8 +1705,7 @@ EOF
 							sed -i -e 's/part_msdos//g' /etc/default/grub # disable grub UUID
 							sed -i -e 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT=""/g' /etc/default/grub # disable grub UUID
 						}
-						GRUB2_BIOS_SYSTEMD
-						# GRUB2_UEFI_SYSTEMD
+						SYSTEMD_GRUB2_$BOOTINITVAR
 						CONF_GRUB2_SYSTEMD	
 					}
 					GEN_GRUBCONF () {
@@ -1700,7 +1714,7 @@ EOF
 					GRUB2_$SYSINITVAR
 					GEN_GRUBCONF
 				}
-				GRUB2_SETUP
+				SETUP_$BOOTLOADER
 			}
 			# __     _____ ____  _   _   _    _     
 			# \ \   / /_ _/ ___|| | | | / \  | |    
@@ -1717,25 +1731,26 @@ EOF
 				#  \____|_|    \___/ 
 				#            
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
-				#SETUP_GPU () {
-				#	NVIDIA () {
-				#	echo "nvidia placeholder"
-				#	}
-				#	AMD () {
-				#		RADEON () {
-				#			echo "radeon placeholder"
-				#		}
-				#		AMDGPU () {
-				#			echo "amdgpu placeholder"
-				#		# radeon-ucode
-				#		}
-				#		# RADEON
-				#		AMDGPU
-				#	}
-				#	# NVIDIA
-				#	# AMD
-				#}
-				# SETUP_GPU
+				GPU () {
+					NONE () {
+						 echo placeholder
+					}
+					NVIDIA () {
+					echo "nvidia placeholder"
+					}
+					AMD () {
+						RADEON () {
+							echo "radeon placeholder"
+						}
+						AMDGPU () {
+							echo "amdgpu placeholder"
+						# radeon-ucode
+						}
+						# RADEON
+						AMDGPU
+					}
+					$GPU_SET
+				}
 				# __        _____ _   _ ____   _____        __  ______   ______  
 				# \ \      / /_ _| \ | |  _ \ / _ \ \      / / / ___\ \ / / ___| 
 				#  \ \ /\ / / | ||  \| | | | | | | \ \ /\ / /  \___ \\ V /\___ \ 
@@ -1751,7 +1766,7 @@ EOF
 					# /_/\_\_|_|
 					#
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					X11 () { # https://wiki.gentoo.org/wiki/Xorg/Guide
+					X11 () {  # (! default) # https://wiki.gentoo.org/wiki/Xorg/Guide
 						EMERGE_XORG () {
 							emerge $EMERGE_VAR x11-base/xorg-server
 							# emerge --pretend --verbose x11-base/xorg-drivers
@@ -1760,7 +1775,7 @@ EOF
 						}
 						EMERGE_XORG
 					}
-					X11
+					$DISPLAYSERV
 				}
 				#  ____ ___ ____  ____  _        _ __   __  __  __  ____ ____  
 				# |  _ \_ _/ ___||  _ \| |      / \\ \ / / |  \/  |/ ___|  _ \ 
@@ -1797,39 +1812,71 @@ EOF
 					# DISPLAYMANAGER="sddm"
 					# 
 					# To start SDDM on boot, add the XDM init script to the system's default runlevel:
-					# root #rc-update add xdm default
+					# rc-update add xdm default
 					# 
 					# To start SDDM immediately, run:
-					# root #rc-service xdm start
+					# rc-service xdm start
 					#					
 					# systemd
 					#
 					# If using systemd as the init system, first locate a .service file.
 					#
 					# To start SDDM on boot, enable the following service:
-					# root #systemctl enable sddm.service
+					# systemctl enable sddm.service
 					# 
 					# To start SDDM immediately run this command:
-					# root #systemctl start sddm.service   
+					# systemctl start sddm.service   
+
+					#  ____ ____  __  __ 
+					# / ___|  _ \|  \/  |
+					#| |   | | | | |\/| |
+					#| |___| |_| | |  | |
+					# \____|____/|_|  |_|
+					#                    
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					CDM () { # The Console Display Manager https://wiki.gentoo.org/wiki/CDM
+						EMERGE_CDM () {
+							emerge --ask x11-misc/cdm
+						}
+						AUTOSTART_CDM_OPENRC () {
+							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/cdm#g' /etc/conf.d/xdm
+							rc-update add xdm default
+						}
+						AUTOSTART_CDM_SYSTEMD () {
+							systemctl enable cdm.service
+						}
+						CONFIGURE_CDM () {
+							echo placeholder	
+						}
+						EMERGE_CDM
+						AUTOSTART_CDM_$SYSINITVAR
+						CONFIGURE_CDM
+					# 
 					#   ____ ____  __  __ 
 					#  / ___|  _ \|  \/  |
 					# | |  _| | | | |\/| |
 					# | |_| | |_| | |  | |
 					#  \____|____/|_|  |_|
-					#      
+					# 
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					GDM () { # https://wiki.gentoo.org/wiki/GNOME/gdm
+					GDM () { # https://wiki.gentoo.org/wiki/GNOME/gdm -- https://github.com/evertiro/cdm
 						EMERGE_GDMDE () {
-							emerge --ask lxqt-base/lxde-meta
+							emerge --ask gnome-base/gdm
 						}
 						AUTOSTART_GDMDE_OPENRC () {
-							echo "exec startlxde" >> ~/.xinitrc
+							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/gdm#g' /etc/conf.d/xdm
+							echo "exec gdm" >> ~/.xinitrc
+							rc-update add xdm default
 						}
 						AUTOSTART_GDMDE_SYSTEMD () {
 							systemctl enable gdm.service
 						}
+						CONFIGURE_GDM () {
+							echo placeholder
+						}
 						EMERGE_GDMDE
 						AUTOSTART_GDMDE_$SYSINITVAR
+						CONFIGURE_GDM
 					#  _     ___ ____ _   _ _____ ____  __  __ 
 					# | |   |_ _/ ___| | | |_   _|  _ \|  \/  |
 					# | |    | | |  _| |_| | | | | | | | |\/| |
@@ -1838,19 +1885,24 @@ EOF
 					#                                         
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 					LIGHTDM () { # https://wiki.gentoo.org/wiki/LightDM
-						emerge $EMERGE_VAR x11-misc/lightdm
-						LIGHTDM_OPENRC () { # openrc switch (option variables top) 
+						EMERGE_LXDM () {
+							emerge $EMERGE_VAR x11-misc/lightdm
+						}
+						AUTOSTART_LIGHTDM_OPENRC () {
+							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/lightdm#g' /etc/conf.d/xdm
+							echo "exec lightdm" >> ~/.xinitrc
 							rc-update add dbus default
 							rc-update add xdm default
-
-							/etc/init.d/dbus start
-							/etc/init.d/xdm start
 						}
-						LIGHTDM_SYSTEMD () {
-							systemctl enable lightdm
-							systemctl start lightdm
+						AUTOSTART_LIGHTDM_SYSTEMD () {
+							systemctl enable lightdm.service
 						}
-						LIGHTDM_$SYSINITVAR
+						CONFIGURE_LXDM () {
+							placeholder	
+						}
+						EMERGE_LXDM
+						AUTOSTART_LIGHTDM_$SYSINITVAR
+						CONFIGURE_LXDM
 					}
 					#  _    __  ______  __  __ 
 					# | |   \ \/ /  _ \|  \/  |
@@ -1859,35 +1911,165 @@ EOF
 					# |_____/_/\_\____/|_|  |_|
 					#                         
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					LXDM () { # https://wiki.gentoo.org/wiki/LXDE
-						INSTALL_LXDM () {
-							EMERGE_LXDM () {
-								emerge $EMERGE_VAR lxde-base/lxdm
-							}
-							AUTOSTART_LXDM () {
-								LXDM_OPENRC () { # openrc switch (option variables top) 
-									echo "exec startlxde" >> ~/.xinitrc
-								}
-								LXDM_SYSTEMD () { # systemd switch (option variables top) 
-									systemctl enable lxdm
-								}
-								LXDM_$SYSINITVAR
-							}
-							EMERGE_LXDM
-							AUTOSTART_LXDM
+					LXDM () { # https://wiki.gentoo.org/wiki/LXDE (always links to lxde by time of writing this)
+						EMERGE_LXDM () {
+							emerge $EMERGE_VAR lxde-base/lxdm
+						}
+						AUTOSTART_LXDM_OPENRC () { 
+							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/lxdm#g' /etc/conf.d/xdm
+							echo "exec startlxde" >> ~/.xinitrc
+							rc-update add xdm default
+						}
+						AUTOSTART_LXDM_SYSTEMD () { # systemd switch (option variables top) 
+							systemctl enable lxdm.service
 						}
 						CONFIGURE_LXDM () {
-							echo "configure lxde placeholder"	
+							echo placeholder
 						}
-						INSTALL_LXDM
+						EMERGE_LXDM
+						AUTOSTART_LXDM_$SYSINITVAR
 						CONFIGURE_LXDM
 					}
+					#   ___  ___ _   _  ______   __
+					#  / _ \|_ _| \ | |/ ___\ \ / /
+					# | | | || ||  \| | |  _ \ V / 
+					# | |_| || || |\  | |_| | | |  
+					#  \__\_\___|_| \_|\____| |_|  
+					#                             
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					AUTOSTARTDISPLMGR () {
-						cat << EOF > /etc/conf.d/xdm
-						DISPLAYMANAGER="$DISPLAYMGR"
-EOF
+					QINGY () { # https://wiki.gentoo.org/wiki/LXDE
+						EMERGE_QINGY () {
+							emerge $EMERGE_VAR qingy
+						}
+						AUTOSTART_QINGY_OPENRC () { 
+							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/qingy#g' /etc/conf.d/xdm
+							echo "exec qingy" >> ~/.xinitrc
+							rc-update del xdm default
+						}
+						AUTOSTART_QINGY_SYSTEMD () { # systemd switch (option variables top) 
+							systemctl enable qingy.service
+						}
+						CONFIGURE_QINGY () {
+							qingy-keygen	
+						}
+						EMERGE_QINGY
+						AUTOSTART_QINGY_$SYSINITVAR
+						CONFIGURE_QINGY
+					}
+					#  ____ ____  ____  __  __ 
+					# / ___/ ___||  _ \|  \/  |
+					# \___ \___ \| | | | |\/| |
+					#  ___) |__) | |_| | |  | |
+					# |____/____/|____/|_|  |_|
+					#                         
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					SSDM () { # https://wiki.gentoo.org/wiki/LXDE
+						EMERGE_SSDM () {
+							emerge --ask x11-misc/sddm
+						}
+						AUTOSTART_SSDM_OPENRC () {
+							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/ssdm#g' /etc/conf.d/xdm
+							echo "exec ssdm" >> ~/.xinitrc
+							rc-update add xdm default
+						}
+						AUTOSTART_SSDM_SYSTEMD () { # systemd switch (option variables top) 
+							systemctl enable sddm.service
+						}
+						CONFIGURE_SSDM () {
+							usermod -a -G video sddm	
+						}
+						EMERGE_SSDM
+						AUTOSTART_SSDM_$SYSINITVAR
+						CONFIGURE_SSDM
+					}
+					#  ____  _     ___ __  __ 
+					# / ___|| |   |_ _|  \/  |
+					# \___ \| |    | || |\/| |
+					#  ___) | |___ | || |  | |
+					# |____/|_____|___|_|  |_|
+					#                        
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					SLIM () { # https://wiki.gentoo.org/wiki/SLiM
+						EMERGE_SLIM () {
+							emerge $EMERGE_VAR x11-misc/slim
+						}
+						AUTOSTART_SLIM_OPENRC () {
+							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/slim#g' /etc/conf.d/xdm
+							echo "exec slim" >> ~/.xinitrc
+							rc-update add xdm default
+							rc-update add dbus default
+						}
+						AUTOSTART_SLIM_SYSTEMD () { # systemd switch (option variables top) 
+							systemctl enable slim.service
+						}
+						CONFIGURE_SLIM () {
+							echo placeholder
+						}
+						EMERGE_SLIM
+						AUTOSTART_SLIM_$SYSINITVAR
+						CONFIGURE_SLIM
+					}
+					# __        ______  __  __ 
+					# \ \      / /  _ \|  \/  |
+					#  \ \ /\ / /| | | | |\/| |
+					#   \ V  V / | |_| | |  | |
+					#    \_/\_/  |____/|_|  |_|
+					#                                              
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					WDM () { # https://wiki.gentoo.org/wiki/WDM
+						EMERGE_WDM () {
+							emerge $EMERGE_VAR x11-misc/wdm
+						}
+						AUTOSTART_WDM_OPENRC () {
+							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/wdm#g' /etc/conf.d/xdm
+							echo "exec wdm" >> ~/.xinitrc
+							rc-update add xdm default
+						}
+						AUTOSTART_WDM_SYSTEMD () { # systemd switch (option variables top) 
+							systemctl enable wdm.service
+						}
+
+						CONFIGURE_WDM () {
+							echo placeholder	
+						}
+						EMERGE_XDM
+						AUTOSTART_XDM_$SYSINITVAR
+						CONFIGURE_WDM
+					}
+					# __  ______  __  __ 
+					# \ \/ /  _ \|  \/  |
+					#  \  /| | | | |\/| |
+					#  /  \| |_| | |  | |
+					# /_/\_\____/|_|  |_|
+					#                   
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					XDM () { https://packages.gentoo.org/packages/x11-apps/xdm
+						EMERGE_XDM () {
+							emerge $EMERGE_VAR x11-apps/xdm
+						}
+						AUTOSTART_XDM_OPENRC () {
+							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/xdm#g' /etc/conf.d/xdm
+							echo "exec xdm" >> ~/.xinitrc
+							rc-update add xdm default
+						}
+						AUTOSTART_XDM_SYSTEMD () { # systemd switch (option variables top) 
+							systemctl enable xdm.service
+						}
+						CONFIGURE_SSDM () {
+							echo placeholder
+						}
+						EMERGE_XDM
+						AUTOSTART_XDM_$SYSINITVAR
+						CONFIGURE_XDM
+					}
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					INSTALL_$DISPLAYMGR () {
+						EMERGE_$DISPLAYMGR () {
+							emerge $EMERGE_VAR lxde-base/lxdm
+						}				
+					AUTOSTART_DISPLMGR () {
 						SET_DISPLAYMGRSTR_OPENRC () {
+							# echo "exec startlxde" >> ~/.xinitrc
 							rc-update add $DISPLAYMGR default
 							rc-service $DISPLAYMGR start
 
@@ -1898,9 +2080,8 @@ EOF
 						}
 						SET_DISPLAYMGRSTR_$SYSINITVAR
 					}
-					# LIGHTDM
-					LXDM	
-					AUTOSTARTDISPLMGR
+					$DISPLAYMGR	
+					AUTOSTART_$DISPLAYMGR
 				}
 				#  ____  _____ ____  _  _______ ___  ____    _____ _   ___     __
 				# |  _ \| ____/ ___|| |/ /_   _/ _ \|  _ \  | ____| \ | \ \   / /
@@ -1932,26 +2113,25 @@ EOF
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                 
 					BUDGIE () { # https://wiki.gentoo.org/wiki/GNOME
 						EMERGE_BUDGIE () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge --ask gnome-extra/budgie-desktop
 						}
 						W_DISPLAYMGR_BUDGIE () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							BUDGIE_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/gnome-session;g' /etc/lxdm/lxdm.conf
+								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/budgie-desktop;g' /etc/lxdm/lxdm.conf
 							}
-							XBUDGIE_LXDM
+							BUDGIE_$DISPLAYMGR
 						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							XFCE_STARTX_OPENRC () { # openrc switch (option variables top) 
+						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
+							BUDGIE_STARTX_OPENRC () { 
 								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
+								exec budgie-desktop
 EOF
 							}
-							XFCE_STARTX_OPENRC
+							BUDGIE_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							BUDGIE_STARTX_$SYSINITVAR
 						}
 						BUDGIE_MISC () {
 							echo placeholder
@@ -1969,31 +2149,38 @@ EOF
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
 					CINNAMON () { # https://wiki.gentoo.org/wiki/GNOME
 						EMERGE_CINNAMON () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge --ask gnome-extra/cinnamon
 						}
 						W_DISPLAYMGR_CINNAMON () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							CINNAMON_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/gnome-session;g' /etc/lxdm/lxdm.conf
+								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/gnome-session-cinnamon;g' /etc/lxdm/lxdm.conf
 							}
-							CINNAMON_LXDM
+							CINNAMON_$DISPLAYMGR
 						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							CINNAMON_STARTX_OPENRC () { # openrc switch (option variables top) 
-								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
+						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
+							CINNAMON_STARTX_OPENRC () { 
+								CINNAMON_XINITRC () {
+									cat << 'EOF' > ~/.xinitrc 
+									exec cinnamon-session
 EOF
+									rc-update add dbus default && rc-service dbus start
+									rc-update add openrc-settingsd default && rc-service openrc-settingsd start
+									rc-update add elogind boot && rc-service elogind start
+
+									cp /etc/xdg/autostart/nm-applet.desktop /home/userName/.config/autostart/nm-applet.desktop
+									echo 'X-GNOME-Autostart-enabled=false' >> /home/userName/.config/autostart/nm-applet.desktop
+									chown userName:userName /home/userName/.config/autostart/nm-applet.desktop
+
 							}
-							CINNAMON_STARTX_OPENRC
+							CINNAMON_STARTX_SYSTEMD () {
+								systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							CINNAMON_STARTX_$SYSINITVAR
 						}
 						CINNAMON_MISC () {
 							echo placeholder
 						}
-						EMERGE_BUDGIE
+						EMERGE_CINNAMON
 						W_DISPLAYMGR_LXDM
 						# WO_DISPLAYMGR
 						CINNAMON_MISC
@@ -2007,29 +2194,41 @@ EOF
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
 					DDE () { # Deepin Desktop Environment - https://wiki.gentoo.org/wiki/DDE
 						EMERGE_DDE () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge --ask --noreplace app-eselect/eselect-repository dev-vcs/git
+							eselect repository add deepin git https://github.com/zhtengw/deepin-overlay.git
+							emerge --sync deepin
+							mkdir -pv /etc/portage/package.use
+							echo "dde-base/dde-meta multimedia" >> /etc/portage/package.use/deepin
+							emerge --ask --verbose --keep-going dde-base/dde-meta
 						}
-						W_DISPLAYMGR_DDE () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
+						W_DISPLAYMGR_DDE_OPENCL () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
+							systemctl enable NetworkManager 
+							rc-update add dbus default
+							rc-update add xdm default
+							rc-update add NetworkManager default
+							rc-update del dhcpcd default
+							rc-update add elogind boot 
+
+
 							DDE_LXDM () {
 								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/gnome-session;g' /etc/lxdm/lxdm.conf
 							}
-							DDE_LXDM
+							DDE_$DISPLAYMGR
 						}
 						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							DDE_STARTX_OPENRC () { # openrc switch (option variables top) 
+							DDE_STARTX_OPENRC () { 
 								cat << 'EOF' > ~/.xinitrc 
 								exec startxfce4
 EOF
 							}
-							DDE_STARTX_OPENRC
+							DDE_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							DDE_STARTX_$SYSINITVAR
 						}
 						DDE_MISC () {
-							echo placeholder
+							
 						}
 						EMERGE_DDE
 						W_DISPLAYMGR_LXDM
@@ -2046,28 +2245,30 @@ EOF
 					FVWMCRYSTAL () { # FVWM-Crystal - https://wiki.gentoo.org/wiki/FVWM-Crystal
 						EMERGE_FVWMCRYSTAL () {
 							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							x11-themes/fvwm-crystal
 						}
 						W_DISPLAYMGR_FVWMCRYSTAL () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							FVWMCRYSTAL_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/gnome-session;g' /etc/lxdm/lxdm.conf
+								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/fvwm-crystal;g' /etc/lxdm/lxdm.conf
 							}
-							FVWMCRYSTAL_LXDM
+							FVWMCRYSTAL_$DISPLAYMGR
 						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							DDE_STARTX_OPENRC () { # openrc switch (option variables top) 
+						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
+							FVWMCRYSTAL_STARTX_OPENRC () { 
 								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
+								#!/bin/sh
+								xrdb ~/.Xdefaults
+								# exec ck-launch-session dbus-launch --sh-syntax --exit-with-session fvwm-crystal
 EOF
 							}
-							DDE_STARTX_OPENRC
+							FVWMCRYSTAL_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							FVWMCRYSTAL_STARTX_$SYSINITVAR
 						}
 						FVWMCRYSTAL_MISC () {
-							echo placeholder
+							# emerge --ask xdg-user-dirs # If you are having trouble with desktop icons, try installing xdg-user-dirs
 						}
 						EMERGE_DDE
 						W_DISPLAYMGR_LXDM
@@ -2084,25 +2285,26 @@ EOF
 					GNOME () { # https://wiki.gentoo.org/wiki/GNOME
 						EMERGE_GNOME () {
 							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge $EMERGE_VAR gnome-base/gnome
+							env-update && source /etc/profile
 						}
 						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							GNOME_LXDM () {
 								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/gnome-session;g' /etc/lxdm/lxdm.conf
 							}
-							GNOME_LXDM
+							GNOME_$DISPLAYMGR
 						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							GNOME_STARTX_OPENRC () { # openrc switch (option variables top) 
+						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
+							GNOME_STARTX_OPENRC () { 
 								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
+								exec gnome-session
 EOF
 							}
-							GNOME_STARTX_OPENRC
+							GNOME_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							GNOME_STARTX_$SYSINITVAR
 						}
 						GNOME_MISC () {
 							echo placeholder
@@ -2121,28 +2323,28 @@ EOF
 					KDE () { # https://wiki.gentoo.org/wiki/KDE
 						EMERGE_KDE () {
 							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge $EMERGE_VAR kde-plasma/plasma-meta
 						}
 						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							KDE_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/gnome-session;g' /etc/lxdm/lxdm.conf
+								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startkde;g' /etc/lxdm/lxdm.conf
 							}
-							KDE_LXDM
+							KDE_$DISPLAYMGR
 						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							KDE_STARTX_OPENRC () { # openrc switch (option variables top) 
+						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
+							KDE_STARTX_OPENRC () { 
 								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
+								exec startkde
 EOF
 							}
-							KDE_STARTX_OPENRC
+							KDE_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							KDE_STARTX_$SYSINITVAR
 						}
 						KDE_MISC () {
-							echo placeholder
+							emerge --ask kde-plasma/kdeplasma-addons
 						}
 						EMERGE_KDE
 						W_DISPLAYMGR_LXDM
@@ -2158,25 +2360,25 @@ EOF
 					LXDE () { # https://wiki.gentoo.org/wiki/LXDE
 						EMERGE_LXDE () {
 							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge $EMERGE_VAR emerge --ask lxde-base/lxde-meta
 						}
 						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							LXDE_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startlxde;g' /etc/lxdm/lxdm.conf
+								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startlxde;g' /etc/lxdm/lxdm.conf # lxsession or startlxde ?
 							}
-							XFCE4_LXDM
+							LXDE_$DISPLAYMGR
 						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							XFCE_STARTX_OPENRC () { # openrc switch (option variables top) 
+						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
+							XFCE_STARTX_OPENRC () { 
 								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
+								exec startlxde
 EOF
 							}
-							XFCE_STARTX_OPENRC
+							XFCE_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							LXDE_STARTX_$SYSINITVAR
 						}
 						LXDE_MISC () {
 							echo placeholder
@@ -2195,26 +2397,27 @@ EOF
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 					LXQT () { # https://wiki.gentoo.org/wiki/LXQt
 						EMERGE_LXQT () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge $EMERGE_VAR lxqt-base/lxqt-meta
 						}
 						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							LXQT_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startxfce4;g' /etc/lxdm/lxdm.conf
+								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startlxqt;g' /etc/lxdm/lxdm.conf
 							}
-							LXQT_LXDM
+							LXQT_$DISPLAYMGR
 						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							LXQT_STARTX_OPENRC () { # openrc switch (option variables top) 
+						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
+							LXQT_STARTX_OPENRC () { 
 								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
+								exec startlxqt
+								# exec ck-launch-session startlxqt # When using ConsoleKit, ck-launch-session is needed to be able to shutdown or reboot the system from the LXQt menu
+								# exec ck-launch-session dbus-launch --exit-with-session startlxqt # It may be desirable to start D-Bus manually, for example if notifications are not working or if there are several dbus-launch ...
 EOF
 							}
-							LXQT_STARTX_OPENRC
+							LXQT_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							LXQT_STARTX_$SYSINITVAR
 						}
 						LXQT_MISC () {
 							echo placeholder
@@ -2233,26 +2436,26 @@ EOF
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
 					LUMINA () { # https://wiki.gentoo.org/wiki/Lumina
 						EMERGE_LUMINA () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge $EMERGE_VAR x11-wm/lumina
 						}
-						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							LUMINA_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startxfce4;g' /etc/lxdm/lxdm.conf
+						W_DISPLAYMGR_LUMINA () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
+							LUMINA_LUMINA () {
+								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/start-lumina-desktop;g' /etc/lxdm/lxdm.conf
 							}
-							LUMINA_LXDM
+							LUMINA_$DISPLAYMGR
 						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							XFCE_STARTX_OPENRC () { # openrc switch (option variables top) 
+						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
+							LUMINA_STARTX_OPENRC () { 
 								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
+								[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+								exec start-lumina-desktop
 EOF
 							}
-							XFCE_STARTX_OPENRC
+							LUMINA_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							LUMINA_STARTX_$SYSINITVAR
 						}
 						LUMINA_MISC () {
 							echo placeholder
@@ -2271,29 +2474,28 @@ EOF
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
 					MATE () { # https://wiki.gentoo.org/wiki/MATE
 						EMERGE_MATE () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge $EMERGE_VAR --changed-use mate-base/mate
 						}
 						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							MATE_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startxfce4;g' /etc/lxdm/lxdm.conf
+								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/mate-session;g' /etc/lxdm/lxdm.conf
 							}
-							MATE_LXDM
+							MATE_$DISPLAYMGR
 						}
 						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							MATE_STARTX_OPENRC () { # openrc switch (option variables top) 
+							MATE_STARTX_OPENRC () { 
 								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
+								exec mate-session
 EOF
 							}
-							MATE_STARTX_OPENRC
+							MATE_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							MATE_STARTX_$SYSINITVAR
 						}
 						MATE_MISC () {
-							echo placeholder
+							emerge --ask mate-extra/caja-extensions
 						}
 						EMERGE_MATE
 						W_DISPLAYMGR_LXDM
@@ -2308,38 +2510,38 @@ EOF
 					#                                                
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 					PANTHEON () { # https://wiki.gentoo.org/wiki/Pantheon
+						ADDREPO_PYNTHEON () {
+							layman -a elementary
+							eselect repository enable elementary
+							emerge --sync elementary 
+}
 						EMERGE_PANTHEON () {
 							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge --ask pantheon-base/pantheon-shell
+							emerge --ask media-video/audience x11-terms/pantheon-terminal
 						}
 						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							PANTHEON_LXDM () {
 								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startxfce4;g' /etc/lxdm/lxdm.conf
 							}
-							PANTHEON_LXDM
+							PANTHEON_$DISPLAYMGR
 						}
 						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							XFCE_STARTX_OPENRC () { # openrc switch (option variables top) 
+							PANTHEON_STARTX_OPENRC () { 
 								cat << 'EOF' > ~/.xinitrc 
 								exec startxfce4
 EOF
 							}
-							XFCE_STARTX_OPENRC
+							PANTHEON_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							PANTHEON_STARTX_$SYSINITVAR
 						}
 						PANTHEON_MISC () {
-							emerge $EMERGE_VAR xfce-extra/xfce4-mount-plugin
-							emerge $EMERGE_VAR xfce-base/thunar
-							# emerge $EMERGE_VAR x11-terms/xfce4-terminal
-							emerge $EMERGE_VAR app-editors/mousepad
-							emerge $EMERGE_VAR xfce4-pulseaudio-plugin
-							emerge $EMERGE_VAR xfce-extra/xfce4-mixer 
-							emerge $EMERGE_VAR xfce-extra/xfce4-alsa-plugin
-							# emerge $EMERGE_VAR xfce-extra/thunar-volman
+							echo placeholder
 						}
+						ADDREPO_PYNTHEON
 						EMERGE_PANTHEON
 						W_DISPLAYMGR_LXDM
 						# WO_DISPLAYMGR
@@ -2354,26 +2556,23 @@ EOF
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 					RAZORQT () { # https://wiki.gentoo.org/wiki/Razor-qt
 						EMERGE_RAZORQT () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							echo placeholder
 						}
 						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							RAZORQT_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startxfce4;g' /etc/lxdm/lxdm.conf
+								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/razor-session;g' /etc/lxdm/lxdm.conf
 							}
-							RAZORQT_LXDM
+							RAZORQT_$DISPLAYMGR
 						}
 						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							RAZORQT_STARTX_OPENRC () { # openrc switch (option variables top) 
-								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
-EOF
+							RAZORQT_STARTX_OPENRC () { 
+								echo placeholder
 							}
-							RAZORQT_STARTX_OPENRC
+							RAZORQT_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							RAZORQT_STARTX_$SYSINITVAR
 						}
 						RAZORQT_MISC () {
 							echo placeholder
@@ -2392,26 +2591,22 @@ EOF
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 					TDE () { # https://wiki.gentoo.org/wiki/Razor-qt
 						EMERGE_TDE () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							emerge $EMERGE_VAR trinity-base/tdebase-meta
 						}
 						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							TDE_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startxfce4;g' /etc/lxdm/lxdm.conf
+								echo placeholder
 							}
-							TDE_LXDM
+							TDE_$DISPLAYMGR
 						}
 						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							TDE_STARTX_OPENRC () { # openrc switch (option variables top) 
-								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
-EOF
+							TDE_STARTX_OPENRC () { 
+								echo placeholder
+							TDE_STARTX_SYSTEMD () {
+								echo placeholder
+								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
 							}
-							TDE_STARTX_OPENRC
+_							TDE_STARTX_$SYSINITVAR
 						}
 						TDE_MISC () {
 							echo placeholder
@@ -2430,29 +2625,29 @@ EOF
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 					XFCE4 () { # https://wiki.gentoo.org/wiki/Xfce
 						EMERGE_XFCE4 () {
-							# eselect profile set default/linux/amd64/17.0/desktop
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR xfce-base/xfce4-meta xfce-extra/xfce4-notifyd
+							emerge $EMERGE_VAR xfce-base/xfce4-meta 
 							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-base/xfwm4 xfce-base/xfce4-panel
+							env-update && source /etc/profile
 						}
 						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
 							XFCE4_LXDM () {
 								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startxfce4;g' /etc/lxdm/lxdm.conf
 							}
-							XFCE4_LXDM
+							XFCE4_$DISPLAYMGR
 						}
 						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							# startx and startxfce4 -  starting Xfce without using a display manager.
-							# startx
-							XFCE_STARTX_OPENRC () { # openrc switch (option variables top) 
-								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
-EOF
+							XFCE_STARTX_OPENRC () { 
+								echo "exec startxfce4" > ~/.xinitrc
 							}
-							XFCE_STARTX_OPENRC
+							XFCE_STARTX_SYSTEMD () {
+								systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							XFCE_STARTX_$SYSINITVAR
 						}
 						XFCE4_MISC () {
+							emerge $EMERGE_VAR xfce-base/xfwm4
+							emerge $EMERGE_VAR xfce-base/xfce4-panel
+							# emerge $EMERGE_VAR xfce-extra/xfce4-notifyd
 							emerge $EMERGE_VAR xfce-extra/xfce4-mount-plugin
 							emerge $EMERGE_VAR xfce-base/thunar
 							# emerge $EMERGE_VAR x11-terms/xfce4-terminal
@@ -2467,11 +2662,13 @@ EOF
 						# WO_DISPLAYMGR
 						XFCE4_MISC
 					}
-					XFCE4
+					$DESKTOPENV
 				}
+				## (!changeme)
+				GPU
 				WINDOWSYS
-				#DISPLAYMGR
-				DESKTOP_ENV
+				DISPLAYMGR
+				# DESKTOP_ENV
 			}
 			#     _   _   _ ____ ___ ___  
 			#    / \ | | | |  _ \_ _/ _ \ 
@@ -2481,13 +2678,41 @@ EOF
 			# 		            
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			AUDIO () {
-				SOUNDMIXER () {
+				SOUND_API () {
+					ALSA () { # https://wiki.gentoo.org/wiki/ALSA
+						euse -E alsa
+						emerge --ask --changed-use --deep @world
+						emerge --ask media-sound/alsa-utils
+						USE="ffmpeg" emerge -q media-plugins/alsa-plugins
+
+						ALSASOUND_OPENRC () {
+							rc-service alsasound start
+							rc-update add alsasound boot
+						}
+						ALSASOUND_SYSTEMD () {
+							systemctl status alsa-restore
+						}
+						ALSASOUND_$SYSINITVAR
+					}
+					ALSA
+				}
+				SOUND_SERVER () {
+					PULSEAUDIO () {
+						# rc-update add consolekit default
+						echo placeholder
+					}
+					PULSEAUDIO
+				}
+				SOUND_MIXER () {
+
 					PAVUCONTROL () {
-					emerge $EMERGE_VAR media-sound/pavucontrol
+						emerge $EMERGE_VAR media-sound/pavucontrol
 					}
 					PAVUCONTROL
 				}
-				SOUNDMIXER
+				SOUND_API
+				SOUND_SERVER
+				SOUND_MIXER
 			}
 			#  _   _ _____ _______        _____  ____  _  __
 			# | \ | | ____|_   _\ \      / / _ \|  _ \| |/ /
@@ -2499,15 +2724,14 @@ EOF
 			NETWORKING () {
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				BASICNET () {
-					GENTOONET () {
+					GENTOONET () { # (! default)
 						emerge $EMERGE_VAR --noreplace net-misc/netifrc
-						# Please read /usr/share/doc/netifrc-*/net.example.bz2 for a list of all available options. DHCP client man page if specific DHCP options need to be set.
-						cat << 'EOF' > /etc/conf.d/net 
+						cat << 'EOF' > /etc/conf.d/net # Please read /usr/share/doc/netifrc-*/net.example.bz2 for a list of all available options. DHCP client man page if specific DHCP options need to be set.
 						#config_eth0="dhcp"
 						config_enp1s0="dhcp"
 EOF
 					}
-					HOSTSFILE () {
+					HOSTSFILE () { # (! default)
 						echo "$HOSTNAME" > /etc/hostname
 						echo "127.0.0.1	localhost
 						::1		localhost
@@ -2521,12 +2745,12 @@ EOF
 					SET_SYSTEMD () {
 						systemctl enable systemd-networkd.service
 						systemctl start systemd-networkd.service 
-						REPLACE_RESOLVECONF () {
+						REPLACE_RESOLVECONF () { (! default)
 							ln -snf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 							systemctl enable systemd-resolved.service
 							systemctl start systemd-resolved.service 
 						}
-						WIRED_DHCPD () {
+						WIRED_DHCPD () { # (! default)
 							cat << 'EOF' > /etc/systemd/network/20-wired.network
 							[ Match ]
 							Name=enp1s0
@@ -2557,7 +2781,7 @@ EOF
 					EMERGE_DHCPCD () {
 						emerge $EMERGE_VAR net-misc/dhcpcd
 					}
-					SYSSTART_DHCPD_OPENRC () { # openrc switch (option variables top) 
+					SYSSTART_DHCPD_OPENRC () { 
 						rc-update add dhcpcd default
 						/etc/init.d/dhcpcd start 
 					}
@@ -2568,9 +2792,37 @@ EOF
 					EMERGE_DHCPCD
 					SYSSTART_DHCPD_$SYSINITVAR
 				}
-				BASICNET
-				NETWORKD
+				BASICNET # (! default)
+				NETWORKD # (! default)
 				# INST_DHCPCD
+			}
+			#  _   _ ____  _____ ____      _    ____  ____  
+			# | | | / ___|| ____|  _ \    / \  |  _ \|  _ \ 
+			# | | | \___ \|  _| | |_) |  / _ \ | |_) | |_) |
+			# | |_| |___) | |___|  _ <  / ___ \|  __/|  __/ 
+			#  \___/|____/|_____|_| \_\/_/   \_\_|   |_|    
+			#                                              
+			#
+			USERAPP () { # user applications
+				#   ____ ___ _____ 
+				#  / ___|_ _|_   _|
+				# | |  _ | |  | |  
+				# | |_| || |  | |  
+				#  \____|___| |_|  
+				#                 
+				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				GIT () {
+					emerge $EMERGE_VAR dev-vcs/git
+				}
+				FIREFOX () {
+					emerge $EMERGE_VAR www-client/firefox
+				}
+				MIDORI () {
+					emerge $EMERGE_VAR www-client/midori
+				}
+				GIT
+				FIREFOX
+				MIDORI
 			}
 			#  _   _ ____  _____ ____  
 			# | | | / ___|| ____|  _ \ 
@@ -2579,12 +2831,12 @@ EOF
 			#  \___/|____/|_____|_| \_\
 			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			USER () {
-				ROOT () {
+			USERS () { # setup users
+				ROOT () { # (! default)
 					echo "${bold}enter new root password${normal}"
 					passwd
 				}
-				ADMIN () {
+				ADMIN () { # (! default)
 					useradd -m -g users -G wheel,storage,power -s /bin/bash $SYSUSERNAME
 					echo "${bold}enter new $SYSUSERNAME password${normal}"
 					passwd $SYSUSERNAME
@@ -2593,14 +2845,15 @@ EOF
 				ADMIN
 
 			}
+			## (!changeme)
 			BUILDKERN	&& echo "${bold}BUILD_KERNEL - END${normal}"
-			### INITRAMFS	&& echo "${bold}INITRAMFS - END${normal}"
+			### INITRAMFS	&& echo "${bold}INITRAMFS - END${normal}" (! disabled for default setup)
 			FSTAB		&& echo "${bold}FSTAB - END${normal}"
 			KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
 			BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
 			VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
-			#AUDIO		&& echo "${bold}AUDIO - END${normal}"
-			#USER		&& echo "${bold}USER - END${normal}"
+			# AUDIO		&& echo "${bold}AUDIO - END${normal}"
+			# USERS		&& echo "${bold}USER - END${normal}"
 			# NETWORKING	&& echo "${bold}NETWORKING - END${normal}"
 		}
 		#
@@ -2617,7 +2870,7 @@ EOF
 		#  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
 		# ... yay!
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
-		FINISH () {
+		FINISH () { # tidy up installation files
 			rm /stage3-*.tar.*
 		}
 		#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2629,6 +2882,7 @@ EOF
 		#										 ~
 		#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		## (!changeme)
 		BASE	&& echo "${bold}BASE - END${normal}"
 		SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
 		CORE	&& echo "${bold}CORE - END${normal}"
@@ -2645,6 +2899,7 @@ RUNCHROOT () {
 }
 
 #### RUN ALL
+## (!changeme)
 BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
 INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
 PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
