@@ -303,7 +303,7 @@ BANNER () { # 0.1 BANNER
 	# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART - mainhdd only has boot & fainfs
 	# SWAP_FS=linux-swap # swapfs, couldnt have guessed it
 
-	## FILESYSTEMS
+	## FILESYSTEMS # !FSTOOLS
 	BOOT_FS=ext2 # boot filesystem
 	MAIN_FS=ext4 # main filesystem for the OS
 
@@ -598,7 +598,6 @@ EOF
 		# | |  | | |\  | | |   |  _|  ___) |
 		# |_|  |_|_| \_| |_|   |_|   |____/ 
 		#                                  
-		# ... ...
 		MNTFS () { 
 			#  ____    _    ____  _____ ______   ______  
 			# | __ )  / \  / ___|| ____/ ___\ \ / / ___| 
@@ -743,7 +742,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART - mainhdd only has boot & fainfs
 		# SWAP_FS=linux-swap # swapfs, couldnt have guessed it
 
-		## FILESYSTEMS
+		## FILESYSTEMS # !FSTOOLS
 		BOOT_FS=ext2 # boot filesystem
 		MAIN_FS=ext4 # main filesystem for the OS
 
@@ -768,7 +767,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		SYSDATE_MAN=071604551969 # hack time :)
 		SYSCLOCK_SET=AUTO # USE AUTO (!default) / MANUAL -- WITH MANUAL YOU DONT GET TIMESYNCED SERVICE
 		SYSCLOCK_MAN="1969-07-16 04:55:42" # hack time :)
-		SYSTIMEZONE_SET="Europe/Berlin" # (!changeme) Europe/Berlin format for SYSTEMD ; Europe/Brussels foiormat for OPENRC
+		SYSTIMEZONE_SET="Europe/Berlin" # (!changeme) Europe/Berlin format for SYSTEMD ; Europe/Brussels format for OPENRC
 
 		## NETWORK - https://en.wikipedia.org/wiki/Public_recursive_name_server
 		HOSTNAME=p1p1 # (!changeme) define hostname
@@ -784,8 +783,24 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		## DISPLAY
 		GPU_SET=NONE # NONE. AMD_V***. NVIDIA_V***
 		DISPLAYSERV=X11 # see options
+		DISPLAYMGR_YESNO=W_D_MGR # W_D_MGR (WITH display manager) / SOLO (without display manager)
 		DISPLAYMGR=LXDM # see options
 		DESKTOPENV=XFCE4 # see options
+
+		BUDGIEXEC=budgie-desktop
+		CINNAMONXEC=gnome-session-cinnamon
+		DDEXEC=startlxde
+		FVWMCRYSTALXEC=fvwm-crystal
+		GNOMEXEC=gnome-session-cinnamon
+		KDEXEC=startkde
+		LXDEXEC=startlxde
+		LXQTXEC=startlxqt
+		LUMINAXEC=start-lumina-desktop
+		MATEXEC=mate-session
+		PANTHEONXEC=mate-session
+		RAZORQT=razor-session
+		TDEXEC=tde-session
+
 
 		## USER
 		SYSUSERNAME=gentoo # (!changeme) name of the login user
@@ -803,14 +818,12 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		CONFIGKERN=AUTO # AUTO (genkernel) / MANUAL 
 		KERNVERS=5.3-rc4 # for MANUAL setup
 		KERNSOURCES=EMERGE # EMERGE (!default) ; TORVALDS (git repository)
-
+		### BOOT
+		BOOTLOADER=GRUB2 # GRUB2 (!default)
+		BOOTINITVAR=BIOS # BIOS (!default) / UEFI (!prototype)
 		## SYSAPP
 		### LOG
 		CRONSET=CRONIE # CRONIE (!default), DCRON, ANACRON ..... see on your own
-
-		## BOOT
-		BOOTLOADER=GRUB2 # GRUB2 (!default)
-		BOOTINITVAR=BIOS # BIOS (!default) / UEFI (!prototype)
 
 		# MISC
 		bold=$(tput bold) # staticvar bold text
@@ -1773,49 +1786,7 @@ EOF
 				# |____/___|____/|_|   |_____/_/   \_\_|   |_|  |_|\____|_| \_\
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				DISPLAYMGR () {
-					# OPTIONS: https://wiki.gentoo.org/wiki/Display_manager
-					#  1. CDM (The Console Display Manager) 
-					#  2. GDM (GNOME Display Manager) 
-					#  3. LightDM (A Lightweight Display Manager) 
-					#  4. LXDM (LXDE Display Manager) 
-					#  5. Qingy (Qingy Is Not GettY) 
-					#  6. SDDM (Simple Desktop Display Manager) 
-					#  7. SLiM (Simple Login Manager) 
-					#  8. WDM (WINGs Display Manager) 
-					#  9. XDM (X Display Manager) 
-					#
-					# Configuration
-					#
-					# In major Linux operating systems display managers are started automatically on boot. In order for this to happen automatically a script must be added to the proper init system's runlevel. 
-					# Examples for OpenRC and systemd are provided below.
-					#					
-					# OpenRC
-					# 
-					# Under most circumstances the OpenRC init system (Gentoo's default init system) will be used to start the display manager. The XDM init script handles the starting of the display manager. 
-					# Configuration of the conf.d file is needed to set a default display manager for the system.
-					#
-					# The following examples will set SDDM to be the default display manager. Adjust as necessary for other display managers.
-					# FILE /etc/conf.d/xdmSetting SDDM as the default display manager
-					# 
-					# DISPLAYMANAGER="sddm"
-					# 
-					# To start SDDM on boot, add the XDM init script to the system's default runlevel:
-					# rc-update add xdm default
-					# 
-					# To start SDDM immediately, run:
-					# rc-service xdm start
-					#					
-					# systemd
-					#
-					# If using systemd as the init system, first locate a .service file.
-					#
-					# To start SDDM on boot, enable the following service:
-					# systemctl enable sddm.service
-					# 
-					# To start SDDM immediately run this command:
-					# systemctl start sddm.service   
-
+				DISPLAYMGR () { # OPTIONS: https://wiki.gentoo.org/wiki/Display_manager
 					#  ____ ____  __  __ 
 					# / ___|  _ \|  \/  |
 					#| |   | | | | |\/| |
@@ -1877,13 +1848,14 @@ EOF
 						EMERGE_LXDM () {
 							emerge $EMERGE_VAR x11-misc/lightdm
 						}
-						AUTOSTART_LIGHTDM_OPENRC () {
+						AUTOSTART_LIGHTDM_OPENRC () { # https://wiki.gentoo.org/wiki/MATE#OpenRC
 							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/lightdm#g' /etc/conf.d/xdm
 							echo "exec lightdm" >> ~/.xinitrc
 							rc-update add dbus default
 							rc-update add xdm default
 						}
-						AUTOSTART_LIGHTDM_SYSTEMD () {
+						AUTOSTART_LIGHTDM_SYSTEMD () { # https://wiki.gentoo.org/wiki/MATE#systemd
+							systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
 							systemctl enable lightdm.service
 						}
 						CONFIGURE_LXDM () {
@@ -2079,20 +2051,21 @@ EOF
 				# |____/|_____|____/|_|\_\ |_| \___/|_|     |_____|_| \_|  \_/                                                         
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				DESKTOP_ENV () { # https://wiki.gentoo.org/wiki/Desktop_environment
-					# OPTIONS:
-					# 1.  Budgie
-					# 2.  Cinnamon
-					# 3.  Deepin Desktop Environment
-					# 4.  FVWM-Crystal
-					# 5.  GNOME
-					# 6.  KDE Plasma
-					# 7.  LXDE
-					# 8.  LXQt
-					# 9.  Lumina
-					# 10. MATE
-					# 11. TDE
-					# 12. Xfce	
+				DESKTOP_ENV () { # https://wiki.gentoo.org/wiki/Desktop_environment	
+					########################################## misc functions start
+					MAIN_DESKTPENV_OPENRC () {
+						rc-update add dbus default
+						rc-update add xdm default
+						rc-update add elogind boot # elogind The systemd project's "logind", extracted to a standalone package https://github.com/elogind/elogind
+					}
+					MAIN_DESKTPENV_SYSTEMD () {
+						enable systemd-logind.service
+						systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+					}
+
+					DISPLAYMGR=LXDM # see options
+					DESKTOPENV=BUDGIE
+
 					#  ____  _   _ ____   ____ ___ _____ 
 					# | __ )| | | |  _ \ / ___|_ _| ____|
 					# |  _ \| | | | | | | |  _ | ||  _|  
@@ -2100,35 +2073,11 @@ EOF
 					# |____/ \___/|____/ \____|___|_____|
 					#                                           
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                 
-					BUDGIE () { # https://wiki.gentoo.org/wiki/GNOME
-						EMERGE_BUDGIE () {
-							emerge --ask gnome-extra/budgie-desktop
-						}
-						W_DISPLAYMGR_BUDGIE () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							BUDGIE_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/budgie-desktop;g' /etc/lxdm/lxdm.conf
-							}
-							BUDGIE_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							BUDGIE_STARTX_OPENRC () { 
-								cat << 'EOF' > ~/.xinitrc 
-								exec budgie-desktop
-EOF
-							}
-							BUDGIE_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							BUDGIE_STARTX_$SYSINITVAR
-						}
-						BUDGIE_MISC () {
-							echo placeholder
-						}
-						EMERGE_BUDGIE
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						BUDGIE_MISC
+
+					BUDGIE_DPMXEC=budgie_dpmexec
+					BUDGIE_DSKTPENVSTARTXXEC=budgie
+					BUDGIE_DSKTPENVEMRGE=budgie
+
 					#   ____ ___ _   _ _   _    _    __  __  ___  _   _ 
 					#  / ___|_ _| \ | | \ | |  / \  |  \/  |/ _ \| \ | |
 					# | |    | ||  \| |  \| | / _ \ | |\/| | | | |  \| |
@@ -2136,44 +2085,11 @@ EOF
 					#  \____|___|_| \_|_| \_/_/   \_\_|  |_|\___/|_| \_|
 					#                                                           
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-					CINNAMON () { # https://wiki.gentoo.org/wiki/GNOME
-						EMERGE_CINNAMON () {
-							emerge --ask gnome-extra/cinnamon
-						}
-						W_DISPLAYMGR_CINNAMON () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							CINNAMON_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/gnome-session-cinnamon;g' /etc/lxdm/lxdm.conf
-							}
-							CINNAMON_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							CINNAMON_STARTX_OPENRC () { 
-								CINNAMON_XINITRC () {
-									cat << 'EOF' > ~/.xinitrc 
-									exec cinnamon-session
-EOF
-									rc-update add dbus default && rc-service dbus start
-									rc-update add openrc-settingsd default && rc-service openrc-settingsd start
-									rc-update add elogind boot && rc-service elogind start
 
-									cp /etc/xdg/autostart/nm-applet.desktop /home/userName/.config/autostart/nm-applet.desktop
-									echo 'X-GNOME-Autostart-enabled=false' >> /home/userName/.config/autostart/nm-applet.desktop
-									chown userName:userName /home/userName/.config/autostart/nm-applet.desktop
+					CINNAMON_DPMXEC=gnome-session-cinnamon
+					CINNAMON_DSKTPENVSTARTXXEC=cinnamon-session
+					CINNAMON_DSKTPENVEMRGE=gnome-extra/cinnamon
 
-							}
-							CINNAMON_STARTX_SYSTEMD () {
-								systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							CINNAMON_STARTX_$SYSINITVAR
-						}
-						CINNAMON_MISC () {
-							echo placeholder
-						}
-						EMERGE_CINNAMON
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						CINNAMON_MISC
-					}
 					#  ____  ____  _____ 
 					# |  _ \|  _ \| ____|
 					# | | | | | | |  _|  
@@ -2181,49 +2097,10 @@ EOF
 					# |____/|____/|_____|
 					#                  
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-					DDE () { # Deepin Desktop Environment - https://wiki.gentoo.org/wiki/DDE
-						EMERGE_DDE () {
-							emerge --ask --noreplace app-eselect/eselect-repository dev-vcs/git
-							eselect repository add deepin git https://github.com/zhtengw/deepin-overlay.git
-							emerge --sync deepin
-							mkdir -pv /etc/portage/package.use
-							echo "dde-base/dde-meta multimedia" >> /etc/portage/package.use/deepin
-							emerge --ask --verbose --keep-going dde-base/dde-meta
-						}
-						W_DISPLAYMGR_DDE_OPENCL () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							systemctl enable NetworkManager 
-							rc-update add dbus default
-							rc-update add xdm default
-							rc-update add NetworkManager default
-							rc-update del dhcpcd default
-							rc-update add elogind boot 
 
-
-							DDE_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/gnome-session;g' /etc/lxdm/lxdm.conf
-							}
-							DDE_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							DDE_STARTX_OPENRC () { 
-								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
-EOF
-							}
-							DDE_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							DDE_STARTX_$SYSINITVAR
-						}
-						DDE_MISC () {
-							
-						}
-						EMERGE_DDE
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						DDE_MISC
-					}
+					DDE_DPMXEC=DDE
+					DDE_DSKTPENVSTARTXXEC=DDE
+					DDE_DSKTPENVEMRGE=DDE
 					#  _______     ____        ____  __  ____ ______   ______ _____  _    _     
 					# |  ___\ \   / /\ \      / /  \/  |/ ___|  _ \ \ / / ___|_   _|/ \  | |    
 					# | |_   \ \ / /  \ \ /\ / /| |\/| | |   | |_) \ V /\___ \ | | / _ \ | |    
@@ -2231,39 +2108,12 @@ EOF
 					# |_|      \_/      \_/\_/  |_|  |_|\____|_| \_\|_| |____/ |_/_/   \_\_____|
 					#                                                                         
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-					FVWMCRYSTAL () { # FVWM-Crystal - https://wiki.gentoo.org/wiki/FVWM-Crystal
-						EMERGE_FVWMCRYSTAL () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							x11-themes/fvwm-crystal
-						}
-						W_DISPLAYMGR_FVWMCRYSTAL () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							FVWMCRYSTAL_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/fvwm-crystal;g' /etc/lxdm/lxdm.conf
-							}
-							FVWMCRYSTAL_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							FVWMCRYSTAL_STARTX_OPENRC () { 
-								cat << 'EOF' > ~/.xinitrc 
-								#!/bin/sh
-								xrdb ~/.Xdefaults
-								# exec ck-launch-session dbus-launch --sh-syntax --exit-with-session fvwm-crystal
-EOF
-							}
-							FVWMCRYSTAL_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							FVWMCRYSTAL_STARTX_$SYSINITVAR
-						}
-						FVWMCRYSTAL_MISC () {
-							# emerge --ask xdg-user-dirs # If you are having trouble with desktop icons, try installing xdg-user-dirs
-						}
-						EMERGE_DDE
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						FVWMCRYSTAL_MISC
-					}
+					
+
+					FVWMCRYSTAL_DPMXEC=fvwm-crystal
+					FVWMCRYSTAL_DSKTPENVSTARTXXEC=fvwm-crystal
+					FVWMCRYSTAL_DSKTPENVEMRGE=x11-themes/fvwm-crystal
+
 					#   ____ _   _  ___  __  __ _____ 
 					#  / ___| \ | |/ _ \|  \/  | ____|
 					# | |  _|  \| | | | | |\/| |  _|  
@@ -2271,37 +2121,12 @@ EOF
 					#  \____|_| \_|\___/|_|  |_|_____|
 					#                                 
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					GNOME () { # https://wiki.gentoo.org/wiki/GNOME
-						EMERGE_GNOME () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR gnome-base/gnome
-							env-update && source /etc/profile
-						}
-						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							GNOME_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/gnome-session;g' /etc/lxdm/lxdm.conf
-							}
-							GNOME_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							GNOME_STARTX_OPENRC () { 
-								cat << 'EOF' > ~/.xinitrc 
-								exec gnome-session
-EOF
-							}
-							GNOME_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							GNOME_STARTX_$SYSINITVAR
-						}
-						GNOME_MISC () {
-							echo placeholder
-						}
-						EMERGE_GNOME
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						GNOME_MISC
+
+
+					GNOME_DPMXEC=gnome-session
+					GNOME_DSKTPENVSTARTXXEC=GNOME
+					GNOME_DSKTPENVEMRGE=gnome-base/gnome
+
 					#  _  ______  _____ 
 					# | |/ /  _ \| ____|
 					# | ' /| | | |  _|  
@@ -2309,36 +2134,11 @@ EOF
 					# |_|\_\____/|_____|
 					#                 
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					KDE () { # https://wiki.gentoo.org/wiki/KDE
-						EMERGE_KDE () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR kde-plasma/plasma-meta
-						}
-						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							KDE_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startkde;g' /etc/lxdm/lxdm.conf
-							}
-							KDE_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							KDE_STARTX_OPENRC () { 
-								cat << 'EOF' > ~/.xinitrc 
-								exec startkde
-EOF
-							}
-							KDE_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							KDE_STARTX_$SYSINITVAR
-						}
-						KDE_MISC () {
-							emerge --ask kde-plasma/kdeplasma-addons
-						}
-						EMERGE_KDE
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						KDE_MISC
+
+					KDE_DPMXEC=kde-plasma/startkde
+					KDE_DSKTPENVSTARTXXEC=startkde
+					KDE_DSKTPENVEMRGE=kde-plasma/plasma-meta
+
 					#  _    __  ______  _____ 
 					# | |   \ \/ /  _ \| ____|
 					# | |    \  /| | | |  _|  
@@ -2346,37 +2146,11 @@ EOF
 					# |_____/_/\_\____/|_____|
 					#
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					LXDE () { # https://wiki.gentoo.org/wiki/LXDE
-						EMERGE_LXDE () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge $EMERGE_VAR emerge --ask lxde-base/lxde-meta
-						}
-						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							LXDE_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startlxde;g' /etc/lxdm/lxdm.conf # lxsession or startlxde ?
-							}
-							LXDE_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							XFCE_STARTX_OPENRC () { 
-								cat << 'EOF' > ~/.xinitrc 
-								exec startlxde
-EOF
-							}
-							XFCE_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							LXDE_STARTX_$SYSINITVAR
-						}
-						LXDE_MISC () {
-							echo placeholder
-						}
-						EMERGE_LXDE
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						LXDE_MISC
-					}
+
+					LXDE_DPMXEC=lxde-meta
+					LXDE_DSKTPENVSTARTXXEC=lxde-meta
+					LXDE_DSKTPENVEMRGE=lxde-base/lxde-meta
+
 					#  _    __  _____ _____ 
 					# | |   \ \/ / _ \_   _|
 					# | |    \  / | | || |  
@@ -2384,38 +2158,11 @@ EOF
 					# |_____/_/\_\__\_\|_|  
 					#                       
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					LXQT () { # https://wiki.gentoo.org/wiki/LXQt
-						EMERGE_LXQT () {
-							emerge $EMERGE_VAR lxqt-base/lxqt-meta
-						}
-						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							LXQT_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startlxqt;g' /etc/lxdm/lxdm.conf
-							}
-							LXQT_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							LXQT_STARTX_OPENRC () { 
-								cat << 'EOF' > ~/.xinitrc 
-								exec startlxqt
-								# exec ck-launch-session startlxqt # When using ConsoleKit, ck-launch-session is needed to be able to shutdown or reboot the system from the LXQt menu
-								# exec ck-launch-session dbus-launch --exit-with-session startlxqt # It may be desirable to start D-Bus manually, for example if notifications are not working or if there are several dbus-launch ...
-EOF
-							}
-							LXQT_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							LXQT_STARTX_$SYSINITVAR
-						}
-						LXQT_MISC () {
-							echo placeholder
-						}
-						EMERGE_LXQT
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						LXQT_MISC
-					}
+
+					LXQT_DPMXEC=startlxqt
+					LXQT_DSKTPENVSTARTXXEC=startlxqt
+					LXQT_DSKTPENVEMRGE=lxqt-base/lxqt-meta
+
 					#  _    _   _ __  __ ___ _   _    _    
 					# | |  | | | |  \/  |_ _| \ | |  / \   
 					# | |  | | | | |\/| || ||  \| | / _ \  
@@ -2423,37 +2170,11 @@ EOF
 					# |_____\___/|_|  |_|___|_| \_/_/   \_\
 					#
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
-					LUMINA () { # https://wiki.gentoo.org/wiki/Lumina
-						EMERGE_LUMINA () {
-							emerge $EMERGE_VAR x11-wm/lumina
-						}
-						W_DISPLAYMGR_LUMINA () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							LUMINA_LUMINA () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/start-lumina-desktop;g' /etc/lxdm/lxdm.conf
-							}
-							LUMINA_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							LUMINA_STARTX_OPENRC () { 
-								cat << 'EOF' > ~/.xinitrc 
-								[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
-								exec start-lumina-desktop
-EOF
-							}
-							LUMINA_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							LUMINA_STARTX_$SYSINITVAR
-						}
-						LUMINA_MISC () {
-							echo placeholder
-						}
-						EMERGE_LUMINA
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						LUMINA_MISC
-					}
+
+					LUMINA_DPMXEC=start-lumina-desktop
+					LUMINA_DSKTPENVSTARTXXEC=start-lumina-desktop
+					LUMINA_DSKTPENVEMRGE=x11-wm/lumina
+
 					#  __  __    _  _____ _____ 
 					# |  \/  |  / \|_   _| ____|
 					# | |\/| | / _ \ | | |  _|  
@@ -2461,36 +2182,11 @@ EOF
 					# |_|  |_/_/   \_\_| |_____|
 					#                         
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
-					MATE () { # https://wiki.gentoo.org/wiki/MATE
-						EMERGE_MATE () {
-							emerge $EMERGE_VAR --changed-use mate-base/mate
-						}
-						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							MATE_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/mate-session;g' /etc/lxdm/lxdm.conf
-							}
-							MATE_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							MATE_STARTX_OPENRC () { 
-								cat << 'EOF' > ~/.xinitrc 
-								exec mate-session
-EOF
-							}
-							MATE_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							MATE_STARTX_$SYSINITVAR
-						}
-						MATE_MISC () {
-							emerge --ask mate-extra/caja-extensions
-						}
-						EMERGE_MATE
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						MATE_MISC
-					}
+
+					MATE_DPMXEC=mate-session
+					MATE_DSKTPENVSTARTXXEC=mate-session
+					MATE_DSKTPENVEMRGE=mate-base/mate
+
 					#  ____   _    _   _ _____ _   _ _____ ___  _   _ 
 					# |  _ \ / \  | \ | |_   _| | | | ____/ _ \| \ | |
 					# | |_) / _ \ |  \| | | | | |_| |  _|| | | |  \| |
@@ -2498,44 +2194,11 @@ EOF
 					# |_| /_/   \_\_| \_| |_| |_| |_|_____\___/|_| \_|
 					#                                                
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					PANTHEON () { # https://wiki.gentoo.org/wiki/Pantheon
-						ADDREPO_PYNTHEON () {
-							layman -a elementary
-							eselect repository enable elementary
-							emerge --sync elementary 
-}
-						EMERGE_PANTHEON () {
-							app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							emerge --ask pantheon-base/pantheon-shell
-							emerge --ask media-video/audience x11-terms/pantheon-terminal
-						}
-						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							PANTHEON_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startxfce4;g' /etc/lxdm/lxdm.conf
-							}
-							PANTHEON_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							PANTHEON_STARTX_OPENRC () { 
-								cat << 'EOF' > ~/.xinitrc 
-								exec startxfce4
-EOF
-							}
-							PANTHEON_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							PANTHEON_STARTX_$SYSINITVAR
-						}
-						PANTHEON_MISC () {
-							echo placeholder
-						}
-						ADDREPO_PYNTHEON
-						EMERGE_PANTHEON
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						PANTHEON_MISC
-					}
+
+					PANTHEON_DPMXEC=PANTHEON
+					PANTHEON_DSKTPENVSTARTXXEC=PANTHEON
+					PANTHEON_DSKTPENVEMRGE=PANTHEON
+
 					#  ____      _     ________  ____     ___ _____ 
 					# |  _ \    / \   |__  / _ \|  _ \   / _ \_   _|
 					# | |_) |  / _ \    / / | | | |_) | | | | || |  
@@ -2543,34 +2206,11 @@ EOF
 					# |_| \_\/_/   \_\/____\___/|_| \_\  \__\_\|_|  
 					#       
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					RAZORQT () { # https://wiki.gentoo.org/wiki/Razor-qt
-						EMERGE_RAZORQT () {
-							echo placeholder
-						}
-						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							RAZORQT_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/razor-session;g' /etc/lxdm/lxdm.conf
-							}
-							RAZORQT_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							RAZORQT_STARTX_OPENRC () { 
-								echo placeholder
-							}
-							RAZORQT_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							RAZORQT_STARTX_$SYSINITVAR
-						}
-						RAZORQT_MISC () {
-							echo placeholder
-						}
-						EMERGE_PANTHEON
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						RAZORQT_MISC
-					}
+
+					RAZORQT_DPMXEC=razor-session
+					RAZORQT_DSKTPENVSTARTXXEC=razor-session
+					RAZORQT_DSKTPENVEMRGE=RAZORQT
+
 					#  _____ ____  _____ 
 					# |_   _|  _ \| ____|
 					#   | | | | | |  _|  
@@ -2578,33 +2218,11 @@ EOF
 					#   |_| |____/|_____|
 					#                   
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					TDE () { # https://wiki.gentoo.org/wiki/Razor-qt
-						EMERGE_TDE () {
-							emerge $EMERGE_VAR trinity-base/tdebase-meta
-						}
-						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							TDE_LXDM () {
-								echo placeholder
-							}
-							TDE_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							TDE_STARTX_OPENRC () { 
-								echo placeholder
-							TDE_STARTX_SYSTEMD () {
-								echo placeholder
-								# systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-_							TDE_STARTX_$SYSINITVAR
-						}
-						TDE_MISC () {
-							echo placeholder
-						}
-						EMERGE_TDE
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						TDE_MISC
-					}
+
+					TDE_DPMXEC=tde-session
+					TDE_DSKTPENVSTARTXXEC=tde-session
+					TDE_DSKTPENVEMRGE=trinity-base/tdebase-meta
+
 					# __  _______ ____ _____ _  _   
 					# \ \/ /  ___/ ___| ____| || |  
 					#  \  /| |_ | |   |  _| | || |_ 
@@ -2612,52 +2230,148 @@ _							TDE_STARTX_$SYSINITVAR
 					# /_/\_\_|   \____|_____|  |_|  
 					#
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					XFCE4 () { # https://wiki.gentoo.org/wiki/Xfce
-						EMERGE_XFCE4 () {
-							emerge $EMERGE_VAR xfce-base/xfce4-meta 
-							emerge $EMERGE_VAR --deselect=y xfce-extra/xfce4-notifyd
-							env-update && source /etc/profile
-						}
-						W_DISPLAYMGR_LXDM () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
-							XFCE4_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/startxfce4;g' /etc/lxdm/lxdm.conf
-							}
-							XFCE4_$DISPLAYMGR
-						}
-						WO_DISPLAYMGR () { # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager
-							XFCE_STARTX_OPENRC () { 
-								echo "exec startxfce4" > ~/.xinitrc
-							}
-							XFCE_STARTX_SYSTEMD () {
-								systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							}
-							XFCE_STARTX_$SYSINITVAR
-						}
-						XFCE4_MISC () {
-							emerge $EMERGE_VAR xfce-base/xfwm4
-							emerge $EMERGE_VAR xfce-base/xfce4-panel
-							# emerge $EMERGE_VAR xfce-extra/xfce4-notifyd
-							emerge $EMERGE_VAR xfce-extra/xfce4-mount-plugin
-							emerge $EMERGE_VAR xfce-base/thunar
-							# emerge $EMERGE_VAR x11-terms/xfce4-terminal
-							emerge $EMERGE_VAR app-editors/mousepad
-							emerge $EMERGE_VAR xfce4-pulseaudio-plugin
-							emerge $EMERGE_VAR xfce-extra/xfce4-mixer 
-							emerge $EMERGE_VAR xfce-extra/xfce4-alsa-plugin
-							# emerge $EMERGE_VAR xfce-extra/thunar-volman
-						}
-						EMERGE_XFCE4
-						W_DISPLAYMGR_LXDM
-						# WO_DISPLAYMGR
-						XFCE4_MISC
+
+					XFCE4_DPMXEC=XFCE4-session
+					XFCE4_DSKTPENVSTARTXXEC=startxfce4
+					XFCE4_DSKTPENVEMRGE=xfce-base/xfce4-meta 
+
+					AWESOME () {
+					echo "desktop env set $DESKTOPENV"
+					echo "displaymgr set $DISPLAYMGR"
+
+					echo $DSKTPENVDPMXEC 
+					echo $DSKTPENVSTARTXXEC
+					echo $DSKTPENVEMRGE
+
 					}
-					$DESKTOPENV
-				}
-				## (!changeme)
-				GPU
-				WINDOWSYS
-				DISPLAYMGR
-				# DESKTOP_ENV
+
+
+					if [ "$DESKTOPENV" = "BUDGIE" ]; then
+					DSKTPENVDPMXEC=$DPMXEC && DSKTPENVSTARTXXEC=$DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "CINNAMON" ] 
+					then DSKTPENVDPMXEC=$DPMXEC && DSKTPENVSTARTXXEC=$DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "DDE" ] 
+					then DSKTPENVDPMXEC=$DDE_DPMXEC && DSKTPENVSTARTXXEC=$DDE_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$DDE_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "FVWMCRYSTAL" ] 
+					then DSKTPENVDPMXEC=$FVWMCRYSTAL_DPMXEC && DSKTPENVSTARTXXEC=$CINNAMON_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$CINNAMON_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "GNOME" ] 
+					then DSKTPENVDPMXEC=$GNOME_DPMXEC && DSKTPENVSTARTXXEC=$GNOME_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$GNOME_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "KDE" ] 
+					then DSKTPENVDPMXEC=$KDE_DPMXEC && DSKTPENVSTARTXXEC=$KDE_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$KDE_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "LXDE" ] 
+					then DSKTPENVDPMXEC=$LXDE_DPMXEC && DSKTPENVSTARTXXEC=$LXDE_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$LXDE_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "LXQT" ] 
+					then DSKTPENVDPMXEC=$LXQT_DPMXEC && DSKTPENVSTARTXXEC=$LXQT_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$LXQT_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "LUMINA" ] 
+					then DSKTPENVDPMXEC=$LUMINA_DPMXEC && DSKTPENVSTARTXXEC=$LUMINA_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$LUMINA_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "MATE" ] 
+					then DSKTPENVDPMXEC=$MATE_DPMXEC && DSKTPENVSTARTXXEC=$MATE_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$MATE_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "PANTHEON" ] 
+					then DSKTPENVDPMXEC=$PANTHEON_DPMXEC && DSKTPENVSTARTXXEC=$PANTHEON_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$PANTHEON_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "RAZORQT" ] 
+					then DSKTPENVDPMXEC=$RAZORQT_DPMXEC && DSKTPENVSTARTXXEC=$RAZORQT_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$RAZORQT_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "TDE" ] 
+					then DSKTPENVDPMXEC=$TDE_DPMXEC && DSKTPENVSTARTXXEC=$TDE_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$TDE_DSKTPENVEMRGE && AWESOME
+					elif [ "$DESKTOPENV" = "XFCE4" ] 
+					then DSKTPENVDPMXEC=$XFCE4_DPMXEC && DSKTPENVSTARTXXEC=$XFCE4_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$XFCE4_DSKTPENVEMRGE && AWESOME
+					else 
+					echo wtf
+					fi
+					
+					DSKTENVSTP () { 
+						ADDREPO_DSKTPENV () {
+							if 
+							layman -a elementary
+							eselect repository enable elementary
+							emerge --sync elementary 
+							else
+							echo nothing to be done
+							fi
+						}
+						EMERGE_DSKTPENV () {
+							if [ "$DESKTOPENV" = "DDM" ]; then
+							emerge --ask --noreplace app-eselect/eselect-repository dev-vcs/git
+							eselect repository add deepin git https://github.com/zhtengw/deepin-overlay.git
+							emerge --sync deepin
+							mkdir -pv /etc/portage/package.use
+							echo "dde-base/dde-meta multimedia" >> /etc/portage/package.use/deepin
+							emerge --ask --verbose --keep-going dde-base/dde-meta
+
+							elif [ "$DESKTOPENV" = "PANTHEON" ]; then
+							merge --ask app-text/poppler -qt5 # app-text/poppler have +qt5 by default
+							emerge --ask pantheon-base/pantheon-shell
+							emerge --ask media-video/audience x11-terms/pantheon-terminal
+							elif [ "$DESKTOPENV" = "XFCE4" ]; then
+							
+							MISC_XFCE4 () {
+								emerge $EMERGE_VAR xfce-base/xfwm4
+								emerge $EMERGE_VAR xfce-base/xfce4-panel
+								# emerge $EMERGE_VAR xfce-extra/xfce4-notifyd
+								emerge $EMERGE_VAR xfce-extra/xfce4-mount-plugin
+								emerge $EMERGE_VAR xfce-base/thunar
+								# emerge $EMERGE_VAR x11-terms/xfce4-terminal
+								emerge $EMERGE_VAR app-editors/mousepad
+								emerge $EMERGE_VAR xfce4-pulseaudio-plugin
+								emerge $EMERGE_VAR xfce-extra/xfce4-mixer 
+								emerge $EMERGE_VAR xfce-extra/xfce4-alsa-plugin
+								# emerge $EMERGE_VAR xfce-extra/thunar-volman
+							}
+							MISC_XFCE4
+
+							else
+							emerge --ask app-text/poppler -qt5 # app-text/poppler have +qt5 by default
+							emerge --ask $DSKTPENVEMRGE
+							env-update && source /etc/profile
+							fi
+
+						}
+						W_D_MGR () { # https://wiki.gentoo.org/wiki/Xfce#Display_managers
+							WDMGR_LXDM () {
+								MAIN_LXDM_BUDGIE () {
+									sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/$DPMXEC;g' /etc/lxdm/lxdm.conf
+								}
+								MAIN_LXDM_BUDGIE
+								MAIN_DESKTPENV_$SYSINITVAR
+							}
+							WDMGR_$DISPLAYMGR
+						}
+						DESKTENV_SOLO () {  # https://wiki.gentoo.org/wiki/Xfce#Starting_Xfce_without_a_display_manager						
+							DESKTENV_STARTX () { 
+								if luminba
+								cat << 'EOF' > ~/.xinitrc 
+								[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+								exec start-lumina-desktop
+EOF								
+								else
+
+								cat << 'EOF' > ~/.xinitrc 
+								exec $DSKTPENVSTARTXXEC
+EOF
+								fi
+
+							}
+							DESKTENV_AUTOSTART_OPENRC () {
+								if [ "$DESKTOPENV" = "CINNAMON" ]; then
+								cp /etc/xdg/autostart/nm-applet.desktop /home/userName/.config/autostart/nm-applet.desktop
+								echo 'X-GNOME-Autostart-enabled=false' >> /home/userName/.config/autostart/nm-applet.desktop
+								chown userName:userName /home/userName/.config/autostart/nm-applet.desktop
+								else
+								echo placeholder
+								fi
+							}
+							DESKTENV_AUTOSTART_SYSTEMD () {
+ 								systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+							}
+							DESKTENV_STARTX
+							DESKTENV_AUTOSTART_$SYSINITVAR
+						}
+						ADDREPO_DSKTPENV
+						EMERGE_DSKTPENV
+						DISPLAYMGR_YESNO
+
+					
+					################## misc function end
+
 			}
 			#     _   _   _ ____ ___ ___  
 			#    / \ | | | |  _ \_ _/ _ \ 
@@ -2790,8 +2504,8 @@ EOF
 			# | | | \___ \|  _| | |_) |  / _ \ | |_) | |_) |
 			# | |_| |___) | |___|  _ <  / ___ \|  __/|  __/ 
 			#  \___/|____/|_____|_| \_\/_/   \_\_|   |_|    
-			#                                              
-			#
+			#                                            
+			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''  
 			USERAPP () { # user applications
 				#   ____ ___ _____ 
 				#  / ___|_ _|_   _|
@@ -2803,9 +2517,11 @@ EOF
 				GIT () {
 					emerge $EMERGE_VAR dev-vcs/git
 				}
+				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				FIREFOX () {
 					emerge $EMERGE_VAR www-client/firefox
 				}
+				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				MIDORI () {
 					emerge $EMERGE_VAR www-client/midori
 				}
@@ -2821,10 +2537,12 @@ EOF
 			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			USERS () { # setup users
+				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				ROOT () { # (! default)
 					echo "${bold}enter new root password${normal}"
 					passwd
 				}
+				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				ADMIN () { # (! default)
 					useradd -m -g users -G wheel,storage,power -s /bin/bash $SYSUSERNAME
 					echo "${bold}enter new $SYSUSERNAME password${normal}"
@@ -2857,7 +2575,6 @@ EOF
 		# | |              | || |              | || |              | || |              | || |              | || |              | |
 		# | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
 		#  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
-		# ... yay!
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		FINISH () { # tidy up installation files
 			rm /stage3-*.tar.*
