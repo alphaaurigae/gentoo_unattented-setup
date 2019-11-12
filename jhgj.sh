@@ -88,7 +88,7 @@
 		BOOTSYSINITVAR=BIOS # BIOS (!default) / UEFI (!prototype)
 		## SYSAPP
 		### LOG
-		CRONSET=CRONIE # CRONIE (!default), DCRON, ANACRON ..... see on your own
+		CRON=CRONIE # CRONIE (!default), DCRON, ANACRON ..... see on your own
 		
 		## DISPLAY MANAGER
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,					
@@ -493,76 +493,125 @@ EOF
 			INSTALL_OSPROBER () {
 				emerge $EMERGE_VAR sys-boot/os-prober
 			}                                 
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			SYSLOG () {
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				LOGGING () {
-					SYSLOGNG () {
-						emerge $EMERGE_VAR app-admin/syslog-ng
-						SYSSTART_SYSLOGNG () {
-							SYSLOGNG_OPENRC () { 
-								rc-update add syslog-ng default
-							}
-							SYSLOGNG_SYSTEMD () {  
-								systemctl enable syslog-ng@default
-							}
-							SYSLOGNG_$SYSINITVAR
-						}
-						SYSSTART_SYSLOGNG
-					}
-					SYSKLOGD () {
-						emerge $EMERGE_VAR app-admin/sysklogd
-						SYSSTART_SYSKLOGD () {
-							SYSKLOGD_OPENRC () { 
-								rc-update add sysklogd default
-							}
-							SYSKLOGD_SYSTEMD () {  
-								systemctl enable rsyslog
-							}
-							SYSKLOGD_$SYSINITVAR
-						}
-						SYSSTART_SYSKLOGD
-					}
-					SYSLOGNG
+			# '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			INST_SYSLOG () {
+				SETVAR_SYSLOG () {
+					## LOG          
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+					# SYSLOGNG
+					SYSLOGNG_CRON_SYSTEMD=syslog-ng@default
+					SYSLOGNG_CRON_OPENRC=syslog-ng
+					SYSLOGNG_CRON_EMRGE=app-admin/syslog-ng              
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 					# SYSKLOGD
-				}                                                          
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+					SYSKLOGD_CRON_SYSTEMD=systemctl enable rsyslog
+					SYSKLOGD_CRON_OPENRC=sysklogd
+					SYSKLOGD_CRON_EMRGE=app-admin/sysklogd					
+                                        
+					DEBUG_CRON () {
+						echo "CRON set $SYSLOG"
+						echo $SYSLOG_SYSTEMD 
+						echo $SYSLOG_OPENRC
+						echo $SYSLOG_EMRGE
+					}
+
+					if [ "$SYSLOG" = "BCRON" ]; then
+					CRON_SYSTEMD=$BCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE && DEBUG_CRON
+					elif [ "$SYSLOG" = "FCRON" ] 
+					then CRON_SYSTEMD=$SYSKLOGD_CRON_SYSTEMD && CRON_OPENRC=$SYSKLOGD_CRON_OPENRC && CRON_EMRGE=$SYSKLOGD_CRON_EMRGE && DEBUG_CRON
+					else 
+					echo wtf
+					fi
+				}
+				EMERGE_CRON () {
+					emerge --ask $SYSLOG_CRON_EMRGE
+				}
+				CRON_OPENRC () {
+					rc-update add $SYSLOG_OPENRC default
+				}
+				CRON_SYSTEMD () {
+					systemctl enable $SYSLOG_SYSTEMD
+				}
+				CONFIGURE_CRON () {
+					crontab /etc/crontab	
+				}
 				LOGROTATION () {
 					LOGROTATE () {
 						emerge $EMERGE_VAR app-admin/logrotate
 					}
 					LOGROTATE
 				}
-				LOGGING
+				CRON_ANACRON #  dont know where else to put this 
+				SETVAR_CRON
+				EMERGE_CRON
+				CRON_$SYSINITVAR
+				CONFIGURE_CRON
 				LOGROTATION
-			}                     
+			}
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 			INST_CRON () {
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_CRONIE () {
-					emerge $EMERGE_VAR sys-process/cronie
-					CRONIE_OPENRC () { 
-						rc-update add cronie default
+				SETVAR_CRON () {
+					## CRON - https://wiki.gentoo.org/wiki/Cron#Which_cron_is_right_for_the_job.3F                         
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+					# BCRON
+					BCRON_CRON_SYSTEMD=mate-session
+					BCRON_CRON_OPENRC=mate-session
+					BCRON_CRON_EMRGE=sys-process/bcron                                          
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					# FCRON
+					FCRON_CRON_SYSTEMD=PANTHEON
+					FCRON_CRON_OPENRC=PANTHEON
+					FCRON_CRON_EMRGE=sys-process/fcron 
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					# DCRON - FVWM-Crystal
+					DCRON_CRON_SYSTEMD=razor-session
+					DCRON_CRON_OPENRC=razor-session
+					DCRON_CRON_EMRGE=sys-process/dcron              
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					# CRONIE
+					CRONIE_CRON_SYSTEMD=tde-session
+					CRONIE_CRON_OPENRC=tde-session
+					CRONIE_CRON_EMRGE=sys-process/cronie
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					# VIXICRON
+					VIXICRON_CRON_SYSTEMD=vixi
+					VIXICRON_CRON_OPENRC=vixi
+					VIXICRON_EMRGE=sys-process/vixie-cron
+					DEBUG_CRON () {
+						echo "CRON set $CRON"
+						echo $CRON_SYSTEMD 
+						echo $CRON_OPENRC
+						echo $CRON_EMRGE
 					}
-					CRONIE_SYSTEMD () {  
-						systemctl enable cronie
-					}
-					CRONIE_$SYSINITVAR
+
+					if [ "$CRON" = "BCRON" ]; then
+					CRON_SYSTEMD=$BCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE && DEBUG_CRON
+					elif [ "$CRON" = "FCRON" ] 
+					then CRON_SYSTEMD=$FCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE && DEBUG_CRON
+					elif [ "$CRON" = "DCRON" ] 
+					then CRON_SYSTEMD=$DCRON_CRON_SYSTEMD && CRON_OPENRC=$DCRON_CRON_OPENRC && CRON_EMRGE=$DCRON_CRON_EMRGE && DEBUG_CRON
+					elif [ "$CRON" = "CRONIE" ] 
+					then CRON_SYSTEMD=$CRONIE_CRON_SYSTEMD && CRON_OPENRC=$CRONIE_CRON_OPENRC && CRON_EMRGE=$CRONIE_CRON_EMRGE && DEBUG_CRON
+					elif [ "$CRON" = "VIXICRON" ] 
+					then CRON_SYSTEMD=$VIXICRON_CRON_SYSTEMD && CRON_OPENRC=$VIXICRON_CRON_OPENRC && CRON_EMRGE=$VIXICRON_CRON_EMRGE && DEBUG_CRON
+					else 
+					echo wtf
+					fi
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_DCRON () {
-					emerge $EMERGE_VAR dcron
-					DCRON_OPENRC () { 
-						/etc/init.d/dcron start
-						rc-update add dcron default
-					}
-					DCRON_SYSTEMD () {  
-						systemctl enable dcron
-					}
-				CRONIE_$SYSINITVAR
+				EMERGE_CRON () {
+					emerge --ask $CRON_CRON_EMRGE
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_ANACRON () {
+				CRON_OPENRC () {
+					rc-update add $CRON_OPENRC default
+				}
+				CRON_SYSTEMD () {
+					systemctl enable $CRON_SYSTEMD
+				}
+				CONFIGURE_CRON () {
+					crontab /etc/crontab	
+				}
+				CRON_ANACRON () { # dont know where else to put this # https://wiki.gentoo.org/wiki/Cron#anacron "... it will run jobs that were missed while the system was down. Anacron usually relies on a cron daemon to run it each day."
 					emerge $EMERGE_VAR anacron
 					ANACRON_OPENRC () { 
 						/etc/init.d/anacron start
@@ -571,47 +620,26 @@ EOF
 					ANACRON_SYSTEMD () {  
 						systemctl enable anacron
 					}
-				ANACRON_$SYSINITVAR
+					ANACRON_$SYSINITVAR
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_FCRON () {
-					emerge $EMERGE_VAR fcron
-					gpasswd -a $SYSUSERNAME fcron
-					FCRON_OPENRC () { 
-						/etc/init.d/fcron start
-						rc-update add fcron default
-					}
-					FCRON_SYSTEMD () {  
-						systemctl enable fcron
-					}
-				FCRON_$SYSINITVAR
+				CRON_ANACRON #  dont know where else to put this 
+				SETVAR_CRON
+				EMERGE_CRON
+				CRON_$SYSINITVAR
+				CONFIGURE_CRON
+			}
+
+			# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+			CRON_ANACRON () {
+				emerge $EMERGE_VAR anacron
+				ANACRON_OPENRC () { 
+					/etc/init.d/anacron start
+					rc-update add anacron default
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_BCRON () {
-					emerge $EMERGE_VAR bcron
-					BCRON_OPENRC () { 
-						/etc/init.d/bcron start
-						rc-update add bcron default
-					}
-					BCRON_SYSTEMD () {  
-					SYSTEMD enable bcron
-					}
-				BCRON_$SYSINITVAR
+				ANACRON_SYSTEMD () {  
+					systemctl enable anacron
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_VIXICRON () {
-					emerge $EMERGE_VAR fcron
-					VIXICRON_OPENRC () { 
-						/etc/init.d/vixi start
-						rc-update add vixi default
-					}
-					VIXICRON_SYSTEMD () {  
-						systemctl enable vixi
-					}
-				VIXICRON_$SYSINITVAR
-				}
-				CRON_$CRONSET
-				crontab /etc/crontab
+			ANACRON_$SYSINITVAR
 			}
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			FILEINDEXING () {
@@ -633,7 +661,7 @@ EOF
 			INSTALL_PCIUTILS	&& echo "${bold}INSTALL_PCIUTILS - END ....${normal}"
 			INSTALL_MULTIPATH	&& echo "${bold}INSTALL_MULTIPATH - END ....${normal}"
 			INSTALL_OSPROBER
-			INST_LOGGER
+			INST_SYSLOG
 			INST_CRON
 			FILEINDEXING
 			FSTOOLS
