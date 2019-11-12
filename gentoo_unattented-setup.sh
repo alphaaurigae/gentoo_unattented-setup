@@ -809,6 +809,126 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		## SYSAPP
 		### LOG
 		CRONSET=CRONIE # CRONIE (!default), DCRON, ANACRON ..... see on your own
+		
+		## DISPLAY MANAGER
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,					
+		# CDM - The Console Display Manager https://wiki.gentoo.org/wiki/CDM -- https://github.com/evertiro/cdm
+		CDM_DSPMGR_SYSTEMD=cdm.service
+		CDM_DSPMGR_OPENRC=cdm
+		CDM_DSPMGR_EMRGE=x11-misc/cdm
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# GDM - https://wiki.gentoo.org/wiki/GNOME/gdm
+		GDM_DSPMGR_SYSTEMD=cdm.service
+		GDM_DSPMGR_OPENRC=gdm
+		GDM_DSPMGR_EMRGE=gnome-base/gdm                                     
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# LIGHTDM - https://wiki.gentoo.org/wiki/LightDM					
+		LIGHTDM_DSPMGR_SYSTEMD=lightdm.service
+		LIGHTDM_DSPMGR_OPENRC=lightdm
+		LIGHTDM_DSPMGR_EMRGE=x11-misc/lightdm                       
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# LXDM - https://wiki.gentoo.org/wiki/LXDE (always links to lxde by time of this writing)					
+		LXDM_DSPMGR_SYSTEMD=lxdm.service
+		LXDM_DSPMGR_OPENRC=lxdm # (startlxde ?)
+		LXDM_DSPMGR_EMRGE=lxde-base/lxdm                          
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# QINGY - https://wiki.gentoo.org/wiki/ QINGY				
+		QINGY_DSPMGR_SYSTEMD=qingy.service
+		QINGY_DSPMGR_OPENRC=qingy
+		QINGY_DSPMGR_EMRGE=placeholder                      
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# SSDM - https://wiki.gentoo.org/wiki/SSDM
+		SSDM_DSPMGR_SYSTEMD=sddm.service
+		SSDM_DSPMGR_OPENRC=sddm
+		SSDM_DSPMGR_EMRGE=x11-misc/sddm                      
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# SLIM - https://wiki.gentoo.org/wiki/SLiM
+		SLIM_DSPMGR_SYSTEMD=slim.service
+		SLIM_DSPMGR_OPENRC=slim
+		SLIM_DSPMGR_EMRGE=x11-misc/slim                                            
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# WDM - https://wiki.gentoo.org/wiki/WDM					
+		WDM_DSPMGR_SYSTEMD=wdm.service
+		WDM_DSPMGR_OPENRC=wdm
+		WDM_DSPMGR_EMRGE=x11-misc/wdm                 
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# XDM - https://packages.gentoo.org/packages/x11-apps/xdm
+		XDM_DSPMGR_SYSTEMD=xdm.service
+		XDM_DSPMGR_OPENRC=xdm
+		XDM_DSPMGR_EMRGE=x11-apps/xdm
+
+
+		## DESKTOP ENV
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                 
+		# BUDGIE - https://wiki.gentoo.org/wiki/Budgie					
+		BUDGIE_DSTENV_XEC=budgie_dpmexec
+		BUDGIE_DSTENV_STARTX=budgie
+		BUDGIE_DSTENV_EMRGE=budgie                                                       
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
+		# CINNAMON - https://wiki.gentoo.org/wiki/Cinnamon					
+		CINNAMON_DSTENV_XEC=gnome-session-cinnamon
+		CINNAMON_DSTENV_STARTX=cinnamon-session
+		CINNAMON_DSTENV_EMRGE=gnome-extra/cinnamon                
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
+		# DDE "Deepin Desktop Environment" - https://wiki.gentoo.org/wiki/DDE				
+		DDE_DSTENV_XEC=DDE
+		DDE_DSTENV_STARTX=DDE
+		DDE_DSTENV_EMRGE=DDE                                                                     
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
+		# FVWM-Crystal - FVWM-Crystal
+		FVWMCRYSTAL_DSTENV_XEC=fvwm-crystal
+		FVWMCRYSTAL_DSTENV_STARTX=fvwm-crystal
+		FVWMCRYSTAL_DSTENV_EMRGE=x11-themes/fvwm-crystal                             
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# GNOME - https://wiki.gentoo.org/wiki/GNOME					
+		GNOME_DSTENV_XEC=gnome-session
+		GNOME_DSTENV_STARTX=GNOME
+		GNOME_DSTENV_EMRGE=gnome-base/gnome           
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# KDE - FVWM-Crystal					
+		KDE_DSTENV_XEC=kde-plasma/startkde
+		KDE_DSTENV_STARTX=startkde
+		KDE_DSTENV_EMRGE=kde-plasma/plasma-meta
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# LXDE - https://wiki.gentoo.org/wiki/LXDE				
+		LXDE_DSTENV_XEC=lxde-meta
+		LXDE_DSTENV_STARTX=lxde-meta
+		LXDE_DSTENV_EMRGE=lxde-base/lxde-meta              
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# LXQT - FVWM-Crystal		
+		LXQT_DSTENV_XEC=startlxqt
+		LXQT_DSTENV_STARTX=startlxqt
+		LXQT_DSTENV_EMRGE=lxqt-base/lxqt-meta
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+		# LUMINA - https://wiki.gentoo.org/wiki/Lumina				
+		LUMINA_DSTENV_XEC=start-lumina-desktop
+		LUMINA_DSTENV_STARTX=start-lumina-desktop
+		LUMINA_DSTENV_EMRGE=x11-wm/lumina                     
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+		# MATE - https://wiki.gentoo.org/wiki/MATE					
+		MATE_DSTENV_XEC=mate-session
+		MATE_DSTENV_STARTX=mate-session
+		MATE_DSTENV_EMRGE=mate-base/mate                                             
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# PANTHEON - https://wiki.gentoo.org/wiki/Pantheon				
+		PANTHEON_DSTENV_XEC=PANTHEON
+		PANTHEON_DSTENV_STARTX=PANTHEON
+		PANTHEON_DSTENV_EMRGE=PANTHEON    
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# RAZORQT - FVWM-Crystal
+		RAZORQT_DSTENV_XEC=razor-session
+		RAZORQT_DSTENV_STARTX=razor-session
+		RAZORQT_DSTENV_EMRGE=RAZORQT              
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# TDE - https://wiki.gentoo.org/wiki/Trinity_Desktop_Environment					
+		TDE_DSTENV_XEC=tde-session
+		TDE_DSTENV_STARTX=tde-session
+		TDE_DSTENV_EMRGE=trinity-base/tdebase-meta
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# XFCE - https://wiki.gentoo.org/wiki/Xfce					
+		XFCE4_DSTENV_XEC=XFCE4-session
+		XFCE4_DSTENV_STARTX=startxfce4
+		XFCE4_DSTENV_EMRGE=xfce-base/xfce4-meta 
 
 		# MISC
 		bold=$(tput bold) # staticvar bold text
@@ -1772,263 +1892,61 @@ EOF
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				DISPLAYMGR () { # OPTIONS: https://wiki.gentoo.org/wiki/Display_manager
-					#  ____ ____  __  __ 
-					# / ___|  _ \|  \/  |
-					#| |   | | | | |\/| |
-					#| |___| |_| | |  | |
-					# \____|____/|_|  |_|
-					#                    
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					CDM () { # The Console Display Manager https://wiki.gentoo.org/wiki/CDM
-						EMERGE_CDM () {
-							emerge --ask x11-misc/cdm
+					STP_DSPMGR () {
+						SETVAR_DSPMGR () {
+							DEBUG_DSPMGR () {
+							echo "desktop env set $DESKTOPENV"
+							echo "displaymgr set $DISPLAYMGR"
+
+							echo $DSTENVDSTENV_XEC 
+							echo $DSTENV_STARTX
+							echo $DSTENV_EMRGE
+							}
+							if [ "$DISPLAYMGR" = "CDM" ]; then
+							DSPMGR_SYSTEMD=$CDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$CDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$CDM_DSPMGR_EMRGE && DEBUG_DSPMGR
+							elif [ "$DISPLAYMGR" = "GDM" ] 
+							then DSPMGR_SYSTEMD=$GDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$CDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$CDM_DSPMGR_EMRGE && DEBUG_DSPMGR
+							elif [ "$DISPLAYMGR" = "LIGHTDM" ] 
+							then DSPMGR_SYSTEMD=$LIGHTDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$LIGHTDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$LIGHTDM_DSPMGR_EMRGE && DEBUG_DSPMGR
+							elif [ "$DISPLAYMGR" = "LXDM" ] 
+							then DSPMGR_SYSTEMD=$LXDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$LXDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$LXDM_DSPMGR_EMRGE && DEBUG_DSPMGR
+							elif [ "$DISPLAYMGR" = "QINGY" ] 
+							then DSPMGR_SYSTEMD=$QINGY_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$QINGY_DSPMGR_OPENRC && DSPMGR_EMRGE=$QINGY_DSPMGR_EMRGE && DEBUG_DSPMGR
+							elif [ "$DISPLAYMGR" = "SSDM" ] 
+							then DSPMGR_SYSTEMD=$SSDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$SSDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$SSDM_DSPMGR_EMRGE && DEBUG_DSPMGR
+							elif [ "$DISPLAYMGR" = "SLIM" ] 
+							then DSPMGR_SYSTEMD=$SLIM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$SLIM_DSPMGR_OPENRC && DSPMGR_EMRGE=$SLIM_DSPMGR_EMRGE && DEBUG_DSPMGR
+							elif [ "$DISPLAYMGR" = "WDM" ] 
+							then DSPMGR_SYSTEMD=$WDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$WDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$WDM_DSPMGR_EMRGE && DEBUG_DSPMGR
+							elif [ "$DISPLAYMGR" = "XDM" ] 
+							then DSPMGR_SYSTEMD=$XDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$XDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$XDM_DSPMGR_EMRGE && DEBUG_DSPMGR
+							else 
+							echo wtf
+							fi
 						}
-						AUTOSTART_CDM_OPENRC () {
-							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/cdm#g' /etc/conf.d/xdm
-							rc-update add xdm default
+						EMERGE_DSPMGR () {
+							emerge --ask $DISPLAYMGR_DSPMGR_EMRGE
 						}
-						AUTOSTART_CDM_SYSTEMD () {
-							systemctl enable cdm.service
+						DSPMGR_OPENRC () {
+							# sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/$DSPMGR_OPENRC#g' /etc/conf.d/xdm
+							# echo "exec gdm" >> ~/.xinitrc
+							# rc-update add xdm default
+							echo placeholder
 						}
-						CONFIGURE_CDM () {
+						DSPMGR_SYSTEMD () {
+							systemctl enable $DSPMGR_SYSTEMD
+						}
+						CONFIGURE_DSPMGR () {
 							echo placeholder	
 						}
-						EMERGE_CDM
-						AUTOSTART_CDM_$INITVAR
-						CONFIGURE_CDM
-					# 
-					#   ____ ____  __  __ 
-					#  / ___|  _ \|  \/  |
-					# | |  _| | | | |\/| |
-					# | |_| | |_| | |  | |
-					#  \____|____/|_|  |_|
-					# 
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					GDM () { # https://wiki.gentoo.org/wiki/GNOME/gdm -- https://github.com/evertiro/cdm
-						EMERGE_GDMDE () {
-							emerge --ask gnome-base/gdm
-						}
-						AUTOSTART_GDMDE_OPENRC () {
-							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/gdm#g' /etc/conf.d/xdm
-							echo "exec gdm" >> ~/.xinitrc
-							rc-update add xdm default
-						}
-						AUTOSTART_GDMDE_SYSTEMD () {
-							systemctl enable gdm.service
-						}
-						CONFIGURE_GDM () {
-							echo placeholder
-						}
-						EMERGE_GDMDE
-						AUTOSTART_GDMDE_$INITVAR
-						CONFIGURE_GDM
-					#  _     ___ ____ _   _ _____ ____  __  __ 
-					# | |   |_ _/ ___| | | |_   _|  _ \|  \/  |
-					# | |    | | |  _| |_| | | | | | | | |\/| |
-					# | |___ | | |_| |  _  | | | | |_| | |  | |
-					# |_____|___\____|_| |_| |_| |____/|_|  |_|
-					#                                         
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					LIGHTDM () { # https://wiki.gentoo.org/wiki/LightDM
-						EMERGE_LXDM () {
-							emerge $EMERGE_VAR x11-misc/lightdm
-						}
-						AUTOSTART_LIGHTDM_OPENRC () { # https://wiki.gentoo.org/wiki/MATE#OpenRC
-							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/lightdm#g' /etc/conf.d/xdm
-							echo "exec lightdm" >> ~/.xinitrc
-							rc-update add dbus default
-							rc-update add xdm default
-						}
-						AUTOSTART_LIGHTDM_SYSTEMD () { # https://wiki.gentoo.org/wiki/MATE#systemd
-							systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-							systemctl enable lightdm.service
-						}
-						CONFIGURE_LXDM () {
-							placeholder	
-						}
-						EMERGE_LXDM
-						AUTOSTART_LIGHTDM_$INITVAR
-						CONFIGURE_LXDM
+						SETVAR_DSPMGR
+						EMERGE_DSPMGR
+						DSPMGR_$INITVAR
+						CONFIGURE_DSPMGR
 					}
-					#  _    __  ______  __  __ 
-					# | |   \ \/ /  _ \|  \/  |
-					# | |    \  /| | | | |\/| |
-					# | |___ /  \| |_| | |  | |
-					# |_____/_/\_\____/|_|  |_|
-					#                         
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					LXDM () { # https://wiki.gentoo.org/wiki/LXDE (always links to lxde by time of writing this)
-						EMERGE_LXDM () {
-							emerge $EMERGE_VAR lxde-base/lxdm
-						}
-						AUTOSTART_LXDM_OPENRC () { 
-							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/lxdm#g' /etc/conf.d/xdm
-							echo "exec startlxde" >> ~/.xinitrc
-							rc-update add xdm default
-						}
-						AUTOSTART_LXDM_SYSTEMD () { # systemd switch (option variables top) 
-							systemctl enable lxdm.service
-						}
-						CONFIGURE_LXDM () {
-							echo placeholder
-						}
-						EMERGE_LXDM
-						AUTOSTART_LXDM_$INITVAR
-						CONFIGURE_LXDM
-					}
-					#   ___  ___ _   _  ______   __
-					#  / _ \|_ _| \ | |/ ___\ \ / /
-					# | | | || ||  \| | |  _ \ V / 
-					# | |_| || || |\  | |_| | | |  
-					#  \__\_\___|_| \_|\____| |_|  
-					#                             
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					QINGY () { # https://wiki.gentoo.org/wiki/LXDE
-						EMERGE_QINGY () {
-							emerge $EMERGE_VAR qingy
-						}
-						AUTOSTART_QINGY_OPENRC () { 
-							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/qingy#g' /etc/conf.d/xdm
-							echo "exec qingy" >> ~/.xinitrc
-							rc-update del xdm default
-						}
-						AUTOSTART_QINGY_SYSTEMD () { # systemd switch (option variables top) 
-							systemctl enable qingy.service
-						}
-						CONFIGURE_QINGY () {
-							qingy-keygen	
-						}
-						EMERGE_QINGY
-						AUTOSTART_QINGY_$INITVAR
-						CONFIGURE_QINGY
-					}
-					#  ____ ____  ____  __  __ 
-					# / ___/ ___||  _ \|  \/  |
-					# \___ \___ \| | | | |\/| |
-					#  ___) |__) | |_| | |  | |
-					# |____/____/|____/|_|  |_|
-					#                         
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					SSDM () { # https://wiki.gentoo.org/wiki/LXDE
-						EMERGE_SSDM () {
-							emerge --ask x11-misc/sddm
-						}
-						AUTOSTART_SSDM_OPENRC () {
-							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/ssdm#g' /etc/conf.d/xdm
-							echo "exec ssdm" >> ~/.xinitrc
-							rc-update add xdm default
-						}
-						AUTOSTART_SSDM_SYSTEMD () { # systemd switch (option variables top) 
-							systemctl enable sddm.service
-						}
-						CONFIGURE_SSDM () {
-							usermod -a -G video sddm	
-						}
-						EMERGE_SSDM
-						AUTOSTART_SSDM_$INITVAR
-						CONFIGURE_SSDM
-					}
-					#  ____  _     ___ __  __ 
-					# / ___|| |   |_ _|  \/  |
-					# \___ \| |    | || |\/| |
-					#  ___) | |___ | || |  | |
-					# |____/|_____|___|_|  |_|
-					#                        
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					SLIM () { # https://wiki.gentoo.org/wiki/SLiM
-						EMERGE_SLIM () {
-							emerge $EMERGE_VAR x11-misc/slim
-						}
-						AUTOSTART_SLIM_OPENRC () {
-							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/slim#g' /etc/conf.d/xdm
-							echo "exec slim" >> ~/.xinitrc
-							rc-update add xdm default
-							rc-update add dbus default
-						}
-						AUTOSTART_SLIM_SYSTEMD () { # systemd switch (option variables top) 
-							systemctl enable slim.service
-						}
-						CONFIGURE_SLIM () {
-							echo placeholder
-						}
-						EMERGE_SLIM
-						AUTOSTART_SLIM_$INITVAR
-						CONFIGURE_SLIM
-					}
-					# __        ______  __  __ 
-					# \ \      / /  _ \|  \/  |
-					#  \ \ /\ / /| | | | |\/| |
-					#   \ V  V / | |_| | |  | |
-					#    \_/\_/  |____/|_|  |_|
-					#                                              
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					WDM () { # https://wiki.gentoo.org/wiki/WDM
-						EMERGE_WDM () {
-							emerge $EMERGE_VAR x11-misc/wdm
-						}
-						AUTOSTART_WDM_OPENRC () {
-							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/wdm#g' /etc/conf.d/xdm
-							echo "exec wdm" >> ~/.xinitrc
-							rc-update add xdm default
-						}
-						AUTOSTART_WDM_SYSTEMD () { # systemd switch (option variables top) 
-							systemctl enable wdm.service
-						}
-
-						CONFIGURE_WDM () {
-							echo placeholder	
-						}
-						EMERGE_XDM
-						AUTOSTART_XDM_$INITVAR
-						CONFIGURE_WDM
-					}
-					# __  ______  __  __ 
-					# \ \/ /  _ \|  \/  |
-					#  \  /| | | | |\/| |
-					#  /  \| |_| | |  | |
-					# /_/\_\____/|_|  |_|
-					#                   
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					XDM () { https://packages.gentoo.org/packages/x11-apps/xdm
-						EMERGE_XDM () {
-							emerge $EMERGE_VAR x11-apps/xdm
-						}
-						AUTOSTART_XDM_OPENRC () {
-							sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/xdm#g' /etc/conf.d/xdm
-							echo "exec xdm" >> ~/.xinitrc
-							rc-update add xdm default
-						}
-						AUTOSTART_XDM_SYSTEMD () { # systemd switch (option variables top) 
-							systemctl enable xdm.service
-						}
-						CONFIGURE_SSDM () {
-							echo placeholder
-						}
-						EMERGE_XDM
-						AUTOSTART_XDM_$INITVAR
-						CONFIGURE_XDM
-					}
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					INSTALL_$DISPLAYMGR () {
-						EMERGE_$DISPLAYMGR () {
-							emerge $EMERGE_VAR lxde-base/lxdm
-						}				
-					AUTOSTART_DISPLMGR () {
-						SET_DISPLAYMGRSTR_OPENRC () {
-							# echo "exec startlxde" >> ~/.xinitrc
-							rc-update add $DISPLAYMGR default
-							rc-service $DISPLAYMGR start
-
-						}
-						SET_DISPLAYMGRSTR_SYSTEMD () {
-							systemctl enable $DISPLAYMGR.service
-							systemctl start $DISPLAYMGR
-						}
-						SET_DISPLAYMGRSTR_$INITVAR
-					}
-					$DISPLAYMGR	
-					AUTOSTART_$DISPLAYMGR
+					STP_DSPMGR
 				}
+
 				#  ____  _____ ____  _  _______ ___  ____    _____ _   ___     __
 				# |  _ \| ____/ ___|| |/ /_   _/ _ \|  _ \  | ____| \ | \ \   / /
 				# | | | |  _| \___ \| ' /  | || | | | |_) | |  _| |  \| |\ \ / / 
@@ -2036,204 +1954,51 @@ EOF
 				# |____/|_____|____/|_|\_\ |_| \___/|_|     |_____|_| \_|  \_/                                                         
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				DESKTOP_ENV () { # https://wiki.gentoo.org/wiki/Desktop_environment	
-					DISPLAYMGR=LXDM # see options
-					DESKTOPENV=BUDGIE
-					#  ____  _   _ ____   ____ ___ _____ 
-					# | __ )| | | |  _ \ / ___|_ _| ____|
-					# |  _ \| | | | | | | |  _ | ||  _|  
-					# | |_) | |_| | |_| | |_| || || |___ 
-					# |____/ \___/|____/ \____|___|_____|
-					#                                           
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                 
-					BUDGIE_DPMXEC=budgie_dpmexec
-					BUDGIE_DSKTPENVSTARTXXEC=budgie
-					BUDGIE_DSKTPENVEMRGE=budgie
-					#   ____ ___ _   _ _   _    _    __  __  ___  _   _ 
-					#  / ___|_ _| \ | | \ | |  / \  |  \/  |/ _ \| \ | |
-					# | |    | ||  \| |  \| | / _ \ | |\/| | | | |  \| |
-					# | |___ | || |\  | |\  |/ ___ \| |  | | |_| | |\  |
-					#  \____|___|_| \_|_| \_/_/   \_\_|  |_|\___/|_| \_|
-					#                                                           
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-					CINNAMON_DPMXEC=gnome-session-cinnamon
-					CINNAMON_DSKTPENVSTARTXXEC=cinnamon-session
-					CINNAMON_DSKTPENVEMRGE=gnome-extra/cinnamon
-					#  ____  ____  _____ 
-					# |  _ \|  _ \| ____|
-					# | | | | | | |  _|  
-					# | |_| | |_| | |___ 
-					# |____/|____/|_____|
-					#                  
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-					DDE_DPMXEC=DDE
-					DDE_DSKTPENVSTARTXXEC=DDE
-					DDE_DSKTPENVEMRGE=DDE
-					#  _______     ____        ____  __  ____ ______   ______ _____  _    _     
-					# |  ___\ \   / /\ \      / /  \/  |/ ___|  _ \ \ / / ___|_   _|/ \  | |    
-					# | |_   \ \ / /  \ \ /\ / /| |\/| | |   | |_) \ V /\___ \ | | / _ \ | |    
-					# |  _|   \ V /    \ V  V / | |  | | |___|  _ < | |  ___) || |/ ___ \| |___ 
-					# |_|      \_/      \_/\_/  |_|  |_|\____|_| \_\|_| |____/ |_/_/   \_\_____|
-					#                                                                         
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-					FVWMCRYSTAL_DPMXEC=fvwm-crystal
-					FVWMCRYSTAL_DSKTPENVSTARTXXEC=fvwm-crystal
-					FVWMCRYSTAL_DSKTPENVEMRGE=x11-themes/fvwm-crystal
-					#   ____ _   _  ___  __  __ _____ 
-					#  / ___| \ | |/ _ \|  \/  | ____|
-					# | |  _|  \| | | | | |\/| |  _|  
-					# | |_| | |\  | |_| | |  | | |___ 
-					#  \____|_| \_|\___/|_|  |_|_____|
-					#                                 
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					GNOME_DPMXEC=gnome-session
-					GNOME_DSKTPENVSTARTXXEC=GNOME
-					GNOME_DSKTPENVEMRGE=gnome-base/gnome
-					#  _  ______  _____ 
-					# | |/ /  _ \| ____|
-					# | ' /| | | |  _|  
-					# | . \| |_| | |___ 
-					# |_|\_\____/|_____|
-					#                 
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					KDE_DPMXEC=kde-plasma/startkde
-					KDE_DSKTPENVSTARTXXEC=startkde
-					KDE_DSKTPENVEMRGE=kde-plasma/plasma-meta
-					#  _    __  ______  _____ 
-					# | |   \ \/ /  _ \| ____|
-					# | |    \  /| | | |  _|  
-					# | |___ /  \| |_| | |___ 
-					# |_____/_/\_\____/|_____|
-					#
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					LXDE_DPMXEC=lxde-meta
-					LXDE_DSKTPENVSTARTXXEC=lxde-meta
-					LXDE_DSKTPENVEMRGE=lxde-base/lxde-meta
-					#  _    __  _____ _____ 
-					# | |   \ \/ / _ \_   _|
-					# | |    \  / | | || |  
-					# | |___ /  \ |_| || |  
-					# |_____/_/\_\__\_\|_|  
-					#                       
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					LXQT_DPMXEC=startlxqt
-					LXQT_DSKTPENVSTARTXXEC=startlxqt
-					LXQT_DSKTPENVEMRGE=lxqt-base/lxqt-meta
-					#  _    _   _ __  __ ___ _   _    _    
-					# | |  | | | |  \/  |_ _| \ | |  / \   
-					# | |  | | | | |\/| || ||  \| | / _ \  
-					# | |__| |_| | |  | || || |\  |/ ___ \ 
-					# |_____\___/|_|  |_|___|_| \_/_/   \_\
-					#
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
-					LUMINA_DPMXEC=start-lumina-desktop
-					LUMINA_DSKTPENVSTARTXXEC=start-lumina-desktop
-					LUMINA_DSKTPENVEMRGE=x11-wm/lumina
-					#  __  __    _  _____ _____ 
-					# |  \/  |  / \|_   _| ____|
-					# | |\/| | / _ \ | | |  _|  
-					# | |  | |/ ___ \| | | |___ 
-					# |_|  |_/_/   \_\_| |_____|
-					#                         
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
-					MATE_DPMXEC=mate-session
-					MATE_DSKTPENVSTARTXXEC=mate-session
-					MATE_DSKTPENVEMRGE=mate-base/mate
-					#  ____   _    _   _ _____ _   _ _____ ___  _   _ 
-					# |  _ \ / \  | \ | |_   _| | | | ____/ _ \| \ | |
-					# | |_) / _ \ |  \| | | | | |_| |  _|| | | |  \| |
-					# |  __/ ___ \| |\  | | | |  _  | |__| |_| | |\  |
-					# |_| /_/   \_\_| \_| |_| |_| |_|_____\___/|_| \_|
-					#                                                
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					PANTHEON_DPMXEC=PANTHEON
-					PANTHEON_DSKTPENVSTARTXXEC=PANTHEON
-					PANTHEON_DSKTPENVEMRGE=PANTHEON
-					#  ____      _     ________  ____     ___ _____ 
-					# |  _ \    / \   |__  / _ \|  _ \   / _ \_   _|
-					# | |_) |  / _ \    / / | | | |_) | | | | || |  
-					# |  _ <  / ___ \  / /| |_| |  _ <  | |_| || |  
-					# |_| \_\/_/   \_\/____\___/|_| \_\  \__\_\|_|  
-					#       
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					RAZORQT_DPMXEC=razor-session
-					RAZORQT_DSKTPENVSTARTXXEC=razor-session
-					RAZORQT_DSKTPENVEMRGE=RAZORQT
-					#  _____ ____  _____ 
-					# |_   _|  _ \| ____|
-					#   | | | | | |  _|  
-					#   | | | |_| | |___ 
-					#   |_| |____/|_____|
-					#                   
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					TDE_DPMXEC=tde-session
-					TDE_DSKTPENVSTARTXXEC=tde-session
-					TDE_DSKTPENVEMRGE=trinity-base/tdebase-meta
-					# __  _______ ____ _____ _  _   
-					# \ \/ /  ___/ ___| ____| || |  
-					#  \  /| |_ | |   |  _| | || |_ 
-					#  /  \|  _|| |___| |___|__   _|
-					# /_/\_\_|   \____|_____|  |_|  
-					#
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					XFCE4_DPMXEC=XFCE4-session
-					XFCE4_DSKTPENVSTARTXXEC=startxfce4
-					XFCE4_DSKTPENVEMRGE=xfce-base/xfce4-meta 
+				DESKTOP_ENV () { # https://wiki.gentoo.org/wiki/Desktop_environment
+					STP_DSKTENV () {
+						SETVAR_DSKTENV () {
+							DEBUG_DSKTENV () {
+							echo "desktop env set $DESKTOPENV"
+							echo "displaymgr set $DISPLAYMGR"
 
-
-					MAIN_DESKTPENV_OPENRC () {
-						rc-update add dbus default
-						rc-update add xdm default
-						rc-update add elogind boot # elogind The systemd project's "logind", extracted to a standalone package https://github.com/elogind/elogind
-					}
-					MAIN_DESKTPENV_SYSTEMD () {
-						enable systemd-logind.service
-						systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-					}
-
-					AWESOME () {
-					echo "desktop env set $DESKTOPENV"
-					echo "displaymgr set $DISPLAYMGR"
-
-					echo $DSKTPENVDPMXEC 
-					echo $DSKTPENVSTARTXXEC
-					echo $DSKTPENVEMRGE
-					}
-
-					if [ "$DESKTOPENV" = "BUDGIE" ]; then
-					DSKTPENVDPMXEC=$DPMXEC && DSKTPENVSTARTXXEC=$DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "CINNAMON" ] 
-					then DSKTPENVDPMXEC=$DPMXEC && DSKTPENVSTARTXXEC=$DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "DDE" ] 
-					then DSKTPENVDPMXEC=$DDE_DPMXEC && DSKTPENVSTARTXXEC=$DDE_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$DDE_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "FVWMCRYSTAL" ] 
-					then DSKTPENVDPMXEC=$FVWMCRYSTAL_DPMXEC && DSKTPENVSTARTXXEC=$CINNAMON_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$CINNAMON_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "GNOME" ] 
-					then DSKTPENVDPMXEC=$GNOME_DPMXEC && DSKTPENVSTARTXXEC=$GNOME_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$GNOME_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "KDE" ] 
-					then DSKTPENVDPMXEC=$KDE_DPMXEC && DSKTPENVSTARTXXEC=$KDE_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$KDE_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "LXDE" ] 
-					then DSKTPENVDPMXEC=$LXDE_DPMXEC && DSKTPENVSTARTXXEC=$LXDE_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$LXDE_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "LXQT" ] 
-					then DSKTPENVDPMXEC=$LXQT_DPMXEC && DSKTPENVSTARTXXEC=$LXQT_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$LXQT_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "LUMINA" ] 
-					then DSKTPENVDPMXEC=$LUMINA_DPMXEC && DSKTPENVSTARTXXEC=$LUMINA_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$LUMINA_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "MATE" ] 
-					then DSKTPENVDPMXEC=$MATE_DPMXEC && DSKTPENVSTARTXXEC=$MATE_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$MATE_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "PANTHEON" ] 
-					then DSKTPENVDPMXEC=$PANTHEON_DPMXEC && DSKTPENVSTARTXXEC=$PANTHEON_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$PANTHEON_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "RAZORQT" ] 
-					then DSKTPENVDPMXEC=$RAZORQT_DPMXEC && DSKTPENVSTARTXXEC=$RAZORQT_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$RAZORQT_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "TDE" ] 
-					then DSKTPENVDPMXEC=$TDE_DPMXEC && DSKTPENVSTARTXXEC=$TDE_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$TDE_DSKTPENVEMRGE && AWESOME
-					elif [ "$DESKTOPENV" = "XFCE4" ] 
-					then DSKTPENVDPMXEC=$XFCE4_DPMXEC && DSKTPENVSTARTXXEC=$XFCE4_DSKTPENVSTARTXXEC && DSKTPENVEMRGE=$XFCE4_DSKTPENVEMRGE && AWESOME
-					else 
-					echo wtf
-					fi
-					
-					DSKTENVSTP () {
-						ADDREPO_DSKTPENV () {
+							echo $DSTENVDSTENV_XEC 
+							echo $DSTENV_STARTX
+							echo $DSTENV_EMRGE
+							}
+							
+							if [ "$DESKTOPENV" = "BUDGIE" ]; then
+							DSTENVDSTENV_XEC=$DSTENV_XEC && DSTENV_STARTX=$DSTENV_STARTX && DSTENV_EMRGE=$DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "CINNAMON" ] 
+							then DSTENVDSTENV_XEC=$DSTENV_XEC && DSTENV_STARTX=$DSTENV_STARTX && DSTENV_EMRGE=$DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "DDE" ] 
+							then DSTENVDSTENV_XEC=$DDE_DSTENV_XEC && DSTENV_STARTX=$DDE_DSTENV_STARTX && DSTENV_EMRGE=$DDE_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "FVWMCRYSTAL" ] 
+							then DSTENVDSTENV_XEC=$FVWMCRYSTAL_DSTENV_XEC && DSTENV_STARTX=$CINNAMON_DSTENV_STARTX && DSTENV_EMRGE=$CINNAMON_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "GNOME" ] 
+							then DSTENVDSTENV_XEC=$GNOME_DSTENV_XEC && DSTENV_STARTX=$GNOME_DSTENV_STARTX && DSTENV_EMRGE=$GNOME_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "KDE" ] 
+							then DSTENVDSTENV_XEC=$KDE_DSTENV_XEC && DSTENV_STARTX=$KDE_DSTENV_STARTX && DSTENV_EMRGE=$KDE_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "LXDE" ] 
+							then DSTENVDSTENV_XEC=$LXDE_DSTENV_XEC && DSTENV_STARTX=$LXDE_DSTENV_STARTX && DSTENV_EMRGE=$LXDE_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "LXQT" ] 
+							then DSTENVDSTENV_XEC=$LXQT_DSTENV_XEC && DSTENV_STARTX=$LXQT_DSTENV_STARTX && DSTENV_EMRGE=$LXQT_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "LUMINA" ] 
+							then DSTENVDSTENV_XEC=$LUMINA_DSTENV_XEC && DSTENV_STARTX=$LUMINA_DSTENV_STARTX && DSTENV_EMRGE=$LUMINA_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "MATE" ] 
+							then DSTENVDSTENV_XEC=$MATE_DSTENV_XEC && DSTENV_STARTX=$MATE_DSTENV_STARTX && DSTENV_EMRGE=$MATE_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "PANTHEON" ] 
+							then DSTENVDSTENV_XEC=$PANTHEON_DSTENV_XEC && DSTENV_STARTX=$PANTHEON_DSTENV_STARTX && DSTENV_EMRGE=$PANTHEON_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "RAZORQT" ] 
+							then DSTENVDSTENV_XEC=$RAZORQT_DSTENV_XEC && DSTENV_STARTX=$RAZORQT_DSTENV_STARTX && DSTENV_EMRGE=$RAZORQT_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "TDE" ] 
+							then DSTENVDSTENV_XEC=$TDE_DSTENV_XEC && DSTENV_STARTX=$TDE_DSTENV_STARTX && DSTENV_EMRGE=$TDE_DSTENV_EMRGE && DEBUG_DSKTENV
+							elif [ "$DESKTOPENV" = "XFCE4" ] 
+							then DSTENVDSTENV_XEC=$XFCE4_DSTENV_XEC && DSTENV_STARTX=$XFCE4_DSTENV_STARTX && DSTENV_EMRGE=$XFCE4_DSTENV_EMRGE && DEBUG_DSKTENV
+							else 
+							echo wtf
+							fi
+						}
+						ADDREPO_DSTENV () {
 							if [ "$DESKTOPENV" = "PANTHEON" ]; then
 							layman -a elementary
 							eselect repository enable elementary
@@ -2242,7 +2007,7 @@ EOF
 							echo nothing to be done
 							fi
 						}
-						EMERGE_DSKTPENV () {
+						EMERGE_DSTENV () {
 							if [ "$DESKTOPENV" = "DDM" ]; then
 							emerge --ask --noreplace app-eselect/eselect-repository dev-vcs/git
 							eselect repository add deepin git https://github.com/zhtengw/deepin-overlay.git
@@ -2252,7 +2017,6 @@ EOF
 							emerge --ask --verbose --keep-going dde-base/dde-meta
 
 							elif [ "$DESKTOPENV" = "PANTHEON" ]; then
-							merge --ask app-text/poppler -qt5 # app-text/poppler have +qt5 by default
 							emerge --ask pantheon-base/pantheon-shell
 							emerge --ask media-video/audience x11-terms/pantheon-terminal
 							elif [ "$DESKTOPENV" = "XFCE4" ]; then
@@ -2273,15 +2037,24 @@ EOF
 							MISC_XFCE4
 
 							else
-							emerge --ask $DSKTPENVEMRGE
+							emerge --ask $DSTENV_EMRGE
 							fi
 							emerge --ask app-text/poppler -qt5 # app-text/poppler have +qt5 by default
 							env-update && source /etc/profile
 						}
+						MAIN_DESKTPENV_OPENRC () {
+							rc-update add dbus default
+							rc-update add xdm default
+							rc-update add elogind boot # elogind The systemd project's "logind", extracted to a standalone package https://github.com/elogind/elogind
+						}
+						MAIN_DESKTPENV_SYSTEMD () {
+							enable systemd-logind.service
+							systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+						}
 						W_D_MGR () {
 							WDMGR_LXDM () {
 								MAIN_LXDM () {
-									sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/$DPMXEC;g' /etc/lxdm/lxdm.conf
+									sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/$DSTENV_XEC;g' /etc/lxdm/lxdm.conf
 								}
 								MAIN_LXDM
 								MAIN_DESKTPENV_$INITVAR
@@ -2298,7 +2071,7 @@ EOF
 								else
 
 								cat << 'EOF' > ~/.xinitrc 
-								exec $DSKTPENVSTARTXXEC
+								exec $DSTENV_STARTX
 EOF
 								fi
 							}
@@ -2318,8 +2091,8 @@ EOF
 							DESKTENV_AUTOSTART_$INITVAR
 						}
 						MAIN_DESKTPENV_$INITVAR
-						ADDREPO_DSKTPENV
-						EMERGE_DSKTPENV
+						ADDREPO_DSTENV
+						EMERGE_DSTENV
 						DISPLAYMGR_YESNO
 			}
 			#     _   _   _ ____ ___ ___  
