@@ -629,30 +629,47 @@ EOF
 				CONFIGURE_CRON
 			}
 
-			# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-			CRON_ANACRON () {
-				emerge $EMERGE_VAR anacron
-				ANACRON_OPENRC () { 
-					/etc/init.d/anacron start
-					rc-update add anacron default
-				}
-				ANACRON_SYSTEMD () {  
-					systemctl enable anacron
-				}
-			ANACRON_$SYSINITVAR
-			}
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			FILEINDEXING () {
+			INST_FILEINDEXING () {
 				emerge $EMERGE_VAR sys-apps/mlocate
 			}                                      
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			FSTOOLS () { # (!changeme)
-				emerge $EMERGE_VAR sys-fs/e2fsprogs # Ext2, 3, and 4
-				# emerge $EMERGE_VAR sys-fs/xfsprogs # XFS 			
-				# emerge $EMERGE_VAR sys-fs/reiserfsprogs # ReiserFS	
-				# emerge $EMERGE_VAR sys-fs/jfsutils # JFS 	
-				## emerge $EMERGE_VAR sys-fs/dosfstools # VFAT (FAT32, ...) 	
-				# emerge $EMERGE_VAR sys-fs/btrfs-progs # Btrfs 
+			INST_FSTOOLS () {
+				SETVAR_FSTOOLS () {
+					## FSTOOLS          
+					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+					FS_EXT=sys-fs/e2fsprogs
+					FS_XFS=sys-fs/xfsprogs
+					FS_REISER=sys-fs/reiserfsprogs
+					FS_JFS=sys-fs/jfsutils
+					FS_VFAT=sys-fs/dosfstools # (FAT32, ...) 
+					FS_BTRFS=sys-fs/btrfs-progs
+
+					DEBUG_FSTOOLS () {
+						echo "FSTOOLS set on boot $BOOT_FS and for main $MAIN_FS"
+						echo $FSTOOLS_EMRGE
+					}
+					if (( "$BOOT_FS" = "ext2" || "$BOOT_FS" = "ext3" || "$BOOT_FS" = "ext4" || "$MAIN_FS" = "ext2" || "$MAIN_FS" = "ext3" || "$MAIN_FS" = "ext4" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					elif (( "$BOOT_FS" = "xfs" || "$MAIN_FS" = "xfs" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					elif (( "$BOOT_FS" = "reiserfs" || "$MAIN_FS" = "reiserfs" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					elif (( "$BOOT_FS" = "jfs" || "$MAIN_FS" = "jfs" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					elif (( "$BOOT_FS" = "msdos" || "$MAIN_FS" = "msdos" || "$BOOT_FS" = "vfat" || "$MAIN_FS" = "vfat" || "$BOOT_FS" = "fat" || "$MAIN_FS" = "fat" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					elif (( "$BOOT_FS" = "btrfs" || "$MAIN_FS" = "btrfs" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					else 
+					echo wtf
+					fi
+				}
+				EMERGE_FSTOOLS () {
+					emerge $EMERGE_VAR $FSTOOLS_EMRGE
+				}
+				SETVAR_FSTOOLS
+				EMERGE_FSTOOLS
 			}
 			## (!changeme)
 			INSTALL_CRYPTSETUP
@@ -663,8 +680,8 @@ EOF
 			INSTALL_OSPROBER
 			INST_SYSLOG
 			INST_CRON
-			FILEINDEXING
-			FSTOOLS
+			INST_FILEINDEXING
+			INST_FSTOOLS
 			}
 		#
 		#  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -981,7 +998,7 @@ EOF
 				#  \____|_|    \___/ 
 				#            
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
-				GPU () {
+				GPU () { # (!todo)
 					NONE () {
 						 echo placeholder
 					}
@@ -1244,7 +1261,7 @@ EOF
 			# /_/   \_\___/|____/___\___/ 
 			# 		            
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			AUDIO () {
+			AUDIO () { # (!todo)
 				SOUND_API () {
 					ALSA () { # https://wiki.gentoo.org/wiki/ALSA
 						euse -E alsa
@@ -1288,7 +1305,7 @@ EOF
 			# |_| \_|_____| |_|    \_/\_/  \___/|_| \_\_|\_\
 			#                                            
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			NETWORKING () {
+			NETWORKING () { # (!todo)
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				BASICNET () {
 					GENTOONET () { # (! default)
@@ -1304,8 +1321,8 @@ EOF
 						::1		localhost
 						127.0.1.1	$HOSTNAME.$DOMAIN	$HOSTNAME" > /etc/hosts
 					}
-				GENTOONET
-				HOSTSFILE
+					GENTOONET
+					HOSTSFILE
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				NETWORKD () { # https://wiki.archlinux.org/index.php/Systemd-networkd
@@ -1370,7 +1387,7 @@ EOF
 			#  \___/|____/|_____|_| \_\/_/   \_\_|   |_|    
 			#                                            
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''  
-			USERAPP () { # user applications              
+			USERAPP () { # user applications# (!todo)
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				GIT () {
 					emerge $EMERGE_VAR dev-vcs/git
