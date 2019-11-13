@@ -1,9 +1,7 @@
 #!/bin/bash
 
 
-# 0.0 INFO 
-#
-# STATUS: prototype - some things work - # 1.0 DEPLOY_BASESYS && # 2.0 PREPARE_CHROOT works, for the rest everything is experimental.
+# 0.0 INFO
 #
 # Welcome, this is an aweosme script, may not works here and there as expected but its awesome, so how about helping me with this?! Bug reports, suggestions, commits welcome - documentation isnt this awesome but i try :)
 #
@@ -20,10 +18,11 @@ BANNER () { # 0.1 BANNER
 	+   | |  _|  _| |  \| | | || | | | | | | | |    | ||  \| | | | |\  /    +
 	+   | |_| | |___| |\  | | || |_| | |_| | | |___ | || |\  | |_| |/  \    +
 	+    \____|_____|_| \_| |_| \___/ \___/  |_____|___|_| \_|\___//_/\_\   +
-	+ 								        +
-	+   gentoo linux - modular						+
-	+   by default LVM2 on LUKS, BIOS, GPT, SYSTEMD				+
-	+   Script by https://github.com/alphaaurigae			        +
+	+   									+
+	+   modular, "mostly unattended"					+
+	+   STATUS: dev PROTOTYPE 						+
+	+   									+
+	+   https://github.com/alphaaurigae			        	+
 	+								        +
 	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -99,6 +98,19 @@ BANNER () { # 0.1 BANNER
 		# 3.2.7 WORLDSET
 		# 3.2.8 MAKECONF (! too complex to list here)
 			# 3.2.8.1 MAKECONF_VARIABLES
+			# https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/USE
+			# systemd
+			# LVM2
+			# X11
+			# grub
+			# sudo
+			# audio
+			# video
+			# SSL
+			# CPU FLAGS
+			# encryption
+			# compressions
+			# NO KDE
 		# 3.2.9 SYSTEMTIME
 			# 3.2.9.1 SET_TIMEZONE (! $SYSTIMEZONE_SET)
 				# 3.2.9.1.1 TIMEZONE_OPENRC 
@@ -339,34 +351,16 @@ BANNER () { # 0.1 BANNER
 	# | '--------------' || '--------------' || '--------------' || '--------------' |
 	#  '----------------'  '----------------'  '----------------'  '----------------' 
 	#
-	INIT () { # 2.0
-		#  _____ ___ __  __ _____ 
-		# |_   _|_ _|  \/  | ____|
-		#   | |  | || |\/| |  _|  
-		#   | |  | || |  | | |___ 
-		#   |_| |___|_|  |_|_____|
-		#                        
-		# ... update the system time ... !important
+	INIT () { # 2.0                    
+		# TIME ... update the system time ... !important
 		TIMEUPD () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Setting_the_date_and_time
 			ntpd -q -g
-		}
-		#  __  __  ___  ____  ____  ____   ___  ____  _____ 
-		# |  \/  |/ _ \|  _ \|  _ \|  _ \ / _ \| __ )| ____|
-		# | |\/| | | | | | | | |_) | |_) | | | |  _ \|  _|  
-		# | |  | | |_| | |_| |  __/|  _ <| |_| | |_) | |___ 
-		# |_|  |_|\___/|____/|_|   |_| \_\\___/|____/|_____|
-		#                                                  
-		# ... load kernel modules for the chroot isntall process, for luks we def need the dm-crypt ...
+		}                                                
+		# MODPROBE ... load kernel modules for the chroot isntall process, for luks we def need the dm-crypt ...
 		MODPROBE () {
 			modprobe -a dm-mod dm_crypt # sha256
 		}
-		#  ____   _    ____ _____ ___ _____ ___ ___  _   _ ___ _   _  ____ 
-		# |  _ \ / \  |  _ \_   _|_ _|_   _|_ _/ _ \| \ | |_ _| \ | |/ ___|
-		# | |_) / _ \ | |_) || |  | |  | |  | | | | |  \| || ||  \| | |  _ 
-		# |  __/ ___ \|  _ < | |  | |  | |  | | |_| | |\  || || |\  | |_| |
-		# |_| /_/   \_\_| \_\|_| |___| |_| |___\___/|_| \_|___|_| \_|\____|
-		#
-		# .... glad you asked! ill take a coffee, ahh scew it, make it a triple espresso!                                                                  
+		# PARTITIONING .... glad you asked! ill take a coffee, ahh scew it, make it a triple espresso!                                                                  
 		PARTITIONING () {
 			PARTED () {
 				# https://wiki.archlinux.org/index.php/GNU_Parted
@@ -399,27 +393,14 @@ BANNER () { # 0.1 BANNER
 			PARTED && echo "${bold}PARTED - END, proceeding to PTABLES ....${normal}"
 			PTABLES && echo "${bold}PTABLES - END, proceeding to MAKEFS_BOOT ....${normal}"
 			MAKEFS_BOOT && echo "${bold}PTABLES - END ....${normal}"
-		} # END
-		# https://blog.stigok.com/2018/05/03/lvm-in-luks-with-encrypted-boot-partition-and-suspend-to-disk.html
-		#   ____ ______   ______ _____ ____  _____ _____ _   _ ____  
-		#  / ___|  _ \ \ / /  _ \_   _/ ___|| ____|_   _| | | |  _ \ 
-		# | |   | |_) \ V /| |_) || | \___ \|  _|   | | | | | | |_) |
-		# | |___|  _ < | | |  __/ | |  ___) | |___  | | | |_| |  __/ 
-		#  \____|_| \_\|_| |_|    |_| |____/|_____| |_|  \___/|_|    
-		#
-		# ...  lvm on luks! Lets put EVERYTHING IN THE LUKS CONTAINER, to put the LVM INSIDE and the installation inside of the LVM "CRYPT --> BOOT/LVM2 --> OS - very simple :)" ...                                     
-		CRYPTSETUP () { # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
+		}
+		# ...  lvm on luks! Lets put EVERYTHING IN THE LUKS CONTAINER, to put the LVM INSIDE and the installation inside of the LVM "CRYPT --> BOOT/LVM2 --> OS" ... 
+		CRYPTSETUP () { # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS && https://blog.stigok.com/2018/05/03/lvm-in-luks-with-encrypted-boot-partition-and-suspend-to-disk.html
 			echo "${bold}enter the $PV_MAIN password${normal}"
 			cryptsetup -v luksFormat --type luks2 $MAIN_PART --debug
 			cryptsetup open $MAIN_PART $PV_MAIN
 		}
-		#  _ __     ____  __ 
-		# | |\ \   / /  \/  |
-		# | | \ \ / /| |\/| |
-		# | |__\ V / | |  | |
-		# |_____\_/  |_|  |_|
-		#
-		# ... LVM = "PV (Physical volume)-> VG (Volume group) > LV (Logical volume) inside of the luks crypt container ...             
+		# LVM = "PV (Physical volume)-> VG (Volume group) > LV (Logical volume) inside of the luks crypt container ...             
 		LVMONLUKS () {
 			LVM_PV () { # Create physical volume for OS inst.
 				pvcreate /dev/mapper/$PV_MAIN
@@ -468,15 +449,8 @@ BANNER () { # 0.1 BANNER
 	# | '--------------' || '--------------' || '--------------' |
 	#  '----------------'  '----------------'  '----------------' 
 	#
-	PRE () { # 3.0 PREPARE CHROOT      
-		#  ____ _____  _    ____ _____ _____ 
-		# / ___|_   _|/ \  / ___| ____|___ / 
-		# \___ \ | | / _ \| |  _|  _|   |_ \ 
-		#  ___) || |/ ___ \ |_| | |___ ___) |
-		# |____/ |_/_/   \_\____|_____|____/ 
-		#                                                    
-		# ... Downloading the stage tarball ...
-		# HTTPS:// ?
+	PRE () { # 3.0 PREPARE CHROOT
+		# STAGE3 TARBALL - HTTPS:// ?
 		DL_STAGE () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Choosing_a_stage_tarball && # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Unpacking_the_stage_tarball
 			STAGE3_DEFAULT_AMD64_STATIC () {
 				wget -O $CHROOTX/stage3.tar.xz http://distfiles.gentoo.org/releases/amd64/autobuilds/20190804T214502Z/stage3-amd64-20190804T214502Z.tar.xz
@@ -513,41 +487,24 @@ BANNER () { # 0.1 BANNER
 				tar xvJpf $CHROOTX/stage3.tar.xz --xattrs-include='*.*' --numeric-owner -C $CHROOTX 
 			}
 			STAGE3_LATEST_$STAGE3DEFAULT
-		}
-		#  _____ ____  _   _ ___ _     ____  
-		# | ____| __ )| | | |_ _| |   |  _ \ 
-		# |  _| |  _ \| | | || || |   | | | |
-		# | |___| |_) | |_| || || |___| |_| |
-		# |_____|____/ \___/|___|_____|____/ 
-		#                                   
-		# ... Gentoo ebuild repository ...
+		}                                 
+		# EBUILD ... Gentoo ebuild repository ...
 		EBUILD () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Gentoo_ebuild_repository
 			mkdir --parents $CHROOTX/etc/portage/repos.conf
 			cp $CHROOTX/usr/share/portage/config/repos.conf $CHROOTX/etc/portage/repos.conf/gentoo.conf # copy the Gentoo repository configuration file provided by Portage to the (newly created) repos.conf directory.
 			# cat $CHROOTX/usr/share/portage/config/repos.conf /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
 		}
-		#  ____  _   _ ____  
-		# |  _ \| \ | / ___| 
-		# | | | |  \| \___ \ 
-		# | |_| | |\  |___) |
-		# |____/|_| \_|____/ 
-		#
-		# ... copy resolv.conf (DNS info) ...                                          
+		# RESOLVCONF DNS ... copy resolv.conf (DNS info) ...                                          
 		RESOLVCONF () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Copy_DNS_info
 			cp --dereference /etc/resolv.conf $CHROOTX/etc/
-		}			
+		}
+		# .BASHRC		
 		BASHRC () {
-			cat << 'EOF' > $CHROOTX/etc/skel/.bashrc_tmp
-			#  ____    _    ____  _   _ ____   ____ 
-			# | __ )  / \  / ___|| | | |  _ \ / ___|
-			# |  _ \ / _ \ \___ \| |_| | |_) | |    
-			# | |_) / ___ \ ___) |  _  |  _ <| |___ 
-			# |____/_/   \_\____/|_| |_|_| \_\\____|
-			#                      
+			cat << 'EOF' > $CHROOTX/etc/skel/.bashrc_tmp                   
 			#  .bash.rc by alphaaurigae 11.08.19
 			# ~/.bashrc: executed by bash(1) for non-login shells.
 			# Examples: /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-			[[ $- != *i* ]] && return # # If not running interactively, don't do anything
+			[[ $- != *i* ]] && return # If not running interactively, don't do anything
 			shopt -s histappend # append to the history file.
 			HISTSIZE=1000 # max bash history lines.
 			HISTFILESIZE=2000 # max bash history filesize in bytes.
@@ -555,7 +512,7 @@ BANNER () { # 0.1 BANNER
 			case "$TERM" in # set a fancy prompt (non-color, unless we know we "want" color)
 			    xterm-color|*-256color) color_prompt=yes;;
 			esac
-			force_color_prompt=yes # terminal colors.
+			force_color_prompt=yes
 			if [ -n "$force_color_prompt" ]; then
 			    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
 				color_prompt=yes
@@ -591,41 +548,18 @@ BANNER () { # 0.1 BANNER
 			    . ~/.bash_aliases
 			fi
 EOF
-		}
-		#  __  __ _   _ _____   _____ ____  
-		# |  \/  | \ | |_   _| |  ___/ ___| 
-		# | |\/| |  \| | | |   | |_  \___ \ 
-		# | |  | | |\  | | |   |  _|  ___) |
-		# |_|  |_|_| \_| |_|   |_|   |____/ 
-		#                                  
-		MNTFS () { 
-			#  ____    _    ____  _____ ______   ______  
-			# | __ )  / \  / ___|| ____/ ___\ \ / / ___| 
-			# |  _ \ / _ \ \___ \|  _| \___ \\ V /\___ \ 
-			# | |_) / ___ \ ___) | |___ ___) || |  ___) |
-			# |____/_/   \_\____/|_____|____/ |_| |____/ 
-			#
-			# ... Mounting the necessary filesystems ...
+		}                                
+		MNTFS () {
 			MOUNT_BASESYS () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Mounting_the_necessary_filesystems
 				mount --types proc /proc $CHROOTX/proc
 				mount --rbind /sys $CHROOTX/sys
 				mount --make-rslave $CHROOTX/sys
 				mount --rbind /dev $CHROOTX/dev
-				mount --make-rslave $CHROOTX/dev 
-
-				# Warning
-				# When using non-Gentoo installation media, this might not be sufficient. Some distributions make /dev/shm a symbolic link to /run/shm/ which, after the chroot, becomes invalid. Making /dev/shm/ a proper tmpfs mount up front can fix this:
-				# test -L /dev/shm && rm /dev/shm && mkdir /dev/shm
-				# mount --types tmpfs --options nosuid,nodev,noexec shm /dev/shm
+				mount --make-rslave $CHROOTX/dev
 			}	 
 			SETMODE_DEVSHM () {	
 				chmod 1777 /dev/shm
-			}
-			#  __  __    _    _  _______   ____ ___  _   _ _____ 
-			# |  \/  |  / \  | |/ / ____| / ___/ _ \| \ | |  ___|
-			# | |\/| | / _ \ | ' /|  _|  | |  | | | |  \| | |_   
-			# | |  | |/ ___ \| . \| |___ | |__| |_| | |\  |  _|  
-			# |_|  |_/_/   \_\_|\_\_____(_)____\___/|_| \_|_|    
+			}   
 			# # (!changeme)
 			MAKECONF () { # https://wiki.gentoo.org/wiki//etc/portage/make.conf
 				echo "${bold}MAKECONF${normal}"
@@ -635,19 +569,6 @@ EOF
 					PRESET_VIDEODRIVER='amdgpu radeonsi radeon'
 					PRESET_LICENCES="-* @FREE" # Only accept licenses in the FREE license group (i.e. Free Software)
 					
-					# https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/USE
-					# systemd
-					# LVM2
-					# X11
-					# grub
-					# sudo
-					# audio
-					# video
-					# SSL
-					# CPU FLAGS
-					# encryption
-					# compressions
-					# NO KDE
 							
 					PRESET_USEFLAG='X a52 aac aalib acl acpi adns alsa apparmor atm audit bash-completion berkdb bidi blas boost branding bzip2 \
 							cairo cdda caps cpudetection cjk cracklib crypt cryptsetup css curl cvs cxx dbi dbus debug device-mapper dns-over-tls dga elfutils \
@@ -1618,13 +1539,7 @@ EOF
 			# |____/ \___/ \___/ |_| |_____\___/_/   \_\____/|_____|_| \_\
 			#   
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                                   
-			BOOTLOAD () { # BOOTSYSINITVAR=BIOS/UEFI - 
-				#   ____ ____  _   _ ____ ____  
-				#  / ___|  _ \| | | | __ )___ \ 
-				# | |  _| |_) | | | |  _ \ __) |
-				# | |_| |  _ <| |_| | |_) / __/ 
-				#  \____|_| \_\\___/|____/_____|
-				#
+			BOOTLOAD () { # BOOTSYSINITVAR=BIOS/UEFI
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				SETUP_GRUB2 () {
 					MAIN_GRUB2_SET () {
@@ -1740,12 +1655,6 @@ EOF
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				WINDOWSYS () {
-					# __  ___ _ 
-					# \ \/ / / |
-					#  \  /| | |
-					#  /  \| | |
-					# /_/\_\_|_|
-					#
 					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 					X11 () {  # (! default) # https://wiki.gentoo.org/wiki/Xorg/Guide
 						EMERGE_XORG () {
@@ -2178,16 +2087,8 @@ EOF
 		FINISH () { # tidy up installation files
 			rm /stage3-*.tar.*
 		}
-		#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		#  ____  _   _ _   _   _____ _   _ ___ ____    ____   ____ ____  ___ ____ _____  ~
-		# |  _ \| | | | \ | | |_   _| | | |_ _/ ___|  / ___| / ___|  _ \|_ _|  _ \_   _| ~
-		# | |_) | | | |  \| |   | | | |_| || |\___ \  \___ \| |   | |_) || || |_) || |   ~
-		# |  _ <| |_| | |\  |   | | |  _  || | ___) |  ___) | |___|  _ < | ||  __/ | |   ~
-		# |_| \_\\___/|_| \_|   |_| |_| |_|___|____/  |____/ \____|_| \_\___|_|    |_|   ~
-		#										 ~
-		#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
-		## (!changeme)
+		## RUN ENTIRE SCRIPT (!changeme)
 		BASE	&& echo "${bold}BASE - END${normal}"
 		SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
 		CORE	&& echo "${bold}CORE - END${normal}"
