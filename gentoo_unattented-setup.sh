@@ -720,31 +720,26 @@ EOF
 INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 #!/bin/bash
 
-		# https://github.com/alphaaurigae
+		# https://github.com/alphaaurigae/gentoo_unattented-setup
 
 		env-update
 		source /etc/profile
-		# export PS1="(autochroot) \$PS1" # Not that the user will see this.
-		export PS1="(chroot) $PS1" 
-
-		## MAKEFILE EX
-		# REGION=Europe # (!changeme) disabled for $SYSTEMTIMEZONE # # ls -la /usd/share/zoneinfo/$REGION/$CITY
-		# CITY=Berlin # (!changeme)
+		export PS1="(chroot) $PS1"
 
 		## DRIVES & PARTITIONS
-		HDD1=/dev/sda # OS DRIVE - the drive you want to install gentoo to.
+		HDD1=/dev/sda # GENTOO
 		# GRUB_PART=/dev/sda1 # bios grub
 		BOOT_PART=/dev/sda2 # boot # unencrypted unless required changes are made - see CRYPTSETUP_BOOT 
 		MAIN_PART=/dev/sda3 # mainfs - lukscrypt cryptsetup container with LVM env inside
 
 		## SWAP - DISABLED -- SEE VAR & LVM SECTION TO ENABLE!
 		# SWAP0=swap0 # LVM swap NAME for sorting of swap partitions.
-		# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART - mainhdd only has boot & fainfs
-		# SWAP_FS=linux-swap # swapfs, couldnt have guessed it
+		# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART
+		# SWAP_FS=linux-swap # swapfs
 
 		## FILESYSTEMS # !FSTOOLS
-		BOOT_FS=ext2 # boot filesystem
-		MAIN_FS=ext4 # main filesystem for the OS
+		BOOT_FS=ext2 # BOOT
+		MAIN_FS=ext4 # GENTOO
 
 		## LVM
 		PV_MAIN=pv0_main # LVM PV physical volume
@@ -752,7 +747,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		LV_MAIN=lv0_main # LVM LV logical volume
 
 		## LOCALES / TIME-DATE
-		VCONSOLE_KEYMAP=de-latin1 # (!changeme) console keymap
+		VCONSOLE_KEYMAP=de-latin1 # (!changeme) console keymap systemd
 		VCONSOLE_FONT=eurlatgr # (!changeme)
 		LOCALE_GEN_a1="en_US ISO-8859-1" # (!changeme)
 		LOCALE_GEN_a2="en_US.UTF-8 UTF-8" # (!changeme)
@@ -760,14 +755,13 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		LOCALE_GEN_b2="de_DE.UTF-8 UTF-8" # (!changeme)
 		LOCALE_CONF="en_US.UTF-8" # (!changeme)
 		X11KEYMAP="de" # (!changeme) keymap for desktop environment 
-		SYSTIMEZONE=utc # (!changeme maybe) utc or localtime # ls -la /usd/share/zoneinfo
 
 		SYSLOCALE="de_DE.UTF-8" # (!changeme)
 		SYSDATE_SET=AUTO # (!default)
 		SYSDATE_MAN=071604551969 # hack time :)
-		SYSCLOCK_SET=AUTO # USE AUTO (!default) / MANUAL -- WITH MANUAL YOU DONT GET TIMESYNCED SERVICE
+		SYSCLOCK_SET=AUTO # USE AUTO (!default) / MANUAL -- MANUAL="NO TIMESYNCED SERVICE"
 		SYSCLOCK_MAN="1969-07-16 04:55:42" # hack time :)
-		SYSTIMEZONE_SET="Europe/Berlin" # (!changeme) Europe/Berlin format for SYSTEMD ; Europe/Brussels format for OPENRC
+		SYSTIMEZONE_SET="UTC" # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Timezone
 
 		## NETWORK - https://en.wikipedia.org/wiki/Public_recursive_name_server
 		HOSTNAME=p1p1 # (!changeme) define hostname
@@ -775,10 +769,10 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		NETWORK_NET=DHCPD # DHCPD or STATIC, config static on your own in the network section.	
 
 		## DNS
-		NAMESERVER1_IPV4=1.1.1.1 # (!changeme) cloudflare ipv4
-		NAMESERVER1_IPV6=2606:4700:4700::1111 # (!changeme)cloudflare ipv6
-		NAMESERVER2_IPV4=1.0.0.1 # (!changeme)cloudflare ipv4
-		NAMESERVER2_IPV6=2606:4700:4700::1001 # (!changeme)cloudflare ipv6
+		NAMESERVER1_IPV4=1.1.1.1 # (!changeme) 1.1.1.1 ns1 cloudflare ipv4
+		NAMESERVER1_IPV6=2606:4700:4700::1111 # (!changeme) ipv6 ns1 2606:4700:4700::1111 cloudflare ipv6
+		NAMESERVER2_IPV4=1.0.0.1 # (!changeme) 1.0.0.1 ns2 cloudflare ipv4
+		NAMESERVER2_IPV6=2606:4700:4700::1001 # (!changeme) ipv6 ns2 2606:4700:4700::1001 cloudflare ipv6
 
 		## DISPLAY
 		GPU_SET=NONE # NONE. AMD_V***. NVIDIA_V***
@@ -788,7 +782,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		DESKTOPENV=XFCE4 # see options
 
 		## USER
-		SYSUSERNAME=gentoo # (!changeme) name of the login user
+		SYSUSERNAME=gentoo # (!changeme) wheel group member - name of the login sysadmin user
 
 		## KERNEL
 		INITRAMFSVAR="--lvm --mdadm"
@@ -798,17 +792,17 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		
 		## SYSTEM
 		### INITSYSTEM
-		INITVAR=SYSTEMD # SYSTEMD (!default) / OPENRC
+		SYSINITVAR=SYSTEMD # SYSTEMD (!default) / OPENRC
 		### KERNEL
 		CONFIGKERN=AUTO # AUTO (genkernel) / MANUAL 
 		KERNVERS=5.3-rc4 # for MANUAL setup
 		KERNSOURCES=EMERGE # EMERGE (!default) ; TORVALDS (git repository)
 		### BOOT
 		BOOTLOADER=GRUB2 # GRUB2 (!default)
-		BOOTINITVAR=BIOS # BIOS (!default) / UEFI (!prototype)
+		BOOTSYSINITVAR=BIOS # BIOS (!default) / UEFI (!prototype)
 		## SYSAPP
 		### LOG
-		CRONSET=CRONIE # CRONIE (!default), DCRON, ANACRON ..... see on your own
+		CRON=CRONIE # CRONIE (!default), DCRON, ANACRON ..... see on your own
 		
 		## DISPLAY MANAGER
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,					
@@ -822,7 +816,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		GDM_DSPMGR_OPENRC=gdm
 		GDM_DSPMGR_EMRGE=gnome-base/gdm                                     
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-		# LIGHTDM - https://wiki.gentoo.org/wiki/LightDM					
+		# LIGHTDM - https://wiki.gentoo.org/wiki/LightDM
 		LIGHTDM_DSPMGR_SYSTEMD=lightdm.service
 		LIGHTDM_DSPMGR_OPENRC=lightdm
 		LIGHTDM_DSPMGR_EMRGE=x11-misc/lightdm                       
@@ -847,7 +841,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		SLIM_DSPMGR_OPENRC=slim
 		SLIM_DSPMGR_EMRGE=x11-misc/slim                                            
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-		# WDM - https://wiki.gentoo.org/wiki/WDM					
+		# WDM - https://wiki.gentoo.org/wiki/WDM
 		WDM_DSPMGR_SYSTEMD=wdm.service
 		WDM_DSPMGR_OPENRC=wdm
 		WDM_DSPMGR_EMRGE=x11-misc/wdm                 
@@ -860,17 +854,17 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 
 		## DESKTOP ENV
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                 
-		# BUDGIE - https://wiki.gentoo.org/wiki/Budgie					
+		# BUDGIE - https://wiki.gentoo.org/wiki/Budgie
 		BUDGIE_DSTENV_XEC=budgie_dpmexec
 		BUDGIE_DSTENV_STARTX=budgie
 		BUDGIE_DSTENV_EMRGE=budgie                                                       
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-		# CINNAMON - https://wiki.gentoo.org/wiki/Cinnamon					
+		# CINNAMON - https://wiki.gentoo.org/wiki/Cinnamon
 		CINNAMON_DSTENV_XEC=gnome-session-cinnamon
 		CINNAMON_DSTENV_STARTX=cinnamon-session
 		CINNAMON_DSTENV_EMRGE=gnome-extra/cinnamon                
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
-		# DDE "Deepin Desktop Environment" - https://wiki.gentoo.org/wiki/DDE				
+		# DDE "Deepin Desktop Environment" - https://wiki.gentoo.org/wiki/DDE
 		DDE_DSTENV_XEC=DDE
 		DDE_DSTENV_STARTX=DDE
 		DDE_DSTENV_EMRGE=DDE                                                                     
@@ -880,7 +874,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		FVWMCRYSTAL_DSTENV_STARTX=fvwm-crystal
 		FVWMCRYSTAL_DSTENV_EMRGE=x11-themes/fvwm-crystal                             
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-		# GNOME - https://wiki.gentoo.org/wiki/GNOME					
+		# GNOME - https://wiki.gentoo.org/wiki/GNOME
 		GNOME_DSTENV_XEC=gnome-session
 		GNOME_DSTENV_STARTX=GNOME
 		GNOME_DSTENV_EMRGE=gnome-base/gnome           
@@ -890,7 +884,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		KDE_DSTENV_STARTX=startkde
 		KDE_DSTENV_EMRGE=kde-plasma/plasma-meta
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-		# LXDE - https://wiki.gentoo.org/wiki/LXDE				
+		# LXDE - https://wiki.gentoo.org/wiki/LXDE
 		LXDE_DSTENV_XEC=lxde-meta
 		LXDE_DSTENV_STARTX=lxde-meta
 		LXDE_DSTENV_EMRGE=lxde-base/lxde-meta              
@@ -900,17 +894,17 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		LXQT_DSTENV_STARTX=startlxqt
 		LXQT_DSTENV_EMRGE=lxqt-base/lxqt-meta
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
-		# LUMINA - https://wiki.gentoo.org/wiki/Lumina				
+		# LUMINA - https://wiki.gentoo.org/wiki/Lumina
 		LUMINA_DSTENV_XEC=start-lumina-desktop
 		LUMINA_DSTENV_STARTX=start-lumina-desktop
 		LUMINA_DSTENV_EMRGE=x11-wm/lumina                     
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
-		# MATE - https://wiki.gentoo.org/wiki/MATE					
+		# MATE - https://wiki.gentoo.org/wiki/MATE
 		MATE_DSTENV_XEC=mate-session
 		MATE_DSTENV_STARTX=mate-session
 		MATE_DSTENV_EMRGE=mate-base/mate                                             
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-		# PANTHEON - https://wiki.gentoo.org/wiki/Pantheon				
+		# PANTHEON - https://wiki.gentoo.org/wiki/Pantheon
 		PANTHEON_DSTENV_XEC=PANTHEON
 		PANTHEON_DSTENV_STARTX=PANTHEON
 		PANTHEON_DSTENV_EMRGE=PANTHEON    
@@ -920,16 +914,80 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		RAZORQT_DSTENV_STARTX=razor-session
 		RAZORQT_DSTENV_EMRGE=RAZORQT              
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-		# TDE - https://wiki.gentoo.org/wiki/Trinity_Desktop_Environment					
+		# TDE - https://wiki.gentoo.org/wiki/Trinity_Desktop_Environment
 		TDE_DSTENV_XEC=tde-session
 		TDE_DSTENV_STARTX=tde-session
 		TDE_DSTENV_EMRGE=trinity-base/tdebase-meta
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-		# XFCE - https://wiki.gentoo.org/wiki/Xfce					
+		# XFCE - https://wiki.gentoo.org/wiki/Xfce
 		XFCE4_DSTENV_XEC=XFCE4-session
 		XFCE4_DSTENV_STARTX=startxfce4
 		XFCE4_DSTENV_EMRGE=xfce-base/xfce4-meta 
 
+		## LOG          
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+		# SYSLOGNG
+		SYSLOGNG_SYSLOG_SYSTEMD=syslog-ng@default
+		SYSLOGNG_SYSLOG_OPENRC=syslog-ng
+		SYSLOGNG_SYSLOG_EMRGE=app-admin/syslog-ng              
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# SYSKLOGD
+		SYSKLOGD_SYSLOG_SYSTEMD=systemctl enable rsyslog
+		SYSKLOGD_SYSLOG_OPENRC=sysklogd
+		SYSKLOGD_SYSLOG_EMRGE=app-admin/sysklogd
+
+		## CRON - https://wiki.gentoo.org/wiki/Cron#Which_cron_is_right_for_the_job.3F                         
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+		# BCRON
+		BCRON_CRON_SYSTEMD=mate-session
+		BCRON_CRON_OPENRC=mate-session
+		BCRON_CRON_EMRGE=sys-process/bcron                                          
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# FCRON
+		FCRON_CRON_SYSTEMD=PANTHEON
+		FCRON_CRON_OPENRC=PANTHEON
+		FCRON_CRON_EMRGE=sys-process/fcron 
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# DCRON - FVWM-Crystal
+		DCRON_CRON_SYSTEMD=razor-session
+		DCRON_CRON_OPENRC=razor-session
+		DCRON_CRON_EMRGE=sys-process/dcron              
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# CRONIE
+		CRONIE_CRON_SYSTEMD=tde-session
+		CRONIE_CRON_OPENRC=tde-session
+		CRONIE_CRON_EMRGE=sys-process/cronie
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		# VIXICRON
+		VIXICRON_CRON_SYSTEMD=vixi
+		VIXICRON_CRON_OPENRC=vixi
+		VIXICRON_EMRGE=sys-process/vixie-cron
+
+		INSTALL_CRYPTSETUP=YES
+		INSTALL_LVM2=YES
+		INSTALL_SUDO=YES
+		INSTALL_PCIUTILS=YES
+		INSTALL_MULTIPATH=YES
+		INSTALL_GNUPG=NO
+		INSTALL_OSPROBER=YES
+		INSTALL_SYSLOG=YES
+		INSTALL_CRON=YES
+		INSTALL_FILEINDEXING=YES
+
+		## FSTOOLS          
+		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+		FS_EXT=sys-fs/e2fsprogs
+		FS_XFS=sys-fs/xfsprogs
+		FS_REISER=sys-fs/reiserfsprogs
+		FS_JFS=sys-fs/jfsutils
+		FS_VFAT=sys-fs/dosfstools # (FAT32, ...) 
+		FS_BTRFS=sys-fs/btrfs-progs
+
+		INSTALL_GIT=YES
+		INSTALL_FIREFOX=YES
+		INSTALL_MIDORI=YES
+
+		ESELECT_PROFILE=29 # 17.1 systemd
 		# MISC
 		bold=$(tput bold) # staticvar bold text
 		normal=$(tput sgr0) # # staticvar reverse to normal text
@@ -948,159 +1006,40 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		#  '----------------'  '----------------'  '----------------'  '----------------' 
 		#
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 		
-		BASESYS () {
-			#  ____   ___  ____ _____  _    ____ _____ 
-			# |  _ \ / _ \|  _ \_   _|/ \  / ___| ____|
-			# | |_) | | | | |_) || | / _ \| |  _|  _|  
-			# |  __/| |_| |  _ < | |/ ___ \ |_| | |___ 
-			# |_|    \___/|_| \_\|_/_/   \_\____|_____|
-			#                                         
+		BASESYS () { 
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			PORTAGE () { # https://wiki.gentoo.org/wiki/Portage#emerge-webrsync && https://dev.gentoo.org/~zmedico/portage/doc/man/emerge.1.html
-				echo "${bold}CONFIG_PORTAGE${normal}"
 				mkdir /usr/portage
 				emerge-webrsync
 			}
-			#  ______   ___   _  ____ 
-			# / ___\ \ / / \ | |/ ___|
-			# \___ \\ V /|  \| | |    
-			#  ___) || | | |\  | |___ 
-			# |____/ |_| |_| \_|\____|
-			#                        
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			EMERGE_SYNC () {
-				echo "${bold}EMERGE_SYNC${normal}"
 				emerge --sync
-				echo "${bold}EMERGE_SYNC done${normal}"
 			}
-			# ____  ____   ___  _____ ___ _     _____ 
-			# |  _ \|  _ \ / _ \|  ___|_ _| |   | ____|
-			# | |_) | |_) | | | | |_   | || |   |  _|  
-			# |  __/|  _ <| |_| |  _|  | || |___| |___ 
-			# |_|   |_| \_\\___/|_|   |___|_____|_____|
-			#                                         
-			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 			SELECT_PROFILE () { # https://wiki.gentoo.org/wiki/Profile_(Portage)
-				# eselect profile set 19 # hardened selinux stable 17.1
-				echo "${bold}SELECT_PROFILE${normal}"
-				eselect profile set 29 # 17.1 systemd
-				echo "${bold}SELECT_PROFILE end${normal}"
-			}
-			#    ______        _____  ____  _     ____  ____  _____ _____ 
-			#   / __ \ \      / / _ \|  _ \| |   |  _ \/ ___|| ____|_   _|
-			#  / / _` \ \ /\ / / | | | |_) | |   | | | \___ \|  _|   | |  
-			# | | (_| |\ V  V /| |_| |  _ <| |___| |_| |___) | |___  | |  
-			#  \ \__,_| \_/\_/  \___/|_| \_\_____|____/|____/|_____| |_|  
-			#   \____/                                                    
-			#                                                    
+				eselect profile set $ESELECT_PROFILE
+			}                                                 
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			WORLDSET () { # https://wiki.gentoo.org/wiki/World_set_(Portage)
-				echo "${bold}WORLDSET${normal}"
-				# emerge --sync
 				emerge --quiet --complete-graph --verbose --update --deep --newuse @world
-				emerge --oneshot virtual/udev virtual/libudev # If your system set provides sys-fs/eudev, virtual/udev and virtual/libudev may be preventing systemd.  https://wiki.gentoo.org/wiki/Systemd
-				echo "${bold}WORLDSET done${normal}"
+				emerge --oneshot virtual/udev virtual/libudev # ! If your system set provides sys-fs/eudev, virtual/udev and virtual/libudev may be preventing systemd.  https://wiki.gentoo.org/wiki/Systemd
 			}
-			#  ___ _   _ ___ _____ ______   ______ _____ _____ __  __ 
-			# |_ _| \ | |_ _|_   _/ ___\ \ / / ___|_   _| ____|  \/  |
-			#  | ||  \| || |  | | \___ \\ V /\___ \ | | |  _| | |\/| |
-			#  | || |\  || |  | |  ___) || |  ___) || | | |___| |  | |
-			# |___|_| \_|___| |_| |____/ |_| |____/ |_| |_____|_|  |_|
-			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			INITSYSTEM () { # https://wiki.gentoo.org/wiki/Init_system && https://wiki.gentoo.org/wiki/Comparison_of_init_systems
-				echo "${bold}INITSYSTEM${normal}"
-				#   ___  ____  _____ _   _ ____   ____ 
-				#  / _ \|  _ \| ____| \ | |  _ \ / ___|
-				# | | | | |_) |  _| |  \| | |_) | |    
-				# | |_| |  __/| |___| |\  |  _ <| |___ 
-				#  \___/|_|   |_____|_| \_|_| \_\\____|
-				#                                     
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				INITSYS_OPENRC () {  # https://wiki.gentoo.org/wiki/OpenRC
-					CONFIG_OPENRC () {                     
-						RCCONF () {
-							nano -w /etc/rc.conf
-						}
-						RCCONF
-					}
-					CONFIG_OPENRC
-				}
-				#  ______   ______ _____ _____ __  __ ____  
-				# / ___\ \ / / ___|_   _| ____|  \/  |  _ \ 
-				# \___ \\ V /\___ \ | | |  _| | |\/| | | | |
-				#  ___) || |  ___) || | | |___| |  | | |_| |
-				# |____/ |_| |____/ |_| |_____|_|  |_|____/ 
-				#	
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				INITSYS_SYSTEMD () { # systemd switch (option variables top)  # https://wiki.gentoo.org/wiki/Systemd
-					REMOVE_UDEV () {
-						emerge --deselect sys-fs/udev
-						emerge --unmerge sys-fs/udev
-					}
-					REMOVE_OPENRC () {
-						emerge --deselect sys-apps/openrc
-						emerge --unmerge sys-apps/openrc
-						rm /etc/portage/package.mask/systemd
-					}
-					EMERGE_SYSTEMDANDDEPS () {
-						emerge $EMERGE_VAR sys-apps/pciutils
-						emerge $EMERGE_VAR sys-apps/dbus
-						emerge $EMERGE_VAR app-portage/gentoolkit
-						euse -E cryptsetup systemd gudev dbus
-						emerge $EMERGE_VAR sys-apps/systemd
-						emerge $EMERGE_VAR sys-apps/systemd-integration
-					}
-					ETCMTAB () {
-						ln -sf /proc/self/mounts /etc/mtab
-					}
-					REMOVE_UDEV
-					REMOVE_OPENRC
-					EMERGE_SYSTEMDANDDEPS
-					ETCMTAB
-					systemctl preset-all
-				}
-				INITSYS_$INITVAR
-				echo "${bold}INITSYSTEM end${normal}"
-			}
-			#  ______   ______ _____ _____ __  __   _____ ___ __  __ _____ 
-			# / ___\ \ / / ___|_   _| ____|  \/  | |_   _|_ _|  \/  | ____|
-			# \___ \\ V /\___ \ | | |  _| | |\/| |   | |  | || |\/| |  _|  
-			#  ___) || |  ___) || | | |___| |  | |   | |  | || |  | | |___ 
-			# |____/ |_| |____/ |_| |_____|_|  |_|   |_| |___|_|  |_|_____|
-			#                                                             
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			SYSTEMTIME () { # https://wiki.gentoo.org/wiki/System_time
-				echo "${bold}SYSTEMTIME${normal}"
-				#  _____ ___ __  __ _____ ________  _   _ _____ 
-				# |_   _|_ _|  \/  | ____|__  / _ \| \ | | ____|
-				#   | |  | || |\/| |  _|   / / | | |  \| |  _|  
-				#   | |  | || |  | | |___ / /| |_| | |\  | |___ 
-				#   |_| |___|_|  |_|_____/____\___/|_| \_|_____|
-				#                                              
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+			SYSTEMTIME () { # https://wiki.gentoo.org/wiki/System_time                                       
 				SET_TIMEZONE () { # https://wiki.gentoo.org/wiki/System_time#Time_zone
 					TIMEZONE_OPENRC () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Timezone
-						echo "$SET_TIMEZONE" > /etc/timezone
+						echo "$SYSTIMEZONE_SET" > /etc/timezone
 						emerge --config sys-libs/timezone-data
 					}
 					TIMEZONE_SYSTEMD () {
 						timedatectl set-timezone $SYSTIMEZONE_SET
 					}
-					TIMEZONE_$INITVAR
-				}
-				#  ______   ______ _____ _____ __  __    ____ _     ___   ____ _  __
-				# / ___\ \ / / ___|_   _| ____|  \/  |  / ___| |   / _ \ / ___| |/ /
-				# \___ \\ V /\___ \ | | |  _| | |\/| | | |   | |  | | | | |   | ' / 
-				#  ___) || |  ___) || | | |___| |  | | | |___| |__| |_| | |___| . \ 
-				# |____/ |_| |____/ |_| |_____|_|  |_|  \____|_____\___/ \____|_|\_\
-				#                                                                  
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+					TIMEZONE_$SYSINITVAR
+				}                                                                 
 				SET_SYSTEMCLOCK () { # https://wiki.gentoo.org/wiki/System_time#System_clock
-					echo "${bold}SYSTEMCLOCK${normal}"
 					SYSTEMCLOCK_OPENRC () {
-						OPENRC_SYSCLOCK_MANUAL () { # switch to manual configuration (option variables top)
+						OPENRC_SYSCLOCK_MANUAL () { 
 							OPENRC_SYSTEMCLOCK () {
 								date $SYSDATE_MAN
 							}
@@ -1121,10 +1060,10 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 						OPENRC_OPENNTPD
 					}
 					SYSTEMCLOCK_SYSTEMD () { # https://wiki.gentoo.org/wiki/System_time#Hardware_clock
-						SYSTEMD_SYSCLOCK_MANUAL () { # switch to manual configuration (option variables top)
+						SYSTEMD_SYSCLOCK_MANUAL () { 
 							timedatectl set-time "$SYSCLOCK_MAN"
 						}
-						SYSTEMD_SYSCLOCK_AUTO () { # switch to auto (option variables top)
+						SYSTEMD_SYSCLOCK_AUTO () { 
 							SYSSTART_TIMESYND () {
 								SYSTEMD enable systemd-timesyncd
 								SYSTEMD start systemd-timesyncd
@@ -1133,38 +1072,23 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 						}
 						SYSTEMD_SYSCLOCK_$SYSCLOCK
 					}
-					SYSTEMCLOCK_$INITVAR
-				}
-				#  _   ___        ______ _     ___   ____ _  __
-				# | | | \ \      / / ___| |   / _ \ / ___| |/ /
-				# | |_| |\ \ /\ / / |   | |  | | | | |   | ' / 
-				# |  _  | \ V  V /| |___| |__| |_| | |___| . \ 
-				# |_| |_|  \_/\_/  \____|_____\___/ \____|_|\_\
-				#                                             
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+					SYSTEMCLOCK_$SYSINITVAR 
+				}                                         
 				SET_HWCLOCK () {
-					echo "${bold}HWCLOCK${normal}"
 					HWCLOCK_OPENRC () { 
 						echo 'placeholder'
 					}
-					HWCLOCK_SYSTEMD () { # systemd switch (option variables top) 
-						timedatectl set-local-rtc 0 # set UTC
+					HWCLOCK_SYSTEMD () {  
+						timedatectl set-local-rtc 0 # 0 set UTC
 					}
-					HWCLOCK_$INITVAR
+					HWCLOCK_$SYSINITVAR
 				}
-				SET_TIMEZONE
-				#SET_SYSTEMCLOCK
-				#SET_HWCLOCK
-			}
-			#  _     ___   ____    _    _     _____ ____  
-			# | |   / _ \ / ___|  / \  | |   | ____/ ___| 
-			# | |  | | | | |     / _ \ | |   |  _| \___ \ 
-			# | |__| |_| | |___ / ___ \| |___| |___ ___) |
-			# |_____\___/ \____/_/   \_\_____|_____|____/ 
-			#                                       
+				SET_TIMEZONE && echo "${bold}SET_TIMEZONE end${normal}"
+				#SET_SYSTEMCLOCK && echo "${bold}SYSTEMCLOCK end${normal}"
+				#SET_HWCLOCK && echo "${bold}SET_HWCLOCK end${normal}"
+			}                                      
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			CONF_LOCALES () { # https://wiki.gentoo.org/wiki/Localization/Guide
-				echo "${bold}CONF_LOCALES${normal}"
 				CONF_LOCALEGEN () {
 					cat << EOF > /etc/locale.gen
 					$LOCALE_GEN_a1
@@ -1177,27 +1101,34 @@ EOF
 					locale-gen
 				}
 				SYS_LOCALE () {
-					cat << EOF > /etc/env.d/02locale
-					LANG="$SYSLOCALE"
-					LC_COLLATE="C"
+					SYSTEMLOCALE_OPENRC () { # https://wiki.gentoo.org/wiki/Localization/Guide#OpenRC
+						cat << EOF > /etc/env.d/02locale
+						LANG="$SYSLOCALE"
+						LC_COLLATE="C"
 EOF
+					}
+					SYSTEMLOCALE_SYSTEMD () { # https://wiki.gentoo.org/wiki/Localization/Guide#systemd
+						localectl set-locale LANG=$SYSLOCALE
+						localectl | grep "System Locale"
+					}
+					SYSTEMLOCALE_OPENRC
+				}
+				XKEYBOARDLAYOUT () {
+					KLAYOUT_SYSTEMD () {
+						localectl set-x11-keymap it
+					}
+					KLAYOUT_SYSTEMD
 				}
 				RELOAD_LOCALE_ENV () {
-					env-update && source /etc/profile && export PS1="(chroot) ${PS1}" # reload
+					env-update && source /etc/profile && export PS1="(chroot) ${PS1}"
 				}
-				CONF_LOCALEGEN
-				GEN_LOCALE
-				# YS_LOCALE
-				RELOAD_LOCALE_ENV
+				CONF_LOCALEGEN && echo "${bold}CONF_LOCALEGEN end${normal}"
+				GEN_LOCALE && echo "${bold}GEN_LOCALE end${normal}"
+				# SYS_LOCALE && echo "${bold}SYS_LOCALE end${normal}"
+				XKEYBOARDLAYOUT && echo "${bold}XKEYBOARDLAYOUT end${normal}"
+				RELOAD_LOCALE_ENV && echo "${bold}RELOAD_LOCALE_ENV end${normal}"
 				echo "${bold}CONF_LOCALES end${normal}"
 			}
-
-			#  _____ ___ ____  __  ____        ___    ____  _____ 
-			# |  ___|_ _|  _ \|  \/  \ \      / / \  |  _ \| ____|
-			# | |_   | || |_) | |\/| |\ \ /\ / / _ \ | |_) |  _|  
-			# |  _|  | ||  _ <| |  | | \ V  V / ___ \|  _ <| |___ 
-			# |_|   |___|_| \_\_|  |_|  \_/\_/_/   \_\_| \_\_____|
-			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			FIRMWARE () {
 				echo "${bold}FIRMWARE${normal}"
@@ -1213,7 +1144,6 @@ EOF
 			##EMERGE_SYNC		&& echo "${bold}EMERGE_SYNC - END ....${normal}"
 			SELECT_PROFILE		&& echo "${bold}SELECT_PROFILE - END ....${normal}"
 			WORLDSET		&& echo "${bold}WORLDSET - END ....${normal}"
-			## INITSYSTEM		&& echo "${bold}INITSYSTEM - END ....${normal}"
 			## SYSTEMTIME		&& echo "${bold}SYSTEMTIME - END ....${normal}"
 			CONF_LOCALES		&& echo "${bold}CONF_LOCALES - END ....${normal}"
 			FIRMWARE		&& echo "${bold}FIRMWARE - END, proceeding to CHROOT ....${normal}"
@@ -1233,29 +1163,17 @@ EOF
 		#
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 	
 		SYSAPP () {
-			#   ____ ______   ______ _____ ____  _____ _____ _   _ ____  
-			#  / ___|  _ \ \ / /  _ \_   _/ ___|| ____|_   _| | | |  _ \ 
-			# | |   | |_) \ V /| |_) || | \___ \|  _|   | | | | | | |_) |
-			# | |___|  _ < | | |  __/ | |  ___) | |___  | | | |_| |  __/ 
-			#  \____|_| \_\|_| |_|    |_| |____/|_____| |_|  \___/|_|    
-			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			INSTALL_CRYPTSETUP () { # https://wiki.gentoo.org/wiki/Dm-crypt
 				emerge $EMERGE_VAR sys-fs/cryptsetup
 				SYSSTART_CRYPTSETUP_OPENRC () { 
 					rc-update add dmcrypt boot
 				}
-				SYSSTART_CRYPTSETUP_SYSTEMD () { # systemd switch (option variables top) 
-					rc-update add dmcrypt boot
+				SYSSTART_CRYPTSETUP_SYSTEMD () {  
+					echo placeholder
 				}
-				SYSSTART_CRYPTSETUP_$INITVAR	
-			}
-			#  _ __     ____  __ ____  
-			# | |\ \   / /  \/  |___ \ 
-			# | | \ \ / /| |\/| | __) |
-			# | |__\ V / | |  | |/ __/ 
-			# |_____\_/  |_|  |_|_____|
-			#                         
+				SYSSTART_CRYPTSETUP_$SYSINITVAR	
+			}                       
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			INSTALL_LVM2 () { # https://wiki.gentoo.org/wiki/LVM/de
 				emerge $EMERGE_VAR sys-fs/lvm2
@@ -1263,10 +1181,10 @@ EOF
 					BOOT_START_LVM2_OPENRC () { 
 						rc-update add lvm boot
 					}
-					BOOT_START_LVM2_SYSTEMD () { # systemd switch (option variables top) 
+					BOOT_START_LVM2_SYSTEMD () {  
 						systemctl enable lvm2-monitor.service
 					}
-					BOOT_START_LVM2_$INITVAR
+					BOOT_START_LVM2_$SYSINITVAR
 				}
 				CONFIG_LVM2 () {
 					LVM_CONF () {
@@ -1278,247 +1196,208 @@ EOF
 				SYSSTART_LVM2
 				CONFIG_LVM2
 			}
-			#  ____  _   _ ____   ___  
-			# / ___|| | | |  _ \ / _ \ 
-			# \___ \| | | | | | | | | |
-			#  ___) | |_| | |_| | |_| |
-			# |____/ \___/|____/ \___/ 
-			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			INSTALL_SUDO () { # https://wiki.gentoo.org/wiki/Sudo
 				emerge $EMERGE_VAR app-admin/sudo # must keep trailing
 				cp /etc/sudoers /etc/sudoers_bak
 				sed -i -e 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
-			}
-			#  ____   ____ ___ _   _ _____ ___ _     ____  
-			# |  _ \ / ___|_ _| | | |_   _|_ _| |   / ___| 
-			# | |_) | |    | || | | | | |  | || |   \___ \ 
-			# |  __/| |___ | || |_| | | |  | || |___ ___) |
-			# |_|    \____|___|\___/  |_| |___|_____|____/ 
-			#                                             
+			}                                          
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			INSTALL_PCIUTILS () {
 				echo "${bold}INSTALL_PCIUTILS${normal}"
 				emerge $EMERGE_VAR sys-apps/pciutils 
-			}
-			#  __  __ _   _ _   _____ ___ ____   _  _____ _   _ 
-			# |  \/  | | | | | |_   _|_ _|  _ \ / \|_   _| | | |
-			# | |\/| | | | | |   | |  | || |_) / _ \ | | | |_| |
-			# | |  | | |_| | |___| |  | ||  __/ ___ \| | |  _  |
-			# |_|  |_|\___/|_____|_| |___|_| /_/   \_\_| |_| |_|
-			#                                                    
+			}                                             
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			INSTALL_MULTIPATH () { # https://wiki.gentoo.org/wiki/Multipath
 				echo "${bold}INSTALL_MULTIPATH${normal}"
 				emerge $EMERGE_VAR sys-fs/multipath-tools
-			}
-			#   ____ _   _ _   _ ____   ____ 
-			#  / ___| \ | | | | |  _ \ / ___|
-			# | |  _|  \| | | | | |_) | |  _ 
-			# | |_| | |\  | |_| |  __/| |_| |
-			#  \____|_| \_|\___/|_|    \____|
-			#                               
+			}                            
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			INSTALL_GNUPG () {
 				echo "${bold}INSTALL_GNUPG${normal}"
 				emerge $EMERGE_VAR app/crypt/gnupg
 				gpg --full-gen-key
-			}
-			#   ___  ____        ____  ____   ___  ____  _____ ____  
-			#  / _ \/ ___|      |  _ \|  _ \ / _ \| __ )| ____|  _ \ 
-			# | | | \___ \ _____| |_) | |_) | | | |  _ \|  _| | |_) |
-			# | |_| |___) |_____|  __/|  _ <| |_| | |_) | |___|  _ < 
-			#  \___/|____/      |_|   |_| \_\\___/|____/|_____|_| \_\
-			#                                                       
+			}                                                   
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			INSTALL_OSPROBER () {
 				emerge $EMERGE_VAR sys-boot/os-prober
-			}
-			#  ______   ______  _     ___   ____ 
-			# / ___\ \ / / ___|| |   / _ \ / ___|
-			# \___ \\ V /\___ \| |  | | | | |  _ 
-			#  ___) || |  ___) | |__| |_| | |_| |
-			# |____/ |_| |____/|_____\___/ \____|
-			#                                   
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			SYSLOG () {
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				LOGGING () {
-					SYSLOGNG () {
-						emerge $EMERGE_VAR app-admin/syslog-ng
-						SYSSTART_SYSLOGNG () {
-							SYSLOGNG_OPENRC () { 
-								rc-update add syslog-ng default
-								rc-service syslog-ng start
-							}
-							SYSLOGNG_SYSTEMD () { # systemd switch (option variables top) 
-								systemctl enable syslog-ng@default
-								systemctl start syslog-ng@default
-							}
-							SYSLOGNG_$INITVAR
-						}
-						SYSSTART_SYSLOGNG
+			}                                 
+			# '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			INSTALL_SYSLOG () {
+				SETVAR_SYSLOG () {
+					DEBUG_SYSLOG () {
+						echo "${bold}SYSLOG set $SYSLOG ${normal}"
+						echo $SYSLOG_SYSTEMD 
+						echo $SYSLOG_OPENRC
+						echo $SYSLOG_EMRGE
 					}
-					SYSKLOGD () {
-						emerge $EMERGE_VAR app-admin/sysklogd
-						rc-update add sysklogd default
-						SYSSTART_SYSKLOGD () {
-							SYSKLOGD_OPENRC () { 
-								echo "palceholder"
-							}
-							SYSKLOGD_SYSTEMD () { # systemd switch (option variables top) 
-								systemctl enable rsyslog
-								systemctl start rsyslog
-							}
-							SYSKLOGD_$INITVAR
-						}
-						SYSSTART_SYSKLOGD
-					}
-					SYSLOGNG
-					# SYSKLOGD
+
+					if [ "$SYSLOG" = "SYSLOGNG" ]; then
+					SYSLOG_SYSTEMD=$SYSLOGNG_SYSLOG_SYSTEMD && SYSLOG_OPENRC=$SYSLOGNG_CRON_OPENRC && CRON_EMRGE=$SYSLOGNG_CRON_EMRGE && DEBUG_CRON
+					elif [ "$SYSLOG" = "SYSKLOGD" ] 
+					then CRON_SYSTEMD=$SYSKLOGD_CRON_SYSTEMD && SYSLOG_OPENRC=$SYSKLOGD_CRON_OPENRC && CRON_EMRGE=$SYSKLOGD_CRON_EMRGE && DEBUG_CRON
+					else
+					DEBUG_CRON
+					echo "${bold}ERROR: !${normal}"
+					fi
 				}
-				#  _     ___   ____ ____   ___ _____  _  _____ ___ ___  _   _ 
-				# | |   / _ \ / ___|  _ \ / _ \_   _|/ \|_   _|_ _/ _ \| \ | |
-				# | |  | | | | |  _| |_) | | | || | / _ \ | |  | | | | |  \| |
-				# | |__| |_| | |_| |  _ <| |_| || |/ ___ \| |  | | |_| | |\  |
-				# |_____\___/ \____|_| \_\\___/ |_/_/   \_\_| |___\___/|_| \_|
-				#                                                             
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				EMERGE_SYSLOG () {
+					emerge --ask $SYSLOG_CRON_EMRGE
+				}
+				SYSLOG_OPENRC () {
+					rc-update add $SYSLOG_OPENRC default
+				}
+				SYSLOG_SYSTEMD () {
+					systemctl enable $SYSLOG_SYSTEMD
+				}
+				CONFIGURE_SYSLOG () {
+					echo placeholder
+				}
 				LOGROTATION () {
 					LOGROTATE () {
 						emerge $EMERGE_VAR app-admin/logrotate
 					}
 					LOGROTATE
 				}
-				LOGGING
+				CRON_ANACRON #  dont know where else to put this 
+				SETVAR_CRON
+				EMERGE_CRON
+				CRON_$SYSINITVAR
+				CONFIGURE_CRON
 				LOGROTATION
 			}
-			#   ____ ____   ___  _   _ 
-			#  / ___|  _ \ / _ \| \ | |
-			# | |   | |_) | | | |  \| |
-			# | |___|  _ <| |_| | |\  |
-			#  \____|_| \_\\___/|_| \_|
-			#                         
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			INST_CRON () {
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_CRONIE () {
-					emerge $EMERGE_VAR sys-process/cronie
-					CRONIE_OPENRC () { 
-						rc-update add cronie default
+			INSTALL_CRON () {
+				SETVAR_CRON () {
+					DEBUG_CRON () {
+						echo "CRON set $CRON"
+						echo $CRON_SYSTEMD 
+						echo $CRON_OPENRC
+						echo $CRON_EMRGE
 					}
-					CRONIE_SYSTEMD () { # systemd switch (option variables top) 
-						systemctl enable cronie
-						systemctl start cronie 
-						systemctl restart cronie 
-					}
-					CRONIE_$INITVAR
+
+					if [ "$CRON" = "BCRON" ]; then
+					CRON_SYSTEMD=$BCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE && DEBUG_CRON
+					elif [ "$CRON" = "FCRON" ] 
+					then CRON_SYSTEMD=$FCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE && DEBUG_CRON
+					elif [ "$CRON" = "DCRON" ] 
+					then CRON_SYSTEMD=$DCRON_CRON_SYSTEMD && CRON_OPENRC=$DCRON_CRON_OPENRC && CRON_EMRGE=$DCRON_CRON_EMRGE && DEBUG_CRON
+					elif [ "$CRON" = "CRONIE" ] 
+					then CRON_SYSTEMD=$CRONIE_CRON_SYSTEMD && CRON_OPENRC=$CRONIE_CRON_OPENRC && CRON_EMRGE=$CRONIE_CRON_EMRGE && DEBUG_CRON
+					elif [ "$CRON" = "VIXICRON" ] 
+					then CRON_SYSTEMD=$VIXICRON_CRON_SYSTEMD && CRON_OPENRC=$VIXICRON_CRON_OPENRC && CRON_EMRGE=$VIXICRON_CRON_EMRGE && DEBUG_CRON
+					else 
+					echo wtf
+					fi
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_DCRON () {
-					emerge $EMERGE_VAR dcron
-					DCRON_OPENRC () { 
-						/etc/init.d/dcron start
-						rc-update add dcron default
-					}
-					DCRON_SYSTEMD () { # systemd switch (option variables top) 
-						systemctl enable dcron
-						systemctl start dcron 
-					}
-				CRONIE_$INITVAR
+				EMERGE_CRON () {
+					emerge --ask $CRON_CRON_EMRGE
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_ANACRON () {
+				CRON_OPENRC () {
+					rc-update add $CRON_OPENRC default
+				}
+				CRON_SYSTEMD () {
+					systemctl enable $CRON_SYSTEMD
+				}
+				CONFIGURE_CRON () {
+					crontab /etc/crontab	
+				}
+				CRON_ANACRON () { # dont know where else to put this # https://wiki.gentoo.org/wiki/Cron#anacron "... it will run jobs that were missed while the system was down. Anacron usually relies on a cron daemon to run it each day."
 					emerge $EMERGE_VAR anacron
 					ANACRON_OPENRC () { 
 						/etc/init.d/anacron start
 						rc-update add anacron default
 					}
-					ANACRON_SYSTEMD () { # systemd switch (option variables top) 
+					ANACRON_SYSTEMD () {  
 						systemctl enable anacron
-						systemctl start anacron 
 					}
-				ANACRON_$INITVAR
+					ANACRON_$SYSINITVAR
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_FCRON () {
-					emerge $EMERGE_VAR fcron
-					gpasswd -a $SYSUSERNAME fcron
-					FCRON_OPENRC () { 
-						/etc/init.d/fcron start
-						rc-update add fcron default
-					}
-					FCRON_SYSTEMD () { # systemd switch (option variables top) 
-						systemctl enable fcron
-						systemctl start fcron 
-					}
-				FCRON_$INITVAR
-				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_BCRON () {
-					emerge $EMERGE_VAR bcron
-					BCRON_OPENRC () { 
-						/etc/init.d/bcron start
-						rc-update add bcron default
-					}
-					BCRON_SYSTEMD () { # systemd switch (option variables top) 
-					SYSTEMD enable bcron
-					SYSTEMD start bcron 
-					}
-				BCRON_$INITVAR
-				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				CRON_VIXICRON () {
-					emerge $EMERGE_VAR fcron
-					VIXICRON_OPENRC () { 
-						/etc/init.d/vixi start
-						rc-update add vixi default
-					}
-					VIXICRON_SYSTEMD () { # systemd switch (option variables top) 
-						systemctl enable vixi
-						systemctl start vixi 
-					}
-				VIXICRON_$INITVAR
-				}
-				CRON_$CRONSET
-				crontab /etc/crontab
+				CRON_ANACRON #  dont know where else to put this 
+				SETVAR_CRON
+				EMERGE_CRON
+				CRON_$SYSINITVAR
+				CONFIGURE_CRON
 			}
-			#  _____ ___ _     _____   ___ _   _ ____  _______  __
-			# |  ___|_ _| |   | ____| |_ _| \ | |  _ \| ____\ \/ /
-			# | |_   | || |   |  _|    | ||  \| | | | |  _|  \  / 
-			# |  _|  | || |___| |___   | || |\  | |_| | |___ /  \ 
-			# |_|   |___|_____|_____| |___|_| \_|____/|_____/_/\_\
-			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			FILEINDEXING () {
+			INSTALL_FILEINDEXING () {
 				emerge $EMERGE_VAR sys-apps/mlocate
-			}
-			#  _____ ____ _____ ___   ___  _     ____  
-			# |  ___/ ___|_   _/ _ \ / _ \| |   / ___| 
-			# | |_  \___ \ | || | | | | | | |   \___ \ 
-			# |  _|  ___) || || |_| | |_| | |___ ___) |
-			# |_|   |____/ |_| \___/ \___/|_____|____/ 
-			#                                         
+			}                                      
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			FSTOOLS () { # (!changeme)
-				emerge $EMERGE_VAR sys-fs/e2fsprogs # Ext2, 3, and 4
-				# emerge $EMERGE_VAR sys-fs/xfsprogs # XFS 			
-				# emerge $EMERGE_VAR sys-fs/reiserfsprogs # ReiserFS	
-				# emerge $EMERGE_VAR sys-fs/jfsutils # JFS 	
-				## emerge $EMERGE_VAR sys-fs/dosfstools # VFAT (FAT32, ...) 	
-				# emerge $EMERGE_VAR sys-fs/btrfs-progs # Btrfs 
+			INSTALL_FSTOOLS () {
+				SETVAR_FSTOOLS () {
+					DEBUG_FSTOOLS () {
+						echo "FSTOOLS set on boot $BOOT_FS and for main $MAIN_FS"
+						echo $FSTOOLS_EMRGE
+					}
+					if (( "$BOOT_FS" = "ext2" || "$BOOT_FS" = "ext3" || "$BOOT_FS" = "ext4" || "$MAIN_FS" = "ext2" || "$MAIN_FS" = "ext3" || "$MAIN_FS" = "ext4" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					elif (( "$BOOT_FS" = "xfs" || "$MAIN_FS" = "xfs" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					elif (( "$BOOT_FS" = "reiserfs" || "$MAIN_FS" = "reiserfs" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					elif (( "$BOOT_FS" = "jfs" || "$MAIN_FS" = "jfs" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					elif (( "$BOOT_FS" = "msdos" || "$MAIN_FS" = "msdos" || "$BOOT_FS" = "vfat" || "$MAIN_FS" = "vfat" || "$BOOT_FS" = "fat" || "$MAIN_FS" = "fat" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					elif (( "$BOOT_FS" = "btrfs" || "$MAIN_FS" = "btrfs" )); then
+					BOOTFS_EMRGE=$FS_EXT && DEBUG_FSTOOLS
+					else 
+					echo wtf
+					fi
+				}
+				EMERGE_FSTOOLS () {
+					emerge $EMERGE_VAR $FSTOOLS_EMRGE
+				}
+				SETVAR_FSTOOLS
+				EMERGE_FSTOOLS
 			}
 			## (!changeme)
-			INSTALL_CRYPTSETUP
-			INSTALL_LVM2
-			INSTALL_SUDO
-			INSTALL_PCIUTILS	&& echo "${bold}INSTALL_PCIUTILS - END ....${normal}"
-			INSTALL_MULTIPATH	&& echo "${bold}INSTALL_MULTIPATH - END ....${normal}"
-			INSTALL_OSPROBER
-			INST_LOGGER
-			INST_CRON
-			FILEINDEXING
-			FSTOOLS
+				if [ "$INSTALL_CRYPTSETUP" = "YES" ]; then
+				INSTALL_CRYPTSETUP && echo "${bold}INSTALL_CRYPTSETUP - END ....${normal}"
+				else
+				echo placeholder
+				fi
+				if [ "$INSTALL_LVM2" = "YES" ]; then
+				INSTALL_LVM2 && echo "${bold}INSTALL_LVM2 - END ....${normal}"
+				else
+				echo placeholder
+				fi
+				if [ "$INSTALL_SUDO" = "YES" ]; then
+				INSTALL_SUDO && echo "${bold}INSTALL_SUDO - END ....${normal}"
+				else
+				echo placeholder
+				fi
+				if [ "$INSTALL_PCIUTILS" = "YES" ]; then
+				INSTALL_PCIUTILS && echo "${bold}INSTALL_PCIUTILS - END ....${normal}"
+				else
+				echo placeholder
+				fi
+				if [ "$INSTALL_MULTIPATH" = "YES" ]; then
+				INSTALL_MULTIPATH && echo "${bold}INSTALL_MULTIPATH - END ....${normal}"
+				else
+				echo placeholder
+				fi
+				if [ "$INSTALL_GNUPG" = "YES" ]; then
+				INSTALL_GNUPG  && echo "${bold}INSTALL_GNUPG - END ....${normal}"
+				else
+				echo placeholder
+				fi
+				if [ "$INSTALL_SYSLOG" = "YES" ]; then
+				INSTALL_SYSLOG  && echo "${bold}INSTALL_SYSLOG - END ....${normal}"
+				else
+				echo placeholder
+				fi
+				if [ "$INSTALL_CRON" = "YES" ]; then
+				INSTALL_CRON  && echo "${bold}INSTALL_CRON - END ....${normal}"
+				else
+				echo placeholder
+				fi
+				if [ "$INSTALL_FILEINDEXING" = "YES" ]; then
+				INSTALL_FILEINDEXING  && echo "${bold}INSTALL_FILEINDEXING - END ....${normal}"
+				else
+				echo placeholder
+				fi
 			}
 		#
 		#  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -1560,13 +1439,13 @@ EOF
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				CONFKERN_SET () {
-					CONFKERN_MANUAL () { # switch to manual configuration (option variables top) # guess an initramfs needs to be generated with dracut or the like? still new to gentoo, using genkernel for testing.
+					CONFKERN_MANUAL () {  # guess an initramfs needs to be generated with dracut or the like? still new to gentoo, using genkernel for testing.
 					lsmod # active modules by install medium.
 						CNFG_KERN_PASTE () { # lets paste our own config here (maybe this should go to auto afterall)
 							mv /usr/src/linux/.conf /usr/src/linux/.oldconf
 							touch /usr/src/linux/.conf
 							cat < EOF > /usr/src/linux/.conf
-							PLACEHOLDER - your custom linux/.conf kernel conf goes here!
+							# PLACEHOLDER - your custom linux/.conf kernel conf goes here!
 EOF
 						}
 						MKERNBUILD (){
@@ -1581,24 +1460,24 @@ EOF
 						MKERNBUILD
 					}
 					CONFKERN_AUTO () { # (!changeme) switch to auto (option variables top) # switch to auto configuration (option variables top)
-						GENKERNEL_NEXT () {
-							CKA_OPENRC () {  # ONLY SAMPLE; FIX ON YOUR OWN OERR USE SYSTEMD # config kernel with genkernel for openrc		
+						GENKERNEL_NEXT () { # # (!default)
+							CKA_OPENRC () { # (!todo)	
 								emerge $EMERGE_VAR sys-kernel/genkernel
 								CONFGENKERNEL_OPENRC () { 
 									cat < EOF > /etc/genkernel.conf
 									placeholder
 EOF
 								}
-								RUNGENKERNEL_OPENRC () { 
+								RUNGENKERNEL_OPENRC () { # (!todo)
 									# genkernel "$GENKERNEL_ALL_VAR" # generate kernel WITHOUT initramfs
 									genkernel "$GENKERNEL_ALL_VAR" initramfs # generate kernel and initramfs
 								}
 								GENKERNEL_OPENRC
 								CONFGENKERNEL_OPENRC
 							}
-							CKA_SYSTEMD () { # systemd switch (option variables top)  # config kernel with genkernel-next for systemd
+							CKA_SYSTEMD () { # (!default) # config kernel with genkernel-next for systemd
 								emerge $EMERGE_VAR sys-kernel/genkernel-next
-								CONFGENKERNEL_SYSTEMD () { # systemd switch (option variables top)
+								CONFGENKERNEL_SYSTEMD () { # (!default)
 									touch /etc/genkernel.conf
 									cat << 'EOF' > /etc/genkernel.conf
 									INSTALL="yes"
@@ -1647,14 +1526,13 @@ EOF
 									#ALLRAMDISKMODULES="1"
 EOF
 								}
-								GENKERNELNEXT_SYSTEMD () { # systemd switch (option variables top) 
-										# genkernel  # generate kernel WITHOUT initramfs
+								GENKERNELNEXT_SYSTEMD () {  
 										genkernel --config=/etc/genkernel.conf  all # generate kernel and initramfs
 								}
 								CONFGENKERNEL_SYSTEMD
 								GENKERNELNEXT_SYSTEMD
 							}
-							CKA_$INITVAR && echo "${bold}CKA_$INITVAR - END ....${normal}"
+							CKA_$SYSINITVAR && echo "${bold}CKA_$SYSINITVAR - END ....${normal}"
 						}
 						GENKERNEL_NEXT
 					}
@@ -1671,8 +1549,7 @@ EOF
 			# |___|_| \_|___| |_| |_| \_\/_/   \_\_|  |_|_|   |____/ 
 			#                                                       
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			INITRAMFS () { # https://wiki.gentoo.org/wiki/Initramfs
-				# IF GENKERNEL USED WITH "INITRAMFS VAR SKIP THIS, OR REMOVE VAR AND USE DRACUT
+			INITRAMFS () { # (!todo) # SKIP IF GENKERNEL - https://wiki.gentoo.org/wiki/Initramfs
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				DRACUT () { 
 					emerge $EMERGE_VAR sys-kernel/dracut
@@ -1697,7 +1574,7 @@ EOF
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			FSTAB () { # https://wiki.gentoo.org/wiki/Fstab
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				FSTAB_LVMONLUKS_BIOS () { # bios switch (option variables top)
+				FSTAB_LVMONLUKS_BIOS () { # (!default)
 					cat << EOF > /etc/fstab
 					# /dev/mapper/vg0-root:
 					UUID="$(blkid -o value -s UUID /dev/mapper/$VG_MAIN-$LV_MAIN)"	/	ext4	rw,relatime	0 1
@@ -1712,7 +1589,7 @@ EOF
 
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				FSTAB_LVMONLUKS_$BOOTINITVAR
+				FSTAB_LVMONLUKS_$BOOTSYSINITVAR
 			}
 			#  _  _________   ____  __    _    ____  ____  
 			# | |/ / ____\ \ / /  \/  |  / \  |  _ \/ ___| 
@@ -1723,7 +1600,7 @@ EOF
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			KEYMAPS () {
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				KEYMAPS_SYSTEMD () { # systemd switch (option variables top) 
+				KEYMAPS_SYSTEMD () {  
 					VCONSOLE_CONF () { # https://wiki.archlinux.org/index.php/Keyboard_configuration_in_console
 						cat << EOF > /etc/vconsole.conf
 						KEYMAP=$VCONSOLE_KEYMAP
@@ -1732,9 +1609,8 @@ EOF
 					}
 					VCONSOLE_CONF
 				}
-				KEYMAPS_$INITVAR
+				KEYMAPS_$SYSINITVAR
 			}
-
 			#  ____   ___   ___ _____ _     ___    _    ____  _____ ____  
 			# | __ ) / _ \ / _ \_   _| |   / _ \  / \  |  _ \| ____|  _ \ 
 			# |  _ \| | | | | | || | | |  | | | |/ _ \ | | | |  _| | |_) |
@@ -1742,7 +1618,7 @@ EOF
 			# |____/ \___/ \___/ |_| |_____\___/_/   \_\____/|_____|_| \_\
 			#   
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                                   
-			BOOTLOAD () {
+			BOOTLOAD () { # BOOTSYSINITVAR=BIOS/UEFI - 
 				#   ____ ____  _   _ ____ ____  
 				#  / ___|  _ \| | | | __ )___ \ 
 				# | |  _| |_) | | | |  _ \ __) |
@@ -1751,75 +1627,73 @@ EOF
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				SETUP_GRUB2 () {
-					emerge $EMERGE_VAR sys-boot/grub:2
-					GRUB2_OPENRC () {  # https://wiki.gentoo.org/wiki/GRUB2
-						OPENRC_GRUB2_BIOS () { 
+					MAIN_GRUB2_SET () {
+						emerge $EMERGE_VAR sys-boot/grub:2
+						MAIN_GRUB2_BIOS () {
 							grub-install $HDD1
 						}
-						OPENRC_GRUB2_UEFI () { 
-							sed -i -e '/GRUB_PLATFORMS="efi-64/d' >> /etc/portage/make.conf
-							echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
-							grub-install --target=x86_64-efi --efi-directory=/boot
-							# mount -o remount,rw /sys/firmware/efi/efivars # If grub_install returns an error like Could not prepare Boot variable: Read-only file system, it may be necessary to remount the efivars special mount as read-write in order to succeed:
-							# grub-install --target=x86_64-efi --efi-directory=/boot --removable # # Some motherboard manufacturers seem to only support the /efi/boot/ directory location for the .EFI file in the EFI System Partition (ESP). 
-						}
-						CONF_GRUB2_OPENRC () {  # CONFIG REQUIRED, ONLY A COPY FROM SYSTEMD
-							cp /etc/default/grub /etc/default/grub_bak
-
-							sed -i -e 's#GRUB_CMDLINE_LINUX="#GRUB_CMDLINE_LINUX=#g' /etc/default/grub # remove quotation mark as sed wont handle it together with functions
-							#sed -i -e "s#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX=cryptdevice=UUID=$(blkid -o value -s UUID $MAIN_PART):$PV_MAIN:allow-discards root=/dev/mapper/$VG_MAIN-$LV_MAIN #g" /etc/default/grub # # encrypt
-							sed -i -e "s#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX=rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN root=/dev/mapper/$VG_MAIN-$LV_MAIN #g" /etc/default/grub # sd-encrypt systemd
-							sed -i -e 's#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX="#g' /etc/default/grub # bring quotation mark back
-							sed -i -e 's#""#"#g' /etc/default/grub # remove quotation mark
-							sed -i -e 's#GRUB_PRELOAD_MODULES="#GRUB_PRELOAD_MODULES=#g' /etc/default/grub # remove quotation mark as sed wont handle it together with functions
-							sed -i -e "s#GRUB_PRELOAD_MODULES=#GRUB_PRELOAD_MODULES=lvm #g" /etc/default/grub # parse the config
-							sed -i -e 's#GRUB_PRELOAD_MODULES=#GRUB_PRELOAD_MODULES="#g' /etc/default/grub # bring quotation mark back
-							sed -i -e 's#""#"#g' /etc/default/grub # remove quotation mark
-							sed -i -e 's/#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g' /etc/default/grub
-							# sed -i -e 's/#GRUB_DISABLE_LINUX_UUID=true/GRUB_DISABLE_LINUX_UUID=true/g' /etc/default/grub # disable grub UUID
-							sed -i -e 's/part_msdos//g' /etc/default/grub # disable grub UUID
-							sed -i -e 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT=""/g' /etc/default/grub # disable grub UUID
-						}
-						OPENRC_GRUB2_$BOOTINITVAR
-						CONF_GRUB2_OPENRC
-						
-					}
-					GRUB2_SYSTEMD () { # systemd switch (option variables top)  # https://wiki.gentoo.org/wiki/GRUB2
-						SYSTEMD_GRUB2_BIOS () {  # systemd switch (option variables top)
-							grub-install $HDD1
-						}
-						SYSTEMD_GRUB2_UEFI () {  # systemd switch (option variables top) 
+						MAIN_GRUB2_UEFI () {   
 							sed -i -e '/GRUB_PLATFORMS="efi-64/d' >> /etc/portage/make.conf
 							echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
 							grub-install --target=x86_64-efi --efi-directory=/boot
 							# mount -o remount,rw /sys/firmware/efi/efivars # If grub_install returns an error like Could not prepare Boot variable: Read-only file system, it may be necessary to remount the efivars special mount as read-write in order to succeed:
 							# grub-install --target=x86_64-efi --efi-directory=/boot --removable # Some motherboard manufacturers seem to only support the /efi/boot/ directory location for the .EFI file in the EFI System Partition (ESP). 
 						}
-						CONF_GRUB2_SYSTEMD () {  # systemd switch (option variables top) 
+						MAIN_GRUB2_MAIN () {
 							cp /etc/default/grub /etc/default/grub_bak
-
-							sed -i -e 's#GRUB_CMDLINE_LINUX="#GRUB_CMDLINE_LINUX=#g' /etc/default/grub # remove quotation mark as sed wont handle it together with functions
-							#sed -i -e "s#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX=cryptdevice=UUID=$(blkid -o value -s UUID $MAIN_PART):$PV_MAIN:allow-discards root=/dev/mapper/$VG_MAIN-$LV_MAIN #g" /etc/default/grub # # encrypt
-							sed -i -e "s#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX=init=/lib/systemd/systemd rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN root=/dev/mapper/$VG_MAIN-$LV_MAIN #g" /etc/default/grub # sd-encrypt systemd
-							sed -i -e 's#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX="#g' /etc/default/grub # bring quotation mark back
-							sed -i -e 's#""#"#g' /etc/default/grub # remove quotation mark
-							sed -i -e 's#GRUB_PRELOAD_MODULES="#GRUB_PRELOAD_MODULES=#g' /etc/default/grub # remove quotation mark as sed wont handle it together with functions
-							sed -i -e "s#GRUB_PRELOAD_MODULES=#GRUB_PRELOAD_MODULES=lvm #g" /etc/default/grub # parse the config
-							sed -i -e 's#GRUB_PRELOAD_MODULES=#GRUB_PRELOAD_MODULES="#g' /etc/default/grub # bring quotation mark back
-							sed -i -e 's#""#"#g' /etc/default/grub # remove quotation mark
-							sed -i -e 's/#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g' /etc/default/grub
-							# sed -i -e 's/#GRUB_DISABLE_LINUX_UUID=true/GRUB_DISABLE_LINUX_UUID=true/g' /etc/default/grub # disable grub UUID
-							sed -i -e 's/part_msdos//g' /etc/default/grub # disable grub UUID
-							sed -i -e 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT=""/g' /etc/default/grub # disable grub UUID
 						}
-						SYSTEMD_GRUB2_$BOOTINITVAR
-						CONF_GRUB2_SYSTEMD	
+						MAIN_GRUB2_$BOOTSYSINITVAR
+						MAIN_GRUB2_MAIN
 					}
-					GEN_GRUBCONF () {
-						grub-mkconfig -o /boot/grub/grub.cfg
+					INITSYS_GRUB2_SET () {
+						GRUB2_OPENRC () {  # (!todo) # https://wiki.gentoo.org/wiki/GRUB2
+							OPENRC_GRUB2_BIOS () { 
+								echo placeholder
+							}
+							OPENRC_GRUB2_UEFI () {
+								echo placeholder
+							}
+							CONF_GRUB2_OPENRC () {  # CONFIG REQUIRED, ONLY A COPY FROM SYSTEMD
+								echo placeholder
+							}
+							OPENRC_GRUB2_$BOOTSYSINITVAR
+							CONF_GRUB2_OPENRC
+							
+						}
+						GRUB2_SYSTEMD () {   # https://wiki.gentoo.org/wiki/GRUB2
+							SYSTEMD_GRUB2_BIOS () {  
+								echo placeholder
+							}
+							SYSTEMD_GRUB2_UEFI () {  
+								echo placeholder
+							}
+							CONF_GRUB2_SYSTEMD () {  
+								sed -i -e 's#GRUB_CMDLINE_LINUX="#GRUB_CMDLINE_LINUX=#g' /etc/default/grub # remove quotation mark as sed wont handle it together with functions
+								#sed -i -e "s#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX=cryptdevice=UUID=$(blkid -o value -s UUID $MAIN_PART):$PV_MAIN:allow-discards root=/dev/mapper/$VG_MAIN-$LV_MAIN #g" /etc/default/grub # # encrypt
+								sed -i -e "s#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX=init=/lib/systemd/systemd rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN root=/dev/mapper/$VG_MAIN-$LV_MAIN #g" /etc/default/grub # sd-encrypt systemd
+								sed -i -e 's#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX="#g' /etc/default/grub # bring quotation mark back
+								sed -i -e 's#""#"#g' /etc/default/grub # remove quotation mark
+								sed -i -e 's#GRUB_PRELOAD_MODULES="#GRUB_PRELOAD_MODULES=#g' /etc/default/grub # remove quotation mark as sed wont handle it together with functions
+								sed -i -e "s#GRUB_PRELOAD_MODULES=#GRUB_PRELOAD_MODULES=lvm #g" /etc/default/grub # parse the config
+								sed -i -e 's#GRUB_PRELOAD_MODULES=#GRUB_PRELOAD_MODULES="#g' /etc/default/grub # bring quotation mark back
+								sed -i -e 's#""#"#g' /etc/default/grub # remove quotation mark
+								sed -i -e 's/#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g' /etc/default/grub
+								# sed -i -e 's/#GRUB_DISABLE_LINUX_UUID=true/GRUB_DISABLE_LINUX_UUID=true/g' /etc/default/grub # disable grub UUID
+								sed -i -e 's/part_msdos//g' /etc/default/grub # disable grub UUID
+								sed -i -e 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT=""/g' /etc/default/grub # disable grub UUID
+							}
+							SYSTEMD_GRUB2_$BOOTSYSINITVAR
+							CONF_GRUB2_SYSTEMD	
+						}
+						GEN_GRUBCONF () {
+							grub-mkconfig -o /boot/grub/grub.cfg
+						}
+						MAIN_GRUB2
+						GRUB2_$SYSINITVAR
+						GEN_GRUBCONF
 					}
-					GRUB2_$INITVAR
-					GEN_GRUBCONF
+					MAIN_GRUB2
+					INITSYS_GRUB2_SET
 				}
 				SETUP_$BOOTLOADER
 			}
@@ -1838,19 +1712,19 @@ EOF
 				#  \____|_|    \___/ 
 				#            
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
-				GPU () {
+				GPU () { # (!todo)
 					NONE () {
 						 echo placeholder
 					}
 					NVIDIA () {
-					echo "nvidia placeholder"
+						echo placeholder
 					}
 					AMD () {
 						RADEON () {
-							echo "radeon placeholder"
+							echo placeholder
 						}
 						AMDGPU () {
-							echo "amdgpu placeholder"
+							echo placeholder
 						# radeon-ucode
 						}
 						# RADEON
@@ -1895,13 +1769,13 @@ EOF
 					STP_DSPMGR () {
 						SETVAR_DSPMGR () {
 							DEBUG_DSPMGR () {
-							echo "desktop env set $DESKTOPENV"
-							echo "displaymgr set $DISPLAYMGR"
-
-							echo $DSTENVDSTENV_XEC 
-							echo $DSTENV_STARTX
-							echo $DSTENV_EMRGE
+								echo "desktop env set $DESKTOPENV"
+								echo "displaymgr set $DISPLAYMGR"
+								echo $DSPMGR_SYSTEMD 
+								echo $DSPMGR_OPENRC
+								echo $DSPMGR_EMRGE
 							}
+
 							if [ "$DISPLAYMGR" = "CDM" ]; then
 							DSPMGR_SYSTEMD=$CDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$CDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$CDM_DSPMGR_EMRGE && DEBUG_DSPMGR
 							elif [ "$DISPLAYMGR" = "GDM" ] 
@@ -1941,12 +1815,11 @@ EOF
 						}
 						SETVAR_DSPMGR
 						EMERGE_DSPMGR
-						DSPMGR_$INITVAR
+						DSPMGR_$SYSINITVAR
 						CONFIGURE_DSPMGR
 					}
 					STP_DSPMGR
 				}
-
 				#  ____  _____ ____  _  _______ ___  ____    _____ _   ___     __
 				# |  _ \| ____/ ___|| |/ /_   _/ _ \|  _ \  | ____| \ | \ \   / /
 				# | | | |  _| \___ \| ' /  | || | | | |_) | |  _| |  \| |\ \ / / 
@@ -1958,12 +1831,11 @@ EOF
 					STP_DSKTENV () {
 						SETVAR_DSKTENV () {
 							DEBUG_DSKTENV () {
-							echo "desktop env set $DESKTOPENV"
-							echo "displaymgr set $DISPLAYMGR"
-
-							echo $DSTENVDSTENV_XEC 
-							echo $DSTENV_STARTX
-							echo $DSTENV_EMRGE
+								echo "desktop env set $DESKTOPENV"
+								echo "displaymgr set $DISPLAYMGR"
+								echo $DSTENVDSTENV_XEC 
+								echo $DSTENV_STARTX
+								echo $DSTENV_EMRGE
 							}
 							
 							if [ "$DESKTOPENV" = "BUDGIE" ]; then
@@ -2057,7 +1929,7 @@ EOF
 									sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/$DSTENV_XEC;g' /etc/lxdm/lxdm.conf
 								}
 								MAIN_LXDM
-								MAIN_DESKTPENV_$INITVAR
+								MAIN_DESKTPENV_$SYSINITVAR
 							}
 							WDMGR_$DISPLAYMGR
 						}
@@ -2088,9 +1960,9 @@ EOF
  								echo placeholder
 							}
 							DESKTENV_STARTX
-							DESKTENV_AUTOSTART_$INITVAR
+							DESKTENV_AUTOSTART_$SYSINITVAR
 						}
-						MAIN_DESKTPENV_$INITVAR
+						MAIN_DESKTPENV_$SYSINITVAR
 						ADDREPO_DSTENV
 						EMERGE_DSTENV
 						DISPLAYMGR_YESNO
@@ -2102,7 +1974,7 @@ EOF
 			# /_/   \_\___/|____/___\___/ 
 			# 		            
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			AUDIO () {
+			AUDIO () { # (!todo)
 				SOUND_API () {
 					ALSA () { # https://wiki.gentoo.org/wiki/ALSA
 						euse -E alsa
@@ -2117,7 +1989,7 @@ EOF
 						ALSASOUND_SYSTEMD () {
 							systemctl status alsa-restore
 						}
-						ALSASOUND_$INITVAR
+						ALSASOUND_$SYSINITVAR
 					}
 					ALSA
 				}
@@ -2146,7 +2018,7 @@ EOF
 			# |_| \_|_____| |_|    \_/\_/  \___/|_| \_\_|\_\
 			#                                            
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			NETWORKING () {
+			NETWORKING () { # (!todo)
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				BASICNET () {
 					GENTOONET () { # (! default)
@@ -2162,12 +2034,12 @@ EOF
 						::1		localhost
 						127.0.1.1	$HOSTNAME.$DOMAIN	$HOSTNAME" > /etc/hosts
 					}
-				GENTOONET
-				HOSTSFILE
+					GENTOONET
+					HOSTSFILE
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				NETWORKD () { # https://wiki.archlinux.org/index.php/Systemd-networkd
-					SET_SYSTEMD () {
+					SET_NETD_SYSTEMD () {
 						systemctl enable systemd-networkd.service
 						systemctl start systemd-networkd.service 
 						REPLACE_RESOLVECONF () { (! default)
@@ -2199,7 +2071,7 @@ EOF
 					REPLACE_RESOLVECONF
 					WIRED_$NETWORK_NET
 					}
-					SET_$INITVAR
+					SET_NETD_$SYSINITVAR
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				INST_DHCPCD () { # https://wiki.gentoo.org/wiki/Dhcpcd
@@ -2210,12 +2082,12 @@ EOF
 						rc-update add dhcpcd default
 						/etc/init.d/dhcpcd start 
 					}
-					SYSSTART_DHCPD_SYSTEMD () { # systemd switch (option variables top) 
+					SYSSTART_DHCPD_SYSTEMD () {  
 						systemctl enable dhcpcd
 						systemctl start dhcpcd 
 					}
 					EMERGE_DHCPCD
-					SYSSTART_DHCPD_$INITVAR
+					SYSSTART_DHCPD_$SYSINITVAR
 				}
 				BASICNET # (! default)
 				NETWORKD # (! default)
@@ -2228,28 +2100,33 @@ EOF
 			#  \___/|____/|_____|_| \_\/_/   \_\_|   |_|    
 			#                                            
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''  
-			USERAPP () { # user applications
-				#   ____ ___ _____ 
-				#  / ___|_ _|_   _|
-				# | |  _ | |  | |  
-				# | |_| || |  | |  
-				#  \____|___| |_|  
-				#                 
+			USERAPP () { # (!todo)
+				USERAPP_EMERGE=placeholder # (! this is supposed to be a placeholder, dont remove)
+				GIT_EMERGE=dev-vcs/git
+				FIREFOX_EMERGE=www-client/firefox
+				MIDORY_EMERGE=www-client/midori
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				GIT () {
-					emerge $EMERGE_VAR dev-vcs/git
+				EMERGE_USERAPP () {
+					emerge $EMERGE_VAR $USERAPP_EMERGE
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				FIREFOX () {
-					emerge $EMERGE_VAR www-client/firefox
-				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				MIDORI () {
-					emerge $EMERGE_VAR www-client/midori
-				}
-				GIT
-				FIREFOX
-				MIDORI
+				for USERAPPS in (( $GIT_EMERGE $FIREFOX_EMERGE $MIDORY_EMERGE ))
+				do
+					if [ "$USERAPPS" = "YES" ]; then
+					$USERAPP_EMERGE=$GIT_EMERGE EMERGE_USERAPP
+					else
+					echo placeholder
+					fi
+					if [ "$INSTALL_FIREFOX" = "YES" ]; then
+					$USERAPP_EMERGE=$FIREFOX_EMERGE EMERGE_USERAPP
+					else
+					echo placeholder
+					fi
+					if [ "$INSTALL_MIDORI" = "YES" ]; then
+					USERAPP_EMERGE=$INSTALL_MIDORI INSTALL_MIDORI
+					else
+					echo placeholder
+					fi
+				done
 			}
 			#  _   _ ____  _____ ____  
 			# | | | / ___|| ____|  _ \ 
@@ -2273,6 +2150,7 @@ EOF
 				ROOT
 				ADMIN
 			}
+
 			## (!changeme)
 			BUILDKERN	&& echo "${bold}BUILD_KERNEL - END${normal}"
 			### INITRAMFS	&& echo "${bold}INITRAMFS - END${normal}" (! disabled for default setup)
@@ -2316,6 +2194,7 @@ EOF
 		#FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		# IMPORTANT INTENDATION - Must follow intendation, not only for the "innerscript" but across the entire script. Why? tell me if you figure, i didnt but it works and thats why im writing this ... :)
+
 INNERSCRIPT
 )
 RUNCHROOT () {
