@@ -331,7 +331,6 @@ BANNER () { # 0.1 BANNER
 
 	## PROFILE # default during dev of the script is systemd but prep openrc.	
 	STAGE3DEFAULT=AMD64_SYSTEMD # (!changeme) AMD64_DEFAULT (default)
-
 	CHROOTX=/mnt/gentoo # chroot directory, installer will create this recursively
 
 	## BASHRC - see section
@@ -385,23 +384,22 @@ BANNER () { # 0.1 BANNER
 		# PARTITIONING .... glad you asked! ill take a coffee, ahh scew it, make it a triple espresso!                                                                  
 		PARTITIONING () {
 			PARTED () {
-				# https://wiki.archlinux.org/index.php/GNU_Parted
-				## for virtualbox uefi go here: https://wiki.archlinux.org/index.php/VirtualBox#Installation_steps_for_Arch_Linux_guests
+				# https://wiki.archlinux.org/index.php/GNU_Parted ## for virtualbox uefi go here: https://wiki.archlinux.org/index.php/VirtualBox#Installation_steps_for_Arch_Linux_guests
 				sgdisk --zap-all /dev/sda
 				# parted -s $HDD1 rm 1
 				# parted -s $HDD1 rm 2
 				# parted -s $HDD1 rm 3
-				parted -s $HDD1 mklabel gpt # create GUID Partition Table
-				# ///////////////////////////
+				parted -s $HDD1 mklabel gpt # GUID Part-Table
+				# 
 				parted -s $HDD1 mkpart primary "$GRUB_SIZE" # the BIOS boot partition is needed when a GPT partition layout is used with GRUB2 in PC/BIOS mode. It is not required when booting in EFI/UEFI mode. 
 				parted -s $HDD1 name 1 grub # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Disks#GPT
 				parted -s $HDD1 set 1 bios_grub on
-				# ///////////////////////////
-				parted -s $HDD1 mkpart primary $BOOT_FS "$BOOT_SIZE" #
+				# 
+				parted -s $HDD1 mkpart primary $BOOT_FS "$BOOT_SIZE"
 				parted -s $HDD1 name 2 boot
 				parted -s $HDD1 set 2 boot on
-				# ///////////////////////////
-				parted -s $HDD1 mkpart primary $MAIN_FS "$MAIN_SIZE" # Use the remaining partition scheme is entirely
+				# 
+				parted -s $HDD1 mkpart primary $MAIN_FS "$MAIN_SIZE"
 				parted -s $HDD1 name 3 mainfs
 				parted -s $HDD1 set 3 lvm on
 			}
@@ -623,7 +621,6 @@ EOF
 		RESOLVCONF			&& echo "${bold}RESOLVCONF - END, proceeding to MNTFS ....${normal}"
 		MNTFS				&& echo "${bold}MNTFS - END, proceeding to CHROOT ....${normal}"
 	}
-#
 #  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
 # | .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
 # | |     ______   | || |  ____  ____  | || |  _______     | || |     ____     | || |     ____     | || |  _________   | |
@@ -635,9 +632,7 @@ EOF
 # | |              | || |              | || |              | || |              | || |              | || |              | |
 # | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
 #  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
-# ... Entering the new environment ... 		                                                        /
-# https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment            /
-# 4.0 CHROOT
+# 4.0 CHROOT # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment 
 INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 #!/bin/bash
 
@@ -859,24 +854,24 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 
 		## CRON - https://wiki.gentoo.org/wiki/Cron#Which_cron_is_right_for_the_job.3F                         
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
-		# BCRON
-		BCRON_CRON_SYSTEMD=mate-session
-		BCRON_CRON_OPENRC=mate-session
+		# BCRON # http://untroubled.org/bcron
+		BCRON_CRON_SYSTEMD=placeholder
+		BCRON_CRON_OPENRC=placeholder
 		BCRON_CRON_EMRGE=sys-process/bcron                                          
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-		# FCRON
-		FCRON_CRON_SYSTEMD=PANTHEON
-		FCRON_CRON_OPENRC=PANTHEON
+		# FCRON # http://www.linuxfromscratch.org/blfs/view/systemd/general/fcron.html
+		FCRON_CRON_SYSTEMD=fcron
+		FCRON_CRON_OPENRC=fcron
 		FCRON_CRON_EMRGE=sys-process/fcron 
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-		# DCRON - FVWM-Crystal
+		# DCRON # http://www.linuxfromscratch.org/hints/downloads/files/dcron.txt
 		DCRON_CRON_SYSTEMD=razor-session
 		DCRON_CRON_OPENRC=razor-session
 		DCRON_CRON_EMRGE=sys-process/dcron              
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 		# CRONIE
-		CRONIE_CRON_SYSTEMD=tde-session
-		CRONIE_CRON_OPENRC=tde-session
+		CRONIE_CRON_SYSTEMD=cronie
+		CRONIE_CRON_OPENRC=cronie
 		CRONIE_CRON_EMRGE=sys-process/cronie
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 		# VIXICRON
@@ -907,7 +902,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		ESELECT_PROFILE=29 # 17.1 systemd
 
 		## USERAPP
-		USERAPP_EMERGE=placeholder # (! this is supposed to be a placeholder, dont remove)
+		USERAPP_EMERGE=placeholder # (!important) (!static) ( this is supposed to be a placeholder, dont remove)
 		GIT_EMERGE=dev-vcs/git
 		FIREFOX_EMERGE=www-client/firefox
 		MIDORY_EMERGE=www-client/midori
@@ -917,9 +912,9 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		INSTALL_MIDORI=YES
 
 		# MISC
-		bold=$(tput bold) # staticvar bold text
-		normal=$(tput sgr0) # # staticvar reverse to normal text
-		EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse " # !Must keep trailing space!
+		bold=$(tput bold) # (!important)
+		normal=$(tput sgr0) # (!important)
+		EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse " # (!trailing space) (!important)
 		#
 		#  .----------------.  .----------------.  .----------------.  .----------------. 
 		# | .--------------. || .--------------. || .--------------. || .--------------. |
