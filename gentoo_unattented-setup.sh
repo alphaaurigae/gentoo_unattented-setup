@@ -567,6 +567,13 @@ BANNER () { # 0.1 BANNER
 			if [ -f ~/.bash_aliases ]; then # ~/.bash_aliases, instead of adding them here directly.
 			    . ~/.bash_aliases
 			fi
+			GITCOMMIT () {
+			git add .
+			git commit -a -m "$1"
+			git status
+			}
+			alias santa=GITCOMMIT
+			alias hohoho='git push'
 EOF
 		}                                
 		MNTFS () {
