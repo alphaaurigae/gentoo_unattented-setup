@@ -19,7 +19,7 @@ BANNER () { # 0.1 BANNER
 	+   | |_| | |___| |\  | | || |_| | |_| | | |___ | || |\  | |_| |/  \    +
 	+    \____|_____|_| \_| |_| \___/ \___/  |_____|___|_| \_|\___//_/\_\   +
 	+   									+
-	+   modular, "mostly unattended"					+
+	+   modular, mostly unattended						+
 	+   STATUS: dev PROTOTYPE 						+
 	+   									+
 	+   https://github.com/alphaaurigae			        	+
@@ -339,19 +339,19 @@ BANNER () { # 0.1 BANNER
 	PRESET_INPUTEVICE="libinput keyboard"
 	PRESET_VIDEODRIVER='amdgpu radeonsi radeon'
 	PRESET_LICENCES="-* @FREE" # Only accept licenses in the FREE license group (i.e. Free Software)
-	PRESET_USEFLAG='X a52 aac aalib acl acpi adns alsa apparmor atm audit bash-completion berkdb bidi blas boost branding bzip2 \
-			cairo cdda caps cpudetection cjk cracklib crypt cryptsetup css curl cvs cxx dbi dbus debug device-mapper dns-over-tls dga elfutils \
-			efiemu emacs encode exif expat fam ffmpeg filecaps flac fonts fortran ftp geoip gcrypt gd gif git gtk gnuefi gnutls gnuplot \
-			hardened highlight gzip ipv6 initramfs int64 introspection idn jack jpeg jemalloc kernel kms lame latex ldap libcaca libressl lm_sensors \
-			lua lzma lzo lz4 m17n-lib matroska memcached mhash modules mount nettle numa mp3 mp4 mpeg mtp nls ocaml opengl openssl opus osc oss \
-			pcre perl png policykit posix pulseaudio python raw readline resolvconf qt5 recode ruby sound seccomp sasl sockets sox \
-			socks5 ssl sssd static-libs sqllite sqlite3 svg systemd sysv-utils szip symlink tcl tcpd themes thin truetype threads tiff udev \
-			udisks unicode utils xkb xvid zip zlib \
-			-kde -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet'
+	PRESET_USEFLAG='X a52 aac aalib acl acpi adns alsa apparmor atm audit bash-completion berkdb bidi blas boost branding bzip2 '\
+			'cairo cdda caps cpudetection cjk cracklib crypt cryptsetup css curl cvs cxx dbi dbus debug device-mapper dns-over-tls dga elfutils '\
+			'efiemu emacs encode exif expat fam ffmpeg filecaps flac fonts fortran ftp geoip gcrypt gd gif git gtk gnuefi gnutls gnuplot '\
+			'hardened highlight gzip ipv6 initramfs int64 introspection idn jack jpeg jemalloc kernel kms lame latex ldap libcaca libressl lm_sensors '\
+			'lua lzma lzo lz4 m17n-lib matroska memcached mhash modules mount nettle numa mp3 mp4 mpeg mtp nls ocaml opengl openssl opus osc oss '\
+			'pcre perl png policykit posix pulseaudio python raw readline resolvconf qt5 recode ruby sound seccomp sasl sockets sox '\
+			'socks5 ssl sssd static-libs sqllite sqlite3 svg systemd sysv-utils szip symlink tcl tcpd themes thin truetype threads tiff udev '\
+			'udisks unicode utils xkb xvid zip zlib -kde -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet'
 	PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup clean-logs collision-protect \
 			compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
 			network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
-	PRESET_GENTOMIRRORS="https://ftp.snt.utwente.nl/pub/os/linux/gentoo/ https://mirror.isoc.org.il/pub/gentoo/ \
+	PRESET_GENTOMIRRORS="https://mirror.eu.oneandone.net/linux/distributions/gentoo/gentoo/ \
+				https://ftp.snt.utwente.nl/pub/os/linux/gentoo/ https://mirror.isoc.org.il/pub/gentoo/ \
 				https://mirrors.lug.mtu.edu/gentoo/ https://mirror.csclub.uwaterloo.ca/gentoo-distfiles/ \
 				https://ftp.jaist.ac.jp/pub/Linux/Gentoo/"
 
@@ -619,14 +619,14 @@ EOF
 				MAKECONF_VARIABLES
 				# emerge $EMERGE_VAR --changed-use @world
 			}
-			MOUNT_BASESYS && echo "${bold}MOUNT_BASESYS - END, proceeding to SETMODE_DEVSHM ....${normal}"
-			SETMODE_DEVSHM && echo "${bold}SETMODE_DEVSHM - END ...${normal}"
-			MAKECONF echo "${bold}MAKECONF done${normal}"
+			MOUNT_BASESYS 	&& echo "${bold}MOUNT_BASESYS - END, proceeding to SETMODE_DEVSHM ....${normal}"
+			SETMODE_DEVSHM 	&& echo "${bold}SETMODE_DEVSHM - END ...${normal}"
+			MAKECONF 	&& echo "${bold}MAKECONF done${normal}"
 		}
-		DL_STAGE			&& echo "${bold}DL_STAGE - END, proceeding to EBUILD ....${normal}"
-		EBUILD				&& echo "${bold}EBUILD - END, proceeding to RESOLVCONF ....${normal}"
-		RESOLVCONF			&& echo "${bold}RESOLVCONF - END, proceeding to MNTFS ....${normal}"
-		MNTFS				&& echo "${bold}MNTFS - END, proceeding to CHROOT ....${normal}"
+		DL_STAGE	&& echo "${bold}DL_STAGE - END, proceeding to EBUILD ....${normal}"
+		EBUILD		&& echo "${bold}EBUILD - END, proceeding to RESOLVCONF ....${normal}"
+		RESOLVCONF	&& echo "${bold}RESOLVCONF - END, proceeding to MNTFS ....${normal}"
+		MNTFS		&& echo "${bold}MNTFS - END, proceeding to CHROOT ....${normal}"
 	}
 #  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
 # | .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
@@ -922,6 +922,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		bold=$(tput bold) # (!important)
 		normal=$(tput sgr0) # (!important)
 		EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse " # (!trailing space) (!important)
+
 		#
 		#  .----------------.  .----------------.  .----------------.  .----------------. 
 		# | .--------------. || .--------------. || .--------------. || .--------------. |
@@ -1075,8 +1076,8 @@ EOF
 			SELECT_PROFILE		&& echo "${bold}SELECT_PROFILE - END ....${normal}"
 			WORLDSET		&& echo "${bold}WORLDSET - END ....${normal}"
 			SYSTEMTIME		&& echo "${bold}SYSTEMTIME - END ....${normal}"
-			CONF_LOCALES		&& echo "${bold}CONF_LOCALES - END ....${normal}"
-			FIRMWARE		&& echo "${bold}FIRMWARE - END, proceeding to CHROOT ....${normal}"
+			#CONF_LOCALES		&& echo "${bold}CONF_LOCALES - END ....${normal}"
+			#FIRMWARE		&& echo "${bold}FIRMWARE - END, proceeding to CHROOT ....${normal}"
 			echo "${bold}BASE_SYSTEM end${normal}"
 		}
 		#  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -1162,9 +1163,9 @@ EOF
 					}
 
 					if [ "$SYSLOG" = "SYSLOGNG" ]; then
-					SYSLOG_SYSTEMD=$SYSLOGNG_SYSLOG_SYSTEMD && SYSLOG_OPENRC=$SYSLOGNG_CRON_OPENRC && CRON_EMRGE=$SYSLOGNG_CRON_EMRGE
+					SYSLOG_SYSTEMD=$SYSLOGNG_SYSLOG_SYSTEMD && SYSLOG_OPENRC=$SYSLOGNG_CRON_OPENRC && SYSLOG_EMRGE=$SYSLOGNG_CRON_EMRGE
 					elif [ "$SYSLOG" = "SYSKLOGD" ] 
-					then CRON_SYSTEMD=$SYSKLOGD_CRON_SYSTEMD && SYSLOG_OPENRC=$SYSKLOGD_CRON_OPENRC && CRON_EMRGE=$SYSKLOGD_CRON_EMRGE
+					then CRON_SYSTEMD=$SYSKLOGD_CRON_SYSTEMD && SYSLOG_OPENRC=$SYSKLOGD_CRON_OPENRC && SYSLOG_EMRGE=$SYSKLOGD_CRON_EMRGE
 					else
 					DEBUG_CRON
 					echo "${bold}ERROR: Could not detect '$SYSLOG' - debug syslog $SYSLOG ${normal}"
@@ -1172,7 +1173,7 @@ EOF
 					DEBUG_CRON
 				}
 				EMERGE_SYSLOG () {
-					emerge --ask $SYSLOG_CRON_EMRGE
+					emerge --ask $SYSLOG_EMRGE
 				}
 				SYSLOG_OPENRC () {
 					rc-update add $SYSLOG_OPENRC default
@@ -1207,19 +1208,19 @@ EOF
 					}
 
 					if [ "$CRON" = "BCRON" ]; then
-					CRON_SYSTEMD=$BCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE && DEBUG_CRON
+					CRON_SYSTEMD=$BCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE
 					elif [ "$CRON" = "FCRON" ] 
-					then CRON_SYSTEMD=$FCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE && DEBUG_CRON
+					then CRON_SYSTEMD=$FCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE
 					elif [ "$CRON" = "DCRON" ] 
-					then CRON_SYSTEMD=$DCRON_CRON_SYSTEMD && CRON_OPENRC=$DCRON_CRON_OPENRC && CRON_EMRGE=$DCRON_CRON_EMRGE && DEBUG_CRON
+					then CRON_SYSTEMD=$DCRON_CRON_SYSTEMD && CRON_OPENRC=$DCRON_CRON_OPENRC && CRON_EMRGE=$DCRON_CRON_EMRGE
 					elif [ "$CRON" = "CRONIE" ] 
-					then CRON_SYSTEMD=$CRONIE_CRON_SYSTEMD && CRON_OPENRC=$CRONIE_CRON_OPENRC && CRON_EMRGE=$CRONIE_CRON_EMRGE && DEBUG_CRON
+					then CRON_SYSTEMD=$CRONIE_CRON_SYSTEMD && CRON_OPENRC=$CRONIE_CRON_OPENRC && CRON_EMRGE=$CRONIE_CRON_EMRGE
 					elif [ "$CRON" = "VIXICRON" ] 
-					then CRON_SYSTEMD=$VIXICRON_CRON_SYSTEMD && CRON_OPENRC=$VIXICRON_CRON_OPENRC && CRON_EMRGE=$VIXICRON_CRON_EMRGE && DEBUG_CRON
+					then CRON_SYSTEMD=$VIXICRON_CRON_SYSTEMD && CRON_OPENRC=$VIXICRON_CRON_OPENRC && CRON_EMRGE=$VIXICRON_CRON_EMRGE
 					else 
 					echo "${bold}ERROR: Could not detect '$CRON' - debug cron $CRON ${normal}"
 					fi
-
+					DEBUG_CRON
 				}
 				EMERGE_CRON () {
 					emerge --ask $CRON_CRON_EMRGE
@@ -1614,11 +1615,10 @@ EOF
 						GEN_GRUBCONF () {
 							grub-mkconfig -o /boot/grub/grub.cfg
 						}
-						MAIN_GRUB2
 						GRUB2_$SYSINITVAR
 						GEN_GRUBCONF
 					}
-					MAIN_GRUB2
+					MAIN_GRUB2_SET
 					INITSYS_GRUB2_SET
 				}
 				SETUP_$BOOTLOADER
@@ -1662,7 +1662,7 @@ EOF
 				# \ \      / /_ _| \ | |  _ \ / _ \ \      / / / ___\ \ / / ___| 
 				#  \ \ /\ / / | ||  \| | | | | | | \ \ /\ / /  \___ \\ V /\___ \ 
 				#   \ V  V /  | || |\  | |_| | |_| |\ V  V /    ___) || |  ___) |
-				#    \_/\_/  |___|_| \_|____/ \___/  \_/\_/    |____/ |_| |____/ 
+				#    \_/\_/  |___|_| \_|____/ \spielend___/  \_/\_/    |____/ |_| |____/ 
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				WINDOWSYS () {
@@ -1854,7 +1854,7 @@ EOF
 						}
 						DESKTENV_SOLO () {					
 							DESKTENV_STARTX () { 
-								if lumina
+								if [ "$DESKTOPENV" = "LUMINA" ]; then
 								cat << 'EOF' > ~/.xinitrc 
 								[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
 								exec start-lumina-desktop
@@ -2024,7 +2024,7 @@ EOF
 				EMERGE_USERAPP () {
 					emerge $EMERGE_VAR $USERAPP_EMERGE
 				}
-				for USERAPPS in (( $GIT_EMERGE $FIREFOX_EMERGE $MIDORY_EMERGE ))
+				for USERAPPS in (( $GIT_EMERGE = "YES" || $FIREFOX_EMERGE = "YES" || $MIDORY_EMERGE = "YES" ))
 				do
 					if [ "$USERAPPS" = "YES" ]; then
 					$USERAPP_EMERGE=$GIT_EMERGE EMERGE_USERAPP
@@ -2101,15 +2101,14 @@ EOF
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		## RUN ENTIRE SCRIPT (!changeme)
 		BASE	&& echo "${bold}BASE - END${normal}"
-		SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
-		CORE	&& echo "${bold}CORE - END${normal}"
+		# SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
+		# CORE	&& echo "${bold}CORE - END${normal}"
 		#FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		# IMPORTANT INTENDATION - Must follow intendation, not only for the "innerscript" but across the entire script. Why? tell me if you figure, i didnt but it works and thats why im writing this ... :)
-
 INNERSCRIPT
 )
-RUNCHROOT () {
+CHROOT () {
 	echo "$INNER_SCRIPT" > $CHROOTX/chroot_run.sh
 	chmod +x $CHROOTX/chroot_run.sh
 	chroot $CHROOTX /bin/bash ./chroot_run.sh
@@ -2117,8 +2116,8 @@ RUNCHROOT () {
 
 #### RUN ALL ## (!changeme)
 BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
-INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
-PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
+#INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
+#PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
 CHROOT		&& echo "${bold}RUNCHROOT - END${normal}"
 echo "${bold}Script finished all operations - END${normal}"
 
