@@ -847,7 +847,8 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		XFCE4_DSTENV_STARTX=startxfce4
 		XFCE4_DSTENV_EMERGE=xfce-base/xfce4-meta 
 
-		## LOG          
+		## LOG
+		SYSLOG=SYSLOGNG          
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
 		# SYSLOGNG
 		SYSLOGNG_SYSLOG_SYSTEMD=syslog-ng@default
@@ -1886,8 +1887,8 @@ EOF
 
 				GPU
 				WINDOWSYS
-				DISPLAYMGR
-				DESKTOP_ENV
+				#DISPLAYMGR
+				#DESKTOP_ENV
 			}
 			#     _   _   _ ____ ___ ___  
 			#    / \ | | | |  _ \_ _/ _ \ 
@@ -2068,15 +2069,15 @@ EOF
 			}
 
 			## (!changeme)
-			KERNEL	&& echo "${bold}BUILD_KERNEL - END${normal}"
-			if [ "$CONFIGKERN" != "AUTO" ]; then
-			INITRAMFS && echo "${bold}INITRAMFS - END${normal}" # (! disabled for default setup)
-			else
-			echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
-			fi
-			FSTAB		&& echo "${bold}FSTAB - END${normal}"
-			KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
-			BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
+			#KERNEL	&& echo "${bold}BUILD_KERNEL - END${normal}"
+			#if [ "$CONFIGKERN" != "AUTO" ]; then
+			#INITRAMFS && echo "${bold}INITRAMFS - END${normal}" # (! disabled for default setup)
+			#else
+			#echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
+			#fi
+			#FSTAB		&& echo "${bold}FSTAB - END${normal}"
+			#KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
+			#BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
 			VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
 			# AUDIO		&& echo "${bold}AUDIO - END${normal}"
 			# USERS		&& echo "${bold}USER - END${normal}"
@@ -2102,8 +2103,8 @@ EOF
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		## (RUN ENTIRE SCRIPT) (!changeme)
 		#BASE	&& echo "${bold}BASE - END${normal}"
-		SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
-		# CORE	&& echo "${bold}CORE - END${normal}"
+		#SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
+		CORE	&& echo "${bold}CORE - END${normal}"
 		# FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		# IMPORTANT INTENDATION - Must follow intendation, not only for the "innerscript" but across the entire script. Why? tell me if you figure, i didnt but it works and thats why im writing this ... :)
@@ -2116,7 +2117,7 @@ CHROOT () {
 }
 
 #### RUN ALL ## (!changeme)
-BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
+#BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
 #INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
 #PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
 CHROOT		&& echo "${bold}RUNCHROOT - END${normal}"
