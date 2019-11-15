@@ -40,7 +40,6 @@ BANNER () { # 0.1 BANNER
 
 ## Other INFO:
 # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation
-
 # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #  ___ _   _ ____  _______  __
 # |_ _| \ | |  _ \| ____\ \/ /
@@ -339,14 +338,14 @@ BANNER () { # 0.1 BANNER
 	PRESET_INPUTEVICE="libinput keyboard"
 	PRESET_VIDEODRIVER='amdgpu radeonsi radeon'
 	PRESET_LICENCES="-* @FREE" # Only accept licenses in the FREE license group (i.e. Free Software)
-	PRESET_USEFLAG='X a52 aac aalib acl acpi adns alsa apparmor atm audit bash-completion berkdb bidi blas boost branding bzip2 '\
-			'cairo cdda caps cpudetection cjk cracklib crypt cryptsetup css curl cvs cxx dbi dbus debug device-mapper dns-over-tls dga elfutils '\
-			'efiemu emacs encode exif expat fam ffmpeg filecaps flac fonts fortran ftp geoip gcrypt gd gif git gtk gnuefi gnutls gnuplot '\
-			'hardened highlight gzip ipv6 initramfs int64 introspection idn jack jpeg jemalloc kernel kms lame latex ldap libcaca libressl lm_sensors '\
-			'lua lzma lzo lz4 m17n-lib matroska memcached mhash modules mount nettle numa mp3 mp4 mpeg mtp nls ocaml opengl openssl opus osc oss '\
-			'pcre perl png policykit posix pulseaudio python raw readline resolvconf qt5 recode ruby sound seccomp sasl sockets sox '\
-			'socks5 ssl sssd static-libs sqllite sqlite3 svg systemd sysv-utils szip symlink tcl tcpd themes thin truetype threads tiff udev '\
-			'udisks unicode utils xkb xvid zip zlib -kde -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet'
+	PRESET_USEFLAG="X a52 aac aalib acl acpi adns alsa apparmor atm audit bash-completion berkdb bidi blas boost branding bzip2 \
+			cairo cdda caps cpudetection cjk cracklib crypt cryptsetup css curl cvs cxx dbi dbus debug device-mapper dns-over-tls dga elfutils \
+			efiemu emacs encode exif expat fam ffmpeg filecaps flac fonts fortran ftp geoip gcrypt gd gif git gtk gnuefi gnutls gnuplot \
+			hardened highlight gzip ipv6 initramfs int64 introspection idn jack jpeg jemalloc kernel kms lame latex ldap libcaca libressl lm_sensors \
+			lua lzma lzo lz4 m17n-lib matroska memcached mhash modules mount nettle numa mp3 mp4 mpeg mtp nls ocaml opengl openssl opus osc oss \
+			pcre perl png policykit posix pulseaudio python raw readline resolvconf qt5 recode ruby sound seccomp sasl sockets sox \
+			socks5 ssl sssd static-libs sqllite sqlite3 svg systemd sysv-utils szip symlink tcl tcpd themes thin truetype threads tiff udev \
+			udisks unicode utils xkb xvid zip zlib -kde -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
 	PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup clean-logs collision-protect \
 			compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
 			network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
@@ -676,11 +675,9 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		LOCALE_GEN_a2="en_US.UTF-8 UTF-8" # (!changeme)
 		LOCALE_GEN_b1="de_DE ISO-8859-1" # (!changeme)
 		LOCALE_GEN_b2="de_DE.UTF-8 UTF-8" # (!changeme)
-		LOCALE_CONF="en_US.UTF-8" # (!changeme)
-		X11KEYMAP="de" # (!changeme) keymap for desktop environment 
+		## X11KEYMAP="de" # (!changeme) keymap for desktop environment ## no config yet
 
 		SYSLOCALE="de_DE.UTF-8" # (!changeme)
-		SYSDATE_SET=AUTO # (!default)
 		SYSDATE_MAN=071604551969 # hack time :)
 		SYSCLOCK_SET=AUTO # USE AUTO (!default) / MANUAL -- MANUAL="NO TIMESYNCED SERVICE"
 		SYSCLOCK_MAN="1969-07-16 04:55:42" # hack time :)
@@ -692,10 +689,10 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		NETWORK_NET=DHCPD # DHCPD or STATIC, config static on your own in the network section.	
 
 		## DNS
-		NAMESERVER1_IPV4=1.1.1.1 # (!changeme) 1.1.1.1 ns1 cloudflare ipv4
-		NAMESERVER1_IPV6=2606:4700:4700::1111 # (!changeme) ipv6 ns1 2606:4700:4700::1111 cloudflare ipv6
-		NAMESERVER2_IPV4=1.0.0.1 # (!changeme) 1.0.0.1 ns2 cloudflare ipv4
-		NAMESERVER2_IPV6=2606:4700:4700::1001 # (!changeme) ipv6 ns2 2606:4700:4700::1001 cloudflare ipv6
+		##NAMESERVER1_IPV4=1.1.1.1 # (!changeme) 1.1.1.1 ns1 cloudflare ipv4
+		##NAMESERVER1_IPV6=2606:4700:4700::1111 # (!changeme) ipv6 ns1 2606:4700:4700::1111 cloudflare ipv6
+		##NAMESERVER2_IPV4=1.0.0.1 # (!changeme) 1.0.0.1 ns2 cloudflare ipv4
+		##NAMESERVER2_IPV6=2606:4700:4700::1001 # (!changeme) ipv6 ns2 2606:4700:4700::1001 cloudflare ipv6
 
 		## DISPLAY
 		GPU_SET=NONE # NONE. AMD_V***. NVIDIA_V***
@@ -708,10 +705,12 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		SYSUSERNAME=gentoo # (!changeme) wheel group member - name of the login sysadmin user
 
 		## KERNEL
-		INITRAMFSVAR="--lvm --mdadm"
+
+		## INITRAMFS
+		##INITRAMFSVAR="--lvm --mdadm"
 
 		## DISPLAY
-		GPU_DRIVER=amdgpu # (!changeme) amdgpu, radeon
+		GPU_SET=amdgpu # (!changeme) amdgpu, radeon
 		
 		## SYSTEM
 		### INITSYSTEM
@@ -855,7 +854,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		SYSLOGNG_SYSLOG_EMRGE=app-admin/syslog-ng              
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 		# SYSKLOGD
-		SYSKLOGD_SYSLOG_SYSTEMD=systemctl enable rsyslog
+		SYSKLOGD_SYSLOG_SYSTEMD=rsyslog
 		SYSKLOGD_SYSLOG_OPENRC=sysklogd
 		SYSKLOGD_SYSLOG_EMRGE=app-admin/sysklogd
 
@@ -884,7 +883,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		# VIXICRON
 		VIXICRON_CRON_SYSTEMD=vixi
 		VIXICRON_CRON_OPENRC=vixi
-		VIXICRON_EMRGE=sys-process/vixie-cron
+		VIXICRON_CRON_EMRGE=sys-process/vixie-cron
 
 		INSTALL_CRYPTSETUP=YES
 		INSTALL_LVM2=YES
@@ -912,9 +911,9 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		USERAPP_EMERGE=placeholder # (!important) (!static) ( this is supposed to be a placeholder, dont remove)
 		GIT_EMERGE=dev-vcs/git
 		FIREFOX_EMERGE=www-client/firefox
-		MIDORY_EMERGE=www-client/midori
+		MIDORI_EMERGE=www-client/midori
 
-		INSTALL_GIT=YES
+		INSTALL_GIT=YES 
 		INSTALL_FIREFOX=YES
 		INSTALL_MIDORI=YES
 
@@ -937,7 +936,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		#  '----------------'  '----------------'  '----------------'  '----------------' 
 		#
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 		
-		BASESYS () { 
+		BASE () { 
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			PORTAGE () { # https://wiki.gentoo.org/wiki/Portage#emerge-webrsync && https://dev.gentoo.org/~zmedico/portage/doc/man/emerge.1.html
 				mkdir /usr/portage
@@ -1001,7 +1000,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 							}
 							SYSSTART_TIMESYND
 						}
-						SYSTEMD_SYSCLOCK_$SYSCLOCK
+						SYSTEMD_SYSCLOCK_$SYSCLOCK_SET
 					}
 					SYSTEMCLOCK_$SYSINITVAR 
 				}                                         
@@ -1163,14 +1162,14 @@ EOF
 					}
 
 					if [ "$SYSLOG" = "SYSLOGNG" ]; then
-					SYSLOG_SYSTEMD=$SYSLOGNG_SYSLOG_SYSTEMD && SYSLOG_OPENRC=$SYSLOGNG_CRON_OPENRC && SYSLOG_EMRGE=$SYSLOGNG_CRON_EMRGE
+					SYSLOG_SYSTEMD=$SYSLOGNG_SYSLOG_SYSTEMD && SYSLOG_OPENRC=$SYSLOGNG_SYSLOG_OPENRC && SYSLOG_EMRGE=$SYSLOGNG_SYSLOG_EMRGE
 					elif [ "$SYSLOG" = "SYSKLOGD" ] 
-					then CRON_SYSTEMD=$SYSKLOGD_CRON_SYSTEMD && SYSLOG_OPENRC=$SYSKLOGD_CRON_OPENRC && SYSLOG_EMRGE=$SYSKLOGD_CRON_EMRGE
+					then SYSLOG_SYSTEMD=$SYSKLOGD_SYSLOG_SYSTEMD && SYSLOG_OPENRC=$SYSKLOGD_SYSLOG_OPENRC && SYSLOG_EMRGE=$SYSKLOGD_SYSLOG_EMRGE
 					else
-					DEBUG_CRON
+					DEBUG_SYSLOG
 					echo "${bold}ERROR: Could not detect '$SYSLOG' - debug syslog $SYSLOG ${normal}"
 					fi
-					DEBUG_CRON
+					DEBUG_SYSLOG
 				}
 				EMERGE_SYSLOG () {
 					emerge --ask $SYSLOG_EMRGE
@@ -1210,7 +1209,7 @@ EOF
 					if [ "$CRON" = "BCRON" ]; then
 					CRON_SYSTEMD=$BCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE
 					elif [ "$CRON" = "FCRON" ] 
-					then CRON_SYSTEMD=$FCRON_CRON_SYSTEMD && CRON_OPENRC=$BCRON_CRON_OPENRC && CRON_EMRGE=$BCRON_CRON_EMRGE
+					then CRON_SYSTEMD=$FCRON_CRON_SYSTEMD && CRON_OPENRC=$FCRON_CRON_OPENRC && CRON_EMRGE=$FCRON_CRON_EMRGE
 					elif [ "$CRON" = "DCRON" ] 
 					then CRON_SYSTEMD=$DCRON_CRON_SYSTEMD && CRON_OPENRC=$DCRON_CRON_OPENRC && CRON_EMRGE=$DCRON_CRON_EMRGE
 					elif [ "$CRON" = "CRONIE" ] 
@@ -1265,15 +1264,15 @@ EOF
 					if (( "$BOOT_FS" = "ext2" || "$BOOT_FS" = "ext3" || "$BOOT_FS" = "ext4" || "$MAIN_FS" = "ext2" || "$MAIN_FS" = "ext3" || "$MAIN_FS" = "ext4" )); then
 					BOOTFS_EMRGE=$FS_EXT
 					elif (( "$BOOT_FS" = "xfs" || "$MAIN_FS" = "xfs" )); then
-					BOOTFS_EMRGE=$FS_EXT
+					BOOTFS_EMRGE=$FS_XFS
 					elif (( "$BOOT_FS" = "reiserfs" || "$MAIN_FS" = "reiserfs" )); then
-					BOOTFS_EMRGE=$FS_EXT
+					BOOTFS_EMRGE=$FS_REISER
 					elif (( "$BOOT_FS" = "jfs" || "$MAIN_FS" = "jfs" )); then
-					BOOTFS_EMRGE=$FS_EXT
+					BOOTFS_EMRGE=$FS_JFS
 					elif (( "$BOOT_FS" = "msdos" || "$MAIN_FS" = "msdos" || "$BOOT_FS" = "vfat" || "$MAIN_FS" = "vfat" || "$BOOT_FS" = "fat" || "$MAIN_FS" = "fat" )); then
-					BOOTFS_EMRGE=$FS_EXT
+					BOOTFS_EMRGE=$FS_VFAT
 					elif (( "$BOOT_FS" = "btrfs" || "$MAIN_FS" = "btrfs" )); then
-					BOOTFS_EMRGE=$FS_EXT
+					BOOTFS_EMRGE=$FS_BTRFS
 					else 
 					echo "${bold}ERROR: Could not detect '$BOOT_FS' / '$MAIN_FS' - debug bootfs $BOOT_FS mainfs $MAIN_FS ${normal}"
 					fi
@@ -1286,52 +1285,58 @@ EOF
 				EMERGE_FSTOOLS
 			}
 			## (!changeme)
-				if [ "$INSTALL_CRYPTSETUP" = "YES" ]; then
-				INSTALL_CRYPTSETUP && echo "${bold}INSTALL_CRYPTSETUP - END ....${normal}"
-				else
-				echo "${bold}INSTALL_CRYPTSETUP=NO ....${normal}"
-				fi
-				if [ "$INSTALL_LVM2" = "YES" ]; then
-				INSTALL_LVM2 && echo "${bold}INSTALL_LVM2 - END ....${normal}"
-				else
-				echo "${bold}INSTALL_LVM2=NO ....${normal}"
-				fi
-				if [ "$INSTALL_SUDO" = "YES" ]; then
-				INSTALL_SUDO && echo "${bold}INSTALL_SUDO - END ....${normal}"
-				else
-				echo "${bold}INSTALL_SUDO=NO ....${normal}"
-				fi
-				if [ "$INSTALL_PCIUTILS" = "YES" ]; then
-				INSTALL_PCIUTILS && echo "${bold}INSTALL_PCIUTILS - END ....${normal}"
-				else
-				echo "${bold}INSTALL_PCIUTILS=NO ....${normal}"
-				fi
-				if [ "$INSTALL_MULTIPATH" = "YES" ]; then
-				INSTALL_MULTIPATH && echo "${bold}INSTALL_MULTIPATH - END ....${normal}"
-				else
-				echo "${bold}INSTALL_MULTIPATH=NO ....${normal}"
-				fi
-				if [ "$INSTALL_GNUPG" = "YES" ]; then
-				INSTALL_GNUPG  && echo "${bold}INSTALL_GNUPG - END ....${normal}"
-				else
-				echo "${bold}INSTALL_GNUPG=NO ....${normal}"
-				fi
-				if [ "$INSTALL_SYSLOG" = "YES" ]; then
-				INSTALL_SYSLOG  && echo "${bold}INSTALL_SYSLOG - END ....${normal}"
-				else
-				echo "${bold}INSTALL_CRYPTSETUP=NO ....${normal}"
-				fi
-				if [ "$INSTALL_CRON" = "YES" ]; then
-				INSTALL_CRON  && echo "${bold}INSTALL_CRON - END ....${normal}"
-				else
-				echo "${bold}INSTALL_CRON=NO ....${normal}"
-				fi
-				if [ "$INSTALL_FILEINDEXING" = "YES" ]; then
-				INSTALL_FILEINDEXING  && echo "${bold}INSTALL_FILEINDEXING - END ....${normal}"
-				else
-				echo "${bold}INSTALL_FILEINDEXING=NO ....${normal}"
-				fi
-			}
+			if [ "$INSTALL_CRYPTSETUP" = "YES" ]; then
+			INSTALL_CRYPTSETUP && echo "${bold}INSTALL_CRYPTSETUP - END ....${normal}"
+			else
+			echo "${bold}INSTALL_CRYPTSETUP=NO ....${normal}"
+			fi
+			if [ "$INSTALL_LVM2" = "YES" ]; then
+			INSTALL_LVM2 && echo "${bold}INSTALL_LVM2 - END ....${normal}"
+			else
+			echo "${bold}INSTALL_LVM2=NO ....${normal}"
+			fi
+			if [ "$INSTALL_SUDO" = "YES" ]; then
+			INSTALL_SUDO && echo "${bold}INSTALL_SUDO - END ....${normal}"
+			else
+			echo "${bold}INSTALL_SUDO=NO ....${normal}"
+			fi
+			if [ "$INSTALL_PCIUTILS" = "YES" ]; then
+			INSTALL_PCIUTILS && echo "${bold}INSTALL_PCIUTILS - END ....${normal}"
+			else
+			echo "${bold}INSTALL_PCIUTILS=NO ....${normal}"
+			fi
+			if [ "$INSTALL_MULTIPATH" = "YES" ]; then
+			INSTALL_MULTIPATH && echo "${bold}INSTALL_MULTIPATH - END ....${normal}"
+			else
+			echo "${bold}INSTALL_MULTIPATH=NO ....${normal}"
+			fi
+			if [ "$INSTALL_GNUPG" = "YES" ]; then
+			INSTALL_GNUPG  && echo "${bold}INSTALL_GNUPG - END ....${normal}"
+			else
+			echo "${bold}INSTALL_GNUPG=NO ....${normal}"
+			fi
+			if [ "$INSTALL_OSPROBER" = "YES" ]; then
+			INSTALL_OSPROBER  && echo "${bold}INSTALL_OSPROBER - END ....${normal}"
+			else
+			echo "${bold}INSTALL_OSPROBER=NO ....${normal}"
+			fi
+			if [ "$INSTALL_SYSLOG" = "YES" ]; then
+			INSTALL_SYSLOG  && echo "${bold}INSTALL_SYSLOG - END ....${normal}"
+			else
+			echo "${bold}INSTALL_CRYPTSETUP=NO ....${normal}"
+			fi
+			if [ "$INSTALL_CRON" = "YES" ]; then
+			INSTALL_CRON  && echo "${bold}INSTALL_CRON - END ....${normal}"
+			else
+			echo "${bold}INSTALL_CRON=NO ....${normal}"
+			fi
+			if [ "$INSTALL_FILEINDEXING" = "YES" ]; then
+			INSTALL_FILEINDEXING  && echo "${bold}INSTALL_FILEINDEXING - END ....${normal}"
+			else
+			echo "${bold}INSTALL_FILEINDEXING=NO ....${normal}"
+			fi
+			INSTALL_FSTOOLS
+		}
 		#
 		#  .----------------.  .----------------.  .----------------.  .----------------. 
 		# | .--------------. || .--------------. || .--------------. || .--------------. |
@@ -1354,7 +1359,7 @@ EOF
 			# |_|\_\_____|_| \_\_| \_|_____|_____|
 			#                           
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			BUILDKERN () { # https://wiki.gentoo.org/wiki/Kernel
+			KERNEL () { # https://wiki.gentoo.org/wiki/Kernel
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				KERSRC_SET () {
 					KERSRC_EMERGE () {
@@ -1639,13 +1644,13 @@ EOF
 				#            
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
 				GPU () { # (!todo)
-					NONE () {
+					SET_NONE () {
 						 echo placeholder
 					}
-					NVIDIA () {
+					SET_NVIDIA () {
 						echo placeholder
 					}
-					AMD () {
+					SET_AMD () {
 						RADEON () {
 							echo placeholder
 						}
@@ -1662,7 +1667,7 @@ EOF
 				# \ \      / /_ _| \ | |  _ \ / _ \ \      / / / ___\ \ / / ___| 
 				#  \ \ /\ / / | ||  \| | | | | | | \ \ /\ / /  \___ \\ V /\___ \ 
 				#   \ V  V /  | || |\  | |_| | |_| |\ V  V /    ___) || |  ___) |
-				#    \_/\_/  |___|_| \_|____/ \spielend___/  \_/\_/    |____/ |_| |____/ 
+				#    \_/\_/  |___|_| \_|____/ \___/  \_/\_/    |____/ |_| |____/ 
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				WINDOWSYS () {
@@ -1673,7 +1678,11 @@ EOF
 							env-update
 							source /etc/profile 
 						}
+						CONF_XORG () {
+							echo placeholder # (!todo)
+						}
 						EMERGE_XORG
+						CONF_XORG
 					}
 					$DISPLAYSERV
 				}
@@ -1685,59 +1694,56 @@ EOF
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				DISPLAYMGR () { # OPTIONS: https://wiki.gentoo.org/wiki/Display_manager
-					STP_DSPMGR () {
-						SETVAR_DSPMGR () {
-							DEBUG_DSPMGR () {
-								echo "displaymgr set $DISPLAYMGR"
-								echo $DSPMGR_SYSTEMD 
-								echo $DSPMGR_OPENRC
-								echo $DSPMGR_EMRGE
-							}
+					SETVAR_DSPMGR () {
+						DEBUG_DSPMGR () {
+							echo "displaymgr set $DISPLAYMGR"
+							echo $DSPMGR_SYSTEMD 
+							echo $DSPMGR_OPENRC
+							echo $DSPMGR_EMRGE
+						}
 
-							if [ "$DISPLAYMGR" = "CDM" ]; then
-							DSPMGR_SYSTEMD=$CDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$CDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$CDM_DSPMGR_EMRGE
-							elif [ "$DISPLAYMGR" = "GDM" ]
-							then DSPMGR_SYSTEMD=$GDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$CDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$CDM_DSPMGR_EMRGE
-							elif [ "$DISPLAYMGR" = "LIGHTDM" ]
-							then DSPMGR_SYSTEMD=$LIGHTDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$LIGHTDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$LIGHTDM_DSPMGR_EMRGE
-							elif [ "$DISPLAYMGR" = "LXDM" ]
-							then DSPMGR_SYSTEMD=$LXDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$LXDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$LXDM_DSPMGR_EMRGE
-							elif [ "$DISPLAYMGR" = "QINGY" ]
-							then DSPMGR_SYSTEMD=$QINGY_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$QINGY_DSPMGR_OPENRC && DSPMGR_EMRGE=$QINGY_DSPMGR_EMRGE
-							elif [ "$DISPLAYMGR" = "SSDM" ]
-							then DSPMGR_SYSTEMD=$SSDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$SSDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$SSDM_DSPMGR_EMRGE
-							elif [ "$DISPLAYMGR" = "SLIM" ]
-							then DSPMGR_SYSTEMD=$SLIM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$SLIM_DSPMGR_OPENRC && DSPMGR_EMRGE=$SLIM_DSPMGR_EMRGE
-							elif [ "$DISPLAYMGR" = "WDM" ]
-							then DSPMGR_SYSTEMD=$WDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$WDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$WDM_DSPMGR_EMRGE
-							elif [ "$DISPLAYMGR" = "XDM" ]
-							then DSPMGR_SYSTEMD=$XDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$XDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$XDM_DSPMGR_EMRGE 
-							else
-							echo "${bold}ERROR: Could not detect '$DISPLAYMGR' - debug displaymanager $DISPLAYMGR ${normal}"
-							fi
-							DEBUG_DSPMGR
-						}
-						EMERGE_DSPMGR () {
-							emerge --ask $DISPLAYMGR_DSPMGR_EMRGE
-						}
-						DSPMGR_OPENRC () {
-							# sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/$DSPMGR_OPENRC#g' /etc/conf.d/xdm
-							# echo "exec gdm" >> ~/.xinitrc
-							# rc-update add xdm default
-							echo placeholder
-						}
-						DSPMGR_SYSTEMD () {
-							systemctl enable $DSPMGR_SYSTEMD
-						}
-						CONFIGURE_DSPMGR () {
-							echo placeholder	
-						}
-						SETVAR_DSPMGR
-						EMERGE_DSPMGR
-						DSPMGR_$SYSINITVAR
-						CONFIGURE_DSPMGR
+						if [ "$DISPLAYMGR" = "CDM" ]; then
+						DSPMGR_SYSTEMD=$CDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$CDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$CDM_DSPMGR_EMRGE
+						elif [ "$DISPLAYMGR" = "GDM" ]
+						then DSPMGR_SYSTEMD=$GDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$GDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$GDM_DSPMGR_EMRGE
+						elif [ "$DISPLAYMGR" = "LIGHTDM" ]
+						then DSPMGR_SYSTEMD=$LIGHTDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$LIGHTDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$LIGHTDM_DSPMGR_EMRGE
+						elif [ "$DISPLAYMGR" = "LXDM" ]
+						then DSPMGR_SYSTEMD=$LXDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$LXDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$LXDM_DSPMGR_EMRGE
+						elif [ "$DISPLAYMGR" = "QINGY" ]
+						then DSPMGR_SYSTEMD=$QINGY_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$QINGY_DSPMGR_OPENRC && DSPMGR_EMRGE=$QINGY_DSPMGR_EMRGE
+						elif [ "$DISPLAYMGR" = "SSDM" ]
+						then DSPMGR_SYSTEMD=$SSDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$SSDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$SSDM_DSPMGR_EMRGE
+						elif [ "$DISPLAYMGR" = "SLIM" ]
+						then DSPMGR_SYSTEMD=$SLIM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$SLIM_DSPMGR_OPENRC && DSPMGR_EMRGE=$SLIM_DSPMGR_EMRGE
+						elif [ "$DISPLAYMGR" = "WDM" ]
+						then DSPMGR_SYSTEMD=$WDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$WDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$WDM_DSPMGR_EMRGE
+						elif [ "$DISPLAYMGR" = "XDM" ]
+						then DSPMGR_SYSTEMD=$XDM_DSPMGR_SYSTEMD && DSPMGR_OPENRC=$XDM_DSPMGR_OPENRC && DSPMGR_EMRGE=$XDM_DSPMGR_EMRGE 
+						else
+						echo "${bold}ERROR: Could not detect '$DISPLAYMGR' - debug displaymanager $DISPLAYMGR ${normal}"
+						fi
+						DEBUG_DSPMGR
 					}
-					STP_DSPMGR
+					EMERGE_DSPMGR () {
+						emerge --ask $DISPLAYMGR_DSPMGR_EMRGE
+					}
+					DSPMGR_OPENRC () {
+						# sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/$DSPMGR_OPENRC#g' /etc/conf.d/xdm
+						# echo "exec gdm" >> ~/.xinitrc
+						# rc-update add xdm default
+						echo placeholder
+					}
+					DSPMGR_SYSTEMD () {
+						systemctl enable $DSPMGR_SYSTEMD
+					}
+					CONFIGURE_DSPMGR () {
+						echo placeholder	
+					}
+					SETVAR_DSPMGR
+					EMERGE_DSPMGR
+					DSPMGR_$SYSINITVAR
+					CONFIGURE_DSPMGR
 				}
 				#  ____  _____ ____  _  _______ ___  ____    _____ _   ___     __
 				# |  _ \| ____/ ___|| |/ /_   _/ _ \|  _ \  | ____| \ | \ \   / /
@@ -1747,144 +1753,150 @@ EOF
 				#
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				DESKTOP_ENV () { # https://wiki.gentoo.org/wiki/Desktop_environment
-					STP_DSKTENV () {
-						SETVAR_DSKTENV () {
-							DEBUG_DSKTENV () {
-								echo "desktop env set $DESKTOPENV"
-								echo $DSTENVDSTENV_XEC 
-								echo $DSTENV_STARTX
-								echo $DSTENV_EMRGE
-							}
-							
-							if [ "$DESKTOPENV" = "BUDGIE" ]; then
-							DSTENVDSTENV_XEC=$DSTENV_XEC && DSTENV_STARTX=$DSTENV_STARTX && DSTENV_EMRGE=$DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "CINNAMON" ] 
-							then DSTENVDSTENV_XEC=$DSTENV_XEC && DSTENV_STARTX=$DSTENV_STARTX && DSTENV_EMRGE=$DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "DDE" ] 
-							then DSTENVDSTENV_XEC=$DDE_DSTENV_XEC && DSTENV_STARTX=$DDE_DSTENV_STARTX && DSTENV_EMRGE=$DDE_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "FVWMCRYSTAL" ] 
-							then DSTENVDSTENV_XEC=$FVWMCRYSTAL_DSTENV_XEC && DSTENV_STARTX=$CINNAMON_DSTENV_STARTX && DSTENV_EMRGE=$CINNAMON_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "GNOME" ] 
-							then DSTENVDSTENV_XEC=$GNOME_DSTENV_XEC && DSTENV_STARTX=$GNOME_DSTENV_STARTX && DSTENV_EMRGE=$GNOME_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "KDE" ] 
-							then DSTENVDSTENV_XEC=$KDE_DSTENV_XEC && DSTENV_STARTX=$KDE_DSTENV_STARTX && DSTENV_EMRGE=$KDE_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "LXDE" ] 
-							then DSTENVDSTENV_XEC=$LXDE_DSTENV_XEC && DSTENV_STARTX=$LXDE_DSTENV_STARTX && DSTENV_EMRGE=$LXDE_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "LXQT" ] 
-							then DSTENVDSTENV_XEC=$LXQT_DSTENV_XEC && DSTENV_STARTX=$LXQT_DSTENV_STARTX && DSTENV_EMRGE=$LXQT_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "LUMINA" ] 
-							then DSTENVDSTENV_XEC=$LUMINA_DSTENV_XEC && DSTENV_STARTX=$LUMINA_DSTENV_STARTX && DSTENV_EMRGE=$LUMINA_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "MATE" ] 
-							then DSTENVDSTENV_XEC=$MATE_DSTENV_XEC && DSTENV_STARTX=$MATE_DSTENV_STARTX && DSTENV_EMRGE=$MATE_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "PANTHEON" ] 
-							then DSTENVDSTENV_XEC=$PANTHEON_DSTENV_XEC && DSTENV_STARTX=$PANTHEON_DSTENV_STARTX && DSTENV_EMRGE=$PANTHEON_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "RAZORQT" ] 
-							then DSTENVDSTENV_XEC=$RAZORQT_DSTENV_XEC && DSTENV_STARTX=$RAZORQT_DSTENV_STARTX && DSTENV_EMRGE=$RAZORQT_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "TDE" ] 
-							then DSTENVDSTENV_XEC=$TDE_DSTENV_XEC && DSTENV_STARTX=$TDE_DSTENV_STARTX && DSTENV_EMRGE=$TDE_DSTENV_EMRGE
-							elif [ "$DESKTOPENV" = "XFCE4" ] 
-							then DSTENVDSTENV_XEC=$XFCE4_DSTENV_XEC && DSTENV_STARTX=$XFCE4_DSTENV_STARTX && DSTENV_EMRGE=$XFCE4_DSTENV_EMRGE
-							else 
-							echo "${bold}ERROR: Could not detect '$DESKTOPENV' - debug displaymanager $DESKTOPENV ${normal}"
-							fi
-							DEBUG_DSKTENV
+					SETVAR_DSKTENV () {
+						DEBUG_DSKTENV () {
+							echo "desktop env set $DESKTOPENV"
+							echo $DSTENVDSTENV_XEC 
+							echo $DSTENV_STARTX
+							echo $DSTENV_EMRGE
 						}
-						ADDREPO_DSTENV () {
-							if [ "$DESKTOPENV" = "PANTHEON" ]; then
-							layman -a elementary
-							eselect repository enable elementary
-							emerge --sync elementary 
-							else
-							echo nothing to be done
-							fi
-						}
-						EMERGE_DSTENV () {
-							if [ "$DESKTOPENV" = "DDM" ]; then
-							emerge --ask --noreplace app-eselect/eselect-repository dev-vcs/git
-							eselect repository add deepin git https://github.com/zhtengw/deepin-overlay.git
-							emerge --sync deepin
-							mkdir -pv /etc/portage/package.use
-							echo "dde-base/dde-meta multimedia" >> /etc/portage/package.use/deepin
-							emerge --ask --verbose --keep-going dde-base/dde-meta
+						
+						if [ "$DESKTOPENV" = "BUDGIE" ]; then
+						DSTENVDSTENV_XEC=$BUDGIE_DSTENV_XEC && DSTENV_STARTX=$BUDGIE_DSTENV_STARTX && DSTENV_EMRGE=$BUDGIE_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "CINNAMON" ] 
+						then DSTENVDSTENV_XEC=$CINNAMON_DSTENV_XEC && DSTENV_STARTX=$CINNAMON_DSTENV_STARTX && DSTENV_EMRGE=$CINNAMON_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "DDE" ] 
+						then DSTENVDSTENV_XEC=$DDE_DSTENV_XEC && DSTENV_STARTX=$DDE_DSTENV_STARTX && DSTENV_EMRGE=$DDE_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "FVWMCRYSTAL" ] 
+						then DSTENVDSTENV_XEC=$FVWMCRYSTAL_DSTENV_XEC && DSTENV_STARTX=$FVWMCRYSTAL_DSTENV_STARTX && DSTENV_EMRGE=$FVWMCRYSTAL_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "GNOME" ] 
+						then DSTENVDSTENV_XEC=$GNOME_DSTENV_XEC && DSTENV_STARTX=$GNOME_DSTENV_STARTX && DSTENV_EMRGE=$GNOME_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "KDE" ] 
+						then DSTENVDSTENV_XEC=$KDE_DSTENV_XEC && DSTENV_STARTX=$KDE_DSTENV_STARTX && DSTENV_EMRGE=$KDE_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "LXDE" ] 
+						then DSTENVDSTENV_XEC=$LXDE_DSTENV_XEC && DSTENV_STARTX=$LXDE_DSTENV_STARTX && DSTENV_EMRGE=$LXDE_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "LXQT" ] 
+						then DSTENVDSTENV_XEC=$LXQT_DSTENV_XEC && DSTENV_STARTX=$LXQT_DSTENV_STARTX && DSTENV_EMRGE=$LXQT_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "LUMINA" ] 
+						then DSTENVDSTENV_XEC=$LUMINA_DSTENV_XEC && DSTENV_STARTX=$LUMINA_DSTENV_STARTX && DSTENV_EMRGE=$LUMINA_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "MATE" ] 
+						then DSTENVDSTENV_XEC=$MATE_DSTENV_XEC && DSTENV_STARTX=$MATE_DSTENV_STARTX && DSTENV_EMRGE=$MATE_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "PANTHEON" ] 
+						then DSTENVDSTENV_XEC=$PANTHEON_DSTENV_XEC && DSTENV_STARTX=$PANTHEON_DSTENV_STARTX && DSTENV_EMRGE=$PANTHEON_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "RAZORQT" ] 
+						then DSTENVDSTENV_XEC=$RAZORQT_DSTENV_XEC && DSTENV_STARTX=$RAZORQT_DSTENV_STARTX && DSTENV_EMRGE=$RAZORQT_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "TDE" ] 
+						then DSTENVDSTENV_XEC=$TDE_DSTENV_XEC && DSTENV_STARTX=$TDE_DSTENV_STARTX && DSTENV_EMRGE=$TDE_DSTENV_EMRGE
+						elif [ "$DESKTOPENV" = "XFCE4" ] 
+						then DSTENVDSTENV_XEC=$XFCE4_DSTENV_XEC && DSTENV_STARTX=$XFCE4_DSTENV_STARTX && DSTENV_EMRGE=$XFCE4_DSTENV_EMRGE
+						else 
+						echo "${bold}ERROR: Could not detect '$DESKTOPENV' - debug displaymanager $DESKTOPENV ${normal}"
+						fi
+						DEBUG_DSKTENV
+					}
+					ADDREPO_DSTENV () {
+						if [ "$DESKTOPENV" = "PANTHEON" ]; then
+						layman -a elementary
+						eselect repository enable elementary
+						emerge --sync elementary 
+						else
+						echo placeholder
+						fi
+					}
+					EMERGE_DSTENV () {
+						if [ "$DESKTOPENV" = "DDM" ]; then
+						emerge --ask --noreplace app-eselect/eselect-repository dev-vcs/git
+						eselect repository add deepin git https://github.com/zhtengw/deepin-overlay.git
+						emerge --sync deepin
+						mkdir -pv /etc/portage/package.use
+						echo "dde-base/dde-meta multimedia" >> /etc/portage/package.use/deepin
+						emerge --ask --verbose --keep-going dde-base/dde-meta
 
-							elif [ "$DESKTOPENV" = "PANTHEON" ]; then
-							emerge --ask pantheon-base/pantheon-shell
-							emerge --ask media-video/audience x11-terms/pantheon-terminal
-							elif [ "$DESKTOPENV" = "XFCE4" ]; then
-							
-							MISC_XFCE4 () {
-								emerge $EMERGE_VAR xfce-base/xfwm4
-								emerge $EMERGE_VAR xfce-base/xfce4-panel
-								# emerge $EMERGE_VAR xfce-extra/xfce4-notifyd
-								emerge $EMERGE_VAR xfce-extra/xfce4-mount-plugin
-								emerge $EMERGE_VAR xfce-base/thunar
-								# emerge $EMERGE_VAR x11-terms/xfce4-terminal
-								emerge $EMERGE_VAR app-editors/mousepad
-								emerge $EMERGE_VAR xfce4-pulseaudio-plugin
-								emerge $EMERGE_VAR xfce-extra/xfce4-mixer 
-								emerge $EMERGE_VAR xfce-extra/xfce4-alsa-plugin
-								# emerge $EMERGE_VAR xfce-extra/thunar-volman
-							}
-							MISC_XFCE4
+						elif [ "$DESKTOPENV" = "PANTHEON" ]; then
+						emerge --ask pantheon-base/pantheon-shell
+						emerge --ask media-video/audience x11-terms/pantheon-terminal
+						elif [ "$DESKTOPENV" = "XFCE4" ]; then
+						
+						MISC_XFCE4 () {
+							emerge $EMERGE_VAR xfce-base/xfwm4
+							emerge $EMERGE_VAR xfce-base/xfce4-panel
+							# emerge $EMERGE_VAR xfce-extra/xfce4-notifyd
+							emerge $EMERGE_VAR xfce-extra/xfce4-mount-plugin
+							emerge $EMERGE_VAR xfce-base/thunar
+							# emerge $EMERGE_VAR x11-terms/xfce4-terminal
+							emerge $EMERGE_VAR app-editors/mousepad
+							emerge $EMERGE_VAR xfce4-pulseaudio-plugin
+							emerge $EMERGE_VAR xfce-extra/xfce4-mixer 
+							emerge $EMERGE_VAR xfce-extra/xfce4-alsa-plugin
+							# emerge $EMERGE_VAR xfce-extra/thunar-volman
+						}
+						MISC_XFCE4
 
-							else
-							emerge --ask $DSTENV_EMRGE
-							fi
-							emerge --ask app-text/poppler -qt5 # app-text/poppler have +qt5 by default
-							env-update && source /etc/profile
-						}
-						MAIN_DESKTPENV_OPENRC () {
-							rc-update add dbus default
-							rc-update add xdm default
-							rc-update add elogind boot # elogind The systemd project's "logind", extracted to a standalone package https://github.com/elogind/elogind
-						}
-						MAIN_DESKTPENV_SYSTEMD () {
-							enable systemd-logind.service
-							systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
-						}
-						W_D_MGR () {
-							WDMGR_LXDM () {
-								MAIN_LXDM () {
-									sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/$DSTENV_XEC;g' /etc/lxdm/lxdm.conf
-								}
-								MAIN_LXDM
-								MAIN_DESKTPENV_$SYSINITVAR
+						else
+						emerge --ask $DSTENV_EMRGE
+						fi
+						emerge --ask app-text/poppler -qt5 # app-text/poppler have +qt5 by default
+						env-update && source /etc/profile
+					}
+					MAIN_DESKTPENV_OPENRC () {
+						rc-update add dbus default
+						rc-update add xdm default
+						rc-update add elogind boot # elogind The systemd project's "logind", extracted to a standalone package https://github.com/elogind/elogind
+					}
+					MAIN_DESKTPENV_SYSTEMD () {
+						enable systemd-logind.service
+						systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+					}
+					W_D_MGR () {
+						WDMGR_LXDM () {
+							MAIN_LXDM () {
+								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/$DSTENV_XEC;g' /etc/lxdm/lxdm.conf
 							}
-							WDMGR_$DISPLAYMGR
+							MAIN_LXDM
+							MAIN_DESKTPENV_$SYSINITVAR
 						}
-						DESKTENV_SOLO () {					
-							DESKTENV_STARTX () { 
-								if [ "$DESKTOPENV" = "LUMINA" ]; then
-								cat << 'EOF' > ~/.xinitrc 
-								[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
-								exec start-lumina-desktop
-EOF								
-								else
-
-								cat << 'EOF' > ~/.xinitrc 
-								exec $DSTENV_STARTX
+						WDMGR_$DISPLAYMGR
+					}
+					DESKTENV_SOLO () {					
+						DESKTENV_STARTX () { 
+							if [ "$DESKTOPENV" = "LUMINA" ]; then
+							cat << 'EOF' > ~/.xinitrc 
+							[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+							exec start-lumina-desktop
 EOF
-								fi
-							}
-							DESKTENV_AUTOSTART_OPENRC () {
-								if [ "$DESKTOPENV" = "CINNAMON" ]; then
-								cp /etc/xdg/autostart/nm-applet.desktop /home/userName/.config/autostart/nm-applet.desktop
-								echo 'X-GNOME-Autostart-enabled=false' >> /home/userName/.config/autostart/nm-applet.desktop
-								chown userName:userName /home/userName/.config/autostart/nm-applet.desktop
-								else
-								echo placeholder
-								fi
-							}
-							DESKTENV_AUTOSTART_SYSTEMD () {
- 								echo placeholder
-							}
-							DESKTENV_STARTX
-							DESKTENV_AUTOSTART_$SYSINITVAR
+							else
+
+							cat << 'EOF' > ~/.xinitrc 
+							exec $DSTENV_STARTX
+EOF
+							fi
 						}
-						MAIN_DESKTPENV_$SYSINITVAR
-						ADDREPO_DSTENV
-						EMERGE_DSTENV
-						DISPLAYMGR_YESNO
+						DESKTENV_AUTOSTART_OPENRC () {
+							if [ "$DESKTOPENV" = "CINNAMON" ]; then
+							cp /etc/xdg/autostart/nm-applet.desktop /home/userName/.config/autostart/nm-applet.desktop
+							echo 'X-GNOME-Autostart-enabled=false' >> /home/userName/.config/autostart/nm-applet.desktop
+							chown userName:userName /home/userName/.config/autostart/nm-applet.desktop
+							else
+							echo placeholder
+							fi
+						}
+						DESKTENV_AUTOSTART_SYSTEMD () {
+							echo placeholder
+						}
+						DESKTENV_STARTX
+						DESKTENV_AUTOSTART_$SYSINITVAR
+					}
+					SETVAR_DSKTENV
+					ADDREPO_DSTENV
+					EMERGE_DSTENV
+					MAIN_DESKTPENV_$SYSINITVAR
+					$DISPLAYMGR_YESNO
+				}
+
+				GPU
+				WINDOWSYS
+				DISPLAYMGR
+				DESKTOP_ENV
 			}
 			#     _   _   _ ____ ___ ___  
 			#    / \ | | | |  _ \_ _/ _ \ 
@@ -1937,7 +1949,7 @@ EOF
 			# |_| \_|_____| |_|    \_/\_/  \___/|_| \_\_|\_\
 			#                                            
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			NETWORKING () { # (!todo)
+			NETWORK () { # (!todo)
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				BASICNET () {
 					GENTOONET () { # (! default)
@@ -2024,24 +2036,22 @@ EOF
 				EMERGE_USERAPP () {
 					emerge $EMERGE_VAR $USERAPP_EMERGE
 				}
-				for USERAPPS in (( $GIT_EMERGE = "YES" || $FIREFOX_EMERGE = "YES" || $MIDORY_EMERGE = "YES" ))
-				do
-					if [ "$USERAPPS" = "YES" ]; then
-					$USERAPP_EMERGE=$GIT_EMERGE EMERGE_USERAPP
-					else
-					echo "${bold}USERAPPS=NO ....${normal}"
-					fi
-					if [ "$INSTALL_FIREFOX" = "YES" ]; then
-					$USERAPP_EMERGE=$FIREFOX_EMERGE EMERGE_USERAPP
-					else
-					echo "${bold}INSTALL_FIREFOX=NO ....${normal}"
-					fi
-					if [ "$INSTALL_MIDORI" = "YES" ]; then
-					USERAPP_EMERGE=$INSTALL_MIDORI INSTALL_MIDORI
-					else
-					echo "${bold}INSTALL_MIDORI=NO ....${normal}"
-					fi
-				done
+
+				if [ "$INSTALL_GIT" = "YES" ]; then
+				USERAPP_EMERGE=$GIT_EMERGE EMERGE_USERAPP
+				else
+				echo "${bold}USERAPPS=NO ....${normal}"
+				fi
+				if [ "$INSTALL_FIREFOX" = "YES" ]; then
+				USERAPP_EMERGE=$FIREFOX_EMERGE EMERGE_USERAPP
+				else
+				echo "${bold}INSTALL_FIREFOX=NO ....${normal}"
+				fi
+				if [ "$INSTALL_MIDORI" = "YES" ]; then
+				USERAPP_EMERGE=$MIDORI_EMERGE INSTALL_MIDORI
+				else
+				echo "${bold}INSTALL_MIDORI=NO ....${normal}"
+				fi
 			}
 			#  _   _ ____  _____ ____  
 			# | | | / ___|| ____|  _ \ 
@@ -2067,10 +2077,9 @@ EOF
 			}
 
 			## (!changeme)
-			BUILDKERN	&& echo "${bold}BUILD_KERNEL - END${normal}"
-			### INITRAMFS	&& echo "${bold}INITRAMFS - END${normal}" (! disabled for default setup)
+			KERNEL	&& echo "${bold}BUILD_KERNEL - END${normal}"
 			if [ "$CONFIGKERN" != "AUTO" ]; then
-			INITRAMFS
+			INITRAMFS && echo "${bold}INITRAMFS - END${normal}" # (! disabled for default setup)
 			else
 			echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
 			fi
@@ -2080,7 +2089,8 @@ EOF
 			VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
 			# AUDIO		&& echo "${bold}AUDIO - END${normal}"
 			# USERS		&& echo "${bold}USER - END${normal}"
-			# NETWORKING	&& echo "${bold}NETWORKING - END${normal}"
+			# USERAPP
+			# NETWORK	&& echo "${bold}NETWORK - END${normal}"
 		}
 		#
 		#  .----------------.  .----------------.  .-----------------. .----------------.  .----------------.  .----------------. 
@@ -2099,11 +2109,11 @@ EOF
 			rm /stage3-*.tar.*
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
-		## RUN ENTIRE SCRIPT (!changeme)
+		## (RUN ENTIRE SCRIPT) (!changeme)
 		BASE	&& echo "${bold}BASE - END${normal}"
 		# SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
 		# CORE	&& echo "${bold}CORE - END${normal}"
-		#FINISH	&& echo "${bold}FINISH - END${normal}"
+		# FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		# IMPORTANT INTENDATION - Must follow intendation, not only for the "innerscript" but across the entire script. Why? tell me if you figure, i didnt but it works and thats why im writing this ... :)
 INNERSCRIPT
@@ -2116,8 +2126,8 @@ CHROOT () {
 
 #### RUN ALL ## (!changeme)
 BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
-#INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
-#PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
+INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
+PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
 CHROOT		&& echo "${bold}RUNCHROOT - END${normal}"
 echo "${bold}Script finished all operations - END${normal}"
 
