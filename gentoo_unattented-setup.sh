@@ -953,7 +953,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 			}                                                 
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			WORLDSET () { # https://wiki.gentoo.org/wiki/World_set_(Portage)
-				emerge $$EMERGE_VAR --newuse @world
+				emerge $EMERGE_VAR --newuse @world
 				emerge $EMERGE_VAR --oneshot virtual/udev virtual/libudev # ! If your system set provides sys-fs/eudev, virtual/udev and virtual/libudev may be preventing systemd.  https://wiki.gentoo.org/wiki/Systemd
 			}
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
