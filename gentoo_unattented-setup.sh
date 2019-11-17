@@ -344,7 +344,7 @@ BANNER () { # 0.1 BANNER
 	PRESET_LICENCES="-* @FREE" # Only accept licenses in the FREE license group (i.e. Free Software)
 	PRESET_USEFLAG="X a52 aac aalib acl acpi alsa apparmor audit bash-completion boost branding bzip2 \
 			cairo cpudetection cjk cracklib crypt cryptsetup cxx dbus git gpg gtk \
-			hardened initramfs int64 lzma lzo mount opengl pulseaudio systemd udev udisks unicode -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
+			hardened initramfs int64 lzma lzo mount opengl pulseaudio systemd threads udev udisks unicode -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
 
 	PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup clean-logs collision-protect \
 			compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
@@ -1621,6 +1621,52 @@ EOF
 				}
 				SETUP_$BOOTLOADER
 			}
+			#     _   _   _ ____ ___ ___  
+			#    / \ | | | |  _ \_ _/ _ \ 
+			#   / _ \| | | | | | | | | | |
+			#  / ___ \ |_| | |_| | | |_| |
+			# /_/   \_\___/|____/___\___/ 
+			# 		            
+			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			AUDIO () { # (!todo)
+				SOUND_API () {
+					ALSA () { # https://wiki.gentoo.org/wiki/ALSA
+						euse -E alsa
+						emerge $EMERGE_VAR --changed-use --deep @world
+						emerge $EMERGE_VAR media-sound/alsa-utils
+						USE="ffmpeg" emerge -q media-plugins/alsa-plugins
+
+						ALSASOUND_OPENRC () {
+							rc-service alsasound start
+							rc-update add alsasound boot
+						}
+						ALSASOUND_SYSTEMD () {
+							systemctl status alsa-restore
+						}
+						ALSASOUND_$SYSINITVAR
+					}
+					ALSA
+				}
+				SOUND_SERVER () {
+					PULSEAUDIO () {
+						# just igbberish here - ignore for now or fix it xD
+						# rc-update add consolekit default
+						echo placeholder
+						#emerge --ask --changed-use --deep @world # this is to update after setting the use flag
+					}
+					PULSEAUDIO
+				}
+				SOUND_MIXER () {
+
+					PAVUCONTROL () {
+						emerge $EMERGE_VAR media-sound/pavucontrol
+					}
+					PAVUCONTROL
+				}
+				SOUND_API
+				SOUND_SERVER
+				SOUND_MIXER
+			}
 			# __     _____ ____  _   _   _    _     
 			# \ \   / /_ _/ ___|| | | | / \  | |    
 			#  \ \ / / | |\___ \| | | |/ _ \ | |    
@@ -1888,55 +1934,9 @@ EOF
 				}
 
 				#GPU
-				#WINDOWSYS
+				WINDOWSYS
 				DISPLAYMGR
 				DESKTOP_ENV
-			}
-			#     _   _   _ ____ ___ ___  
-			#    / \ | | | |  _ \_ _/ _ \ 
-			#   / _ \| | | | | | | | | | |
-			#  / ___ \ |_| | |_| | | |_| |
-			# /_/   \_\___/|____/___\___/ 
-			# 		            
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			AUDIO () { # (!todo)
-				SOUND_API () {
-					ALSA () { # https://wiki.gentoo.org/wiki/ALSA
-						euse -E alsa
-						emerge $EMERGE_VAR --changed-use --deep @world
-						emerge $EMERGE_VAR media-sound/alsa-utils
-						USE="ffmpeg" emerge -q media-plugins/alsa-plugins
-
-						ALSASOUND_OPENRC () {
-							rc-service alsasound start
-							rc-update add alsasound boot
-						}
-						ALSASOUND_SYSTEMD () {
-							systemctl status alsa-restore
-						}
-						ALSASOUND_$SYSINITVAR
-					}
-					ALSA
-				}
-				SOUND_SERVER () {
-					PULSEAUDIO () {
-						# just igbberish here - ignore for now or fix it xD
-						# rc-update add consolekit default
-						echo placeholder
-						#emerge --ask --changed-use --deep @world # this is to update after setting the use flag
-					}
-					PULSEAUDIO
-				}
-				SOUND_MIXER () {
-
-					PAVUCONTROL () {
-						emerge $EMERGE_VAR media-sound/pavucontrol
-					}
-					PAVUCONTROL
-				}
-				SOUND_API
-				SOUND_SERVER
-				SOUND_MIXER
 			}
 			#  _   _ _____ _______        _____  ____  _  __
 			# | \ | | ____|_   _\ \      / / _ \|  _ \| |/ /
@@ -2043,7 +2043,7 @@ EOF
 				else
 				echo "${bold}INSTALL_FIREFOX=NO ....${normal}"
 				fi
-				if [ "$INSTALL_MIDORI" == "YES" ]; then
+				if [ "INSTALL_MIDORI" == "YES" ]; then
 				USERAPP_EMERGE=$MIDORI_EMERGE INSTALL_MIDORI
 				else
 				echo "${bold}INSTALL_MIDORI=NO ....${normal}"
@@ -2060,32 +2060,40 @@ EOF
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				ROOT () { # (! default)
 					echo "${bold}enter new root password${normal}"
-					passwd
+					until passwd
+					do
+					  echo "${bold}enter new root password${normal}"
+					done
 				}
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				ADMIN () { # (! default)
-					useradd -m -g users -G wheel,storage,power -s /bin/bash $SYSUSERNAME
+					groupadd plugdev
+					groupadd power
+					useradd -m -g users -G wheel,plugdev,power -s /bin/bash $SYSUSERNAME
 					echo "${bold}enter new $SYSUSERNAME password${normal}"
-					passwd $SYSUSERNAME
+					until passwd $SYSUSERNAME
+					do
+					  echo "${bold}enter new $SYSUSERNAME password${normal}"
+					done
 				}
 				ROOT
 				ADMIN
 			}
 
 			## (!changeme)
-			#KERNEL	&& echo "${bold}BUILD_KERNEL - END${normal}"
-			#if [ "$CONFIGKERN" != "AUTO" ]; then
-			#INITRAMFS && echo "${bold}INITRAMFS - END${normal}" # (! disabled for default setup)
-			#else
-			#echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
-			#fi
-			#FSTAB		&& echo "${bold}FSTAB - END${normal}"
-			#KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
-			#BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
-			#VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
-			# AUDIO		&& echo "${bold}AUDIO - END${normal}"
+			KERNEL	&& echo "${bold}BUILD_KERNEL - END${normal}"
+			if [ "$CONFIGKERN" != "AUTO" ]; then
+			INITRAMFS && echo "${bold}INITRAMFS - END${normal}" # (! disabled for default setup)
+			else
+			echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
+			fi
+			FSTAB		&& echo "${bold}FSTAB - END${normal}"
+			KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
+			BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
+			AUDIO		&& echo "${bold}AUDIO - END${normal}"
+			VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
+			USERAPP
 			USERS		&& echo "${bold}USER - END${normal}"
-			# USERAPP
 			# NETWORK	&& echo "${bold}NETWORK - END${normal}"
 		}
 		#
@@ -2106,8 +2114,8 @@ EOF
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		## (RUN ENTIRE SCRIPT) (!changeme)
-		#BASE	&& echo "${bold}BASE - END${normal}"
-		#SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
+		BASE	&& echo "${bold}BASE - END${normal}"
+		SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
 		CORE	&& echo "${bold}CORE - END${normal}"
 		# FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -2122,8 +2130,8 @@ CHROOT () {
 
 #### RUN ALL ## (!changeme)
 BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
-#INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
-#PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
+INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
+PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
 CHROOT		&& echo "${bold}RUNCHROOT - END${normal}"
 echo "${bold}Script finished all operations - END${normal}"
 
