@@ -41,6 +41,9 @@ BANNER () { # 0.1 BANNER
 ## Other INFO:
 # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation
 # https://wiki.gentoo.org/wiki/Handbook:AMD64/Full/Installation
+
+# https://wiki.gentoo.org/wiki/Security_Handbook/Full
+
 # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #  ___ _   _ ____  _______  __
 # |_ _| \ | |  _ \| ____\ \/ /
@@ -72,7 +75,7 @@ BANNER () { # 0.1 BANNER
 	# 1.5 LVMONLUKS ((!LVM2) in the luks container on $MAIN_PART) - WORKS
 		# 1.5.1 LVM_PV ((!physical volume $PV_MAIN) only for the $MAIN_PART)
 		# 1.5.2 LVM_VG ((!volume group $VG_MAIN) only on the $VG_MAIN)
-		# 1.5.3 LVM_LV ((!volume group $LV_MAIN) only on the $PV_MAIN for the OS installation as root)
+		# 1.5.3 LVM_LV ((!volume group $LV_MAIN) only 		on the $PV_MAIN for the OS installation as root)
 		# 1.5.4 MAKEFS_LVM (filesystem on the created LVM logical volume $LV_MAIN)
 		# 1.5.5 MOUNT_LVM_LV (mount to proceed with gentoo setup)
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -339,17 +342,12 @@ BANNER () { # 0.1 BANNER
 	PRESET_INPUTEVICE="libinput keyboard"
 	PRESET_VIDEODRIVER='amdgpu radeonsi radeon'
 	PRESET_LICENCES="-* @FREE" # Only accept licenses in the FREE license group (i.e. Free Software)
-	PRESET_USEFLAG="X a52 aac aalib acl acpi adns alsa apparmor atm audit bash-completion berkdb bidi blas boost branding bzip2 \
-			cairo cdda caps cpudetection cjk cracklib crypt cryptsetup css curl cvs cxx dbi dbus debug device-mapper dns-over-tls dga elfutils \
-			efiemu emacs encode exif expat fam ffmpeg filecaps flac fonts fortran ftp geoip gcrypt gd gif git gtk gnuefi gnutls gnuplot \
-			hardened highlight gzip ipv6 initramfs int64 introspection idn jack jpeg jemalloc kernel kms lame latex ldap libcaca libressl lm_sensors \
-			lua lzma lzo lz4 m17n-lib matroska memcached mhash modules mount nettle numa mp3 mp4 mpeg mtp nls ocaml opengl openssl opus osc oss \
-			pcre perl png policykit posix pulseaudio python raw readline resolvconf qt5 recode ruby sound seccomp sasl sockets sox \
-			socks5 ssl sssd static-libs sqllite sqlite3 svg systemd sysv-utils szip symlink tcl tcpd themes thin truetype threads tiff udev \
-			udisks unicode utils xkb xvid zip zlib -kde -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
+	PRESET_USEFLAG="X a52 aac aalib acl acpi alsa apparmor audit bash-completion boost branding bzip2 \
+			cairo cpudetection cjk cracklib crypt cryptsetup cxx dbus git gpg gtk \
+			hardened initramfs int64 lzma lzo mount systemd udev udisks unicode -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
 	PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup clean-logs collision-protect \
 			compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
-			network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
+			network-sandbox noman opengl parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
 	PRESET_GENTOMIRRORS="https://mirror.eu.oneandone.net/linux/distributions/gentoo/gentoo/ \
 				https://ftp.snt.utwente.nl/pub/os/linux/gentoo/ https://mirror.isoc.org.il/pub/gentoo/ \
 				https://mirrors.lug.mtu.edu/gentoo/ https://mirror.csclub.uwaterloo.ca/gentoo-distfiles/ \
@@ -592,7 +590,7 @@ EOF
 				PRESET_MAKE="-j$(nproc) --quiet"
 				MAKECONF_VARIABLES () {
 					#cp /etc/portage/make.conf /etc/portage/make.Aconf_backup_$(date +%F_%R)
-					cat << EOF > /etc/portage/make.conf
+					cat << EOF > $CHROOTX/etc/portage/make.conf
 					COMMON_CPUFLAGS="$(lscpu | grep Flags: | sed -e 's/Flags:               //g')"
 					COMMON_FLAGS="-march=native -O2 -pipe" # set
 					CPU_FLAGS_X86="$(lscpu | grep Flags: | sed -e 's/Flags:               //g')"
@@ -922,7 +920,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		# MISC
 		bold=$(tput bold) # (!important)
 		normal=$(tput sgr0) # (!important)
-		EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse " # (!trailing space) (!important)
+		EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse --load-average 4 -j 2 " # (!trailing space) (!important)
 
 		#
 		#  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -1101,11 +1099,13 @@ EOF
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			DM_CRYPT () { # https://wiki.gentoo.org/wiki/Dm-crypt
 				emerge $EMERGE_VAR sys-fs/cryptsetup
+				etc-update --automode -3 # (automode -3 = merge all)
 				DM_CRYPT_OPENRC () { 
 					rc-update add dmcrypt boot
 				}
-				DM_CRYPT_SYSTEMD () {  
-					systemctl enable systemd-cryptsetup@.service # https://www.freedesktop.org/software/systemd/man/systemd-cryptsetup@.service.html
+				DM_CRYPT_SYSTEMD () {
+					echo placeholder
+					# systemctl enable systemd-cryptsetup@.service # https://www.freedesktop.org/software/systemd/man/systemd-cryptsetup@.service.html
 				}
 				DM_CRYPT_$SYSINITVAR	
 			}                       
@@ -1271,7 +1271,7 @@ EOF
 					DEBUG_FSTOOLS
 				}
 				EMERGE_FSTOOLS () {
-					emerge $EMERGE_VAR $FSTOOLS_EMERGE
+					emerge $EMERGE_VAR $BOOTFS_EMERGE
 				}
 				SETVAR_FSTOOLS
 				EMERGE_FSTOOLS
@@ -1718,7 +1718,7 @@ EOF
 						DEBUG_DSPMGR
 					}
 					EMERGE_DSPMGR () {
-						emerge $EMERGE_VAR $DISPLAYMGR_DSPMGR_EMERGE
+						emerge $EMERGE_VAR $DSPMGR_EMERGE
 					}
 					DSPMGR_OPENRC () {
 						# sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/$DSPMGR_OPENRC#g' /etc/conf.d/xdm
@@ -1880,14 +1880,14 @@ EOF
 					}
 					SETVAR_DSKTENV
 					ADDREPO_DSTENV
-					EMERGE_DSTENV
+					DSTENV_EMERGE
 					MAIN_DESKTPENV_$SYSINITVAR
 					$DISPLAYMGR_YESNO
 				}
 
-				GPU
+				#GPU
 				WINDOWSYS
-				#DISPLAYMGR
+				DISPLAYMGR
 				#DESKTOP_ENV
 			}
 			#     _   _   _ ____ ___ ___  
@@ -2069,15 +2069,15 @@ EOF
 			}
 
 			## (!changeme)
-			#KERNEL	&& echo "${bold}BUILD_KERNEL - END${normal}"
-			#if [ "$CONFIGKERN" != "AUTO" ]; then
-			#INITRAMFS && echo "${bold}INITRAMFS - END${normal}" # (! disabled for default setup)
-			#else
-			#echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
-			#fi
-			#FSTAB		&& echo "${bold}FSTAB - END${normal}"
-			#KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
-			#BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
+			KERNEL	&& echo "${bold}BUILD_KERNEL - END${normal}"
+			if [ "$CONFIGKERN" != "AUTO" ]; then
+			INITRAMFS && echo "${bold}INITRAMFS - END${normal}" # (! disabled for default setup)
+			else
+			echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
+			fi
+			FSTAB		&& echo "${bold}FSTAB - END${normal}"
+			KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
+			BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
 			VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
 			# AUDIO		&& echo "${bold}AUDIO - END${normal}"
 			# USERS		&& echo "${bold}USER - END${normal}"
@@ -2102,8 +2102,8 @@ EOF
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		## (RUN ENTIRE SCRIPT) (!changeme)
-		#BASE	&& echo "${bold}BASE - END${normal}"
-		#SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
+		BASE	&& echo "${bold}BASE - END${normal}"
+		SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
 		CORE	&& echo "${bold}CORE - END${normal}"
 		# FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -2117,9 +2117,9 @@ CHROOT () {
 }
 
 #### RUN ALL ## (!changeme)
-#BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
-#INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
-#PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
+BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
+INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
+PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
 CHROOT		&& echo "${bold}RUNCHROOT - END${normal}"
 echo "${bold}Script finished all operations - END${normal}"
 
