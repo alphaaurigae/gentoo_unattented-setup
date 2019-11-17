@@ -344,7 +344,7 @@ BANNER () { # 0.1 BANNER
 	PRESET_LICENCES="-* @FREE" # Only accept licenses in the FREE license group (i.e. Free Software)
 	PRESET_USEFLAG="X a52 aac aalib acl acpi alsa apparmor audit bash-completion boost branding bzip2 \
 			cairo cpudetection cjk cracklib crypt cryptsetup cxx dbus git gpg gtk \
-			hardened initramfs int64 lzma lzo mount opengl systemd udev udisks unicode -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
+			hardened initramfs int64 lzma lzo mount opengl pulseaudio systemd udev udisks unicode -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
 
 	PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup clean-logs collision-protect \
 			compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
@@ -1819,7 +1819,7 @@ EOF
 							# emerge $EMERGE_VAR x11-terms/xfce4-terminal
 							emerge $EMERGE_VAR app-editors/mousepad
 							emerge $EMERGE_VAR xfce4-pulseaudio-plugin
-							emerge $EMERGE_VAR xfce-extra/xfce4-mixer 
+							# emerge $EMERGE_VAR xfce-extra/xfce4-mixer # not found 17.11.19
 							emerge $EMERGE_VAR xfce-extra/xfce4-alsa-plugin
 							# emerge $EMERGE_VAR xfce-extra/thunar-volman
 						}
@@ -1828,7 +1828,6 @@ EOF
 						else
 						emerge $EMERGE_VAR $DSTENV_EMERGE
 						fi
-						emerge $EMERGE_VAR app-text/poppler -qt5 # app-text/poppler have +qt5 by default
 						env-update && source /etc/profile
 					}
 					MAIN_DESKTPENV_OPENRC () {
@@ -1837,13 +1836,15 @@ EOF
 						rc-update add elogind boot # elogind The systemd project's "logind", extracted to a standalone package https://github.com/elogind/elogind
 					}
 					MAIN_DESKTPENV_SYSTEMD () {
-						enable systemd-logind.service
-						systemctl enable dbus.service && systemctl start dbus.service && systemctl daemon-reload
+						#systemctl enable systemd-logind.service
+						# systemctl enable dbus.service && systemctl start dbus.service
+						systemctl daemon-reload
+						env-update && source /etc/profile
 					}
 					W_D_MGR () {
 						WDMGR_LXDM () {
 							MAIN_LXDM () {
-								sed -i -e 's;^# session=/usr/bin/startlxde;session=/usr/bin/$DSTENV_XEC;g' /etc/lxdm/lxdm.conf
+								sed -ie 's;^# session=/usr/bin/startlxde;session=/usr/bin/$DSTENV_XEC;g' /etc/lxdm/lxdm.conf
 							}
 							MAIN_LXDM
 							MAIN_DESKTPENV_$SYSINITVAR
@@ -1887,7 +1888,7 @@ EOF
 				}
 
 				#GPU
-				WINDOWSYS
+				#WINDOWSYS
 				DISPLAYMGR
 				DESKTOP_ENV
 			}
@@ -1919,8 +1920,10 @@ EOF
 				}
 				SOUND_SERVER () {
 					PULSEAUDIO () {
+						# just igbberish here - ignore for now or fix it xD
 						# rc-update add consolekit default
 						echo placeholder
+						#emerge --ask --changed-use --deep @world # this is to update after setting the use flag
 					}
 					PULSEAUDIO
 				}
@@ -2070,18 +2073,18 @@ EOF
 			}
 
 			## (!changeme)
-			KERNEL	&& echo "${bold}BUILD_KERNEL - END${normal}"
-			if [ "$CONFIGKERN" != "AUTO" ]; then
-			INITRAMFS && echo "${bold}INITRAMFS - END${normal}" # (! disabled for default setup)
-			else
-			echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
-			fi
-			FSTAB		&& echo "${bold}FSTAB - END${normal}"
-			KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
-			BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
-			VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
+			#KERNEL	&& echo "${bold}BUILD_KERNEL - END${normal}"
+			#if [ "$CONFIGKERN" != "AUTO" ]; then
+			#INITRAMFS && echo "${bold}INITRAMFS - END${normal}" # (! disabled for default setup)
+			#else
+			#echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
+			#fi
+			#FSTAB		&& echo "${bold}FSTAB - END${normal}"
+			#KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
+			#BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
+			#VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
 			# AUDIO		&& echo "${bold}AUDIO - END${normal}"
-			# USERS		&& echo "${bold}USER - END${normal}"
+			USERS		&& echo "${bold}USER - END${normal}"
 			# USERAPP
 			# NETWORK	&& echo "${bold}NETWORK - END${normal}"
 		}
@@ -2103,8 +2106,8 @@ EOF
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		## (RUN ENTIRE SCRIPT) (!changeme)
-		BASE	&& echo "${bold}BASE - END${normal}"
-		SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
+		#BASE	&& echo "${bold}BASE - END${normal}"
+		#SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
 		CORE	&& echo "${bold}CORE - END${normal}"
 		# FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -2119,8 +2122,8 @@ CHROOT () {
 
 #### RUN ALL ## (!changeme)
 BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
-INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
-PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
+#INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
+#PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
 CHROOT		&& echo "${bold}RUNCHROOT - END${normal}"
 echo "${bold}Script finished all operations - END${normal}"
 
