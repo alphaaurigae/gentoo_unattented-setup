@@ -314,9 +314,9 @@ BANNER () { # 0.1 BANNER
 	MAIN_PART=/dev/sda3 # mainfs - lukscrypt cryptsetup container with LVM env inside
 
 	## SWAP - DISABLED -- SEE VAR & LVM SECTION TO ENABLE!
-	# SWAP0=swap0 # LVM swap NAME for sorting of swap partitions.
+	#SWAP0=swap0 # LVM swap NAME for sorting of swap partitions.
 	# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART - mainhdd only has boot & fainfs
-	# SWAP_FS=linux-swap # swapfs, couldnt have guessed it
+	# SWAP_FS=linux-swap # swapfs
 
 	## FILESYSTEMS # !FSTOOLS
 	BOOT_FS=ext2 # boot filesystem
@@ -380,7 +380,7 @@ BANNER () { # 0.1 BANNER
 		MODPROBE () {
 			modprobe -a dm-mod dm_crypt # sha256
 		}
-		# PARTITIONING .... glad you asked! ill take a coffee, ahh scew it, make it a triple espresso!                                                                  
+		# PARTITIONING ...                                                            
 		PARTITIONING () {
 			PARTED () {
 				# https://wiki.archlinux.org/index.php/GNU_Parted ## for virtualbox uefi go here: https://wiki.archlinux.org/index.php/VirtualBox#Installation_steps_for_Arch_Linux_guests
@@ -449,11 +449,11 @@ BANNER () { # 0.1 BANNER
 			MOUNT_LVM_LV	&& echo "${bold}MOUNT_LVM_LV - END ....${normal}"
 			
 		}
-		TIMEUPD 			&& echo "${bold}UPDATE_TIME - END ....${normal}"
-		MODPROBE 			&& echo "${bold}MODPROBE - END ....${normal}"
-		PARTITIONING 			&& echo "${bold}PARTED - END ....${normal}"
-		CRYPTSETUP 			&& echo "${bold}CRYPTSETUP_MAIN - END ....${normal}"
-		LVMONLUKS 			&& echo "${bold}LVMONLUKS - END, proceeding to PREPARE_CHROOT ....${normal}"
+		TIMEUPD 	&& echo "${bold}UPDATE_TIME - END ....${normal}"
+		MODPROBE 	&& echo "${bold}MODPROBE - END ....${normal}"
+		PARTITIONING 	&& echo "${bold}PARTED - END ....${normal}"
+		CRYPTSETUP 	&& echo "${bold}CRYPTSETUP_MAIN - END ....${normal}"
+		LVMONLUKS 	&& echo "${bold}LVMONLUKS - END, proceeding to PREPARE_CHROOT ....${normal}"
 	}
 	#
 	#  .----------------.  .----------------.  .----------------. 
@@ -921,7 +921,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		# MISC
 		bold=$(tput bold) # (!important)
 		normal=$(tput sgr0) # (!important)
-		EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse --load-average 4 -j 2 " # (!trailing space) (!important)
+		EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse " # (!trailing space) (!important)
 
 		#
 		#  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -953,8 +953,8 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 			}                                                 
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			WORLDSET () { # https://wiki.gentoo.org/wiki/World_set_(Portage)
-				emerge --quiet --complete-graph --verbose --update --deep --newuse @world
-				emerge --oneshot virtual/udev virtual/libudev # ! If your system set provides sys-fs/eudev, virtual/udev and virtual/libudev may be preventing systemd.  https://wiki.gentoo.org/wiki/Systemd
+				emerge $$EMERGE_VAR --newuse @world
+				emerge $EMERGE_VAR --oneshot virtual/udev virtual/libudev # ! If your system set provides sys-fs/eudev, virtual/udev and virtual/libudev may be preventing systemd.  https://wiki.gentoo.org/wiki/Systemd
 			}
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			
@@ -967,7 +967,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 					echo $SYSTIMEZONE_SET > /etc/timezone
 					TIMEZONE_OPENRC () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Timezone
 						echo "$SYSTIMEZONE_SET" > /etc/timezone
-						emerge --config sys-libs/timezone-data
+						emerge $EMERGE_VAR --config sys-libs/timezone-data
 					}
 					TIMEZONE_SYSTEMD () {
 						timedatectl set-timezone $SYSTIMEZONE_SET
@@ -1192,6 +1192,13 @@ EOF
 				LOGROTATION () {
 					LOGROTATE () {
 						emerge $EMERGE_VAR app-admin/logrotate
+							SET_LROTATE_OPENRC () {
+								echo placeholder
+							}
+							SET_LROTATE_SYSTEMD () {
+								systemd-tmpfiles --create /usr/lib/tmpfiles.d/logrotate.conf
+							}
+							SET_LROTATE_$SYSINITVAR
 					}
 					LOGROTATE
 				}
@@ -2092,9 +2099,9 @@ EOF
 			BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
 			AUDIO		&& echo "${bold}AUDIO - END${normal}"
 			VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
-			USERAPP
+			USERAPP		&& echo "${bold}USERAPP - END${normal}"
 			USERS		&& echo "${bold}USER - END${normal}"
-			# NETWORK	&& echo "${bold}NETWORK - END${normal}"
+			NETWORK		&& echo "${bold}NETWORK - END${normal}"
 		}
 		#
 		#  .----------------.  .----------------.  .-----------------. .----------------.  .----------------.  .----------------. 
@@ -2117,7 +2124,7 @@ EOF
 		BASE	&& echo "${bold}BASE - END${normal}"
 		SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
 		CORE	&& echo "${bold}CORE - END${normal}"
-		# FINISH	&& echo "${bold}FINISH - END${normal}"
+		FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		# IMPORTANT INTENDATION - Must follow intendation, not only for the "innerscript" but across the entire script. Why? tell me if you figure, i didnt but it works and thats why im writing this ... :)
 INNERSCRIPT
