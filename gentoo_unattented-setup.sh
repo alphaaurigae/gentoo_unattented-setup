@@ -344,10 +344,11 @@ BANNER () { # 0.1 BANNER
 	PRESET_LICENCES="-* @FREE" # Only accept licenses in the FREE license group (i.e. Free Software)
 	PRESET_USEFLAG="X a52 aac aalib acl acpi alsa apparmor audit bash-completion boost branding bzip2 \
 			cairo cpudetection cjk cracklib crypt cryptsetup cxx dbus git gpg gtk \
-			hardened initramfs int64 lzma lzo mount systemd udev udisks unicode -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
+			hardened initramfs int64 lzma lzo mount opengl systemd udev udisks unicode -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
+
 	PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup clean-logs collision-protect \
 			compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
-			network-sandbox noman opengl parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
+			network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
 	PRESET_GENTOMIRRORS="https://mirror.eu.oneandone.net/linux/distributions/gentoo/gentoo/ \
 				https://ftp.snt.utwente.nl/pub/os/linux/gentoo/ https://mirror.isoc.org.il/pub/gentoo/ \
 				https://mirrors.lug.mtu.edu/gentoo/ https://mirror.csclub.uwaterloo.ca/gentoo-distfiles/ \
@@ -1888,7 +1889,7 @@ EOF
 				#GPU
 				WINDOWSYS
 				DISPLAYMGR
-				#DESKTOP_ENV
+				DESKTOP_ENV
 			}
 			#     _   _   _ ____ ___ ___  
 			#    / \ | | | |  _ \_ _/ _ \ 
