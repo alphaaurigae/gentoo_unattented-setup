@@ -328,9 +328,9 @@ BANNER () { # 0.1 BANNER
 	LV_MAIN=lv0_main # LVM LV logical volume
 
 	## PARTITION SIZE
-	GRUB_SIZE="1M 150M" # (!changeme) bios grub sector start/end M for megabytes, G for gigabytes
-	BOOT_SIZE="150M 1G" # (!changeme) boot sector start/end
-	MAIN_SIZE="1G 100%" # (!changeme) primary partition start/end
+	GRUB_SIZE="1M 1G" # (!changeme) bios grub sector start/end M for megabytes, G for gigabytes
+	BOOT_SIZE="1G 3G" # (!changeme) boot sector start/end
+	MAIN_SIZE="3G 100%" # (!changeme) primary partition start/end
 
 	## PROFILE # default during dev of the script is systemd but prep openrc.	
 	STAGE3DEFAULT=AMD64_SYSTEMD # (!changeme) AMD64_DEFAULT (default)
@@ -340,11 +340,11 @@ BANNER () { # 0.1 BANNER
 
 	## MAKEFILE
 	PRESET_INPUTEVICE="libinput keyboard"
-	PRESET_VIDEODRIVER='amdgpu radeonsi radeon'
-	PRESET_LICENCES="-* @FREE" # Only accept licenses in the FREE license group (i.e. Free Software)
-	PRESET_USEFLAG="X a52 aac aalib acl acpi alsa apparmor audit bash-completion boost branding bzip2 \
-			cairo cpudetection cjk cracklib crypt cryptsetup cxx dbus git gpg gtk \
-			hardened initramfs int64 lzma lzo mount opengl pulseaudio systemd threads udev udisks unicode -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
+	PRESET_VIDEODRIVER='virtualbox' # amdgpu radeonsi radeon
+	PRESET_LICENCES="*" #default is: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software)
+	PRESET_USEFLAG="X a52 aac aalib acl acpi apparmor audit bash-completion boost branding bzip2 \
+			cairo cpudetection cjk csonsolekit cracklib crypt cryptsetup cxx dbus git gpg gtk \
+			hardened initramfs int64 lzma lzo mount opengl systemd threads udev udisks unicode -ipv6 -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
 
 	PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup clean-logs collision-protect \
 			compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
@@ -449,10 +449,10 @@ BANNER () { # 0.1 BANNER
 			MOUNT_LVM_LV	&& echo "${bold}MOUNT_LVM_LV - END ....${normal}"
 			
 		}
-		TIMEUPD 	&& echo "${bold}UPDATE_TIME - END ....${normal}"
-		MODPROBE 	&& echo "${bold}MODPROBE - END ....${normal}"
-		PARTITIONING 	&& echo "${bold}PARTED - END ....${normal}"
-		CRYPTSETUP 	&& echo "${bold}CRYPTSETUP_MAIN - END ....${normal}"
+		TIMEUPD 	&& echo "${bold}UPDATE_TIME - END, proceeding to MODPROBE${normal}"
+		MODPROBE 	&& echo "${bold}MODPROBE - END, proceeding to PARTED${normal}"
+		PARTITIONING 	&& echo "${bold}PARTED - END, proceeding to CRYPTSETUP_MAIN${normal}"
+		CRYPTSETUP 	&& echo "${bold}CRYPTSETUP_MAIN - END, proceeding to LVMONLUKS${normal}"
 		LVMONLUKS 	&& echo "${bold}LVMONLUKS - END, proceeding to PREPARE_CHROOT ....${normal}"
 	}
 	#
@@ -919,7 +919,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		# MISC
 		bold=$(tput bold) # (!important)
 		normal=$(tput sgr0) # (!important)
-		EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse " # (!trailing space) (!important)
+		EMERGE_VAR="--quiet --complete-graph --verbose --update --deep --newuse --jobs=24 " # (!trailing space) (!important)
 
 		#
 		#  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -1062,8 +1062,13 @@ EOF
 				echo "${bold}CONF_LOCALES end${normal}"
 			}
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			FIRMWARE () {
+			FIRMWARE () { # BUG https://bugs.gentoo.org/318841#c20
 				echo "${bold}FIRMWARE${normal}"
+				echo "sys-kernel/linux-firmware initramfs redistributable unknown-license" >> /etc/portage/package.use/linux-firmware
+				mkdir -p /etc/portage/package.license
+				echo "sys-kernel/linux-firmware @BINARY-REDISTRIBUTABLE" >> /etc/portage/package.license/linux-firmware
+
+				emerge $EMERGE_VAR @world # this is to update after setting the use flag
 				LINUX_FIRMWARE () { # https://wiki.gentoo.org/wiki/Linux_firmware
 					emerge $EMERGE_VAR sys-kernel/linux-firmware
 					etc-update --automode -3 # (automode -3 = merge all)
@@ -1098,8 +1103,10 @@ EOF
 		SYSAPP () {
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			DM_CRYPT () { # https://wiki.gentoo.org/wiki/Dm-crypt
-				echo "sys-fs/cryptsetup static kernel -gcrypt" >> /etc/portage/package.use/cryptsetup
+				#echo "sys-fs/cryptsetup static" >> /etc/portage/package.use/cryptsetup
 				echo "sys-fs/cryptsetup ~amd64" >> /etc/portage/package.keywords
+				emerge $EMERGE_VAR @world
+
 				emerge $EMERGE_VAR sys-fs/cryptsetup
 				etc-update --automode -3 # (automode -3 = merge all)
 
@@ -1258,14 +1265,16 @@ EOF
 			}                                      
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			INSTALL_FSTOOLS () {
+				EMERGE_FSTOOLS () {
+					emerge $EMERGE_VAR $BOOTFS_EMERGE
+				}
 				SETVAR_FSTOOLS () {
 					DEBUG_FSTOOLS () {
 						echo "FSTOOLS set on boot $BOOT_FS and for main $MAIN_FS"
 						echo $FSTOOLS_EMERGE
 					}
-					if (( "$BOOT_FS" == "ext2" || "$BOOT_FS" == "ext3" || "$BOOT_FS" == "ext4" || "$MAIN_FS" == "ext2" || "$MAIN_FS" == "ext3" || "$MAIN_FS" == "ext4" )); then
-					BOOTFS_EMERGE=$FS_EXT_EMERGE
-					elif (( "$BOOT_FS" == "xfs" || "$MAIN_FS" == "xfs" )); then
+					BOOTFS_EMERGE=$FS_EXT_EMERGE && EMERGE_FSTOOLS # (! default - always installed)
+					if (( "$BOOT_FS" == "xfs" || "$MAIN_FS" == "xfs" )); then
 					BOOTFS_EMERGE=$FS_XFS_EMERGE
 					elif (( "$BOOT_FS" == "reiserfs" || "$MAIN_FS" == "reiserfs" )); then
 					BOOTFS_EMERGE=$FS_REISER_EMERGE
@@ -1279,9 +1288,6 @@ EOF
 					echo "${bold}ERROR: Could not detect '$BOOT_FS' / '$MAIN_FS' - debug bootfs $BOOT_FS mainfs $MAIN_FS ${normal}"
 					fi
 					DEBUG_FSTOOLS
-				}
-				EMERGE_FSTOOLS () {
-					emerge $EMERGE_VAR $BOOTFS_EMERGE
 				}
 				SETVAR_FSTOOLS
 				EMERGE_FSTOOLS
@@ -1354,6 +1360,7 @@ EOF
 		#
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 	
 		CORE () {
+
 			#  _  _______ ____  _   _ _____ _     
 			# | |/ / ____|  _ \| \ | | ____| |    
 			# | ' /|  _| | |_) |  \| |  _| | |    
@@ -1366,6 +1373,7 @@ EOF
 				KERSRC_SET () {
 					KERSRC_EMERGE () {
 						echo "sys-kernel/gentoo-sources ~amd64" >> /etc/portage/package.keywords
+						emerge $EMERGE_VAR @world
 						emerge $EMERGE_VAR sys-kernel/gentoo-sources
 					}
 					KERSRC_TORVALDS () {
@@ -1419,6 +1427,7 @@ EOF
 							CKA_SYSTEMD () { # (!default) # config kernel with genkernel-next for systemd
 								echo "sys-kernel/genkernel-next cryptsetup" >> /etc/portage/package.use/genkenel-next
 								echo "sys-kernel/genkernel-next ~amd64" >> /etc/portage/package.keywords
+								emerge $EMERGE_VAR @world # this is to update after setting the use flag
 								emerge $EMERGE_VAR sys-kernel/genkernel-next
 								CONFGENKERNEL_SYSTEMD () { # (!default)
 									touch /etc/genkernel.conf
@@ -1447,15 +1456,16 @@ EOF
 									MULTIPATH="no" # https://wiki.gentoo.org/wiki/Multipath disabled, dont want to trail and error on this one now.
 									ISCSI="no"
 									E2FSPROGS="yes"
-									# FIRMWARE="yes" # skipping this firmware part for now, note to look after later.
-									# FIRMWARE_SRC="/lib/firmware"
+									FIRMWARE="yes" # Add firmware(s) to initramfs
+									FIRMWARE_INSTALL="no" # Install firmware onto root filesystem # Will conflict with sys-kernel/linux-firmware package
+									FIRMWARE_SRC="/lib/firmware"
 									BOOTLOADER="grub2"
-									SPLASH="no"
+									SPLASH="yes"
 									SPLASH_THEME="gentoo"
 									SAVE_CONFIG="yes"
 									MICROCODE="all"
 									DISKLABEL="yes"
-									PLYMOUTH="yes"
+									# PLYMOUTH="yes"
 									BOOTDIR="/boot"
 									GK_SHARE="${GK_SHARE:-/usr/share/genkernel}"
 									CACHE_DIR="/var/cache/genkernel"
@@ -1466,11 +1476,12 @@ EOF
 									COMPRESS_INITRD="yes"
 									COMPRESS_INITRD_TYPE="best"
 									INTEGRATED_INITRAMFS="1"
-									#ALLRAMDISKMODULES="1"
+									ALLRAMDISKMODULES="1"
 EOF
 								}
 								GENKERNELNEXT_SYSTEMD () {  
-										genkernel --config=/etc/genkernel.conf  all # generate kernel and initramfs
+										genkernel --config=/etc/genkernel.conf all
+										#genkernel --config=/etc/genkernel.conf initramfs
 								}
 								CONFGENKERNEL_SYSTEMD
 								GENKERNELNEXT_SYSTEMD
@@ -1482,8 +1493,8 @@ EOF
 					CONFKERN_$CONFIGKERN
 					cd /
 				}
-				KERSRC_SET # a source is required, the variable can be set on top in the option variable section.
-				CONFKERN_SET # this is a little more complex and probably not 100% implemented yet. select auto or manual in the variable section - you can paste, run menuconfig, copy default generic and so on, depending on how far this script has gone.
+				KERSRC_SET # kernel source
+				CONFKERN_SET # config / build
 			}
 			#  ___ _   _ ___ _____ ____      _    __  __ _____ ____  
 			# |_ _| \ | |_ _|_   _|  _ \    / \  |  \/  |  ___/ ___| 
@@ -1494,7 +1505,7 @@ EOF
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			INITRAMFS () { # https://wiki.gentoo.org/wiki/Initramfs
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				DRACUT () {
+				DRACUT () { # https://wiki.gentoo.org/wiki/Dracut
 					echo "sys-kernel/dracut systemd device-mapper" >> /etc/portage/package.use/dracut
 					emerge $EMERGE_VAR sys-kernel/dracut
 					cat << 'EOF' >> /etc/dracut.conf.d/usrmount.conf
@@ -1502,10 +1513,9 @@ EOF
 EOF
 					cat << 'EOF' >> /etc/dracut.conf
 					hostonly="yes" # Equivalent to -H
-					dracutmodules+="dash i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg gensplash lvm multipath plymouth selinux" # Equivalent to -m "module module module"
+					dracutmodules+="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg gensplash lvm multipath selinux"
 EOF
-					dracut -f -I /root/secretkey
-					# dracut --hostonly '' $KERNVERS
+					dracut '' $(ls /lib/modules)
 				}
 				DRACUT	
 			}
@@ -1535,26 +1545,6 @@ EOF
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				FSTAB_LVMONLUKS_$BOOTSYSINITVAR
 			}
-			#  _  _________   ____  __    _    ____  ____  
-			# | |/ / ____\ \ / /  \/  |  / \  |  _ \/ ___| 
-			# | ' /|  _|  \ V /| |\/| | / _ \ | |_) \___ \ 
-			# | . \| |___  | | | |  | |/ ___ \|  __/ ___) |
-			# |_|\_\_____| |_| |_|  |_/_/   \_\_|   |____/ 
-			#                                             
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			KEYMAPS () {
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				KEYMAPS_SYSTEMD () {  
-					VCONSOLE_CONF () { # https://wiki.archlinux.org/index.php/Keyboard_configuration_in_console
-						cat << EOF > /etc/vconsole.conf
-						KEYMAP=$VCONSOLE_KEYMAP
-						FONT=$VCONSOLE_FONT
-EOF
-					}
-					VCONSOLE_CONF
-				}
-				KEYMAPS_$SYSINITVAR
-			}
 			#  ____   ___   ___ _____ _     ___    _    ____  _____ ____  
 			# | __ ) / _ \ / _ \_   _| |   / _ \  / \  |  _ \| ____|  _ \ 
 			# |  _ \| | | | | | || | | |  | | | |/ _ \ | | | |  _| | |_) |
@@ -1568,10 +1558,10 @@ EOF
 					MAIN_GRUB2_SET () {
 						echo "sys-boot/grub device-mapper" >> /etc/portage/package.use/grub
 						echo "sys-boot/grub:2 ~amd64" >> /etc/portage/package.keywords
-						emerge --ask $EMERGE_VAR @world # this is to update after setting the use flag
+						emerge $EMERGE_VAR @world
 						emerge $EMERGE_VAR sys-boot/grub:2
 						MAIN_GRUB2_BIOS () {
-							grub-install $HDD1
+							grub-install --target=i386-pc --recheck $HDD1
 						}
 						MAIN_GRUB2_UEFI () {   
 							sed -ie '/GRUB_PLATFORMS="efi-64/d' >> /etc/portage/make.conf
@@ -1609,10 +1599,11 @@ EOF
 								echo placeholder
 							}
 							CONF_GRUB2_SYSTEMD () {  
-								sed -ie 's#GRUB_CMDLINE_LINUX="#GRUB_CMDLINE_LINUX=#g' /etc/default/grub # remove quotation mark as sed wont handle it together with functions
-								# sed -ie "s#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX=cryptdevice=UUID=$(blkid -o value -s UUID $MAIN_PART):$PV_MAIN:allow-discards root=/dev/mapper/$VG_MAIN-$LV_MAIN #g" /etc/default/grub # # encrypt
-								# sed -ie "s#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX=init=/lib/systemd/systemd rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN root=/dev/mapper/$VG_MAIN-$LV_MAIN dolvm #g" /etc/default/grub # sd-encrypt systemd
-								sed -ie "s#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX=real_init=/lib/systemd/systemd rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN root=/dev/mapper/$VG_MAIN-$LV_MAIN dolvm #g" /etc/default/grub # sd-encrypt systemd
+								sed -ie 's#GRUB_CMDLINE_LINUX="#GRUB_CMDLINE_LINUX=#g' /etc/default/grub # remove quotation mark.
+								# rd.luks.name= is honored only by initial RAM disk (initrd) while luks.name= is honored by both the main system and the initrd. https://www.freedesktop.org/software/systemd/man/systemd-cryptsetup-generator.html
+
+								sed -ie "s#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX=real_init=/lib/systemd/systemd rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN crypt_root=/dev/disk/by-partuuid/$(blkid -o value -s PARTUUID $MAIN_PART) real_root=/dev/mapper/$VG_MAIN-$LV_MAIN dolvm #g" /etc/default/grub # sd-encrypt systemd
+
 								sed -ie 's#GRUB_CMDLINE_LINUX=#GRUB_CMDLINE_LINUX="#g' /etc/default/grub # bring quotation mark back
 								sed -ie 's#""#"#g' /etc/default/grub # remove quotation mark
 								sed -ie 's#GRUB_PRELOAD_MODULES="#GRUB_PRELOAD_MODULES=#g' /etc/default/grub # remove quotation mark as sed wont handle it together with functions
@@ -1638,6 +1629,27 @@ EOF
 				}
 				SETUP_$BOOTLOADER
 			}
+			#  _  _________   ____  __    _    ____  ____  
+			# | |/ / ____\ \ / /  \/  |  / \  |  _ \/ ___| 
+			# | ' /|  _|  \ V /| |\/| | / _ \ | |_) \___ \ 
+			# | . \| |___  | | | |  | |/ ___ \|  __/ ___) |
+			# |_|\_\_____| |_| |_|  |_/_/   \_\_|   |____/ 
+			#                                             
+			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			KEYMAPS () {
+				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				KEYMAPS_SYSTEMD () {  
+					VCONSOLE_CONF () { # https://wiki.archlinux.org/index.php/Keyboard_configuration_in_console
+						cat << EOF > /etc/vconsole.conf
+						KEYMAP=$VCONSOLE_KEYMAP
+						FONT=$VCONSOLE_FONT
+EOF
+					}
+					VCONSOLE_CONF
+				}
+				KEYMAPS_$SYSINITVAR
+			}
+
 			#     _   _   _ ____ ___ ___  
 			#    / \ | | | |  _ \_ _/ _ \ 
 			#   / _ \| | | | | | | | | | |
@@ -1969,7 +1981,7 @@ EOF
 						emerge $EMERGE_VAR --noreplace net-misc/netifrc
 						cat << 'EOF' > /etc/conf.d/net # Please read /usr/share/doc/netifrc-*/net.example.bz2 for a list of all available options. DHCP client man page if specific DHCP options need to be set.
 						#config_eth0="dhcp"
-						config_enp1s0="dhcp"
+						config_enp0s3="dhcp"
 EOF
 					}
 					HOSTSFILE () { # (! default)
@@ -1986,13 +1998,13 @@ EOF
 					SET_NETD_SYSTEMD () {
 						systemctl enable systemd-networkd.service
 						REPLACE_RESOLVECONF () { # (! default)
-							ln -snf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+							ln -snf /run/systemd/resolved.conf /etc/resolv.conf
 							systemctl enable systemd-resolved.service
 						}
 						WIRED_DHCPD () { # (! default)
 							cat << 'EOF' > /etc/systemd/network/20-wired.network
 							[ Match ]
-							Name=enp1s0
+							Name=enp0s3
 
 							[ Network ]
 							DHCP=ipv4
@@ -2001,7 +2013,7 @@ EOF
 						WIRED_STATIC () {
 							cat << 'EOF' > /etc/systemd/network/20-wired.network
 							[ Match ]
-							Name=enp1s0
+							Name=enp0s3
 
 							[ Network ]
 							Address=10.1.10.9/24
@@ -2096,19 +2108,19 @@ EOF
 
 			## (!changeme)
 			KERNEL	&& echo "${bold}BUILD_KERNEL - END${normal}"
-			if [ "$CONFIGKERN" != "AUTO" ]; then
-			INITRAMFS && echo "${bold}INITRAMFS - END${normal}" # (! disabled for default setup)
-			else
-			echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
-			fi
+			#if [ "$CONFIGKERN" != "AUTO" ]; then
+			#INITRAMFS && echo "${bold}INITRAMFS - END${normal}"
+			#else
+			#echo 'CONFIGKERN AUTO DETECTED, skipping initramfs'
+			#fi
 			FSTAB		&& echo "${bold}FSTAB - END${normal}"
-			KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
 			BOOTLOAD	&& echo "${bold}BOOTLOAD - END${normal}"
-			AUDIO		&& echo "${bold}AUDIO - END${normal}"
-			VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
-			USERAPP		&& echo "${bold}USERAPP - END${normal}"
+			KEYMAPS		&& echo "${bold}KEYMAPS - END${normal}"
+			# AUDIO		&& echo "${bold}AUDIO - END${normal}"
+			# VISUAL		&& echo "${bold}DISPLAYVIDEO - END${normal}"
+			# USERAPP		&& echo "${bold}USERAPP - END${normal}"
 			USERS		&& echo "${bold}USER - END${normal}"
-			NETWORK		&& echo "${bold}NETWORK - END${normal}"
+			# NETWORK		&& echo "${bold}NETWORK - END${normal}"
 		}
 		#
 		#  .----------------.  .----------------.  .-----------------. .----------------.  .----------------.  .----------------. 
@@ -2124,14 +2136,14 @@ EOF
 		#  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		FINISH () { # tidy up installation files
-			rm /stage3-*.tar.*
+			rm -f /stage3-*.tar.*
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		## (RUN ENTIRE SCRIPT) (!changeme)
 		BASE	&& echo "${bold}BASE - END${normal}"
 		SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
 		CORE	&& echo "${bold}CORE - END${normal}"
-		#FINISH	&& echo "${bold}FINISH - END${normal}"
+		# FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		# IMPORTANT INTENDATION - Must follow intendation, not only for the "innerscript" but across the entire script. Why? tell me if you figure, i didnt but it works and thats why im writing this ... :)
 INNERSCRIPT
