@@ -629,7 +629,7 @@ EOF
 # | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
 #  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
 # 4.0 CHROOT # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment 
-#INNER_SCRIPT=$(cat << 'INNERSCRIPT'
+INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 #!/bin/bash
 
 		# https://github.com/alphaaurigae/gentoo_unattented-setup
