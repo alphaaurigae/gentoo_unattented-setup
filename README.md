@@ -11,3 +11,27 @@ note: index needs to be updated.
 
 ![screen1test](img/scrnshts/3.png)
 Format: ![Alt Text](url)
+
+
+
+
+![screen1test](img/scrnshts/4.png)
+Format: ![Alt Text](url)
+
+
+
+
+![screen1test](img/scrnshts/7.png)
+Format: ![Alt Text](url)
+
+
+
+
+![screen1test](img/scrnshts/9.png)
+Format: ![Alt Text](url)
+
+
+
+
+![screen1test](img/scrnshts/28.png)
+Format: ![Alt Text](url)
