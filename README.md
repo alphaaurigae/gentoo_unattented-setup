@@ -9,5 +9,5 @@ note: index needs to be updated.
 
 
 
-![screen1test](https://i.imgur.com/CSzL5Zb.png)
+![screen1test](img/scrnshts/1.png)
 Format: ![Alt Text](url)
