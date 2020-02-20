@@ -609,13 +609,13 @@ EOF
 				MAKECONF_VARIABLES
 				# emerge $EMERGE_VAR --changed-use @world
 			}
-			#MOUNT_BASESYS 	&& echo "${bold}MOUNT_BASESYS - END, proceeding to SETMODE_DEVSHM ....${normal}"
-			#SETMODE_DEVSHM 	&& echo "${bold}SETMODE_DEVSHM - END ...${normal}"
+			MOUNT_BASESYS 	&& echo "${bold}MOUNT_BASESYS - END, proceeding to SETMODE_DEVSHM ....${normal}"
+			SETMODE_DEVSHM 	&& echo "${bold}SETMODE_DEVSHM - END ...${normal}"
 			MAKECONF 	&& echo "${bold}MAKECONF done${normal}"
 		}
-		#DL_STAGE	&& echo "${bold}DL_STAGE - END, proceeding to EBUILD ....${normal}"
-		#EBUILD		&& echo "${bold}EBUILD - END, proceeding to RESOLVCONF ....${normal}"
-		#RESOLVCONF	&& echo "${bold}RESOLVCONF - END, proceeding to MNTFS ....${normal}"
+		DL_STAGE	&& echo "${bold}DL_STAGE - END, proceeding to EBUILD ....${normal}"
+		EBUILD		&& echo "${bold}EBUILD - END, proceeding to RESOLVCONF ....${normal}"
+		RESOLVCONF	&& echo "${bold}RESOLVCONF - END, proceeding to MNTFS ....${normal}"
 		MNTFS		&& echo "${bold}MNTFS - END, proceeding to CHROOT ....${normal}"
 	}
 #  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
