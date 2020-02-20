@@ -342,9 +342,9 @@ BANNER () { # 0.1 BANNER
 	PRESET_INPUTEVICE="libinput keyboard"
 	PRESET_VIDEODRIVER='virtualbox' # amdgpu radeonsi radeon
 	PRESET_LICENCES="*" #default is: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software)
-	PRESET_USEFLAG="X a52 aac aalib acl acpi apparmor audit bash-completion boost branding bzip2 \
-			cairo cpudetection cjk csonsolekit crypt cryptsetup cxx dbus git gpg gtk \
-			hardened initramfs int64 lzma lzo mount opengl -systemd threads udev udisks unicode -ipv6 -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -mssql -postgres -telnet"
+	PRESET_USEFLAG="X a52 aac aalib acl acpi apparmor audit alsa bash-completion boost branding bzip2 \
+			cairo cpudetection cjk csonsolekit crypt cryptsetup cxx dbus elogind git gpg gtk \
+			hardened initramfs int64 lzma lzo mount opengl pulseaudio sqlite threads udev udisks unicode -ipv6 -cups -bluetooth -libnotify -mysql -apache -apache2 -dropbear -redis -systemd -selinux -mssql -postgres -telnet"
 
 	PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup clean-logs collision-protect \
 			compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
@@ -608,13 +608,13 @@ EOF
 				MAKECONF_VARIABLES
 				# emerge $EMERGE_VAR --changed-use @world
 			}
-			MOUNT_BASESYS 	&& echo "${bold}MOUNT_BASESYS - END, proceeding to SETMODE_DEVSHM ....${normal}"
-			SETMODE_DEVSHM 	&& echo "${bold}SETMODE_DEVSHM - END ...${normal}"
+			#MOUNT_BASESYS 	&& echo "${bold}MOUNT_BASESYS - END, proceeding to SETMODE_DEVSHM ....${normal}"
+			#SETMODE_DEVSHM 	&& echo "${bold}SETMODE_DEVSHM - END ...${normal}"
 			MAKECONF 	&& echo "${bold}MAKECONF done${normal}"
 		}
-		DL_STAGE	&& echo "${bold}DL_STAGE - END, proceeding to EBUILD ....${normal}"
-		EBUILD		&& echo "${bold}EBUILD - END, proceeding to RESOLVCONF ....${normal}"
-		RESOLVCONF	&& echo "${bold}RESOLVCONF - END, proceeding to MNTFS ....${normal}"
+		#DL_STAGE	&& echo "${bold}DL_STAGE - END, proceeding to EBUILD ....${normal}"
+		#EBUILD		&& echo "${bold}EBUILD - END, proceeding to RESOLVCONF ....${normal}"
+		#RESOLVCONF	&& echo "${bold}RESOLVCONF - END, proceeding to MNTFS ....${normal}"
 		MNTFS		&& echo "${bold}MNTFS - END, proceeding to CHROOT ....${normal}"
 	}
 #  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -629,7 +629,7 @@ EOF
 # | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
 #  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
 # 4.0 CHROOT # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment 
-INNER_SCRIPT=$(cat << 'INNERSCRIPT'
+#INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 #!/bin/bash
 
 		# https://github.com/alphaaurigae/gentoo_unattented-setup
@@ -689,7 +689,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		DISPLAYSERV=X11 # see options
 		DISPLAYMGR_YESNO=W_D_MGR # W_D_MGR (WITH display manager) / SOLO (without display manager)
 		DISPLAYMGR=LXDM # see options
-		DESKTOPENV=XFCE4 # see options
+		DESKTOPENV=LIGHTDM # see options
 
 		## USER
 		SYSUSERNAME=admini # (!changeme) wheel group member - name of the login sysadmin user
@@ -797,8 +797,8 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		KDE_DSTENV_EMERGE=kde-plasma/plasma-meta
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 		# LXDE - https://wiki.gentoo.org/wiki/LXDE
-		LXDE_DSTENV_XEC=lxde-meta
-		LXDE_DSTENV_STARTX=lxde-meta
+		LXDE_DSTENV_XEC=startlxde
+		LXDE_DSTENV_STARTX=startlxde
 		LXDE_DSTENV_EMERGE=lxde-base/lxde-meta              
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 		# LXQT - FVWM-Crystal		
@@ -11263,13 +11263,13 @@ EOF
 
 					emerge $EMERGE_VAR sys-kernel/dracut
 
-					cat << 'EOF' >> /etc/dracut.conf.d/usrmount.conf
+					cat << 'EOF' > /etc/dracut.conf.d/usrmount.conf
 					add_dracutmodules+="usrmount" # Dracut modules to add to the default
 EOF
-					cat << 'EOF' >> /etc/dracut.conf
+					cat << 'EOF' > /etc/dracut.conf
 					hostonly="yes" # Equivalent to -H
 					lvmconf="yes"
-					dracutmodules+="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg gensplash lvm multipath selinux"
+					dracutmodules+="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg gensplash lvm debug dm"
 EOF
 					dracut '' $(ls /lib/modules)
 				}
@@ -11702,16 +11702,18 @@ EOF
 						emerge $EMERGE_VAR $DSPMGR_EMERGE
 					}
 					DSPMGR_OPENRC () {
-						# sed -ie 's#/etc/conf.d/xdm#/etc/conf.d/$DSPMGR_OPENRC#g' /etc/conf.d/xdm
-						# echo "exec gdm" >> ~/.xinitrc
-						# rc-update add xdm default
-						echo placeholder
+						sed -ie 's#DISPLAYMANAGER="xdm"#DISPLAYMANAGER="$DSPMGR_OPENRC"#g' /etc/conf.d/xdm
+						#echo "exec gdm" >> ~/.xinitrc
+						rc-update add dbus default
+						rc-update add xdm default
+						
 					}
 					DSPMGR_SYSTEMD () {
 						systemctl enable $DSPMGR_SYSTEMD
 					}
 					CONFIGURE_DSPMGR () {
-						echo placeholder	
+						usermod -a -G video $DSPMGR_OPENRC	
+
 					}
 					SETVAR_DSPMGR
 					EMERGE_DSPMGR
@@ -11729,39 +11731,39 @@ EOF
 					SETVAR_DSKTENV () {
 						DEBUG_DSKTENV () {
 							echo "desktop env set $DESKTOPENV"
-							echo $DSTENVDSTENV_XEC 
+							echo $DSTENV_XEC 
 							echo $DSTENV_STARTX
 							echo $DSTENV_EMERGE
 						}
-						
+
 						if [ "$DESKTOPENV" == "BUDGIE" ]; then
-						DSTENVDSTENV_XEC=$BUDGIE_DSTENV_XEC && DSTENV_STARTX=$BUDGIE_DSTENV_STARTX && DSTENV_EMERGE=$BUDGIE_DSTENV_EMERGE
+						DSTENV_XEC=$BUDGIE_DSTENV_XEC && DSTENV_STARTX=$BUDGIE_DSTENV_STARTX && DSTENV_EMERGE=$BUDGIE_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "CINNAMON" ] 
-						then DSTENVDSTENV_XEC=$CINNAMON_DSTENV_XEC && DSTENV_STARTX=$CINNAMON_DSTENV_STARTX && DSTENV_EMERGE=$CINNAMON_DSTENV_EMERGE
+						then DSTENV_XEC=$CINNAMON_DSTENV_XEC && DSTENV_STARTX=$CINNAMON_DSTENV_STARTX && DSTENV_EMERGE=$CINNAMON_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "DDE" ] 
-						then DSTENVDSTENV_XEC=$DDE_DSTENV_XEC && DSTENV_STARTX=$DDE_DSTENV_STARTX && DSTENV_EMERGE=$DDE_DSTENV_EMERGE
+						then DSTENV_XEC=$DDE_DSTENV_XEC && DSTENV_STARTX=$DDE_DSTENV_STARTX && DSTENV_EMERGE=$DDE_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "FVWMCRYSTAL" ] 
-						then DSTENVDSTENV_XEC=$FVWMCRYSTAL_DSTENV_XEC && DSTENV_STARTX=$FVWMCRYSTAL_DSTENV_STARTX && DSTENV_EMERGE=$FVWMCRYSTAL_DSTENV_EMERGE
+						then DSTENV_XEC=$FVWMCRYSTAL_DSTENV_XEC && DSTENV_STARTX=$FVWMCRYSTAL_DSTENV_STARTX && DSTENV_EMERGE=$FVWMCRYSTAL_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "GNOME" ] 
-						then DSTENVDSTENV_XEC=$GNOME_DSTENV_XEC && DSTENV_STARTX=$GNOME_DSTENV_STARTX && DSTENV_EMERGE=$GNOME_DSTENV_EMERGE
+						then DSTENV_XEC=$GNOME_DSTENV_XEC && DSTENV_STARTX=$GNOME_DSTENV_STARTX && DSTENV_EMERGE=$GNOME_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "KDE" ] 
-						then DSTENVDSTENV_XEC=$KDE_DSTENV_XEC && DSTENV_STARTX=$KDE_DSTENV_STARTX && DSTENV_EMERGE=$KDE_DSTENV_EMERGE
+						then DSTENV_XEC=$KDE_DSTENV_XEC && DSTENV_STARTX=$KDE_DSTENV_STARTX && DSTENV_EMERGE=$KDE_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "LXDE" ] 
-						then DSTENVDSTENV_XEC=$LXDE_DSTENV_XEC && DSTENV_STARTX=$LXDE_DSTENV_STARTX && DSTENV_EMERGE=$LXDE_DSTENV_EMERGE
+						then DSTENV_XEC=$LXDE_DSTENV_XEC && DSTENV_STARTX=$LXDE_DSTENV_STARTX && DSTENV_EMERGE=$LXDE_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "LXQT" ] 
-						then DSTENVDSTENV_XEC=$LXQT_DSTENV_XEC && DSTENV_STARTX=$LXQT_DSTENV_STARTX && DSTENV_EMERGE=$LXQT_DSTENV_EMERGE
+						then DSTENV_XEC=$LXQT_DSTENV_XEC && DSTENV_STARTX=$LXQT_DSTENV_STARTX && DSTENV_EMERGE=$LXQT_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "LUMINA" ] 
-						then DSTENVDSTENV_XEC=$LUMINA_DSTENV_XEC && DSTENV_STARTX=$LUMINA_DSTENV_STARTX && DSTENV_EMERGE=$LUMINA_DSTENV_EMERGE
+						then DSTENV_XEC=$LUMINA_DSTENV_XEC && DSTENV_STARTX=$LUMINA_DSTENV_STARTX && DSTENV_EMERGE=$LUMINA_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "MATE" ] 
-						then DSTENVDSTENV_XEC=$MATE_DSTENV_XEC && DSTENV_STARTX=$MATE_DSTENV_STARTX && DSTENV_EMERGE=$MATE_DSTENV_EMERGE
+						then DSTENV_XEC=$MATE_DSTENV_XEC && DSTENV_STARTX=$MATE_DSTENV_STARTX && DSTENV_EMERGE=$MATE_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "PANTHEON" ] 
-						then DSTENVDSTENV_XEC=$PANTHEON_DSTENV_XEC && DSTENV_STARTX=$PANTHEON_DSTENV_STARTX && DSTENV_EMERGE=$PANTHEON_DSTENV_EMERGE
+						then DSTENV_XEC=$PANTHEON_DSTENV_XEC && DSTENV_STARTX=$PANTHEON_DSTENV_STARTX && DSTENV_EMERGE=$PANTHEON_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "RAZORQT" ] 
-						then DSTENVDSTENV_XEC=$RAZORQT_DSTENV_XEC && DSTENV_STARTX=$RAZORQT_DSTENV_STARTX && DSTENV_EMERGE=$RAZORQT_DSTENV_EMERGE
+						then DSTENV_XEC=$RAZORQT_DSTENV_XEC && DSTENV_STARTX=$RAZORQT_DSTENV_STARTX && DSTENV_EMERGE=$RAZORQT_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "TDE" ] 
-						then DSTENVDSTENV_XEC=$TDE_DSTENV_XEC && DSTENV_STARTX=$TDE_DSTENV_STARTX && DSTENV_EMERGE=$TDE_DSTENV_EMERGE
+						then DSTENV_XEC=$TDE_DSTENV_XEC && DSTENV_STARTX=$TDE_DSTENV_STARTX && DSTENV_EMERGE=$TDE_DSTENV_EMERGE
 						elif [ "$DESKTOPENV" == "XFCE4" ] 
-						then DSTENVDSTENV_XEC=$XFCE4_DSTENV_XEC && DSTENV_STARTX=$XFCE4_DSTENV_STARTX && DSTENV_EMERGE=$XFCE4_DSTENV_EMERGE
+						then DSTENV_XEC=$XFCE4_DSTENV_XEC && DSTENV_STARTX=$XFCE4_DSTENV_STARTX && DSTENV_EMERGE=$XFCE4_DSTENV_EMERGE
 						else 
 						echo "${bold}ERROR: Could not detect '$DESKTOPENV' - debug displaymanager $DESKTOPENV ${normal}"
 						fi
@@ -11798,7 +11800,7 @@ EOF
 							emerge $EMERGE_VAR xfce-base/thunar
 							# emerge $EMERGE_VAR x11-terms/xfce4-terminal
 							emerge $EMERGE_VAR app-editors/mousepad
-							emerge $EMERGE_VAR xfce4-pulseaudio-plugin
+							#emerge $EMERGE_VAR xfce4-pulseaudio-plugin
 							# emerge $EMERGE_VAR xfce-extra/xfce4-mixer # not found 17.11.19
 							emerge $EMERGE_VAR xfce-extra/xfce4-alsa-plugin
 							# emerge $EMERGE_VAR xfce-extra/thunar-volman
@@ -11835,7 +11837,7 @@ EOF
 						DESKTENV_STARTX () { 
 							if [ "$DESKTOPENV" == "LUMINA" ]; then
 							cat << 'EOF' > ~/.xinitrc 
-							[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+							[[ -f ~/.Xresources ]] && xrdb -merge -I/home/$SYSUSERNAME ~/.Xresources
 							exec start-lumina-desktop
 EOF
 							else
@@ -11847,8 +11849,8 @@ EOF
 						}
 						DESKTENV_AUTOSTART_OPENRC () {
 							if [ "$DESKTOPENV" == "CINNAMON" ]; then
-							cp /etc/xdg/autostart/nm-applet.desktop /home/userName/.config/autostart/nm-applet.desktop
-							echo 'X-GNOME-Autostart-enabled=false' >> /home/userName/.config/autostart/nm-applet.desktop
+							cp /etc/xdg/autostart/nm-applet.desktop /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
+							echo 'X-GNOME-Autostart-enabled=false' >> /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
 							chown $USER:$USER /home/userName/.config/autostart/nm-applet.desktop
 							else
 							echo placeholder
@@ -12016,17 +12018,17 @@ EOF
 			echo "${bold}CRYPTTABD ... START .... ${normal}" && CRYPTTABD && echo "${bold}CRYPTTABD - END${normal}"
 			echo "${bold}KERNEL ... START .... ${normal}" && KERNEL && echo "${bold}BUILD_KERNEL - END${normal}"
 			#if [ "$CONFIGBUILDKERN" != "AUTO" ]; then
-			#INITRAMFS && echo "${bold}INITRAMFS - END${normal}"
+			INITRAMFS && echo "${bold}INITRAMFS - END${normal}"
 			#else
 			#echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
 			#fi
-			#echo "${bold}KEYMAPS ... START .... ${normal}" && KEYMAPS && echo "${bold}KEYMAPS - END${normal}"
+			echo "${bold}KEYMAPS ... START .... ${normal}" && KEYMAPS && echo "${bold}KEYMAPS - END${normal}"
 			##echo "${bold}MODPROBE_CHROOT ... START .... ${normal}" && MODPROBE_CHROOT && echo "${bold}MODPROBE_CHROOT - END${normal}"
-			#echo "${bold}BOOTLOAD ... START .... ${normal}" && BOOTLOAD && echo "${bold}BOOTLOAD - END${normal}"
-			#echo "${bold}AUDIO ... START .... ${normal}" && AUDIO && echo "${bold}AUDIO - END${normal}"
+			echo "${bold}BOOTLOAD ... START .... ${normal}" && BOOTLOAD && echo "${bold}BOOTLOAD - END${normal}"
+			echo "${bold}AUDIO ... START .... ${normal}" && AUDIO && echo "${bold}AUDIO - END${normal}"
 			#echo "${bold}VISUAL ... START .... ${normal}" && VISUAL && echo "${bold}DISPLAYVIDEO - END${normal}"
 			#echo "${bold}USERAPP ... START .... ${normal}" && USERAPP && echo "${bold}USERAPP - END${normal}"
-			#echo "${bold}USERS ... START .... ${normal}" && USERS && echo "${bold}USER - END${normal}"
+			echo "${bold}USERS ... START .... ${normal}" && USERS && echo "${bold}USER - END${normal}"
 			# echo "${bold}NETWORK ... START .... ${normal}" && NETWORK && echo "${bold}NETWORK - END${normal}"
 		}
 		#
