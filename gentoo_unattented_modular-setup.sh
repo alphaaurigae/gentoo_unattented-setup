@@ -1,6 +1,7 @@
 #!/bin/bash
 
-## STATUS: work in progress - system boots w openrc, working to implement every feature available xD
+## STATUS 23.02.2020: work in progress - system boots w openrc. Working to implement dynamic useflags for the make.conf and display / desktop setup...
+#
 # 0.0 INFO
 #
 # Welcome, this is an awesome script, may not work here and there as expected but its awesome, so how about helping me with this?! Bug reports, suggestions, commits welcome - documentation isnt this awesome but i try :)
