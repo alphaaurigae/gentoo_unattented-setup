@@ -372,16 +372,14 @@ BANNER () { # 0.1 BANNER
 	# | '--------------' || '--------------' || '--------------' || '--------------' |
 	#  '----------------'  '----------------'  '----------------'  '----------------' 
 	#
-	INIT () { # 2.0                    
+	INIT () { # 2.0
 		# TIME ... update the system time ... !important
 		TIMEUPD () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Setting_the_date_and_time
 			ntpd -q -g
-		}                                                
-		# MODPROBE ... load kernel modules for the chroot install process, for luks we def need the dm-crypt ...
-		MODPROBE () {
+		}
+		MODPROBE () { # load kernel modules for the chroot install process, for luks we def need the dm-crypt ...
 			modprobe -a dm-mod dm-crypt sha256 aes aes_generic xts
 		}
-		# PARTITIONING ...                                                            
 		PARTITIONING () {
 			PARTED () {
 				# https://wiki.archlinux.org/index.php/GNU_Parted
@@ -390,15 +388,15 @@ BANNER () { # 0.1 BANNER
 				# parted -s $HDD1 rm 2
 				# parted -s $HDD1 rm 3
 				parted -s $HDD1 mklabel gpt # GUID Part-Table
-				# 
+				
 				parted -s $HDD1 mkpart primary "$GRUB_SIZE" # the BIOS boot partition is needed when a GPT partition layout is used with GRUB2 in PC/BIOS mode. It is not required when booting in EFI/UEFI mode. 
 				parted -s $HDD1 name 1 grub # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Disks#GPT
 				parted -s $HDD1 set 1 bios_grub on
-				# 
+
 				parted -s $HDD1 mkpart primary $BOOT_FS "$BOOT_SIZE"
 				parted -s $HDD1 name 2 boot
 				parted -s $HDD1 set 2 boot on
-				# 
+
 				parted -s $HDD1 mkpart primary $MAIN_FS "$MAIN_SIZE"
 				parted -s $HDD1 name 3 mainfs
 				parted -s $HDD1 set 3 lvm on
@@ -510,7 +508,7 @@ BANNER () { # 0.1 BANNER
 			cp --dereference /etc/resolv.conf $CHROOTX/etc/
 		}
 		BASHRC () {
-			cat << 'EOF' > $CHROOTX/etc/skel/.bashrc_tmp                   
+			cat << 'EOF' > $CHROOTX/etc/skel/.bashrc
 			#  .bash.rc by alphaaurigae 11.08.19
 			# ~/.bashrc: executed by bash(1) for non-login shells.
 			# Examples: /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
@@ -558,14 +556,14 @@ BANNER () { # 0.1 BANNER
 			    . ~/.bash_aliases
 			fi
 			GITCOMMIT () {
-			git add .
-			git commit -a -m "$1"
-			git status
+				git add .
+				git commit -a -m "$1"
+				git status
 			}
 			alias santa=GITCOMMIT
 			alias hohoho='git push'
 EOF
-		}                                
+		}
 		MNTFS () {
 			MOUNT_BASESYS () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Mounting_the_necessary_filesystems
 				mount --types proc /proc $CHROOTX/proc
@@ -615,7 +613,8 @@ EOF
 		}
 		DL_STAGE	&& echo "${bold}DL_STAGE - END, proceeding to EBUILD ....${normal}"
 		EBUILD		&& echo "${bold}EBUILD - END, proceeding to RESOLVCONF ....${normal}"
-		RESOLVCONF	&& echo "${bold}RESOLVCONF - END, proceeding to MNTFS ....${normal}"
+		RESOLVCONF	&& echo "${bold}RESOLVCONF - END, proceeding to BASHRC ....${normal}"
+		BASHRC		&& echo "${bold}BASHRC - END, proceeding to MNTFS ....${normal}"
 		MNTFS		&& echo "${bold}MNTFS - END, proceeding to CHROOT ....${normal}"
 	}
 #  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -886,7 +885,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 		INSTALL_CRON=NO
 		INSTALL_FILEINDEXING=NO
 
-		## FSTOOLS          
+		## FSTOOLS
 		# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
 		FS_EXT_EMERGE=sys-fs/e2fsprogs
 		FS_XFS_EMERGE=sys-fs/xfsprogs
@@ -986,7 +985,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 						timedatectl set-timezone $SYSTIMEZONE_SET
 					}
 					TIMEZONE_$SYSINITVAR
-				}                                                                 
+				}
 				SET_SYSTEMCLOCK () { # https://wiki.gentoo.org/wiki/System_time#System_clock
 					SYSTEMCLOCK_OPENRC () {
 						OPENRC_SYSCLOCK_MANUAL () { 
@@ -1032,7 +1031,7 @@ INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 				echo "${bold}SET_SYSTEMCLOCK ... START .... ${normal}" && SET_SYSTEMCLOCK && echo "${bold}SYSTEMCLOCK end${normal}"
 				echo "${bold}SET_SYSTEMCLOCK echos err for systemd if install medium isnt systemd${normal}"
 				echo "${bold}SET_HWCLOCK ... START .... ${normal}" && SET_HWCLOCK && echo "${bold}SET_HWCLOCK end${normal}"
-			}                                      
+			}
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			CONF_LOCALES () { # https://wiki.gentoo.org/wiki/Localization/Guide
 				CONF_LOCALEGEN () {
@@ -1092,7 +1091,7 @@ EOF
 			echo "${bold}PORTAGE ... START .... ${normal}" && PORTAGE && echo "${bold}CONFIG_PORTAGE - END ....${normal}"
 			## EMERGE_SYNC		&& echo "${bold}EMERGE_SYNC - END ....${normal}" # probably can leave this out if everything already latest ...
 			echo "${bold}SELECT_PROFILE ... START .... ${normal}" && SELECT_PROFILE	&& echo "${bold}SELECT_PROFILE - END ....${normal}"
-			echo "${bold}SETFLAGSS1_$SYSINITVAR ... START .... ${normal}" && SETFLAGSS1_$SYSINITVAR && echo "${bold}SETFLAGSS1_$SYSINITVAR - END ....${normal}"
+			echo "${bold}SETFLAGS1 ... START .... ${normal}" && SETFLAGS1 && echo "${bold}SETFLAGS1 - END ....${normal}"
 			echo "${bold}WORLDSET ... START .... ${normal}" && WORLDSET && echo "${bold}WORLDSET - END ....${normal}"
 			echo "${bold}MISC1_CHROOT ... START .... ${normal}" && MISC1_CHROOT && echo "${bold}MISC1_CHROOT - END ....${normal}"
 			echo "${bold}RELOAD_SYSTEMD ... START .... ${normal}" && RELOAD_SYSTEMD && echo "${bold}RELOAD_SYSTEMD - END ....${normal}"
@@ -1118,7 +1117,7 @@ EOF
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			I_DMCRYPT () { # https://wiki.gentoo.org/wiki/Dm-crypt
 				echo "sys-fs/cryptsetup udev" > /etc/portage/package.use/cryptsetup
-				echo "sys-fs/cryptsetup ~amd64" >> /etc/portage/package.keywords
+				echo "sys-fs/cryptsetup ~amd64" >> /etc/portage/package.accept_keywords
 				emerge $EMERGE_VAR @world
 
 				emerge $EMERGE_VAR sys-fs/cryptsetup
@@ -1429,7 +1428,7 @@ EOF
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				KERN_LOAD () {
 					KERN_EMERGE () {
-						sed -ie '#sys-kernel/gentoo-sources ~amd64#d' /etc/portage/package.keywords && echo "sys-kernel/gentoo-sources ~amd64" >> /etc/portage/package.keywords
+						sed -ie '#sys-kernel/gentoo-sources ~amd64#d' /etc/portage/package.accept_keywords && echo "sys-kernel/gentoo-sources ~amd64" >> /etc/portage/package.accept_keywords
 						emerge $EMERGE_VAR @world
 						emerge $EMERGE_VAR sys-kernel/gentoo-sources
 					}
@@ -11167,7 +11166,7 @@ EOF
 					KERN_AUTO () { # (!changeme) switch to auto (option variables top) # switch to auto configuration (option variables top)
 						GENKERNEL_NEXT () { # # (!default)
 							echo "sys-kernel/genkernel-next cryptsetup" > /etc/portage/package.use/genkenel-next
-							sed -ie '#sys-kernel/genkernel-next ~amd64#d' /etc/portage/package.keywords && echo "sys-kernel/genkernel-next ~amd64" >> /etc/portage/package.keywords
+							sed -ie '#sys-kernel/genkernel-next ~amd64#d' /etc/portage/package.accept_keywords && echo "sys-kernel/genkernel-next ~amd64" >> /etc/portage/package.accept_keywords
 							emerge $EMERGE_VAR @world # this is to update after setting the use flag
 							emerge $EMERGE_VAR sys-kernel/genkernel-next
 							CONF_GENKERNEL () { # (!default)
@@ -11301,7 +11300,7 @@ EOF
 					LOAD_GRUB2 () {
 						# sed -ie '#sys-boot/grub device-mapper#d' /etc/portage/package.use/grub && echo "sys-boot/grub device-mapper" > /etc/portage/package.use/grub
 						sed -ie '#sys-boot/grub:2 device-mapper#d' /etc/portage/package.use && echo "sys-boot/grub:2 device-mapper" >> /etc/portage/package.use/sys-boot
-						sed -ie '#sys-boot/grub:2 ~amd64#d' /etc/portage/package.keywords && echo "sys-boot/grub:2 ~amd64" >> /etc/portage/package.keywords
+						sed -ie '#sys-boot/grub:2 ~amd64#d' /etc/portage/package.accept_keywords && echo "sys-boot/grub:2 ~amd64" >> /etc/portage/package.accept_keywords
 						emerge $EMERGE_VAR @world
 						emerge $EMERGE_VAR sys-boot/grub:2
 
@@ -11360,10 +11359,10 @@ EOF
 							# false			true			false			dev name			  #
 							# false			true			true			dev name			  #
 							# true			false			false			fs UUID				  #
-							# true			false			true			part UUID			  #
+							# true			false			true			part UUID				  #
 							# true			true			false			fs UUID				  #
-							# true			true			true			dev name			  #
-							#													  #
+							# true			true			true			dev name				  #
+							#														  #
 							# Remember, ‘GRUB_DISABLE_LINUX_PARTUUID’ and ‘GRUB_DISABLE_LINUX_UUID’ are also considered to be set to  #
 							# ... ‘false’ when they are unset. 									  #
 							###########################################################################################################
@@ -11541,7 +11540,7 @@ EOF
 			# | ' /|  _|  \ V /| |\/| | / _ \ | |_) \___ \ 
 			# | . \| |___  | | | |  | |/ ___ \|  __/ ___) |
 			# |_|\_\_____| |_| |_|  |_/_/   \_\_|   |____/ 
-			#                                             
+			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			KEYMAPS () {
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -11562,7 +11561,7 @@ EOF
 			#   / _ \| | | | | | | | | | |
 			#  / ___ \ |_| | |_| | | |_| |
 			# /_/   \_\___/|____/___\___/ 
-			# 		            
+			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			AUDIO () { # (!todo)
 				SOUND_API () {
@@ -11607,7 +11606,7 @@ EOF
 			#  \ \ / / | |\___ \| | | |/ _ \ | |    
 			#   \ V /  | | ___) | |_| / ___ \| |___ 
 			#    \_/  |___|____/ \___/_/   \_\_____|
-			#                                      
+			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			VISUAL () {
 				#   ____ ____  _   _ 
@@ -11880,7 +11879,7 @@ EOF
 			# |  \| |  _|   | |  \ \ /\ / / | | | |_) | ' / 
 			# | |\  | |___  | |   \ V  V /| |_| |  _ <| . \ 
 			# |_| \_|_____| |_|    \_/\_/  \___/|_| \_\_|\_\
-			#                                            
+			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			NETWORK () { # (!todo)
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -11959,7 +11958,7 @@ EOF
 			# | | | \___ \|  _| | |_) |  / _ \ | |_) | |_) |
 			# | |_| |___) | |___|  _ <  / ___ \|  __/|  __/ 
 			#  \___/|____/|_____|_| \_\/_/   \_\_|   |_|    
-			#                                            
+			#
 			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''  
 			USERAPP () { # (!todo)
 				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -12026,7 +12025,7 @@ EOF
 			echo "${bold}KEYMAPS ... START .... ${normal}" && KEYMAPS && echo "${bold}KEYMAPS - END${normal}"
 			##echo "${bold}MODPROBE_CHROOT ... START .... ${normal}" && MODPROBE_CHROOT && echo "${bold}MODPROBE_CHROOT - END${normal}"
 			echo "${bold}BOOTLOAD ... START .... ${normal}" && BOOTLOAD && echo "${bold}BOOTLOAD - END${normal}"
-			echo "${bold}AUDIO ... START .... ${normal}" && AUDIO && echo "${bold}AUDIO - END${normal}"
+			#echo "${bold}AUDIO ... START .... ${normal}" && AUDIO && echo "${bold}AUDIO - END${normal}"
 			#echo "${bold}VISUAL ... START .... ${normal}" && VISUAL && echo "${bold}DISPLAYVIDEO - END${normal}"
 			#echo "${bold}USERAPP ... START .... ${normal}" && USERAPP && echo "${bold}USERAPP - END${normal}"
 			echo "${bold}USERS ... START .... ${normal}" && USERS && echo "${bold}USER - END${normal}"
@@ -12050,8 +12049,8 @@ EOF
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 		## (RUN ENTIRE SCRIPT) (!changeme)
-		BASE	&& echo "${bold}BASE - END${normal}"
-		SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
+		#BASE	&& echo "${bold}BASE - END${normal}"
+		#SYSAPP	&& echo "${bold}SYSAPP - END${normal}"
 		CORE	&& echo "${bold}CORE - END${normal}"
 		# FINISH	&& echo "${bold}FINISH - END${normal}"
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -12066,7 +12065,7 @@ CHROOT () {
 
 #### RUN ALL ## (!changeme)
 #BANNER 		&& echo "${bold}BANNER - END, proceeding to DEPLOY_BASESYS ....${normal}"
-INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
-PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
+#INIT 		&& echo "${bold}DEPLOY_BASESYS - END, proceeding to PREPARE_CHROOT ....${normal}"
+#PRE		&& echo "${bold}PREPARE_CHROOT - END, proceeding to INNER_CHROOT ....${normal}"
 CHROOT		&& echo "${bold}RUNCHROOT - END${normal}"
 echo "${bold}Script finished all operations - END${normal}"
