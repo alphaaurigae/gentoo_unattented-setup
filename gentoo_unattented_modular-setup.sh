@@ -1,13 +1,11 @@
 #!/bin/bash
 
-
 # work in progress! 12.01.21
 # - minimal default kernel configuration
 # - grub timeout ... boot waiting time. .
 # - keyboard .. after chroot reboot into new system the keyboard is still default in xfce4
 # - tidy up 
 # - modulize ... automate all the things.... ; modulize partitions, useflags ... all the things.
-
 #
 #	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #	+     ____ _____ _   _ _____ ___   ___    _     ___ _   _ _   ___  __   +
@@ -23,32 +21,25 @@
 #	+								        	  +
 #	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
-
-
 ## Deployment Instructions, "3 steps":
-
 # I:
-# ----------------
 #1. config variables - default settings should do for a testrun.
 #2. IF VIRT GUEST may w sufficient RAM (test system has 32G RAM, where 25 are for the guest) and possibly KVM to avoid flag conflics (!note: ex firefox avx2 err).
 
 # II:
-# ----------------
 # sample 1:
 #1. deploy virtualbox gentoo minimal ISO
 #2. wget -O awesome.sh https://....
 #3. tr -d '\015' < awesome.sh > deploy-gentoo.sh # convert to unix file format, in case the host deploys it differently.
-## -----------
+
 ## sample 2:
 #1. deploy virtualbox gentoo minimal ISO
 #2. depending on the network change virtualbox network adapter settings - sample here has host with bridge and guest with bridged adapter,
 #3. passwd root
 #4. run ssh serv
 #5. scp gentoo_unattented_modular-setup.sh root@x.x.x.x:run.sh
-## ----------------#
-#
+
 ## III:
-## ----------------
 #1. chmod +x run.sh
 #2. prepare to be prompted for cryptsetup password setup, youll need this a little later to unlock the luks container for the CHROOT!. see relevant sections for details.
 #3. have dinner, this may take a long while.
@@ -63,324 +54,301 @@
 #3.0 IO: having decent IO capacity (fast, redundant drives) will greatly aid the build speed.
 #4.0 SWAP: theres a function for a swap file to solve RAM problems. add this to the disk size calc.
 #5.0 RAM: dev sys 32 gb where 25 for guest.
-# ----------------
 
 ## MORE INFO:
 # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation
 # https://wiki.gentoo.org/wiki/Handbook:AMD64/Full/Installation
 # https://wiki.gentoo.org/wiki/Security_Handbook/Full
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 # (!note: edit the variables, not the script ..... where possible ^^)
 # VARIABLES (note!: there are 2 places to edit variables! here: pre-script and CHROOT! go to inner script to edit the other variables! (!todo: parse variables to chroot to have all variables in one place)
 
-	##  DRIVES & PARTITIONS
-	HDD1=/dev/sda # OS DRIVE - the drive you want to install gentoo to.
-	## GRUB_PART=/dev/sda1 # bios grub
-	BOOT_PART=/dev/sda2 # boot # unencrypted unless required changes are made - see CRYPTSETUP_BOOT 
-	MAIN_PART=/dev/sda3 # mainfs - lukscrypt cryptsetup container with LVM env inside
+##  DRIVES & PARTITIONS
+HDD1=/dev/sda # OS DRIVE - the drive you want to install gentoo to.
+## GRUB_PART=/dev/sda1 # bios grub
+BOOT_PART=/dev/sda2 # boot # unencrypted unless required changes are made - see CRYPTSETUP_BOOT 
+MAIN_PART=/dev/sda3 # mainfs - lukscrypt cryptsetup container with LVM env inside
 
-	## SWAP PARTITION- DISABLED -- SEE VAR & LVM SECTION TO ENABLE!
-	# SWAP0=swap0 # LVM swap NAME for sorting of swap partitions.
-	# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART - mainhdd only has boot & fainfs
-	# SWAP_FS=linux-swap # swapfs
+## SWAP PARTITION- DISABLED -- SEE VAR & LVM SECTION TO ENABLE!
+# SWAP0=swap0 # LVM swap NAME for sorting of swap partitions.
+# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART - mainhdd only has boot & fainfs
+# SWAP_FS=linux-swap # swapfs
 
-	## FILESYSTEMS # !FSTOOLS
-	FILESYSTEM_BOOT=ext2 # boot filesystem
-	FILESYSTEM_MAIN=ext4 # main filesystem for the OS
+## FILESYSTEMS # !FSTOOLS
+FILESYSTEM_BOOT=ext2 # boot filesystem
+FILESYSTEM_MAIN=ext4 # main filesystem for the OS
 
-	## LVM
-	PV_MAIN=pv0crypt # LVM PV physical volume
-	VG_MAIN=vg0crypt # LVM VG volume group
-	LV_MAIN=lv0crypt # LVM LV logical volume
+## LVM
+PV_MAIN=pv0crypt # LVM PV physical volume
+VG_MAIN=vg0crypt # LVM VG volume group
+LV_MAIN=lv0crypt # LVM LV logical volume
 
-	## PARTITION SIZE
-	GRUB_SIZE="1M 1G" # (!changeme) bios grub sector start/end M for megabytes, G for gigabytes
-	BOOT_SIZE="1G 3G" # (!changeme) boot sector start/end
-	MAIN_SIZE="3G 100%" # (!changeme) primary partition start/end
+## PARTITION SIZE
+GRUB_SIZE="1M 1G" # (!changeme) bios grub sector start/end M for megabytes, G for gigabytes
+BOOT_SIZE="1G 3G" # (!changeme) boot sector start/end
+MAIN_SIZE="3G 100%" # (!changeme) primary partition start/end
 
-	## PROFILE # default during dev of the script is systemd but prep openrc.	
-	STAGE3DEFAULT=latest-stage3-amd64  # latest-stage3-amd64; latest-stage3-amd64-systemd; latest-stage3-amd64-nomultilib; latest-stage3-amd64-hardened; latest-stage3-amd64-hardened-selinux; latest-stage3-amd64-hardened-selinux+nomultilib; latest-stage3-amd64-hardened+nomultilib
-	CHROOTX=/mnt/gentoo # chroot directory, installer will create this recursively
+## PROFILE # default during dev of the script is systemd but prep openrc.	
+STAGE3DEFAULT=latest-stage3-amd64  # latest-stage3-amd64; latest-stage3-amd64-systemd; latest-stage3-amd64-nomultilib; latest-stage3-amd64-hardened; latest-stage3-amd64-hardened-selinux; latest-stage3-amd64-hardened-selinux+nomultilib; latest-stage3-amd64-hardened+nomultilib
+CHROOTX=/mnt/gentoo # chroot directory, installer will create this recursively
 
-	# GPG_VERIFY
-	#GPG_KEYSERV="hkps://keys.gentoo.org"
-	GPG_KEYSERV="hkp://pool.sks-keyservers.net"  # https://sks-keyservers.net/overview-of-pools.php
-	GENTOO_EBUILD_KEYFINGERPRINT1="13EBBDBEDE7A12775DFDB1BABB572E0E2D182910"  # https://www.gentoo.org/downloads/signatures/
-	GENTOO_EBUILD_KEYFINGERPRINT2="DCD05B71EAB94199527F44ACDB6B8C1F96D8BF6D"  # https://www.gentoo.org/downloads/signatures/
-	GENTOO_EBUILD_KEYFINGERPRINT3="534E4209AB49EEE1C19D96162C44695DB9F6043D"  # https://forums.gentoo.org/viewtopic-t-1116176-start-0.html
-	GENTOO_EBUILD_KEYFINGERPRINT4="D99EAC7379A850BCE47DA5F29E6438C817072058"  # https://www.gentoo.org/downloads/signatures/
+# GPG_VERIFY
+#GPG_KEYSERV="hkps://keys.gentoo.org"
+GPG_KEYSERV="hkp://pool.sks-keyservers.net"  # https://sks-keyservers.net/overview-of-pools.php
+GENTOO_EBUILD_KEYFINGERPRINT1="13EBBDBEDE7A12775DFDB1BABB572E0E2D182910"  # https://www.gentoo.org/downloads/signatures/
+GENTOO_EBUILD_KEYFINGERPRINT2="DCD05B71EAB94199527F44ACDB6B8C1F96D8BF6D"  # https://www.gentoo.org/downloads/signatures/
+GENTOO_EBUILD_KEYFINGERPRINT3="534E4209AB49EEE1C19D96162C44695DB9F6043D"  # https://forums.gentoo.org/viewtopic-t-1116176-start-0.html
+GENTOO_EBUILD_KEYFINGERPRINT4="D99EAC7379A850BCE47DA5F29E6438C817072058"  # https://www.gentoo.org/downloads/signatures/
+GENTOO_RELEASE_URL="http://distfiles.gentoo.org/releases/amd64/autobuilds/"
 
-	GENTOO_RELEASE_URL="http://distfiles.gentoo.org/releases/amd64/autobuilds/"
+## MISC STATIC
+bold=$(tput bold) # staticvar bold text
+normal=$(tput sgr0) # # staticvar reverse to normal text
 
-	## MISC STATIC
-	bold=$(tput bold) # staticvar bold text
-	normal=$(tput sgr0) # # staticvar reverse to normal text
+NOTICE_START () {
+	echo "${bold} ${FUNCNAME[1]} ... START ... ${normal}"
+}
+NOTICE_START
+NOTICE_END () {
+	echo "${bold}${FUNCNAME[1]}  ... END ... ${normal}"
+}
 
-		NOTICE_START () {
-			echo "${bold} ${FUNCNAME[1]} ... START ... ${normal}"
-		}
-		# ########################################################################################################################
-		NOTICE_START
-
-		NOTICE_END () {
-			echo "${bold}${FUNCNAME[1]}  ... END ... ${normal}"
-		}
-
-	PRE () {  # PREPARE CHROOT
+PRE () {  # PREPARE CHROOT
+NOTICE_START
+	INIT () {  # (!note:: in this section the script starts off with everything that has to be done prior to the setup action.)
 	NOTICE_START
-		INIT () {  # (!note:: in this section the script starts off with everything that has to be done prior to the setup action.)
+		TIMEUPD () {  # TIME ... update the system time ... (!important) # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Setting_the_date_and_time
 		NOTICE_START
-			TIMEUPD () {  # TIME ... update the system time ... (!important) # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Setting_the_date_and_time
-			NOTICE_START
-				ntpd -q -g
-			NOTICE_END
-			}
-			MODPROBE () {  # load kernel modules for the chroot install process, for luks we def need the dm-crypt ...
-			NOTICE_START
-				modprobe -a dm-mod dm-crypt sha256 aes aes_generic xts
-			NOTICE_END
-			}
-			TIMEUPD
-			MODPROBE
-
+			ntpd -q -g
 		NOTICE_END
 		}
-
-		PARTITIONING () { # (!todo /var/tmp partition in ramfs)
+		MODPROBE () {  # load kernel modules for the chroot install process, for luks we def need the dm-crypt ...
 		NOTICE_START
-			PARTED () {  # (!note: partitioning for LVM on LUKS cryptsetup)
-			NOTICE_START
-				# https://wiki.archlinux.org/index.php/GNU_Parted
-				sgdisk --zap-all /dev/sda
-				# parted -s $HDD1 rm 1
-				# parted -s $HDD1 rm 2
-				# parted -s $HDD1 rm 3
-				parted -s $HDD1 mklabel gpt # GUID Part-Table
-				
-				parted -s $HDD1 mkpart primary "$GRUB_SIZE"  # the BIOS boot partition is needed when a GPT partition layout is used with GRUB2 in PC/BIOS mode. It is not required when booting in EFI/UEFI mode. 
-				parted -s $HDD1 name 1 grub # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Disks#GPT
-				parted -s $HDD1 set 1 bios_grub on
-
-				parted -s $HDD1 mkpart primary $FILESYSTEM_BOOT "$BOOT_SIZE"
-				parted -s $HDD1 name 2 boot
-				parted -s $HDD1 set 2 boot on
-
-				parted -s $HDD1 mkpart primary $FILESYSTEM_MAIN "$MAIN_SIZE"
-				parted -s $HDD1 name 3 mainfs
-				parted -s $HDD1 set 3 lvm on
-			}
-			PTABLES () {
-			NOTICE_START
-				partx -u $HDD1
-				partprobe $HDD1
-			NOTICE_END
-			}
-			MAKEFS_BOOT () {
-			NOTICE_START
-				mkfs.$FILESYSTEM_BOOT $BOOT_PART
-			NOTICE_END
-			}
-			PARTED
-			PTABLES
-			MAKEFS_BOOT
-
+			modprobe -a dm-mod dm-crypt sha256 aes aes_generic xts
 		NOTICE_END
 		}
-
-		#  (!note: lvm on luks! Lets put EVERYTHING IN THE LUKS CONTAINER, to put the LVM INSIDE and the installation inside of the LVM "CRYPT --> BOOT/LVM2 --> OS" ... )
-		#  (!note: for the main disk $MAIN_PART - you will be prompted for passohrase)
-		CRYPTSETUP () {  # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS && https://blog.stigok.com/2018/05/03/lvm-in-luks-with-encrypted-boot-partition-and-suspend-to-disk.html
+		TIMEUPD
+		MODPROBE
+	NOTICE_END
+	}
+	PARTITIONING () { # (!todo /var/tmp partition in ramfs)
+	NOTICE_START
+		PARTED () {  # (!note: partitioning for LVM on LUKS cryptsetup)
 		NOTICE_START
-			echo "${bold}enter the $PV_MAIN password${normal}"
-			cryptsetup -v luksFormat --type luks2 $MAIN_PART --debug
-			cryptsetup open $MAIN_PART $PV_MAIN
-		NOTICE_END
-		}
-
-		#  LVM = "PV (Physical volume)-> VG (Volume group) > LV (Logical volume) inside of the luks crypt container ...             
-		LVMONLUKS () {  # (!note: LVM2 in the luks container on $MAIN_PART)
-		NOTICE_START
-			LVM_PV () {  # (!note: physical volume $PV_MAIN) only for the $MAIN_PART)
-				pvcreate /dev/mapper/$PV_MAIN
-			}
-			LVM_VG () {  # (!note: volume group $VG_MAIN only on the $VG_MAIN)
-				vgcreate $VG_MAIN /dev/mapper/$PV_MAIN
-			}
-			LVM_LV () {  # (!note: volume group $LV_MAIN on $PV_MAIN)
-				# lvcreate -L $SWAP_SIZE -n $SWAP0 $VG_MAIN
-				lvcreate -l 98%FREE -n $LV_MAIN $VG_MAIN
-			}
-			MAKEFS_LVM () {  # (!note: filesystems $LV_MAIN)
-				mkfs.ext4 /dev/$VG_MAIN/$LV_MAIN # logical volume for OS inst.
-				# mkswap /dev/$VG_MAIN/$SWAP0 # swap ...
-			}
-			MOUNT_LVM_LV () {  # (!note: mount the LVM for CHROOT.)
-				mkdir -p $CHROOTX
-				mount /dev/mapper/$VG_MAIN-$LV_MAIN $CHROOTX
-				# swapon /dev/$VG_MAIN/$SWAP0
-				mkdir $CHROOTX/boot
-				mount $BOOT_PART $CHROOTX/boot
-			}
-			LVM_PV
-			LVM_VG
-			LVM_LV
-			MAKEFS_LVM
-			MOUNT_LVM_LV
+			# https://wiki.archlinux.org/index.php/GNU_Parted
+			sgdisk --zap-all /dev/sda
+			# parted -s $HDD1 rm 1
+			# parted -s $HDD1 rm 2
+			# parted -s $HDD1 rm 3
+			parted -s $HDD1 mklabel gpt # GUID Part-Table
 			
+			parted -s $HDD1 mkpart primary "$GRUB_SIZE"  # the BIOS boot partition is needed when a GPT partition layout is used with GRUB2 in PC/BIOS mode. It is not required when booting in EFI/UEFI mode. 
+			parted -s $HDD1 name 1 grub # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Disks#GPT
+			parted -s $HDD1 set 1 bios_grub on
+			parted -s $HDD1 mkpart primary $FILESYSTEM_BOOT "$BOOT_SIZE"
+			parted -s $HDD1 name 2 boot
+			parted -s $HDD1 set 2 boot on
+			parted -s $HDD1 mkpart primary $FILESYSTEM_MAIN "$MAIN_SIZE"
+			parted -s $HDD1 name 3 mainfs
+			parted -s $HDD1 set 3 lvm on
+		}
+		PTABLES () {
+		NOTICE_START
+			partx -u $HDD1
+			partprobe $HDD1
 		NOTICE_END
 		}
-
-		# STAGE3 TARBALL - HTTPS:// ?
-		STAGE3 () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Choosing_a_stage_tarball && # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Unpacking_the_stage_tarball
+		MAKEFS_BOOT () {
 		NOTICE_START
-			STAGE3_FETCH () {
+			mkfs.$FILESYSTEM_BOOT $BOOT_PART
+		NOTICE_END
+		}
+		PARTED
+		PTABLES
+		MAKEFS_BOOT
+	NOTICE_END
+	}
+	#  (!note: lvm on luks! Lets put EVERYTHING IN THE LUKS CONTAINER, to put the LVM INSIDE and the installation inside of the LVM "CRYPT --> BOOT/LVM2 --> OS" ... )
+	#  (!note: for the main disk $MAIN_PART - you will be prompted for passohrase)
+	CRYPTSETUP () {  # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS && https://blog.stigok.com/2018/05/03/lvm-in-luks-with-encrypted-boot-partition-and-suspend-to-disk.html
+	NOTICE_START
+		echo "${bold}enter the $PV_MAIN password${normal}"
+		cryptsetup -v luksFormat --type luks2 $MAIN_PART --debug
+		cryptsetup open $MAIN_PART $PV_MAIN
+	NOTICE_END
+	}
+	#  LVM = "PV (Physical volume)-> VG (Volume group) > LV (Logical volume) inside of the luks crypt container ...             
+	LVMONLUKS () {  # (!note: LVM2 in the luks container on $MAIN_PART)
+	NOTICE_START
+		LVM_PV () {  # (!note: physical volume $PV_MAIN) only for the $MAIN_PART)
+			pvcreate /dev/mapper/$PV_MAIN
+		}
+		LVM_VG () {  # (!note: volume group $VG_MAIN only on the $VG_MAIN)
+			vgcreate $VG_MAIN /dev/mapper/$PV_MAIN
+		}
+		LVM_LV () {  # (!note: volume group $LV_MAIN on $PV_MAIN)
+			# lvcreate -L $SWAP_SIZE -n $SWAP0 $VG_MAIN
+			lvcreate -l 98%FREE -n $LV_MAIN $VG_MAIN
+		}
+		MAKEFS_LVM () {  # (!note: filesystems $LV_MAIN)
+			mkfs.ext4 /dev/$VG_MAIN/$LV_MAIN # logical volume for OS inst.
+			# mkswap /dev/$VG_MAIN/$SWAP0 # swap ...
+		}
+		MOUNT_LVM_LV () {  # (!note: mount the LVM for CHROOT.)
+			mkdir -p $CHROOTX
+			mount /dev/mapper/$VG_MAIN-$LV_MAIN $CHROOTX
+			# swapon /dev/$VG_MAIN/$SWAP0
+			mkdir $CHROOTX/boot
+			mount $BOOT_PART $CHROOTX/boot
+		}
+		LVM_PV
+		LVM_VG
+		LVM_LV
+		MAKEFS_LVM
+		MOUNT_LVM_LV
+		
+	NOTICE_END
+	}
+	# STAGE3 TARBALL - HTTPS:// ?
+	STAGE3 () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Choosing_a_stage_tarball && # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Unpacking_the_stage_tarball
+	NOTICE_START
+		STAGE3_FETCH () {
+		NOTICE_START
+			SET_VAR_STAGE3_FETCH (){
 			NOTICE_START
-				SET_VAR_STAGE3_FETCH (){
-				NOTICE_START
-					STAGE3_FILENAME="$(curl -s http://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE3DEFAULT.txt | sed '/^#/ d' | awk '{print $1}' | sed -r 's/\.tar\.xz//g' )"
-					LIST=".tar.xz
-						.tar.xz.CONTENTS.gz
-						.tar.xz.DIGESTS
-						.tar.xz.DIGESTS.asc"
-				NOTICE_END
-				}
-				FETCH_STAGE3_FETCH () {
-				NOTICE_START
-					for i in $LIST; do
-						echo "${bold}FETCH $STAGE3_FILENAME$i ....${normal}"
-						if [ -f "$CHROOTX/$STAGE3_FILENAME " ]; then
-							wget -P $CHROOTX/ $GENTOO_RELEASE_URL/"$STAGE3_FILENAME$i"  # stage3.tar.xz (!note: main stage3 archive) # OLD single: wget -P $CHROOTX/ http://distfiles.gentoo.org/releases/amd64/autobuilds/"$STAGE3_FILENAME"  # stage3.tar.xz (!note: main stage3 archive)
-						fi
-					done
-				NOTICE_END
-				}
-				SET_VAR_STAGE3_FETCH
-				FETCH_STAGE3_FETCH
+				STAGE3_FILEPATH="$(curl -s http://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE3DEFAULT.txt | sed '/^#/ d' | awk '{print $1}' | sed -r 's/\.tar\.xz//g' )"
 
+				LIST="$STAGE3_FILEPATH.tar.xz
+					$STAGE3_FILEPATH.tar.xz.CONTENTS.gz
+					$STAGE3_FILEPATH.tar.xz.DIGESTS
+					$STAGE3_FILEPATH.tar.xz.DIGESTS.asc"
 			NOTICE_END
 			}
-
-			STAGE3_VERIFY () {  # (!unfinished) (!todo) (!important) # "hope this works" -
+			FETCH_STAGE3_FETCH () {
 			NOTICE_START
-				SET_VAR_STAGE3_VERIFY (){
-				NOTICE_START
-					STAGE3_FILENAME="$(cd $CHROOTX/ && ls stage3-* | awk '{ print $1 }' | awk 'FNR == 1 {print}' | sed -r 's/\.tar\.xz//g' )"
-				NOTICE_END
-				}
-				RECEIVE_GPGKEYS () { # which key is actually needed? for i in 
-				NOTICE_START
-					GENTOOKEYS="
-						$GENTOO_EBUILD_KEYFINGERPRINT1
-						$GENTOO_EBUILD_KEYFINGERPRINT2
-						$GENTOO_EBUILD_KEYFINGERPRINT3
-						$GENTOO_EBUILD_KEYFINGERPRINT4
-					"
-
-					for i in $GENTOOKEYS ; do
-						echo "${bold}$i=$i ....${normal}"
-						echo "${bold}gpg --keyserver $KEYSERVER --recv-keys $i ....${normal}"
-						gpg --keyserver $GPG_KEYSERV --recv-keys "$i"  # Fetch the key https://www.gentoo.org/downloads/signatures/
-					done
-
-					#gpg --list-keys
-				NOTICE_END
-				}
-
-				VERIFY () {
-				NOTICE_START
-					if gpg  --verify "$CHROOTX/$STAGE3_FILENAME.tar.xz.DIGESTS.asc" ; then 
-						echo 'gpg  --verify "$CHROOTX/$STAGE3_FILENAME.tar.xz.DIGESTS.asc" - OK'
-										
-						if grep -A 1 -i sha512 $CHROOTX/$STAGE3_FILENAME.tar.xz.DIGESTS.asc; then  # With the cryptographic signature validated, next verify the checksum to make sure the downloaded ISO file is not corrupted. The .DIGESTS.asc file contains multiple hashing algorithms, so one of the methods to validate the right one is to first look at the checksum registered in the .DIGESTS.asc file. For instance, to get the SHA512 checksum:  In the above output, two SHA512 checksums are shown - one for the install-amd64-minimal-20141204.iso file and one for its accompanying .CONTENTS file. Only the first checksum is of interest, as it needs to be compared with the calculated SHA512 checksum which can be generated as follows: 
-							echo 'grep -A 1 -i sha512 $CHROOTX/$STAGE3_FILENAME.tar.xz.DIGESTS.asc - OK'
-							echo 'STAGE3_UNPACK ....'
-							tar xvJpf $CHROOTX/"$STAGE3_FILENAME.tar.xz" --xattrs-include='*.*' --numeric-owner -C $CHROOTX
-						fi
-					else 
-						echo "SIGNATURE ALERT!"
+				for i in $LIST; do
+					echo "${bold}FETCH $i ....${normal}"
+					wget -P $CHROOTX/ $GENTOO_RELEASE_URL/"$i"  # stage3.tar.xz (!note: main stage3 archive) # OLD single: wget -P $CHROOTX/ http://distfiles.gentoo.org/releases/amd64/autobuilds/"$STAGE3_FILENAME"  # stage3.tar.xz (!note: main stage3 archive)
+					if [ -f "$CHROOTX/$( echo $i| rev | cut -d'/' -f-1 | rev)" ]; then
+						echo "$CHROOTX/$(echo "$i" | rev | cut -d'/' -f-1 | rev) found - OK"
+					else
+						echo "ERROR: $CHROOTX/$(echo "$i" | rev | cut -d'/' -f-1 | rev) not found!"
 					fi
-				NOTICE_END
-				}
-				SET_VAR_STAGE3_VERIFY
-				RECEIVE_GPGKEYS
-				VERIFY
-			NOTICE_END
-
-			}
-			STAGE3_FETCH
-			STAGE3_VERIFY
-		NOTICE_END
-		}
-
-		MNTFS () {
-		NOTICE_START
-			MOUNT_BASESYS () {  # (!important) # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Mounting_the_necessary_filesystems
-			NOTICE_START
-				mount --types proc /proc $CHROOTX/proc
-				mount --rbind /sys $CHROOTX/sys
-				mount --make-rslave $CHROOTX/sys
-				mount --rbind /dev $CHROOTX/dev
-				mount --make-rslave $CHROOTX/dev
-			NOTICE_END
-			}	 
-			SETMODE_DEVSHM () {
-			NOTICE_START
-				chmod 1777 /dev/shm  # (!todo) (note: Chmod 1777 (chmod a+rwx,ug+s,+t,u-s,g-s) sets permissions so that, (U)ser / owner can read, can write and can execute. (G)roup can read, can write and can execute. (O)thers can read, can write and can execute)
-			NOTICE_END
-			}   
-
-			MOUNT_BASESYS
-			SETMODE_DEVSHM
-		NOTICE_END
-		}
-
-		COPY_CONFIGS () {
-		NOTICE_START
-			EBUILD () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Gentoo_ebuild_repository
-				mkdir --parents $CHROOTX/etc/portage/repos.conf
-				cp $CHROOTX/usr/share/portage/config/repos.conf $CHROOTX/etc/portage/repos.conf/gentoo.conf  # copy the Gentoo repository configuration file provided by Portage to the (newly created) repos.conf directory.
-				# cat $CHROOTX/usr/share/portage/config/repos.conf /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
-			NOTICE_END
-			}                                      
-			RESOLVCONF () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Copy_DNS_info
-				cp --dereference /etc/resolv.conf $CHROOTX/etc/
+				done
 			NOTICE_END
 			}
-
+			SET_VAR_STAGE3_FETCH
+			FETCH_STAGE3_FETCH
+		NOTICE_END
+		}
+		STAGE3_VERIFY () {  # (!todo) (!todo) (!important) # "hope this works" -
+		NOTICE_START
+			SET_VAR_STAGE3_VERIFY (){
+			NOTICE_START
+				STAGE3_FILENAME="$(cd $CHROOTX/ && ls stage3-* | awk '{ print $1 }' | awk 'FNR == 1 {print}' | sed -r 's/\.tar\.xz//g' )" # | rev | cut -d'/' -f-1 | rev
+			NOTICE_END
+			}
+			RECEIVE_GPGKEYS () { # which key is actually needed? for i in 
+			NOTICE_START
+				GENTOOKEYS="
+					$GENTOO_EBUILD_KEYFINGERPRINT1
+					$GENTOO_EBUILD_KEYFINGERPRINT2
+					$GENTOO_EBUILD_KEYFINGERPRINT3
+					$GENTOO_EBUILD_KEYFINGERPRINT4
+				"
+				for i in $GENTOOKEYS ; do
+					echo "${bold}$i=$i ....${normal}"
+					echo "${bold}gpg --keyserver $KEYSERVER --recv-keys $i ....${normal}"
+					gpg --keyserver $GPG_KEYSERV --recv-keys "$i"  # Fetch the key https://www.gentoo.org/downloads/signatures/
+				done
+				#gpg --list-keys
+			NOTICE_END
+			}
+			VERIFY_UNPACK () {
+			NOTICE_START
+				if gpg  --verify "$CHROOTX/$STAGE3_FILENAME.tar.xz.DIGESTS.asc" ; then 
+					echo 'gpg  --verify "$CHROOTX/$STAGE3_FILENAME.tar.xz.DIGESTS.asc" - OK'
+									
+					if grep -A 1 -i sha512 $CHROOTX/$STAGE3_FILENAME.tar.xz.DIGESTS.asc; then  # With the cryptographic signature validated, next verify the checksum to make sure the downloaded ISO file is not corrupted. The .DIGESTS.asc file contains multiple hashing algorithms, so one of the methods to validate the right one is to first look at the checksum registered in the .DIGESTS.asc file. For instance, to get the SHA512 checksum:  In the above output, two SHA512 checksums are shown - one for the install-amd64-minimal-20141204.iso file and one for its accompanying .CONTENTS file. Only the first checksum is of interest, as it needs to be compared with the calculated SHA512 checksum which can be generated as follows: 
+						echo 'grep -A 1 -i sha512 $CHROOTX/$STAGE3_FILENAME.tar.xz.DIGESTS.asc - OK'
+						echo 'STAGE3_UNPACK ....'
+						tar xvJpf $CHROOTX/"$STAGE3_FILENAME.tar.xz" --xattrs-include='*.*' --numeric-owner -C $CHROOTX
+					fi
+				else 
+					echo "SIGNATURE ALERT!"
+				fi
+			NOTICE_END
+			}
+			SET_VAR_STAGE3_VERIFY
+			RECEIVE_GPGKEYS
+			VERIFY_UNPACK
+		NOTICE_END
+		}
+		STAGE3_FETCH
+		STAGE3_VERIFY
+	NOTICE_END
+	}
+	MNTFS () {
+	NOTICE_START
+		MOUNT_BASESYS () {  # (!important) # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Mounting_the_necessary_filesystems
+		NOTICE_START
+			mount --types proc /proc $CHROOTX/proc
+			mount --rbind /sys $CHROOTX/sys
+			mount --make-rslave $CHROOTX/sys
+			mount --rbind /dev $CHROOTX/dev
+			mount --make-rslave $CHROOTX/dev
+		NOTICE_END
+		}	 
+		SETMODE_DEVSHM () {
+		NOTICE_START
+			chmod 1777 /dev/shm  # (!todo) (note: Chmod 1777 (chmod a+rwx,ug+s,+t,u-s,g-s) sets permissions so that, (U)ser / owner can read, can write and can execute. (G)roup can read, can write and can execute. (O)thers can read, can write and can execute)
+		NOTICE_END
+		}   
+		MOUNT_BASESYS
+		SETMODE_DEVSHM
+	NOTICE_END
+	}
+	COPY_CONFIGS () {
+	NOTICE_START
+		EBUILD () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Gentoo_ebuild_repository
+			mkdir --parents $CHROOTX/etc/portage/repos.conf
+			cp $CHROOTX/usr/share/portage/config/repos.conf $CHROOTX/etc/portage/repos.conf/gentoo.conf  # copy the Gentoo repository configuration file provided by Portage to the (newly created) repos.conf directory.
+			# cat $CHROOTX/usr/share/portage/config/repos.conf /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
+		NOTICE_END
+		}                                      
+		RESOLVCONF () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Copy_DNS_info
+			cp --dereference /etc/resolv.conf $CHROOTX/etc/
+		NOTICE_END
+		}
 		EBUILD
 		RESOLVCONF
-		
 	}
-	#INIT   # no err 07.11.2020
-	#PARTITIONING
-	#CRYPTSETUP
-	#LVMONLUKS
 
-	#STAGE3
-	#MNTFS
+	INIT   
+	PARTITIONING
+	CRYPTSETUP
+	LVMONLUKS
+	STAGE3
+	MNTFS
 	COPY_CONFIGS
-
 }
 
 CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment 
-
 	INNER_SCRIPT=$(cat << 'INNERSCRIPT'
 #!/bin/bash
 		# CHROOT START >>> alphaaurigae/gentoo_unattented-setup | https://github.com/alphaaurigae/gentoo_unattented-setup
-		# ############################################################################################################################################################################
+
 		# MISC VAR
 		bold=$(tput bold)  # (!important)
 		normal=$(tput sgr0)  # (!important)
-		# ############################################################################################################################################################################
 		NOTICE_START () {
 			echo "${bold} ${FUNCNAME[1]} ... START ... ${normal}"
 		}
-		# ########################################################################################################################
 		NOTICE_START
-
 		NOTICE_END () {
 			echo "${bold}${FUNCNAME[1]}  ... END ... ${normal}"
 		}
+
 		# CHROOT ENV
 		SOURCE_CHROOT () {
 		NOTICE_START
@@ -390,17 +358,14 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		NOTICE_END
 		}
 		SOURCE_CHROOT  # (must run before CHROOT VARIABLES??)
-		# ############################################################################################################################################################################
 
 		# CHROOT VARIABLES
-		# ############################################################################################################################################################################
 
 		## DRIVES & PARTITIONS
 		HDD1=/dev/sda # GENTOO
 		# GRUB_PART=/dev/sda1 # bios grub
 		BOOT_PART=/dev/sda2 # boot # unencrypted unless required changes are made - see CRYPTSETUP_BOOT 
 		MAIN_PART=/dev/sda3 # mainfs - lukscrypt cryptsetup container with LVM env inside
-		# ########################################################################################################################
 
 		## SWAP 
 		### SWAPFILE  # useful during install on low ram VM's (use KVM to avoid erros; ex firefox avx2 err.)
@@ -411,25 +376,19 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		# SWAP0=swap0  # LVM swap NAME for sorting of swap partitions.
 		# SWAP_SIZE="1GB"  # (inside LVM MAIN_PART)
 		# SWAP_FS=linux-swap # swapfs
-		# ########################################################################################################################
 
-		## FILESYSTEMS  # (NOTE!: FSTOOLS ; FSTAB) (NOTE!: nopt a duplicate - match these above)
+		## FILESYSTEMS  # (note!: FSTOOLS ; FSTAB) (note!: nopt a duplicate - match these above)
 		FILESYSTEM_BOOT=ext2  # BOOT
 		FILESYSTEM_MAIN=ext4  # GENTOO
-		# ########################################################################################################################
 
 		## LVM
 		PV_MAIN=pv0crypt  # LVM PV physical volume
 		VG_MAIN=vg0crypt  # LVM VG volume group
 		LV_MAIN=lv0crypt  # LVM LV logical volume
-		# ########################################################################################################################
 
-		# BASE 
-		# ############################################################################################################################################################################
-
+		# BASE
 		### INITSYSTEM
 		SYSINITVAR=OPENRC  # OPENRC (!default); SYSTEMD (!todo)
-		# ########################################################################################################################
 
 		# STATIC CUSTOM  # lets make some variables to avoid repeats.
 		LANG_MAIN_LOWER="de"
@@ -438,7 +397,6 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		LANG_SECOND_UPPER="US"
 
 		## MAKE.CONF PRESET
-		# --------------------------------------------------------------------------------------------------
 		PRESET_CC=gcc  # gcc (!default); the preset compiler
 		PRESET_ACCEPT_KEYWORDS="amd64 ~amd64"
 		# CHOST # https://wiki.gentoo.org/wiki/CHOST
@@ -447,7 +405,6 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		PRESET_CHOST_OS="linux"
 		PRESET_CHOST_LIBC="gnu"
  		# https://wiki.gentoo.org/wiki/CHOST https://wiki.gentoo.org/wiki/GCC_optimization
-
 		PRESET_CPU_FLAGS_X86="$(if [[ $(lscpu | grep Flags:) =~ "ssse3" ]]; then echo "$(lscpu | grep Flags: | sed -e 's/^\w*\ *//' | sed 's/: //g' ) sse3 sse4a "; fi)"  # workaround to insert sse3 and sse4a - intentianal, no idea if requ - testing…
 		PRESET_MARCH=znver1  # default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2  # https://wiki.gentoo.org/wiki/Safe_CFLAGS#Finding_the_CPU (!note: fetch before PRESET_CFLAGS, see MAKEFILE)
 		PRESET_CFLAGS="-march=$PRESET_MARCH -O2 -pipe"  # https://wiki.gentoo.org/wiki/Safe_CFLAGS
@@ -455,40 +412,31 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		PRESET_FCFLAGS="${PRESET_CFLAGS}"
 		PRESET_FFLAGS="${PRESET_CFLAGS}"
 		# clone https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#CFLAGS_and_CXXFLAGS
-
 		PRESET_INPUTEVICE="libinput keyboard"
-		# --------------------------------------------------------------------------------------------------
-		PRESET_VIDEODRIVER='amdgpu'  # amdgpu, radeonsi, radeon, virtualboox ; (!note: if running in virtualbox and intend to build firefox - run KVM and set to your hardware ... "avx2 error firefox")
-		# --------------------------------------------------------------------------------------------------
+		PRESET_VIDEODRIVER="virtualbox"  # amdgpu, radeonsi, radeon, virtualboox ; (!note: if running in virtualbox and intend to build firefox - run KVM and set to your hardware ... "avx2 error firefox")
 		PRESET_LICENCES="*"  # default is: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software) (!todo)
-		# --------------------------------------------------------------------------------------------------
+
 		# https://www.gentoo.org/support/use-flags/
-		#
 		PRESET_USEFLAG="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
 				cpudetection cjk crypt cryptsetup cxx dbus elogind ffmpeg git -gtk gtk+ gzip \
 				hardened initramfs int64 lzma lzo mount opengl pulseaudio policykit postproc secure-delete \
 				sqlite threads udev udisks unicode zip \
 				-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
 				-systemd -mssql -postgres -ppp -telnet"
-		# --------------------------------------------------------------------------------------------------
+
 		PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup binpkg-logs collision-protect \
 				compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
 				network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
-		# --------------------------------------------------------------------------------------------------
+
 		# https://www.gentoo.org/downloads/mirrors/
 		PRESET_GENTOMIRRORS="https://mirror.eu.oneandone.net/linux/distributions/gentoo/gentoo/ \
 					https://ftp.snt.utwente.nl/pub/os/linux/gentoo/ https://mirror.isoc.org.il/pub/gentoo/ \
 					https://mirrors.lug.mtu.edu/gentoo/ https://mirror.csclub.uwaterloo.ca/gentoo-distfiles/ \
 					https://ftp.jaist.ac.jp/pub/Linux/Gentoo/"
-		# --------------------------------------------------------------------------------------------------
+
 		PRESET_MAKE="-j$(expr $(nproc) "*" 1) --quiet "
-		# --------------------------------------------------------------------------------------------------
-		PRESET_EMERGE_LOAD=140
-		# --------------------------------------------------------------------------------------------------
-
+		PRESET_EMERGE_LOAD=3
 		PRESET_EMERGE_DEFAULT_OPTS="--quiet --complete-graph --verbose --update --deep --newuse --jobs $PRESET_EMERGE_JOBS --load-average $PRESET_EMERGE_LOAD"
-		# --------------------------------------------------------------------------------------------------
-
 		PRESET_PORTDIR="/var/db/repos/gentoo"
 		PRESET_DISTDIR="/var/cache/distfiles"
 		PRESET_PKGDIR="/var/cache/binpkgs"
@@ -496,58 +444,42 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		PRESET_PORTAGE_LOGDIR="/var/log/portage"
 		PRESET_PORTAGE_ELOG_CLASSES="log warn error"
 		PRESET_PORTAGE_ELOG_SYSTEM="save"
-
 		PRESET_LINGUAS="$LANG_MAIN_LOWER $LANG_MAIN_LOWER-$LANG_MAIN_UPPER $LANG_SECOND_LOWER $LANG_SECOND_LOWER-$LANG_SECOND_UPPER"
 		PRESET_L10N="$LANG_MAIN_LOWER $LANG_MAIN_LOWER-$LANG_MAIN_UPPER $LANG_SECOND_LOWER $LANG_SECOND_LOWER-$LANG_SECOND_UPPER"
 		PRESET_LC_MESSAGES="C"
-
 		# PRESET_CURL_SSL="$SSLD_CONF"
-		# ########################################################################################################################
 
-		ESELECT_PROFILE=1 # # https://wiki.gentoo.org/wiki/Profile_(Portage)
+		# ESELECT PROFILE  # https://wiki.gentoo.org/wiki/Profile_(Portage)
+		ESELECT_PROFILE=1
 		# AS OF 29.10.2020 | AMD64/17.1 (stable) ; 2. 17.1 selinux; 3. hardened; 4. hardnened + selinux; 5. desktop, 6. desk + gnome; 7. 6+ systemd; 8. desk + plasma ; 9. 8 + systemd; 10 dev; 11. no multilib; ;12. 11+ hardened; 13 12+selkinux; 14 systemd 
-		# ########################################################################################################################
-
 
 		# LOCALES
-		# --------------------------------------------------------------------------------------------------
-		### LOCALES / LANG MAIN 
-		# -------------------------------------------------------------------------------------
-		
+		# LOCALES / LANG MAIN 
 		PRESET_LOCALE_A=$LANG_MAIN_LOWER\_$LANG_MAIN_UPPER # lang set 1 # set ISO-8859-1 & UTF-8 locales in  /etc/locale.gen 
 		PRESET_LOCALE_B=$LANG_SECOND_LOWER\_$LANG_SECOND_UPPER # lang set 2 # "
 
-		# -------------------------------------------------------------------------------------
 		# LOCALES LANG KEYMAPS MAIN
-		# -------------------------------------------------------------------
-		
 		KEYMAP="$LANG_MAIN_LOWER" # set common
 		CONSOLEFONT="default8x16" # https://wiki.gentoo.org/wiki/Fonts
 
-		# -------------------------------------------
 		## LOCALES TIME / DATE MAIN
-		# -------------------------------------------------------------------
 		SYSDATE_MAN=071604551969  # hack time :)
 		SYSCLOCK_SET=AUTO  # USE AUTO (!default) / MANUAL -- MANUAL="NO TIMESYNCED SERVICE"
 		SYSCLOCK_MAN="1969-07-16 04:55:42"  # hack time :)
 		SYSTIMEZONE_SET="UTC"  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Timezone # https://wiki.gentoo.org/wiki/System_time#Time_zone
-		# ############################################################################################################################################################################
 
 		# CORE
-		# ############################################################################################################################################################################
 		### KERNEL
 		KERNDEPLOY=MANUAL  # (!default); AUTO (genkernel)
 		KERNVERS=5.3-rc4  # for MANUAL setup
 		KERNSOURCES=EMERGE  # EMERGE (!default) ; TORVALDS (git repository)
 		KERNCONFD=MENUCONFIG
-		# ########################################################################################################################
 
 		### INITRAMFS
 		GENINITRAMFS=DRACUT  # DRACUT (!default); GENKERNEL
 		
 		# GENKERNEL
 		GENKERNEL_CMD="--luks --lvm --no-zfs all"
-
 		# DRACUT
 		## DRACUT_CONF
 		DRACUT_CONF_MODULES="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg gensplash lvm debug dm"
@@ -555,19 +487,16 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		DRACUT_CONF_LVMCONF="yes"
 		DRACUT_CONFD_ADD_DRACUT_MODULES="usrmount"
 		##INITRAMFSVAR="--lvm --mdadm"
-		# ########################################################################################################################
 
 		### BOOT
 		BOOTLOADER=GRUB2  # GRUB2 (!default)
 		BOOTSYSINITVAR=BIOS  # BIOS (!default) / UEFI (!prototype)
-		# ########################################################################################################################
 
 		## SYSAPP
-		# --------------------------------------------------------------------------------------------------
 		### CRON
 		CRON=CRONIE  # CRONIE (!default), DCRON, ANACRON ..... see on your own
-		# --------------------------------------------------------------------------------------------------
-		# FSTOOLS -- (NOTE!: this is not activating kernel settings yet - solely for FSTOOLS)
+
+		# FSTOOLS -- (note!: this is not activating kernel settings yet - solely for FSTOOLS)
 		FSTOOLS_EXT=YES
 		FSTOOLS_XFS=NO
 		FSTOOLS_REISER=NO
@@ -576,10 +505,9 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		FSTOOLS_BTRFS=NO
 
 		## LOG
-		# --------------------------------------------------------------------------------------------------
 		SYSLOG=SYSLOGNG          
 
-		# --------------------------------------------------------------------------------------------------
+		# SYSAPP_ YES / NO
 		SYSAPP_DMCRYPT=YES
 		SYSAPP_LVM2=YES
 		SYSAPP_SUDO=YES
@@ -590,7 +518,6 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		SYSAPP_SYSLOG=NO
 		SYSAPP_CRON=NO
 		SYSAPP_FILEINDEXING=NO
-		# ########################################################################################################################
 
 		## NETWORK - https://en.wikipedia.org/wiki/Public_recursive_name_server
 		HOSTNAME=gentoo  # (!changeme) define hostname
@@ -598,26 +525,22 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		NETWORK_NET=DHCPD  # DHCPD or STATIC, config static on your own in the network section.	
 		NETIFACE_MAIN=enp0s3  # eth0
 		NETWMGR=NETWORKMANAGER  # NETIFRC; DHCPD; NETWORKMANAGER
-		# ########################################################################################################################
 
 		# DNS
 		# NAMESERVER1_IPV4=1.1.1.1  # (!changeme) 1.1.1.1 ns1 cloudflare ipv4
 		# NAMESERVER1_IPV6=2606:4700:4700::1111  # (!changeme) ipv6 ns1 2606:4700:4700::1111 cloudflare ipv6
 		# NAMESERVER2_IPV4=1.0.0.1  # (!changeme) 1.0.0.1 ns2 cloudflare ipv4
 		# NAMESERVER2_IPV6=2606:4700:4700::1001  # (!changeme) ipv6 ns2 2606:4700:4700::1001 cloudflare ipv6
-		# ########################################################################################################################
 
 		# VIRTUALIZATION
 		SYSVARD=GUEST  # host is GUEST & HOST ... for virtualbization setup
-		# ########################################################################################################################
 
 		# DISPLAY / SCREEN
-		# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		GPU_SET=NONE  # NONE. AMD_V***. NVIDIA_V***
 		DISPLAYSERV=X11  # see options
 		DISPLAYMGR_YESNO=W_D_MGR  # W_D_MGR (WITH display manager) / SOLO (without display manager)
-		DISPLAYMGR=LXDM  # CDM; GDM; LIGHTDM; LXDM (!default - other env untested / unfinished); QINGY; SSDM; SLIM; WDM; XDM  # sample, check the section for valid setups,
-		DESKTOPENV=XFCE  # XFCE (!default - other env untested / unfinished); BUDGIE; CINNAMON; FVWM; GNOME; KDE; LXDE; LXQT; LUMINA; MATE; PANTHEON; RAZORQT; TDE; # sample, check the section for valid setups,
+		DISPLAYMGR=LXDM  # CDM; GDM; LIGHTDM; LXDM (!default - other env untested / todo); QINGY; SSDM; SLIM; WDM; XDM  # sample, check the section for valid setups,
+		DESKTOPENV=XFCE  # XFCE (!default - other env untested / todo); BUDGIE; CINNAMON; FVWM; GNOME; KDE; LXDE; LXQT; LUMINA; MATE; PANTHEON; RAZORQT; TDE; # sample, check the section for valid setups,
 
 		# X11
 		## X11 KEYBOARD
@@ -627,7 +550,6 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 
 		# GRAPHIC UNIT
 		GPU_SET=amdgpu  # (!changeme) amdgpu, radeon # (!todo)
-		# ########################################################################################################################
 
 		# USERAPP
 		USERAPP_GIT=NO  # (!todo)
@@ -635,14 +557,9 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		USERAPP_CHROMIUM=YES
 		USERAPP_MIDORI=NO  # (!note: some unmask thing .. ruby?)  # https://astian.org/en/midori-browser/
 
-		# ########################################################################################################################
-
 		## USER
 		SYSUSERNAME=admini  # (!changeme) wheel group member - name of the login sysadmin user
 		USERGROUPS="wheel,plugdev,power,video"  # (!note: virtualbox groups set if guest / host system is set)
-		# ########################################################################################################################
-
-########################################################
 
 		# SET USEFLAGS (!note: names follow a pattern which must be kept for functions to read it ... "USERFLADS_"emerge_ name"  : "-" is replaced with "_" and lower converted to uppercase letters)
 		USEFLAGS_LINUX_FIRMWARE="sys-kernel/linux-firmware initramfs redistributable unknown-license"
@@ -652,64 +569,52 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		
 		USEFLAGS_XORG_SERVER="xvfb"
 		USEFLAGS_XFCE4_META="gtk3"
-
 		USEFLAGS_NETWORKMANAGER="dhcpcd -modemmanager -ppp"
 
 		# WEBBROWSER 
 		USEFLAGS_FIREFOX="bindist eme-free geckodriver hwaccel jack -system-libvpx -system-icu"  # system-av1 system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-webp hwaccel jack lto pgo screencast wifi
 		USEFLAGS_CHROMIUM=""  # hangouts proprietary-codecs system-ffmpeg system-icu # https://wiki.gentoo.org/wiki/Chromium
 		USEFLAGS_MIDORI=""
-########################################################
 
-		# ########################################################################################################################
-		# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-		# MISC FUNC
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
+		# MISC FUNC                                   
 		EMERGE_USERAPP_DEF () {
 		NOTICE_START
-			echo "emerging $APPAPP_EMERGE"
+			echo "emerging $APPAPP_EMERGE "
 			emerge $APPAPP_EMERGE
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 		EMERGE_USERAPP_RD1 () {
 		NOTICE_START
 			echo "emerging ${!APPAPP_EMERGE}"
-			emerge ${!APPAPP_EMERGE}  # (NOTE!: for redirected var.)
+			emerge ${!APPAPP_EMERGE}  # (note!: for redirected var.)
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 		NOTICE_PLACEHOLDER () {
 		NOTICE_START
 			echo "nothing todo here"
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 		ENVUD () {
 		NOTICE_START
 			env-update
 			source /etc/profile
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 		ACC_KEYWORDS_USERAPP () {
 		NOTICE_START
 			sed -ie "#$APPAPP_EMERGE ~amd64#d" /etc/portage/package.accept_keywords
 			echo "$APPAPP_EMERGE ~amd64" >> /etc/portage/package.accept_keywords
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
-		APPAPP_NAME_SIMPLE="$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}')"  # get the name of the app (!note: fetch EMERGE_USERAPP --> remove slash --> show second coloumn = name
+
+		APPAPP_NAME_SIMPLE="$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}')"  # get the name of the app (!note: fetch EMERGE_USERAPP_DEF --> remove slash --> show second coloumn = name
 		#APPAPP_NAME_UNDERSCORED="$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}' | sed -e 's/-/_/g')"
 		#APPAPP_NAME_UNDERSCOREUPPER="$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}' | sed -e 's/-/_/g' | tr [:lower:] [:upper:])"
 		PORTAGE_USE_DIR="/etc/portage/package.use"
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
-		
+
 		PACKAGE_USE () {
 			NOTICE_START
-
 				#rm -f /etc/portage/package.use/$APPAPP_NAME_SIMPLE
-
 				#if [ -z "$USEFLAGS_FIREFOX" ]; then
 				#	echo '$FIREFOX_USEFLAGS empty'
 				#else
@@ -719,39 +624,30 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 					
 				x=$(echo 'USEFLAGS_')
 				x+=$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}' | sed -e 's/-/_/g' | tr [:lower:] [:upper:])
-
-
 				combined=${!x}
 				#echo "${!x}"
-
 				o=$(echo $PORTAGE_USE_DIR)
 				o+=$(echo $APPAPP_NAME_SIMPLE)
-
-				m="$( printf '%s\n' "$APPAPP_EMERGE" )"
+				m="$( printf '%s\n' "$APPAPP_EMERGE " )"
 				m+="$(echo " ")"
 				m+=${!x}
 				printf '%s\n' "$m"  > /etc/portage/package.use/$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}')  # echo variable only works here and not if forwarded from above.
 				#echo "$APPAPP_EMERGE xvfb" > /etc/portage/package.use/xorg-server  # add xfvb flag for firefox support
-
 				#echo ${!APPAPP_NAME_SIMPLE}
 			NOTICE_END
 		}
-
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 		AUTOSTART_DEFAULT_OPENRC () {
 		NOTICE_START
 			rc-update add $AUTOSTART_NAME_OPENRC default
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
-		AUTOSTART_DEFAULT_SYSTEMD () {
+		AUTOSTART_DEFAULT_SYSTEMD () { (!todo)
 		NOTICE_START
 			systemctl enable dbus.service 
 			systemctl start dbus.service
 			systemctl daemon-reload
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 		AUTOSTART_BOOT_OPENRC () {
 		NOTICE_START
 			rc-service $AUTOSTART_NAME_OPENRC start
@@ -759,7 +655,6 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 			rc-service $AUTOSTART_NAME_OPENRC restart
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 		AUTOSTART_BOOT_SYSTEMD () {
 		NOTICE_START
 			NOTICE_PLACEHOLDER
@@ -767,7 +662,6 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 			# systemctl enable $AUTOSTART_BOOT_SYSTEMD@.service # https://www.freedesktop.org/software/systemd/man/systemd-cryptsetup@.service.html
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 		LICENSE_SET () {
 		NOTICE_START
 				mkdir -p /etc/portage/package.license
@@ -775,13 +669,11 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 				echo "$APPAPP_EMERGE @BINARY-REDISTRIBUTABLE" > /etc/portage/package.license/$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}')
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 		EMERGE_ATWORLD_A () {
 		NOTICE_START
 			emerge @world  # this is to update after setting the use flag
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 		EMERGE_ATWORLD_B () {
 		NOTICE_START
 			emerge --changed-use --deep @world
@@ -789,16 +681,10 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		NOTICE_END
 		}
 
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
-		# emerge app-portage/gentoolkit
-		# equery uses www-client/firefox
-		# ############################################################################################################################################################################
-
 		# MAIN
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 		
 		BASE () {
 		NOTICE_START
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
 			SWAPFILE () {
 			NOTICE_START
 				DEBUG_SWAPFILE () {
@@ -831,9 +717,6 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 				# PERMANENT
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
-
-
 			MAKECONF () {  # /etc/portage/make.conf # https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/USE
 			NOTICE_START
 				MAKECONF_VARIABLES () {
@@ -846,21 +729,17 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 					# (!note) (!todo - not sure if this is "perfect" yet.. anyways, "it works". 
 					CPU_FLAGS_X86="$PRESET_CPU_FLAGS_X86" # workaround to insert sse3 and sse4a - intentianal, no idea if requ - testing…
 					# CPU_FLAGS_X86="$(lscpu | grep Flags: | sed -e 's/Flags:               //g')" # lscpu hides sse3 and sse4a which are shown in cpuid.
-
 					CFLAGS="$PRESET_CFLAGS"
 					CXXFLAGS="${PRESET_CFLAGS}"
 					FCFLAGS="${PRESET_CFLAGS}"
 					FFLAGS="${PRESET_CFLAGS}"
-
 					MAKEOPTS="$PRESET_MAKE"
 					EMERGE_DEFAULT_OPTS="$PRESET_EMERGE_DEFAULT_OPTS"
 					INPUT_DEVICES="$PRESET_INPUTEVICE"
 					VIDEO_CARDS="$PRESET_VIDEODRIVER"
 					ACCEPT_LICENSE="$PRESET_LICENCES"
-
 					FEATURES="$PRESET_FEATURES"
 					USE="$PRESET_USEFLAG"
-
 					GENTOO_MIRRORS="$PRESET_GENTOMIRRORS"
 					PORTDIR="$PRESET_PORTDIR"
 					DISTDIR="$PRESET_DISTDIR"
@@ -869,10 +748,8 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 					PORTAGE_LOGDIR="$PRESET_PORTAGE_LOGDIR"
 					PORTAGE_ELOG_CLASSES="$PRESET_PORTAGE_ELOG_CLASSES"
 					PORTAGE_ELOG_SYSTEM="$PRESET_PORTAGE_ELOG_SYSTEM"
-
 					LINGUAS="$PRESET_LINGUAS"
 					L10N="$PRESET_L10N"  # IETF language tags
-
 					LC_MESSAGES="$PRESET_LC_MESSAGES"
 					# CURL_SSL="$PRESET_CURL_SSL"
 EOF
@@ -882,15 +759,11 @@ EOF
 				EMERGE_ATWORLD_B
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
-
 			ESELECT_PROFILE () {
 			NOTICE_START
 				eselect profile set $ESELECT_PROFILE
 			NOTICE_END
-			}                                                 
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
+			}
 			SETFLAGS1 () {  # set custom flags (!note: disabled by default) (!note; was systemd specific, systemd not compete yet 05.11.2020)
 			NOTICE_START
 				SETFLAGSS1_OPENRC () {
@@ -898,10 +771,10 @@ EOF
 					NOTICE_PLACEHOLDER
 				NOTICE_END
 				}
-				SETFLAGSS1_SYSTEMD () {
+				SETFLAGSS1_SYSTEMD () {  #(!todo)
 				NOTICE_START
-					APPAPP_EMERGE" --oneshot virtual/udev virtual/libudev "  # ! If your system set provides sys-fs/eudev, virtual/udev and virtual/libudev may be preventing systemd.  https://wiki.gentoo.org/wiki/Systemd
-					EMERGE_USERAPP
+					APPAPP_EMERGE=" --oneshot virtual/udev virtual/libudev "  # ! If your system set provides sys-fs/eudev, virtual/udev and virtual/libudev may be preventing systemd.  https://wiki.gentoo.org/wiki/Systemd
+					EMERGE_USERAPP_DEF
 					sed -ie '#echo "sys-apps/systemd cryptsetup#d'
 					echo /etc/portage/package.use/systemd"sys-apps/systemd cryptsetup" >> /etc/portage/package.use/systemd
 				NOTICE_END
@@ -909,23 +782,17 @@ EOF
 				SETFLAGSS1_$SYSINITVAR
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
 			PORTAGE () {  # https://wiki.gentoo.org/wiki/Portage#emerge-webrsync # https://dev.gentoo.org/~zmedico/portage/doc/man/emerge.1.html
 			NOTICE_START
 				mkdir /usr/portage
 				emerge-webrsync
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
 			EMERGE_SYNC () {
 			NOTICE_START
 				emerge --sync
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
 			MISC1_CHROOT () {
 			NOTICE_START
 				MISC1CHROOT_OPENRC () {
@@ -943,9 +810,6 @@ EOF
 				MISC1CHROOT_$SYSINITVAR
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
-
-
 			RELOADING_SYS () {
 			NOTICE_START
 				RELOAD_OPENRC () {
@@ -960,19 +824,18 @@ EOF
 					ENVUD
 				NOTICE_END
 				}
-				RELOAD__$SYSINITVAR
+				RELOAD_$SYSINITVAR
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   
-			SYSTEMTIME () {  # https://wiki.gentoo.org/wiki/System_time                                       
+			SYSTEMTIME () {  # https://wiki.gentoo.org/wiki/System_time
 				SET_TIMEZONE () {
 				NOTICE_START
 					echo $SYSTIMEZONE_SET > /etc/timezone
 					TIMEZONE_OPENRC () {
 					NOTICE_START
 						echo "$SYSTIMEZONE_SET" > /etc/timezone
-						APPAPP_EMERGE" --config sys-libs/timezone-data "
-						EMERGE_USERAPP
+						APPAPP_EMERGE=" --config sys-libs/timezone-data "
+						EMERGE_USERAPP_DEF
 					NOTICE_END
 					}
 					TIMEZONE_SYSTEMD () {
@@ -1006,11 +869,11 @@ EOF
 								AUTOSTART_DEFAULT_OPENRC
 							NOTICE_END
 							}
-							EMERGE_USERAPP
+							EMERGE_USERAPP_DEF
 							SYSSTART_OPENNTPD
 						NOTICE_END
 						}
-						# OPENRC_SYSCLOCK_MANUAL # only 1 can be set
+						# OPENRC_SYSCLOCK_MANUAL  # (!changeme: only 1 can be set)
 						OPENRC_OPENNTPD
 					NOTICE_END
 					}
@@ -1037,7 +900,7 @@ EOF
 					}
 					SYSTEMCLOCK_$SYSINITVAR
 				NOTICE_END
-				}                                         
+				}
 				SET_HWCLOCK () {
 				NOTICE_START
 					hwclock --systohc
@@ -1047,7 +910,6 @@ EOF
 				SET_SYSTEMCLOCK  # echos err for systemd, if install medium isnt systemd
 				SET_HWCLOCK
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			CONF_LOCALES () {  # https://wiki.gentoo.org/wiki/Localization/Guide
 			NOTICE_START
 				CONF_LOCALEGEN () {
@@ -1065,7 +927,7 @@ EOF
 					locale-gen
 				NOTICE_END
 				}
-				SYS_LOCALE () {  # (!unfinished)
+				SYS_LOCALE () {  # (!todo)
 				NOTICE_START
 					SYSLOCALE="$PRESET_LOCALE_A.UTF-8"
 					SYSTEMLOCALE_OPENRC () {  # https://wiki.gentoo.org/wiki/Localization/Guide#OpenRC
@@ -1091,10 +953,8 @@ EOF
 				SYS_LOCALE
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			KEYMAPS () {  # https://wiki.gentoo.org/wiki/Keyboard_layout_switching  ## (note:: theres a second place where keymaps are set, which is:"X11 KEYS SET = WINDOWSYS --> X11")
 			NOTICE_START
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				KEYMAPS_OPENRC () {
 				NOTICE_START
 					KEYLANGORC () {
@@ -1122,6 +982,7 @@ EOF
 						AUTOSTART_BOOT_OPENRC
 					NOTICE_END
 					}
+					etc-update --automode -3
 					KEYLANGORC
 					CONSOLEFONTORC
 				NOTICE_END
@@ -1130,7 +991,6 @@ EOF
 				NOTICE_START
 					VCONSOLE_CONF () {  # https://wiki.archlinux.org/index.php/Keyboard_configuration_in_console
 						AUTOSTART_NAME_SYSTEMD="placeholder"
-
 						### LOCALES LANG KEYMAPS SYSTEMD
 						# -------------------------------------------
 						VCONSOLE_KEYMAP=$KEYMAP-latin1 # (!changeme) console keymap systemd
@@ -1147,24 +1007,21 @@ EOF
 				KEYMAPS_$SYSINITVAR
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			FIRMWARE () {  # BUG https://bugs.gentoo.org/318841#c20
 			NOTICE_START
 				LINUX_FIRMWARE () {  # https://wiki.gentoo.org/wiki/Linux_firmware
 				NOTICE_START
 					APPAPP_EMERGE="sys-kernel/linux-firmware "
-
 					PACKAGE_USE				
 					LICENSE_SET
 					EMERGE_ATWORLD_A
-					EMERGE_USERAPP
+					EMERGE_USERAPP_DEF
 					etc-update --automode -3  # (automode -3 = merge all)
 				NOTICE_END
 				}
 				LINUX_FIRMWARE
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			BASHRC () {  # (!note: custom .bashrc) (!todo) (!changeme)
 				cat << 'EOF' > $CHROOTX/etc/skel/.bashrc
 				#  (!note: .bash.rc by alphaaurigae 11.08.19)
@@ -1221,9 +1078,7 @@ EOF
 				alias santa=GITCOMMIT
 				alias hohoho='git push'
 EOF
-		}
-		
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			}
 			#SWAPFILE
 			#MAKECONF
 			#PORTAGE
@@ -1240,38 +1095,32 @@ EOF
 			#BASHRC
 		NOTICE_END
 		}
-
 		# ############################################################################################################################################################################
 		CORE () {
 		NOTICE_START
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			# 
 			FSTAB () {  # https://wiki.gentoo.org/wiki/Fstab
 			NOTICE_START
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				FSTAB_LVMONLUKS_BIOS () {  # (!default)
 				NOTICE_START
 					cat << EOF > /etc/fstab
 					# ROOT MAIN FS
 					/dev/mapper/$VG_MAIN-$LV_MAIN	/	$FILESYSTEM_MAIN	errors=remount-ro	0 1
-
 					# BOOT
 					UUID="$(blkid -o value -s UUID $BOOT_PART)"	/boot	$FILESYSTEM_BOOT	rw,relatime	0 2
 EOF
 				NOTICE_END
-				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				} 
 				FSTAB_LVMONLUKS_UEFI () {
 				NOTICE_START
 					cat << EOF > /etc/fstab
 					# ROOT MAIN FS
 					/dev/mapper/$VG_MAIN-$LV_MAIN	/	$FILESYSTEM_MAIN	errors=remount-ro	0 1
-
 					# BOOT
 					UUID="$(blkid -o value -s UUID $BOOT_PART)"	/boot	$FILESYSTEM_BOOT	rw,relatime	0 2
 EOF
 				NOTICE_END
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				FSTAB_LVMONLUKS_$BOOTSYSINITVAR
 			NOTICE_END
 			}
@@ -1283,10 +1132,8 @@ EOF
 EOF
 			NOTICE_END
 			}
-# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			SYSAPP () {
 			NOTICE_START
-				# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 				SYSAPP_DMCRYPT () {  # https://wiki.gentoo.org/wiki/Dm-crypt
 				NOTICE_START
 					APPAPP_EMERGE="sys-fs/cryptsetup "
@@ -1300,7 +1147,7 @@ EOF
 					AUTOSTART_BOOT_$SYSINITVAR
 				NOTICE_END
 				}
-				# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+				# 
 				SYSAPP_LVM2 () {  # https://wiki.gentoo.org/wiki/LVM/de
 				NOTICE_START
 					APPAPP_EMERGE="sys-fs/lvm2"
@@ -1315,10 +1162,10 @@ EOF
 					CONFIG_LVM2
 				NOTICE_END
 				}
-				# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+				# 
 				SYSAPP_SUDO () {  # https://wiki.gentoo.org/wiki/Sudo
 				NOTICE_START
-					APPAPP_EMERGE="app-admin/sudo "  # (NOTE!: must keep trailing)
+					APPAPP_EMERGE="app-admin/sudo "  # (note!: must keep trailing)
 					CONFIG_SUDO () {
 						cp /etc/sudoers /etc/sudoers_bak
 						sed -ie 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
@@ -1326,45 +1173,42 @@ EOF
 					EMERGE_USERAPP_DEF
 					CONFIG_SUDO
 				NOTICE_END
-				}                                          
-				# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+				}
+				# 
 				SYSAPP_PCIUTILS () {
 				NOTICE_START
 					APPAPP_EMERGE="sys-apps/pciutils "
 					EMERGE_USERAPP_DEF
 				NOTICE_END
-				}                                             
-				# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+				}
+				# 
 				SYSAPP_MULTIPATH () {  # https://wiki.gentoo.org/wiki/Multipath
 				NOTICE_START
 					APPAPP_EMERGE="sys-fs/multipath-tools "
 					EMERGE_USERAPP_DEF
 					NOTICE_END
-				}                            
-				# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+				}
+				# 
 				SYSAPP_GNUPG () {
 				NOTICE_START
 					APPAPP_EMERGE="app/crypt/gnupg "
 					EMERGE_USERAPP_DEF
 					gpg --full-gen-key
 				NOTICE_END
-				}                                                   
-				# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+				}
+				# 
 				SYSAPP_OSPROBER () {
 				NOTICE_START
 					APPAPP_EMERGE="sys-boot/os-prober "
 					EMERGE_USERAPP_DEF
 				NOTICE_END
-				}                                 
-				# '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+				}
 				SYSAPP_SYSLOG () {
 				NOTICE_START
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
 					# SYSLOGNG
 					SYSLOGNG_SYSLOG_SYSTEMD="syslog-ng@default"
 					SYSLOGNG_SYSLOG_OPENRC="syslog-ng"
-					SYSLOGNG_SYSLOG_EMERGE="app-admin/syslog-ng "             
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					SYSLOGNG_SYSLOG_EMERGE="app-admin/syslog-ng "
 					# SYSKLOGD
 					SYSKLOGD_SYSLOG_SYSTEMD=rsyslog
 					SYSKLOGD_SYSLOG_OPENRC=sysklogd
@@ -1376,7 +1220,6 @@ EOF
 							AUTOSTART_NAME_SYSTEMD=$SYSLOGNG_SYSLOG_SYSTEMD
 							AUTOSTART_NAME_OPENRC=$SYSLOGNG_SYSLOG_OPENRC
 							SYSLOG_EMERGE=$SYSLOGNG_SYSLOG_EMERGE
-
 						elif [ "$SYSLOG" == "SYSKLOGD" ] 
 							then AUTOSTART_NAME_SYSTEMD=$SYSKLOGD_SYSLOG_SYSTEMD
 							AUTOSTART_NAME_OPENRC=$SYSKLOGD_SYSLOG_OPENRC
@@ -1388,10 +1231,9 @@ EOF
 					}
 					SETVAR_SYSLOG
 					APPAPP_EMERGE="$SYSLOG_EMERGE "
-
 					EMERGE_USERAPP_DEF
-					# SYSLOG_$SYSINITVAR  # (NOTE!: autostart TODO)
-					# '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+					# SYSLOG_$SYSINITVAR  # (note!: autostart TODO)
+					# 
 					LOGROTATE () {
 					NOTICE_START
 						APPAPP_EMERGE="app-admin/logrotate "
@@ -1408,37 +1250,33 @@ EOF
 					LOGROTATE
 				NOTICE_END
 				}
-				# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 				SYSAPP_CRON () {
 				NOTICE_START
-
-					## CRON - https://wiki.gentoo.org/wiki/Cron#Which_cron_is_right_for_the_job.3F                         
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+					## CRON - https://wiki.gentoo.org/wiki/Cron#Which_cron_is_right_for_the_job.3F
 					# BCRON # http://untroubled.org/bcron
 					BCRON_CRON_SYSTEMD=placeholder
 					BCRON_CRON_OPENRC=placeholder
-					BCRON_CRON_EMERGE=sys-process/bcron                                          
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					BCRON_CRON_EMERGE=sys-process/bcron
+
 					# FCRON # http://www.linuxfromscratch.org/blfs/view/systemd/general/fcron.html
 					FCRON_CRON_SYSTEMD=fcron
 					FCRON_CRON_OPENRC=fcron
-					FCRON_CRON_EMERGE=sys-process/fcron 
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					FCRON_CRON_EMERGE=sys-process/fcron
+
 					# DCRON # http://www.linuxfromscratch.org/hints/downloads/files/dcron.txt
 					DCRON_CRON_SYSTEMD=razor-session
 					DCRON_CRON_OPENRC=razor-session
-					DCRON_CRON_EMERGE=sys-process/dcron              
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					DCRON_CRON_EMERGE=sys-process/dcron
+
 					# CRONIE
 					CRONIE_CRON_SYSTEMD=cronie
 					CRONIE_CRON_OPENRC=cronie
 					CRONIE_CRON_EMERGE=sys-process/cronie
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 					# VIXICRON
 					VIXICRON_CRON_SYSTEMD=vixi
 					VIXICRON_CRON_OPENRC=vixi
 					VIXICRON_CRON_EMERGE=sys-process/vixie-cron
-
 					SETVAR_CRON () {
 						for i in $CRON
 						do
@@ -1447,8 +1285,6 @@ EOF
 							CRON_EMERGE=$i\_CRON_EMERGE
 						done
 					}
-
-
 					CONFIG_CRON () {
 						crontab /etc/crontab	
 					}
@@ -1462,42 +1298,28 @@ EOF
 					AUTOSTART_DEFAULT_$SYSINITVAR
 				NOTICE_END
 				}
-				# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 				I_FILEINDEXING () {
 				NOTICE_START
 					APPAPP_EMERGE="sys-apps/mlocate "
 					EMERGE_USERAPP_DEF
 				NOTICE_END
-				}                                      
-				# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+				}
 				
-				# ############################################################################################################################################################################
 				RUN_ALL_YES () {
 				NOTICE_START
-
-
 					for i in ${!SYSAPP_*}
-
 					do
 						$i
-
-
 					done
-
 				NOTICE_END
 				}
 				RUN_ALL_YES
-
 			NOTICE_END
 			}
-
 			I_FSTOOLS () {  # (! e2fsprogs # Ext2, 3, and 4) # optional, add to variables at time.
-
-				## (NOTE!: this is a little workaround to make sure FS support is installed.  This is missing a routine to avoid double emerges as of 16 01 2021)
-
+				## (note!: this is a little workaround to make sure FS support is installed.  This is missing a routine to avoid double emerges as of 16 01 2021)
 				NOTICE_START
 					## FSTOOLS
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
 					FST_EMERGE_EXT=sys-fs/e2fsprogs
 					FST_EMERGE_XFS=sys-fs/xfsprogs
 					FST_EMERGE_REISER=sys-fs/reiserfsprogs
@@ -1505,23 +1327,17 @@ EOF
 					FST_EMERGE_VFAT=sys-fs/dosfstools # (FAT32, ...) 
 					FST_EMERGE_BTRFS=sys-fs/btrfs-progs
 					#APPAPP_EMERGE="$BOOTFS_EMERGE "
-
-
 					MAIN () {
-
 						for i in  ${!FSTOOLS_*}
 						do
 							if [ $(printf '%s\n' "${!i}") == "YES" ]; then
 								APPAPP_EMERGE=$(printf '%s\n' "$i" | sed -e s'/FSTOOLS_/FST_EMERGE_/g')
-
 								EMERGE_USERAPP_RD1
 							else 
 								APPAPP_EMERGE=$(printf '%s\n' "$i" | sed -e s'/FSTOOLS_/FST_EMERGE_/g' )
 								MATCHFS="$(printf '%s\n' "$i" | sed -e s'/FSTOOLS_/FST_EMERGE_/g' )"
 								LDGFSE="$(printf '%s\n' "${!MATCHFS}" |   sed -e 's/-progs//g' | sed -e 's/progs//g' | sed -e 's#sys-fs/##g')"
-
 								printf '%s\n' "$APPAPP_EMERGE  is set to NO, test for boot fs ..." 
-
 								for i in  ${!FILESYSTEM_*}
 								do
 									if [ "${!i}" == "$LDGFSE" ]; then
@@ -1536,27 +1352,22 @@ EOF
 								done
 							fi
 						done
-
 						for i in ${!FILESYSTEM_*}
 						do
 							if [[ "${!i}" == "msdos" || "${!FILESYSTEM_*}" == "vfat" || "${!FILESYSTEM_*}" == "fat" ]]; then
-
 								echo "${!i} IS BINGO dos fs"
 								APPAPP_EMERGE="$(printf '%s\n' "$FST_EMERGE_VFAT")"
 								echo "emerging ${!APPAPP_EMERGE}"
 								EMERGE_USERAPP_DEF
-
 							else
 								#printf '%s\n' "${!MATCHFS}"
 								#printf '%s\n' "${!i}"
 								echo "${!i} is not dos fs"
 							fi
-
 							if [[ "${!i}" == *"ext"* ]]; then
-
 								echo "${!i} IS BINGO ext fs"
 								APPAPP_EMERGE="$(printf '%s\n' "$FST_EMERGE_EXT")"
-								echo "emerging $APPAPP_EMERGE"
+								echo "emerging $APPAPP_EMERGE "
 								EMERGE_USERAPP_DEF
 							else
 								#printf '%s\n' "${!MATCHFS}"
@@ -1566,15 +1377,12 @@ EOF
 						done
 					}
 					MAIN
-
 				NOTICE_END
 				}
-# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                                   
 			BOOTLOAD () {  # BOOTSYSINITVAR=BIOS/UEFI
 			NOTICE_START
 				# https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				# 
 				SETUP_GRUB2 () {
 				NOTICE_START
 					LOAD_GRUB2 () {
@@ -1624,27 +1432,24 @@ EOF
 					CONFIGGRUB2_DMCRYPT () {
 					NOTICE_START
 						CONFGRUBDMCRYPT_MAIN () {
+							etc-update --automode -3
 							cat << EOF > /etc/default/grub
 							# If you change this file, run 'update-grub' afterwards to update
 							# /boot/grub/grub.cfg.
 							# For full documentation of the options in this file, see:
 							#   info -f grub -n 'Simple configuration'
-
 							GRUB_DEFAULT=0
 							GRUB_TIMEOUT_STYLE=countdown
 							GRUB_TIMEOUT=10
 							#GRUB_DISTRIBUTOR=``
 							GRUB_CMDLINE_LINUX_DEFAULT=""
 							GRUB_CMDLINE_LINUX=""
-
 							# Uncomment to enable BadRAM filtering, modify to suit your needs
 							# This works with Linux (no patch required) and with any kernel that obtains
 							# the memory map information from GRUB (GNU Mach, kernel of FreeBSD ...)
 							#GRUB_BADRAM="0x01234567,0xfefefefe,0x89abcdef,0xefefefef"
-
 							# Uncomment to disable graphical terminal (grub-pc only)
 							#GRUB_TERMINAL=console
-
 							# The resolution used on graphical terminal
 							# note that you can use only modes which your graphic card supports via VBE
 							# you can see them in real GRUB with the command vbeinfo
@@ -1671,15 +1476,11 @@ EOF
 							
 							# Since version 2.04. If false, and if there is either no initramfs or GRUB_DISABLE_LINUX_UUID is set to true, ${GRUB_DEVICE_PARTUUID} is passed in the root parameter on the kernel command line. See Root identification Heuristics
 							GRUB_DISABLE_LINUX_PARTUUID=false
-
 							# Uncomment to disable generation of recovery mode menu entries
 							#GRUB_DISABLE_RECOVERY="true"
-
 							# Uncomment to get a beep at grub start
 							#GRUB_INIT_TUNE="480 440 1"
-
 							GRUB_ENABLE_CRYPTODISK=y
-
 							GRUB_PRELOAD_MODULES="lvm luks cryptodisk crypto ext2 part_gpt part_msdos gettext gzio"
 EOF
 						}
@@ -1717,7 +1518,6 @@ EOF
 					UPDTE_GRUB
 				NOTICE_END
 				}
-
 				SETUP_LILO () {
 				NOTICE_START
 					APPAPP_EMERGE=" sys-boot/lilo "
@@ -1727,50 +1527,40 @@ EOF
 						# With all newer systems (until year 2004) you can use the RAM
 						# above 15 MB. This option allows the use of this range of RAM.
 						large-memory
-
 						# With all newer systems you can boot from any partition on disks 
 						# with more than 1024 cylinders. This option allows the use of 
 						# partitions above 1024 cylinders.
 						lba32
-
 						# Specifies the boot device.  This is where Lilo installs its boot
 						# block.  It can be either a partition, or the raw device, in which
 						# case it installs in the MBR, and will overwrite the current MBR.
 						# With newer kernel you should use the ID of the boot device, which
 						# can be found here: /dev/disks/by-id/ata*.
 						boot = /dev/sda
-
 						# This option may be needed for some software RAID installs.
 						#raid-extra-boot = mbr-only
-
 						# Enable map compaction.  This tries to merge read requests for 
 						# adjacent sectors into a single read request. This drastically 
 						# reduces load time and keeps the map smaller.  Using 'compact' 
 						# is especially recommended when booting from a floppy disk.  
 						# It is disabled here by default because it doesn't always work.
 						#compact
-
 						 Set the verbose level for bootloader installation. Value range:
 						# 0 to 5. Default value is 0.
 						verbose = 5
-
 						# Specifies the location of the map file. Lilo creates the (sector) 
 						# map file of direct sector addresses which are independent of any
 						# filesystem.
 						map = /boot/.map
-
 						# Specifies the menu interface. You have the choice between:
 						#   text: simple text menu with black background and white text
 						#   menu: configurable text menu with background and text colors.
 						#   bmp:  graphical menu with 640x480 bitmap background.
 						install = text
-
-
 						# A) Customized boot message for choice 'text'.
 						# For the simple text menu you can set an extra message in the 
 						# created file. Its text will be displayed before boot prompt.
 						#message = /boot/message.txt
-
 						# B) Configuration of the scheme for choice 'menu'.
 						# Use following coding: <text>:<highlight>:<border>:<title>
 						# The first character of each part sets the text frontcolor, 
@@ -1780,12 +1570,10 @@ EOF
 						# k=black, b=blue, g=green, c=cyan, r=red, m=magenta, y=yellow, w=white.
 						menu-scheme = Wb:Yr:Wb:Wb
 						#menu-title = " DESDEMONA Boot-Manager "
-
 						# Specifies the number of deciseconds (0.1 seconds) how long LILO 
 						# should wait before booting the first image.  LILO doesn't wait if
 						# 'delay' is omitted or set to zero. You do not see the defined menu.
 						delay = 5
-
 						# Prompt to start one certain kernel from the displayed menu.
 						# It is very recommeded to also set 'timeout'. Without timeout boot 
 						# will not take place unless you hit return. Timeout is the number
@@ -1795,8 +1583,6 @@ EOF
 						prompt
 						timeout = 100
 						#single-key
-
-
 						# Specifying the VGA text mode that should be selected when booting.
 						# The following values are recognized (case is ignored):
 						#   vga=normal    80x25 text mode (default)
@@ -1814,20 +1600,16 @@ EOF
 						#vga = ask
 						vga = normal
 						#vga = 0x317
-
 						# Kernel command line options that apply to all installed images go
 						# here.  See 'kernel-parameters.txt' in the Linux kernel 'Documentation'
 						# directory. I.g. for start into 'init 5' write:  append="5"
 						#append = ""
-
 						# If you used a serial console to install Debian, this option should be
 						# enabled by default.
 						#serial = 0,9600
-
 						# Set the image which should be started after delay or timeout.
 						# If not set, the first defined image will be started.
 						default = Gentoo
-
 						image = /boot/vmlinuz-2.4.19
 						label = "Linux 2.4.19"
 EOF
@@ -1840,10 +1622,9 @@ EOF
 				SETUP_$BOOTLOADER
 			NOTICE_END
 			}                        
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			# 
 			KERNEL () {  # https://wiki.gentoo.org/wiki/Kernel
 			NOTICE_START
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				KERN_LOAD () {
 				NOTICE_START
 					KERN_EMERGE () {
@@ -1867,7 +1648,6 @@ EOF
 					KERN_$KERNSOURCES
 				NOTICE_END
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				KERN_DEPLOY () {
 				NOTICE_START
 					KERN_MANUAL () {
@@ -1876,18 +1656,13 @@ EOF
 						NOTICE_START
 							KERNCONF_PASTE () {  # paste own config here ( ~ this should go to auto)
 							NOTICE_START
-
 								mv /usr/src/linux/.config /usr/src/linux/.oldconfig 
 								echo "ignore err"
 								touch /usr/src/linux/.config
 								cat << 'EOF' > /usr/src/linux/.config
-
-# Automatically generated file; DO NOT EDIT.
-#
 # Automatically generated file; DO NOT EDIT.
 # Linux/x86 5.8.13-gentoo Kernel Configuration
 #
-
 CONFIG_CC_CAN_LINK=y
 CONFIG_CC_CAN_LINK_STATIC=y
 CONFIG_CC_HAS_ASM_GOTO=y
@@ -1895,7 +1670,6 @@ CONFIG_CC_HAS_ASM_INLINE=y
 CONFIG_IRQ_WORK=y
 CONFIG_BUILDTIME_TABLE_SORT=y
 CONFIG_THREAD_INFO_IN_TASK=y
-
 #
 # General setup
 #
@@ -1929,7 +1703,6 @@ CONFIG_USELIB=y
 CONFIG_AUDIT=y
 CONFIG_HAVE_ARCH_AUDITSYSCALL=y
 CONFIG_AUDITSYSCALL=y
-
 #
 # IRQ subsystem
 #
@@ -1951,7 +1724,6 @@ CONFIG_IRQ_FORCED_THREADING=y
 CONFIG_SPARSE_IRQ=y
 # CONFIG_GENERIC_IRQ_DEBUGFS is not set
 # end of IRQ subsystem
-
 CONFIG_CLOCKSOURCE_WATCHDOG=y
 CONFIG_ARCH_CLOCKSOURCE_INIT=y
 CONFIG_CLOCKSOURCE_VALIDATE_LAST_CYCLE=y
@@ -1960,7 +1732,6 @@ CONFIG_GENERIC_CLOCKEVENTS=y
 CONFIG_GENERIC_CLOCKEVENTS_BROADCAST=y
 CONFIG_GENERIC_CLOCKEVENTS_MIN_ADJUST=y
 CONFIG_GENERIC_CMOS_UPDATE=y
-
 #
 # Timers subsystem
 #
@@ -1972,11 +1743,9 @@ CONFIG_NO_HZ_IDLE=y
 CONFIG_NO_HZ=y
 CONFIG_HIGH_RES_TIMERS=y
 # end of Timers subsystem
-
 # CONFIG_PREEMPT_NONE is not set
 CONFIG_PREEMPT_VOLUNTARY=y
 # CONFIG_PREEMPT is not set
-
 #
 # CPU/Task time and stats accounting
 #
@@ -1993,9 +1762,7 @@ CONFIG_TASK_IO_ACCOUNTING=y
 CONFIG_PSI=y
 # CONFIG_PSI_DEFAULT_DISABLED is not set
 # end of CPU/Task time and stats accounting
-
 CONFIG_CPU_ISOLATION=y
-
 #
 # RCU Subsystem
 #
@@ -2010,7 +1777,6 @@ CONFIG_TASKS_TRACE_RCU=y
 CONFIG_RCU_STALL_COMMON=y
 CONFIG_RCU_NEED_SEGCBLIST=y
 # end of RCU Subsystem
-
 CONFIG_BUILD_BIN2C=y
 # CONFIG_IKCONFIG is not set
 CONFIG_IKHEADERS=m
@@ -2018,14 +1784,12 @@ CONFIG_LOG_BUF_SHIFT=18
 CONFIG_LOG_CPU_MAX_BUF_SHIFT=12
 CONFIG_PRINTK_SAFE_LOG_BUF_SHIFT=13
 CONFIG_HAVE_UNSTABLE_SCHED_CLOCK=y
-
 #
 # Scheduler features
 #
 CONFIG_UCLAMP_TASK=y
 CONFIG_UCLAMP_BUCKETS_COUNT=5
 # end of Scheduler features
-
 CONFIG_ARCH_SUPPORTS_NUMA_BALANCING=y
 CONFIG_ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH=y
 CONFIG_CC_HAS_INT128=y
@@ -2124,14 +1888,12 @@ CONFIG_RSEQ=y
 # CONFIG_EMBEDDED is not set
 CONFIG_HAVE_PERF_EVENTS=y
 CONFIG_PC104=y
-
 #
 # Kernel Performance Events And Counters
 #
 CONFIG_PERF_EVENTS=y
 # CONFIG_DEBUG_PERF_USE_VMALLOC is not set
 # end of Kernel Performance Events And Counters
-
 CONFIG_VM_EVENT_COUNTERS=y
 CONFIG_SLUB_DEBUG=y
 CONFIG_SLUB_MEMCG_SYSFS_ON=y
@@ -2148,7 +1910,6 @@ CONFIG_SYSTEM_DATA_VERIFICATION=y
 CONFIG_PROFILING=y
 CONFIG_TRACEPOINTS=y
 # end of General setup
-
 CONFIG_64BIT=y
 CONFIG_X86_64=y
 CONFIG_X86=y
@@ -2185,7 +1946,6 @@ CONFIG_FIX_EARLYCON_MEM=y
 CONFIG_DYNAMIC_PHYSICAL_MASK=y
 CONFIG_PGTABLE_LEVELS=4
 CONFIG_CC_HAS_SANE_STACKPROTECTOR=y
-
 #
 # Processor type and features
 #
@@ -2274,7 +2034,6 @@ CONFIG_X86_MCE_AMD=y
 CONFIG_X86_MCE_THRESHOLD=y
 CONFIG_X86_MCE_INJECT=m
 CONFIG_X86_THERMAL_VECTOR=y
-
 #
 # Performance monitoring
 #
@@ -2283,7 +2042,6 @@ CONFIG_PERF_EVENTS_INTEL_RAPL=m
 CONFIG_PERF_EVENTS_INTEL_CSTATE=m
 # CONFIG_PERF_EVENTS_AMD_POWER is not set
 # end of Performance monitoring
-
 CONFIG_X86_16BIT=y
 CONFIG_X86_ESPFIX64=y
 CONFIG_X86_VSYSCALL_EMULATION=y
@@ -2367,7 +2125,6 @@ CONFIG_MODIFY_LDT_SYSCALL=y
 CONFIG_HAVE_LIVEPATCH=y
 CONFIG_LIVEPATCH=y
 # end of Processor type and features
-
 CONFIG_ARCH_HAS_ADD_PAGES=y
 CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG=y
 CONFIG_ARCH_ENABLE_MEMORY_HOTREMOVE=y
@@ -2375,7 +2132,6 @@ CONFIG_USE_PERCPU_NUMA_NODE_ID=y
 CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK=y
 CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION=y
 CONFIG_ARCH_ENABLE_THP_MIGRATION=y
-
 #
 # Power management and ACPI options
 #
@@ -2469,7 +2225,6 @@ CONFIG_ACPI_CONFIGFS=m
 CONFIG_TPS68470_PMIC_OPREGION=y
 CONFIG_X86_PM_TIMER=y
 CONFIG_SFI=y
-
 #
 # CPU Frequency scaling
 #
@@ -2489,7 +2244,6 @@ CONFIG_CPU_FREQ_GOV_USERSPACE=y
 CONFIG_CPU_FREQ_GOV_ONDEMAND=y
 CONFIG_CPU_FREQ_GOV_CONSERVATIVE=y
 CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y
-
 #
 # CPU frequency scaling drivers
 #
@@ -2501,13 +2255,11 @@ CONFIG_X86_POWERNOW_K8=y
 CONFIG_X86_AMD_FREQ_SENSITIVITY=m
 CONFIG_X86_SPEEDSTEP_CENTRINO=y
 CONFIG_X86_P4_CLOCKMOD=m
-
 #
 # shared options
 #
 CONFIG_X86_SPEEDSTEP_LIB=m
 # end of CPU Frequency scaling
-
 #
 # CPU Idle
 #
@@ -2518,10 +2270,8 @@ CONFIG_CPU_IDLE_GOV_TEO=y
 # CONFIG_CPU_IDLE_GOV_HALTPOLL is not set
 CONFIG_HALTPOLL_CPUIDLE=y
 # end of CPU Idle
-
 CONFIG_INTEL_IDLE=y
 # end of Power management and ACPI options
-
 #
 # Bus options (PCI etc.)
 #
@@ -2535,7 +2285,6 @@ CONFIG_ISA_DMA_API=y
 CONFIG_AMD_NB=y
 # CONFIG_X86_SYSFB is not set
 # end of Bus options (PCI etc.)
-
 #
 # Binary Emulations
 #
@@ -2546,7 +2295,6 @@ CONFIG_COMPAT=y
 CONFIG_COMPAT_FOR_U64_ALIGNMENT=y
 CONFIG_SYSVIPC_COMPAT=y
 # end of Binary Emulations
-
 #
 # Firmware Drivers
 #
@@ -2561,7 +2309,6 @@ CONFIG_ISCSI_IBFT=m
 CONFIG_FW_CFG_SYSFS=m
 # CONFIG_FW_CFG_SYSFS_CMDLINE is not set
 # CONFIG_GOOGLE_FIRMWARE is not set
-
 #
 # EFI (Extensible Firmware Interface) Support
 #
@@ -2582,20 +2329,17 @@ CONFIG_RESET_ATTACK_MITIGATION=y
 # CONFIG_EFI_RCI2_TABLE is not set
 # CONFIG_EFI_DISABLE_PCI_DMA is not set
 # end of EFI (Extensible Firmware Interface) Support
-
 CONFIG_EFI_EMBEDDED_FIRMWARE=y
 CONFIG_UEFI_CPER=y
 CONFIG_UEFI_CPER_X86=y
 CONFIG_EFI_DEV_PATH_PARSER=y
 CONFIG_EFI_EARLYCON=y
 CONFIG_EFI_CUSTOM_SSDT_OVERLAYS=y
-
 #
 # Tegra firmware driver
 #
 # end of Tegra firmware driver
 # end of Firmware Drivers
-
 CONFIG_HAVE_KVM=y
 CONFIG_HAVE_KVM_IRQCHIP=y
 CONFIG_HAVE_KVM_IRQFD=y
@@ -2620,7 +2364,6 @@ CONFIG_AS_AVX512=y
 CONFIG_AS_SHA1_NI=y
 CONFIG_AS_SHA256_NI=y
 CONFIG_AS_TPAUSE=y
-
 #
 # General architecture-dependent options
 #
@@ -2720,21 +2463,18 @@ CONFIG_HAVE_ARCH_PREL32_RELOCATIONS=y
 CONFIG_ARCH_USE_MEMREMAP_PROT=y
 # CONFIG_LOCK_EVENT_COUNTS is not set
 CONFIG_ARCH_HAS_MEM_ENCRYPT=y
-
 #
 # GCOV-based kernel profiling
 #
 # CONFIG_GCOV_KERNEL is not set
 CONFIG_ARCH_HAS_GCOV_PROFILE_ALL=y
 # end of GCOV-based kernel profiling
-
 CONFIG_HAVE_GCC_PLUGINS=y
 CONFIG_GCC_PLUGINS=y
 # CONFIG_GCC_PLUGIN_CYC_COMPLEXITY is not set
 # CONFIG_GCC_PLUGIN_LATENT_ENTROPY is not set
 # CONFIG_GCC_PLUGIN_RANDSTRUCT is not set
 # end of General architecture-dependent options
-
 CONFIG_RT_MUTEXES=y
 CONFIG_BASE_SMALL=0
 CONFIG_MODULE_SIG_FORMAT=y
@@ -2776,7 +2516,6 @@ CONFIG_BLK_DEBUG_FS=y
 CONFIG_BLK_DEBUG_FS_ZONED=y
 CONFIG_BLK_SED_OPAL=y
 # CONFIG_BLK_INLINE_ENCRYPTION is not set
-
 #
 # Partition Types
 #
@@ -2802,12 +2541,10 @@ CONFIG_EFI_PARTITION=y
 CONFIG_SYSV68_PARTITION=y
 CONFIG_CMDLINE_PARTITION=y
 # end of Partition Types
-
 CONFIG_BLOCK_COMPAT=y
 CONFIG_BLK_MQ_PCI=y
 CONFIG_BLK_MQ_VIRTIO=y
 CONFIG_BLK_PM=y
-
 #
 # IO Schedulers
 #
@@ -2817,7 +2554,6 @@ CONFIG_IOSCHED_BFQ=m
 CONFIG_BFQ_GROUP_IOSCHED=y
 # CONFIG_BFQ_CGROUP_DEBUG is not set
 # end of IO Schedulers
-
 CONFIG_PREEMPT_NOTIFIERS=y
 CONFIG_PADATA=y
 CONFIG_ASN1=y
@@ -2838,7 +2574,6 @@ CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE=y
 CONFIG_ARCH_HAS_SYNC_CORE_BEFORE_USERMODE=y
 CONFIG_ARCH_HAS_SYSCALL_WRAPPER=y
 CONFIG_FREEZER=y
-
 #
 # Executable file formats
 #
@@ -2850,7 +2585,6 @@ CONFIG_BINFMT_SCRIPT=y
 CONFIG_BINFMT_MISC=m
 CONFIG_COREDUMP=y
 # end of Executable file formats
-
 #
 # Memory Management options
 #
@@ -2934,14 +2668,12 @@ CONFIG_ARCH_HAS_PKEYS=y
 CONFIG_ARCH_HAS_PTE_SPECIAL=y
 CONFIG_MAPPING_DIRTY_HELPERS=y
 # end of Memory Management options
-
 CONFIG_NET=y
 CONFIG_COMPAT_NETLINK_MESSAGES=y
 CONFIG_NET_INGRESS=y
 CONFIG_NET_EGRESS=y
 CONFIG_NET_REDIRECT=y
 CONFIG_SKB_EXTENSIONS=y
-
 #
 # Networking options
 #
@@ -3063,7 +2795,6 @@ CONFIG_NETWORK_PHY_TIMESTAMPING=y
 CONFIG_NETFILTER=y
 CONFIG_NETFILTER_ADVANCED=y
 CONFIG_BRIDGE_NETFILTER=m
-
 #
 # Core Netfilter Configuration
 #
@@ -3150,14 +2881,12 @@ CONFIG_NFT_FIB_NETDEV=m
 CONFIG_NF_FLOW_TABLE_INET=m
 CONFIG_NF_FLOW_TABLE=m
 CONFIG_NETFILTER_XTABLES=m
-
 #
 # Xtables combined modules
 #
 CONFIG_NETFILTER_XT_MARK=m
 CONFIG_NETFILTER_XT_CONNMARK=m
 CONFIG_NETFILTER_XT_SET=m
-
 #
 # Xtables targets
 #
@@ -3188,7 +2917,6 @@ CONFIG_NETFILTER_XT_TARGET_TRACE=m
 CONFIG_NETFILTER_XT_TARGET_SECMARK=m
 CONFIG_NETFILTER_XT_TARGET_TCPMSS=m
 CONFIG_NETFILTER_XT_TARGET_TCPOPTSTRIP=m
-
 #
 # Xtables matches
 #
@@ -3239,7 +2967,6 @@ CONFIG_NETFILTER_XT_MATCH_TCPMSS=m
 CONFIG_NETFILTER_XT_MATCH_TIME=m
 CONFIG_NETFILTER_XT_MATCH_U32=m
 # end of Core Netfilter Configuration
-
 CONFIG_IP_SET=m
 CONFIG_IP_SET_MAX=256
 CONFIG_IP_SET_BITMAP_IP=m
@@ -3262,7 +2989,6 @@ CONFIG_IP_VS=m
 CONFIG_IP_VS_IPV6=y
 # CONFIG_IP_VS_DEBUG is not set
 CONFIG_IP_VS_TAB_BITS=12
-
 #
 # IPVS transport protocol load balancing support
 #
@@ -3272,7 +2998,6 @@ CONFIG_IP_VS_PROTO_AH_ESP=y
 CONFIG_IP_VS_PROTO_ESP=y
 CONFIG_IP_VS_PROTO_AH=y
 CONFIG_IP_VS_PROTO_SCTP=y
-
 #
 # IPVS scheduler
 #
@@ -3289,24 +3014,20 @@ CONFIG_IP_VS_SH=m
 CONFIG_IP_VS_MH=m
 CONFIG_IP_VS_SED=m
 CONFIG_IP_VS_NQ=m
-
 #
 # IPVS SH scheduler
 #
 CONFIG_IP_VS_SH_TAB_BITS=8
-
 #
 # IPVS MH scheduler
 #
 CONFIG_IP_VS_MH_TAB_INDEX=12
-
 #
 # IPVS application helper
 #
 CONFIG_IP_VS_FTP=m
 CONFIG_IP_VS_NFCT=y
 CONFIG_IP_VS_PE_SIP=m
-
 #
 # IP: Netfilter Configuration
 #
@@ -3348,7 +3069,6 @@ CONFIG_IP_NF_ARPTABLES=m
 CONFIG_IP_NF_ARPFILTER=m
 CONFIG_IP_NF_ARP_MANGLE=m
 # end of IP: Netfilter Configuration
-
 #
 # IPv6: Netfilter Configuration
 #
@@ -3384,15 +3104,12 @@ CONFIG_IP6_NF_NAT=m
 CONFIG_IP6_NF_TARGET_MASQUERADE=m
 CONFIG_IP6_NF_TARGET_NPT=m
 # end of IPv6: Netfilter Configuration
-
 CONFIG_NF_DEFRAG_IPV6=m
-
 #
 # DECnet: Netfilter Configuration
 #
 CONFIG_DECNET_NF_GRABULATOR=m
 # end of DECnet: Netfilter Configuration
-
 CONFIG_NF_TABLES_BRIDGE=m
 CONFIG_NFT_BRIDGE_META=m
 CONFIG_NFT_BRIDGE_REJECT=m
@@ -3423,20 +3140,17 @@ CONFIG_BPFILTER=y
 CONFIG_BPFILTER_UMH=m
 CONFIG_IP_DCCP=m
 CONFIG_INET_DCCP_DIAG=m
-
 #
 # DCCP CCIDs Configuration
 #
 # CONFIG_IP_DCCP_CCID2_DEBUG is not set
 # CONFIG_IP_DCCP_CCID3 is not set
 # end of DCCP CCIDs Configuration
-
 #
 # DCCP Kernel Hacking
 #
 # CONFIG_IP_DCCP_DEBUG is not set
 # end of DCCP Kernel Hacking
-
 CONFIG_IP_SCTP=y
 # CONFIG_SCTP_DBG_OBJCNT is not set
 # CONFIG_SCTP_DEFAULT_COOKIE_HMAC_MD5 is not set
@@ -3527,7 +3241,6 @@ CONFIG_IEEE802154_SOCKET=m
 CONFIG_IEEE802154_6LOWPAN=m
 CONFIG_MAC802154=m
 CONFIG_NET_SCHED=y
-
 #
 # Queueing/Scheduling
 #
@@ -3564,7 +3277,6 @@ CONFIG_NET_SCH_INGRESS=m
 CONFIG_NET_SCH_PLUG=m
 # CONFIG_NET_SCH_ETS is not set
 # CONFIG_NET_SCH_DEFAULT is not set
-
 #
 # Classification
 #
@@ -3662,7 +3374,6 @@ CONFIG_BQL=y
 CONFIG_BPF_JIT=y
 CONFIG_BPF_STREAM_PARSER=y
 CONFIG_NET_FLOW_LIMIT=y
-
 #
 # Network testing
 #
@@ -3670,9 +3381,7 @@ CONFIG_NET_PKTGEN=m
 CONFIG_NET_DROP_MONITOR=y
 # end of Network testing
 # end of Networking options
-
 CONFIG_HAMRADIO=y
-
 #
 # Packet Radio protocols
 #
@@ -3680,7 +3389,6 @@ CONFIG_AX25=m
 CONFIG_AX25_DAMA_SLAVE=y
 CONFIG_NETROM=m
 CONFIG_ROSE=m
-
 #
 # AX.25 network device drivers
 #
@@ -3691,13 +3399,11 @@ CONFIG_BAYCOM_SER_FDX=m
 CONFIG_BAYCOM_SER_HDX=m
 CONFIG_YAM=m
 # end of AX.25 network device drivers
-
 CONFIG_CAN=m
 CONFIG_CAN_RAW=m
 CONFIG_CAN_BCM=m
 CONFIG_CAN_GW=m
 # CONFIG_CAN_J1939 is not set
-
 #
 # CAN Device Drivers
 #
@@ -3729,14 +3435,12 @@ CONFIG_CAN_PLX_PCI=m
 CONFIG_CAN_SJA1000_ISA=m
 CONFIG_CAN_SJA1000_PLATFORM=m
 CONFIG_CAN_SOFTING=m
-
 #
 # CAN SPI interfaces
 #
 CONFIG_CAN_HI311X=m
 CONFIG_CAN_MCP251X=m
 # end of CAN SPI interfaces
-
 #
 # CAN USB interfaces
 #
@@ -3749,10 +3453,8 @@ CONFIG_CAN_MCBA_USB=m
 CONFIG_CAN_PEAK_USB=m
 CONFIG_CAN_UCAN=m
 # end of CAN USB interfaces
-
 # CONFIG_CAN_DEBUG_DEVICES is not set
 # end of CAN Device Drivers
-
 CONFIG_BT=m
 CONFIG_BT_BREDR=y
 CONFIG_BT_RFCOMM=m
@@ -3769,7 +3471,6 @@ CONFIG_BT_LEDS=y
 # CONFIG_BT_MSFTEXT is not set
 CONFIG_BT_DEBUGFS=y
 # CONFIG_BT_SELFTEST is not set
-
 #
 # Bluetooth device drivers
 #
@@ -3808,7 +3509,6 @@ CONFIG_BT_MTKSDIO=m
 CONFIG_BT_MTKUART=m
 CONFIG_BT_HCIRSI=m
 # end of Bluetooth device drivers
-
 CONFIG_AF_RXRPC=m
 CONFIG_AF_RXRPC_IPV6=y
 # CONFIG_AF_RXRPC_INJECT_LOSS is not set
@@ -3874,7 +3574,6 @@ CONFIG_NFC_NCI_SPI=m
 CONFIG_NFC_NCI_UART=m
 CONFIG_NFC_HCI=m
 CONFIG_NFC_SHDLC=y
-
 #
 # Near Field Communication (NFC) devices
 #
@@ -3910,7 +3609,6 @@ CONFIG_NFC_S3FWRN5=m
 CONFIG_NFC_S3FWRN5_I2C=m
 CONFIG_NFC_ST95HF=m
 # end of Near Field Communication (NFC) devices
-
 CONFIG_PSAMPLE=m
 CONFIG_NET_IFE=m
 CONFIG_LWTUNNEL=y
@@ -3924,7 +3622,6 @@ CONFIG_PAGE_POOL=y
 CONFIG_FAILOVER=m
 CONFIG_ETHTOOL_NETLINK=y
 CONFIG_HAVE_EBPF_JIT=y
-
 #
 # Device Drivers
 #
@@ -3975,13 +3672,11 @@ CONFIG_HOTPLUG_PCI_CPCI=y
 CONFIG_HOTPLUG_PCI_CPCI_ZT5550=m
 CONFIG_HOTPLUG_PCI_CPCI_GENERIC=m
 CONFIG_HOTPLUG_PCI_SHPC=y
-
 #
 # PCI controller drivers
 #
 CONFIG_VMD=m
 CONFIG_PCI_HYPERV_INTERFACE=m
-
 #
 # DesignWare PCI Core Support
 #
@@ -3993,18 +3688,15 @@ CONFIG_PCIE_DW_PLAT_HOST=y
 CONFIG_PCIE_DW_PLAT_EP=y
 CONFIG_PCI_MESON=y
 # end of DesignWare PCI Core Support
-
 #
 # Mobiveil PCIe Core Support
 #
 # end of Mobiveil PCIe Core Support
-
 #
 # Cadence PCIe controllers support
 #
 # end of Cadence PCIe controllers support
 # end of PCI controller drivers
-
 #
 # PCI Endpoint
 #
@@ -4012,13 +3704,11 @@ CONFIG_PCI_ENDPOINT=y
 CONFIG_PCI_ENDPOINT_CONFIGFS=y
 # CONFIG_PCI_EPF_TEST is not set
 # end of PCI Endpoint
-
 #
 # PCI switch controller drivers
 #
 CONFIG_PCI_SW_SWITCHTEC=m
 # end of PCI switch controller drivers
-
 # CONFIG_PCCARD is not set
 CONFIG_RAPIDIO=y
 CONFIG_RAPIDIO_TSI721=m
@@ -4029,7 +3719,6 @@ CONFIG_RAPIDIO_DMA_ENGINE=y
 CONFIG_RAPIDIO_ENUM_BASIC=m
 CONFIG_RAPIDIO_CHMAN=m
 CONFIG_RAPIDIO_MPORT_CDEV=m
-
 #
 # RapidIO Switch drivers
 #
@@ -4039,7 +3728,6 @@ CONFIG_RAPIDIO_TSI568=m
 CONFIG_RAPIDIO_CPS_GEN2=m
 CONFIG_RAPIDIO_RXS_GEN3=m
 # end of RapidIO Switch drivers
-
 #
 # Generic Driver Options
 #
@@ -4049,7 +3737,6 @@ CONFIG_DEVTMPFS=y
 CONFIG_DEVTMPFS_MOUNT=y
 # CONFIG_STANDALONE is not set
 CONFIG_PREVENT_FIRMWARE_BUILD=y
-
 #
 # Firmware loader
 #
@@ -4061,7 +3748,6 @@ CONFIG_FW_LOADER_USER_HELPER=y
 CONFIG_FW_LOADER_COMPRESS=y
 CONFIG_FW_CACHE=y
 # end of Firmware loader
-
 CONFIG_WANT_DEV_COREDUMP=y
 CONFIG_ALLOW_DEV_COREDUMP=y
 CONFIG_DEV_COREDUMP=y
@@ -4083,13 +3769,11 @@ CONFIG_REGMAP_SCCB=m
 CONFIG_DMA_SHARED_BUFFER=y
 # CONFIG_DMA_FENCE_TRACE is not set
 # end of Generic Driver Options
-
 #
 # Bus devices
 #
 # CONFIG_MHI_BUS is not set
 # end of Bus devices
-
 CONFIG_CONNECTOR=y
 CONFIG_PROC_EVENTS=y
 # CONFIG_GNSS is not set
@@ -4099,7 +3783,6 @@ CONFIG_ARCH_MIGHT_HAVE_PC_PARPORT=y
 # CONFIG_PARPORT is not set
 CONFIG_PNP=y
 # CONFIG_PNP_DEBUG_MESSAGES is not set
-
 #
 # Protocols
 #
@@ -4131,7 +3814,6 @@ CONFIG_XEN_BLKDEV_BACKEND=y
 CONFIG_VIRTIO_BLK=y
 CONFIG_BLK_DEV_RBD=y
 CONFIG_BLK_DEV_RSXX=y
-
 #
 # NVME Support
 #
@@ -4148,7 +3830,6 @@ CONFIG_NVME_TARGET_FC=m
 # CONFIG_NVME_TARGET_FCLOOP is not set
 CONFIG_NVME_TARGET_TCP=m
 # end of NVME Support
-
 #
 # Misc devices
 #
@@ -4181,7 +3862,6 @@ CONFIG_MISC_RTSX=m
 CONFIG_PVPANIC=m
 CONFIG_C2PORT=m
 CONFIG_C2PORT_DURAMAR_2150=m
-
 #
 # EEPROM support
 #
@@ -4194,17 +3874,14 @@ CONFIG_EEPROM_93XX46=m
 CONFIG_EEPROM_IDT_89HPESX=m
 CONFIG_EEPROM_EE1004=m
 # end of EEPROM support
-
 CONFIG_CB710_CORE=m
 # CONFIG_CB710_DEBUG is not set
 CONFIG_CB710_DEBUG_ASSUMPTIONS=y
-
 #
 # Texas Instruments shared transport line discipline
 #
 CONFIG_TI_ST=m
 # end of Texas Instruments shared transport line discipline
-
 CONFIG_SENSORS_LIS3_I2C=m
 CONFIG_ALTERA_STAPL=m
 CONFIG_INTEL_MEI=m
@@ -4212,7 +3889,6 @@ CONFIG_INTEL_MEI_ME=m
 CONFIG_INTEL_MEI_TXE=m
 CONFIG_INTEL_MEI_HDCP=m
 CONFIG_VMWARE_VMCI=m
-
 #
 # Intel MIC & related support
 #
@@ -4225,7 +3901,6 @@ CONFIG_SCIF=m
 CONFIG_MIC_COSM=m
 CONFIG_VOP=m
 # end of Intel MIC & related support
-
 CONFIG_GENWQE=m
 CONFIG_GENWQE_PLATFORM_ERROR_RECOVERY=0
 CONFIG_ECHO=m
@@ -4235,10 +3910,8 @@ CONFIG_MISC_RTSX_USB=m
 CONFIG_HABANA_AI=m
 # CONFIG_UACCE is not set
 # end of Misc devices
-
 CONFIG_HAVE_IDE=y
 # CONFIG_IDE is not set
-
 #
 # SCSI device support
 #
@@ -4248,7 +3921,6 @@ CONFIG_SCSI=y
 CONFIG_SCSI_DMA=y
 CONFIG_SCSI_NETLINK=y
 CONFIG_SCSI_PROC_FS=y
-
 #
 # SCSI support type (disk, tape, CD-ROM)
 #
@@ -4261,7 +3933,6 @@ CONFIG_SCSI_ENCLOSURE=m
 CONFIG_SCSI_CONSTANTS=y
 CONFIG_SCSI_LOGGING=y
 CONFIG_SCSI_SCAN_ASYNC=y
-
 #
 # SCSI Transports
 #
@@ -4274,7 +3945,6 @@ CONFIG_SCSI_SAS_ATA=y
 CONFIG_SCSI_SAS_HOST_SMP=y
 CONFIG_SCSI_SRP_ATTRS=m
 # end of SCSI Transports
-
 CONFIG_SCSI_LOWLEVEL=y
 CONFIG_ISCSI_TCP=m
 CONFIG_ISCSI_BOOT_SYSFS=m
@@ -4385,7 +4055,6 @@ CONFIG_SCSI_DH_HP_SW=m
 CONFIG_SCSI_DH_EMC=m
 CONFIG_SCSI_DH_ALUA=m
 # end of SCSI device support
-
 CONFIG_ATA=y
 CONFIG_SATA_HOST=y
 CONFIG_PATA_TIMINGS=y
@@ -4394,7 +4063,6 @@ CONFIG_ATA_FORCE=y
 CONFIG_ATA_ACPI=y
 CONFIG_SATA_ZPODD=y
 CONFIG_SATA_PMP=y
-
 #
 # Controllers with non-SFF native interface
 #
@@ -4405,7 +4073,6 @@ CONFIG_SATA_INIC162X=m
 CONFIG_SATA_ACARD_AHCI=m
 CONFIG_SATA_SIL24=m
 CONFIG_ATA_SFF=y
-
 #
 # SFF controllers with custom DMA interface
 #
@@ -4413,7 +4080,6 @@ CONFIG_PDC_ADMA=m
 CONFIG_SATA_QSTOR=m
 CONFIG_SATA_SX4=m
 CONFIG_ATA_BMDMA=y
-
 #
 # SATA SFF controllers with BMDMA
 #
@@ -4430,7 +4096,6 @@ CONFIG_SATA_SVW=m
 CONFIG_SATA_ULI=m
 CONFIG_SATA_VIA=m
 CONFIG_SATA_VITESSE=m
-
 #
 # PATA SFF controllers with BMDMA
 #
@@ -4468,7 +4133,6 @@ CONFIG_PATA_TOSHIBA=m
 CONFIG_PATA_TRIFLEX=m
 CONFIG_PATA_VIA=m
 CONFIG_PATA_WINBOND=m
-
 #
 # PIO-only SFF controllers
 #
@@ -4478,7 +4142,6 @@ CONFIG_PATA_NS87410=m
 CONFIG_PATA_OPTI=m
 CONFIG_PATA_PLATFORM=m
 CONFIG_PATA_RZ1000=m
-
 #
 # Generic fallback / legacy drivers
 #
@@ -4555,7 +4218,6 @@ CONFIG_FUSION_MAX_SGE=128
 CONFIG_FUSION_CTL=m
 CONFIG_FUSION_LAN=m
 CONFIG_FUSION_LOGGING=y
-
 #
 # IEEE 1394 (FireWire) support
 #
@@ -4565,7 +4227,6 @@ CONFIG_FIREWIRE_SBP2=m
 CONFIG_FIREWIRE_NET=m
 CONFIG_FIREWIRE_NOSY=m
 # end of IEEE 1394 (FireWire) support
-
 # CONFIG_MACINTOSH_DRIVERS is not set
 CONFIG_NETDEVICES=y
 CONFIG_MII=m
@@ -4649,7 +4310,6 @@ CONFIG_ATM_HE=m
 CONFIG_ATM_HE_USE_SUNI=y
 CONFIG_ATM_SOLOS=m
 # CONFIG_CAIF_DRIVERS is not set
-
 #
 # Distributed Switch Architecture drivers
 #
@@ -4684,7 +4344,6 @@ CONFIG_NET_DSA_SMSC_LAN9303_MDIO=m
 # CONFIG_NET_DSA_VITESSE_VSC73XX_SPI is not set
 # CONFIG_NET_DSA_VITESSE_VSC73XX_PLATFORM is not set
 # end of Distributed Switch Architecture drivers
-
 CONFIG_ETHERNET=y
 CONFIG_MDIO=m
 CONFIG_NET_VENDOR_3COM=y
@@ -5009,7 +4668,6 @@ CONFIG_PHYLINK=m
 CONFIG_PHYLIB=y
 CONFIG_SWPHY=y
 CONFIG_LED_TRIGGER_PHY=y
-
 #
 # MII PHY device drivers
 #
@@ -5235,21 +4893,18 @@ CONFIG_LIBIPW=m
 CONFIG_IWLEGACY=m
 CONFIG_IWL4965=m
 CONFIG_IWL3945=m
-
 #
 # iwl3945 / iwl4965 Debugging Options
 #
 # CONFIG_IWLEGACY_DEBUG is not set
 CONFIG_IWLEGACY_DEBUGFS=y
 # end of iwl3945 / iwl4965 Debugging Options
-
 CONFIG_IWLWIFI=m
 CONFIG_IWLWIFI_LEDS=y
 CONFIG_IWLDVM=m
 CONFIG_IWLMVM=m
 CONFIG_IWLWIFI_OPMODE_MODULAR=y
 # CONFIG_IWLWIFI_BCAST_FILTERING is not set
-
 #
 # Debugging Options
 #
@@ -5257,7 +4912,6 @@ CONFIG_IWLWIFI_OPMODE_MODULAR=y
 CONFIG_IWLWIFI_DEBUGFS=y
 CONFIG_IWLWIFI_DEVICE_TRACING=y
 # end of Debugging Options
-
 CONFIG_WLAN_VENDOR_INTERSIL=y
 CONFIG_HOSTAP=m
 CONFIG_HOSTAP_FIRMWARE=y
@@ -5403,7 +5057,6 @@ CONFIG_QTNFMAC_PCIE=m
 CONFIG_MAC80211_HWSIM=m
 CONFIG_USB_NET_RNDIS_WLAN=m
 CONFIG_VIRT_WIFI=m
-
 #
 # WiMAX Wireless Broadband devices
 #
@@ -5411,7 +5064,6 @@ CONFIG_WIMAX_I2400M=m
 CONFIG_WIMAX_I2400M_USB=m
 CONFIG_WIMAX_I2400M_DEBUG_LEVEL=8
 # end of WiMAX Wireless Broadband devices
-
 CONFIG_WAN=y
 CONFIG_LANMEDIA=m
 CONFIG_HDLC=m
@@ -5457,7 +5109,6 @@ CONFIG_ISDN_CAPI_MIDDLEWARE=y
 CONFIG_MISDN=m
 CONFIG_MISDN_DSP=m
 CONFIG_MISDN_L1OIP=m
-
 #
 # mISDN hardware drivers
 #
@@ -5475,7 +5126,6 @@ CONFIG_MISDN_ISAR=m
 CONFIG_NVM=y
 CONFIG_NVM_PBLK=m
 # CONFIG_NVM_PBLK_DEBUG is not set
-
 #
 # Input device support
 #
@@ -5485,7 +5135,6 @@ CONFIG_INPUT_FF_MEMLESS=m
 CONFIG_INPUT_POLLDEV=m
 CONFIG_INPUT_SPARSEKMAP=m
 CONFIG_INPUT_MATRIXKMAP=m
-
 #
 # Userland interfaces
 #
@@ -5496,7 +5145,6 @@ CONFIG_INPUT_MOUSEDEV_SCREEN_Y=768
 CONFIG_INPUT_JOYDEV=m
 CONFIG_INPUT_EVDEV=y
 CONFIG_INPUT_EVBUG=m
-
 #
 # Input Device Drivers
 #
@@ -5763,7 +5411,6 @@ CONFIG_RMI4_F30=y
 CONFIG_RMI4_F34=y
 CONFIG_RMI4_F54=y
 CONFIG_RMI4_F55=y
-
 #
 # Hardware I/O ports
 #
@@ -5788,7 +5435,6 @@ CONFIG_GAMEPORT_EMU10K1=m
 CONFIG_GAMEPORT_FM801=m
 # end of Hardware I/O ports
 # end of Input device support
-
 #
 # Character devices
 #
@@ -5803,7 +5449,6 @@ CONFIG_UNIX98_PTYS=y
 CONFIG_LEGACY_PTYS=y
 CONFIG_LEGACY_PTY_COUNT=0
 CONFIG_LDISC_AUTOLOAD=y
-
 #
 # Serial drivers
 #
@@ -5829,7 +5474,6 @@ CONFIG_SERIAL_8250_DW=m
 CONFIG_SERIAL_8250_RT288X=y
 CONFIG_SERIAL_8250_LPSS=m
 CONFIG_SERIAL_8250_MID=m
-
 #
 # Non-8250 serial port support
 #
@@ -5862,7 +5506,6 @@ CONFIG_SERIAL_FSL_LPUART=m
 # CONFIG_SERIAL_FSL_LINFLEXUART is not set
 # CONFIG_SERIAL_SPRD is not set
 # end of Serial drivers
-
 CONFIG_SERIAL_MCTRL_GPIO=y
 CONFIG_SERIAL_NONSTANDARD=y
 CONFIG_ROCKETPORT=m
@@ -5938,10 +5581,8 @@ CONFIG_TELCLOCK=m
 CONFIG_XILLYBUS=m
 CONFIG_XILLYBUS_PCIE=m
 # end of Character devices
-
 CONFIG_RANDOM_TRUST_CPU=y
 # CONFIG_RANDOM_TRUST_BOOTLOADER is not set
-
 #
 # I2C support
 #
@@ -5951,7 +5592,6 @@ CONFIG_I2C_BOARDINFO=y
 CONFIG_I2C_COMPAT=y
 CONFIG_I2C_CHARDEV=y
 CONFIG_I2C_MUX=m
-
 #
 # Multiplexer I2C Chip support
 #
@@ -5962,16 +5602,13 @@ CONFIG_I2C_MUX_PCA954x=m
 CONFIG_I2C_MUX_REG=m
 CONFIG_I2C_MUX_MLXCPLD=m
 # end of Multiplexer I2C Chip support
-
 CONFIG_I2C_HELPER_AUTO=y
 CONFIG_I2C_SMBUS=m
 CONFIG_I2C_ALGOBIT=m
 CONFIG_I2C_ALGOPCA=m
-
 #
 # I2C Hardware Bus support
 #
-
 #
 # PC SMBus host controller drivers
 #
@@ -5995,12 +5632,10 @@ CONFIG_I2C_SIS630=m
 CONFIG_I2C_SIS96X=m
 CONFIG_I2C_VIA=m
 CONFIG_I2C_VIAPRO=m
-
 #
 # ACPI drivers
 #
 CONFIG_I2C_SCMI=m
-
 #
 # I2C system bus drivers (mostly embedded / system-on-chip)
 #
@@ -6018,7 +5653,6 @@ CONFIG_I2C_OCORES=m
 CONFIG_I2C_PCA_PLATFORM=m
 CONFIG_I2C_SIMTEC=m
 CONFIG_I2C_XILINX=m
-
 #
 # External I2C/SMBus adapter drivers
 #
@@ -6028,21 +5662,18 @@ CONFIG_I2C_ROBOTFUZZ_OSIF=m
 CONFIG_I2C_TAOS_EVM=m
 CONFIG_I2C_TINY_USB=m
 CONFIG_I2C_VIPERBOARD=m
-
 #
 # Other I2C/SMBus bus drivers
 #
 CONFIG_I2C_MLXCPLD=m
 CONFIG_I2C_CROS_EC_TUNNEL=m
 # end of I2C Hardware Bus support
-
 CONFIG_I2C_STUB=m
 # CONFIG_I2C_SLAVE is not set
 # CONFIG_I2C_DEBUG_CORE is not set
 # CONFIG_I2C_DEBUG_ALGO is not set
 # CONFIG_I2C_DEBUG_BUS is not set
 # end of I2C support
-
 CONFIG_I3C=m
 CONFIG_CDNS_I3C_MASTER=m
 CONFIG_DW_I3C_MASTER=m
@@ -6050,7 +5681,6 @@ CONFIG_SPI=y
 # CONFIG_SPI_DEBUG is not set
 CONFIG_SPI_MASTER=y
 CONFIG_SPI_MEM=y
-
 #
 # SPI Master Controller Drivers
 #
@@ -6076,12 +5706,10 @@ CONFIG_SPI_XCOMM=m
 # CONFIG_SPI_XILINX is not set
 CONFIG_SPI_ZYNQMP_GQSPI=m
 # CONFIG_SPI_AMD is not set
-
 #
 # SPI Multiplexer support
 #
 # CONFIG_SPI_MUX is not set
-
 #
 # SPI Protocol Masters
 #
@@ -6095,29 +5723,24 @@ CONFIG_SPI_DYNAMIC=y
 CONFIG_SPMI=m
 CONFIG_HSI=m
 CONFIG_HSI_BOARDINFO=y
-
 #
 # HSI controllers
 #
-
 #
 # HSI clients
 #
 CONFIG_HSI_CHAR=m
 CONFIG_PPS=y
 # CONFIG_PPS_DEBUG is not set
-
 #
 # PPS clients support
 #
 # CONFIG_PPS_CLIENT_KTIMER is not set
 CONFIG_PPS_CLIENT_LDISC=m
 CONFIG_PPS_CLIENT_GPIO=m
-
 #
 # PPS generators support
 #
-
 #
 # PTP clock support
 #
@@ -6129,7 +5752,6 @@ CONFIG_PTP_1588_CLOCK_KVM=m
 # CONFIG_PTP_1588_CLOCK_IDTCM is not set
 # CONFIG_PTP_1588_CLOCK_VMW is not set
 # end of PTP clock support
-
 CONFIG_PINCTRL=y
 CONFIG_PINMUX=y
 CONFIG_PINCONF=y
@@ -6169,7 +5791,6 @@ CONFIG_GPIOLIB_IRQCHIP=y
 CONFIG_GPIO_SYSFS=y
 CONFIG_GPIO_GENERIC=m
 CONFIG_GPIO_MAX730X=m
-
 #
 # Memory mapped GPIO drivers
 #
@@ -6183,7 +5804,6 @@ CONFIG_GPIO_VX855=m
 CONFIG_GPIO_XILINX=y
 CONFIG_GPIO_AMD_FCH=m
 # end of Memory mapped GPIO drivers
-
 #
 # Port-mapped I/O GPIO drivers
 #
@@ -6198,7 +5818,6 @@ CONFIG_GPIO_SCH311X=m
 CONFIG_GPIO_WINBOND=m
 CONFIG_GPIO_WS16C48=m
 # end of Port-mapped I/O GPIO drivers
-
 #
 # I2C GPIO expanders
 #
@@ -6210,7 +5829,6 @@ CONFIG_GPIO_PCA953X=m
 CONFIG_GPIO_PCF857X=m
 CONFIG_GPIO_TPIC2810=m
 # end of I2C GPIO expanders
-
 #
 # MFD GPIO expanders
 #
@@ -6240,7 +5858,6 @@ CONFIG_GPIO_WM831X=m
 CONFIG_GPIO_WM8350=m
 CONFIG_GPIO_WM8994=m
 # end of MFD GPIO expanders
-
 #
 # PCI GPIO expanders
 #
@@ -6251,7 +5868,6 @@ CONFIG_GPIO_PCI_IDIO_16=m
 CONFIG_GPIO_PCIE_IDIO_24=m
 CONFIG_GPIO_RDC321X=m
 # end of PCI GPIO expanders
-
 #
 # SPI GPIO expanders
 #
@@ -6261,18 +5877,15 @@ CONFIG_GPIO_MC33880=m
 CONFIG_GPIO_PISOSR=m
 CONFIG_GPIO_XRA1403=m
 # end of SPI GPIO expanders
-
 #
 # USB GPIO expanders
 #
 CONFIG_GPIO_VIPERBOARD=m
 # end of USB GPIO expanders
-
 # CONFIG_GPIO_AGGREGATOR is not set
 # CONFIG_GPIO_MOCKUP is not set
 CONFIG_W1=m
 CONFIG_W1_CON=y
-
 #
 # 1-wire Bus Masters
 #
@@ -6283,7 +5896,6 @@ CONFIG_W1_MASTER_DS1WM=m
 CONFIG_W1_MASTER_GPIO=m
 # CONFIG_W1_MASTER_SGI is not set
 # end of 1-wire Bus Masters
-
 #
 # 1-wire Slaves
 #
@@ -6307,7 +5919,6 @@ CONFIG_W1_SLAVE_DS2781=m
 CONFIG_W1_SLAVE_DS28E04=m
 CONFIG_W1_SLAVE_DS28E17=m
 # end of 1-wire Slaves
-
 CONFIG_POWER_AVS=y
 # CONFIG_QCOM_CPR is not set
 CONFIG_POWER_RESET=y
@@ -6371,7 +5982,6 @@ CONFIG_CHARGER_WILCO=m
 CONFIG_HWMON=y
 CONFIG_HWMON_VID=m
 # CONFIG_HWMON_DEBUG_CHIP is not set
-
 #
 # Native drivers
 #
@@ -6562,7 +6172,6 @@ CONFIG_SENSORS_W83627EHF=m
 CONFIG_SENSORS_WM831X=m
 CONFIG_SENSORS_WM8350=m
 CONFIG_SENSORS_XGENE=m
-
 #
 # ACPI drivers
 #
@@ -6583,7 +6192,6 @@ CONFIG_THERMAL_GOV_USER_SPACE=y
 # CONFIG_CLOCK_THERMAL is not set
 CONFIG_DEVFREQ_THERMAL=y
 CONFIG_THERMAL_EMULATION=y
-
 #
 # Intel thermal drivers
 #
@@ -6591,7 +6199,6 @@ CONFIG_INTEL_POWERCLAMP=m
 CONFIG_X86_PKG_TEMP_THERMAL=m
 CONFIG_INTEL_SOC_DTS_IOSF_CORE=m
 CONFIG_INTEL_SOC_DTS_THERMAL=m
-
 #
 # ACPI INT340X thermal drivers
 #
@@ -6600,17 +6207,14 @@ CONFIG_ACPI_THERMAL_REL=m
 CONFIG_INT3406_THERMAL=m
 CONFIG_PROC_THERMAL_MMIO_RAPL=y
 # end of ACPI INT340X thermal drivers
-
 CONFIG_INTEL_PCH_THERMAL=m
 # end of Intel thermal drivers
-
 CONFIG_WATCHDOG=y
 CONFIG_WATCHDOG_CORE=y
 # CONFIG_WATCHDOG_NOWAYOUT is not set
 CONFIG_WATCHDOG_HANDLE_BOOT_ENABLED=y
 CONFIG_WATCHDOG_OPEN_TIMEOUT=0
 CONFIG_WATCHDOG_SYSFS=y
-
 #
 # Watchdog Pretimeout Governors
 #
@@ -6620,7 +6224,6 @@ CONFIG_WATCHDOG_PRETIMEOUT_GOV_NOOP=y
 CONFIG_WATCHDOG_PRETIMEOUT_GOV_PANIC=m
 CONFIG_WATCHDOG_PRETIMEOUT_DEFAULT_GOV_NOOP=y
 # CONFIG_WATCHDOG_PRETIMEOUT_DEFAULT_GOV_PANIC is not set
-
 #
 # Watchdog Device Drivers
 #
@@ -6683,13 +6286,11 @@ CONFIG_NI903X_WDT=m
 CONFIG_NIC7018_WDT=m
 CONFIG_MEN_A21_WDT=m
 CONFIG_XEN_WDT=m
-
 #
 # PCI-based Watchdog Cards
 #
 CONFIG_PCIPCWATCHDOG=m
 CONFIG_WDTPCI=m
-
 #
 # USB-based Watchdog Cards
 #
@@ -6717,7 +6318,6 @@ CONFIG_BCMA_SFLASH=y
 CONFIG_BCMA_DRIVER_GMAC_CMN=y
 CONFIG_BCMA_DRIVER_GPIO=y
 # CONFIG_BCMA_DEBUG is not set
-
 #
 # Multifunction device drivers
 #
@@ -6841,7 +6441,6 @@ CONFIG_MFD_WM8994=m
 # CONFIG_MFD_WCD934X is not set
 CONFIG_RAVE_SP_CORE=m
 # end of Multifunction device drivers
-
 CONFIG_REGULATOR=y
 # CONFIG_REGULATOR_DEBUG is not set
 CONFIG_REGULATOR_FIXED_VOLTAGE=m
@@ -6940,7 +6539,6 @@ CONFIG_USB_RAINSHADOW_CEC=m
 CONFIG_MEDIA_SUPPORT=m
 # CONFIG_MEDIA_SUPPORT_FILTER is not set
 CONFIG_MEDIA_SUBDRV_AUTOSELECT=y
-
 #
 # Media device types
 #
@@ -6952,7 +6550,6 @@ CONFIG_MEDIA_SDR_SUPPORT=y
 CONFIG_MEDIA_PLATFORM_SUPPORT=y
 CONFIG_MEDIA_TEST_SUPPORT=y
 # end of Media device types
-
 #
 # Media core support
 #
@@ -6960,7 +6557,6 @@ CONFIG_VIDEO_DEV=m
 CONFIG_MEDIA_CONTROLLER=y
 CONFIG_DVB_CORE=m
 # end of Media core support
-
 #
 # Video4Linux options
 #
@@ -6977,18 +6573,15 @@ CONFIG_VIDEOBUF_GEN=m
 CONFIG_VIDEOBUF_DMA_SG=m
 CONFIG_VIDEOBUF_VMALLOC=m
 # end of Video4Linux options
-
 #
 # Media controller options
 #
 CONFIG_MEDIA_CONTROLLER_DVB=y
 CONFIG_MEDIA_CONTROLLER_REQUEST_API=y
-
 #
 # Please notice that the enabled Media controller Request API is EXPERIMENTAL
 #
 # end of Media controller options
-
 #
 # Digital TV options
 #
@@ -6999,13 +6592,11 @@ CONFIG_DVB_DYNAMIC_MINORS=y
 # CONFIG_DVB_DEMUX_SECTION_LOSS_LOG is not set
 # CONFIG_DVB_ULE_DEBUG is not set
 # end of Digital TV options
-
 #
 # Media drivers
 #
 CONFIG_TTPCI_EEPROM=m
 CONFIG_MEDIA_USB_SUPPORT=y
-
 #
 # Webcam devices
 #
@@ -7068,7 +6659,6 @@ CONFIG_VIDEO_CPIA2=m
 CONFIG_USB_ZR364XX=m
 CONFIG_USB_STKWEBCAM=m
 CONFIG_USB_S2255=m
-
 #
 # Analog TV USB devices
 #
@@ -7079,7 +6669,6 @@ CONFIG_VIDEO_PVRUSB2_DVB=y
 CONFIG_VIDEO_HDPVR=m
 CONFIG_VIDEO_STK1160_COMMON=m
 CONFIG_VIDEO_STK1160=m
-
 #
 # Analog/digital TV USB devices
 #
@@ -7087,7 +6676,6 @@ CONFIG_VIDEO_AU0828=m
 CONFIG_VIDEO_AU0828_V4L2=y
 CONFIG_VIDEO_CX231XX=m
 CONFIG_VIDEO_CX231XX_DVB=m
-
 #
 # Digital TV USB devices
 #
@@ -7110,14 +6698,12 @@ CONFIG_SMS_USB_DRV=m
 CONFIG_DVB_B2C2_FLEXCOP_USB=m
 # CONFIG_DVB_B2C2_FLEXCOP_USB_DEBUG is not set
 CONFIG_DVB_AS102=m
-
 #
 # Webcam, TV (analog/digital) USB devices
 #
 CONFIG_VIDEO_EM28XX=m
 CONFIG_VIDEO_EM28XX_V4L2=m
 CONFIG_VIDEO_EM28XX_DVB=m
-
 #
 # Software defined radio USB devices
 #
@@ -7125,14 +6711,12 @@ CONFIG_USB_AIRSPY=m
 CONFIG_USB_HACKRF=m
 CONFIG_USB_MSI2500=m
 CONFIG_MEDIA_PCI_SUPPORT=y
-
 #
 # Media capture support
 #
 CONFIG_VIDEO_MEYE=m
 CONFIG_VIDEO_TW5864=m
 CONFIG_VIDEO_TW68=m
-
 #
 # Media capture/analog TV support
 #
@@ -7140,7 +6724,6 @@ CONFIG_VIDEO_HEXIUM_GEMINI=m
 CONFIG_VIDEO_HEXIUM_ORION=m
 CONFIG_VIDEO_MXB=m
 CONFIG_VIDEO_DT3155=m
-
 #
 # Media capture/analog/hybrid TV support
 #
@@ -7148,7 +6731,6 @@ CONFIG_VIDEO_CX25821=m
 CONFIG_VIDEO_SAA7134=m
 CONFIG_VIDEO_SAA7134_DVB=m
 CONFIG_VIDEO_SAA7164=m
-
 #
 # Media digital TV PCI Adapters
 #
@@ -7192,7 +6774,6 @@ CONFIG_RADIO_TEF6862=m
 CONFIG_RADIO_WL1273=m
 CONFIG_RADIO_WL128X=m
 CONFIG_MEDIA_COMMON_OPTIONS=y
-
 #
 # common driver options
 #
@@ -7223,7 +6804,6 @@ CONFIG_V4L_MEM2MEM_DRIVERS=y
 CONFIG_VIDEO_MEM2MEM_DEINTERLACE=m
 CONFIG_DVB_PLATFORM_DRIVERS=y
 CONFIG_SDR_PLATFORM_DRIVERS=y
-
 #
 # MMC/SDIO DVB adapters
 #
@@ -7235,19 +6815,16 @@ CONFIG_VIDEO_VIVID_CEC=y
 CONFIG_VIDEO_VIVID_MAX_DEVS=64
 CONFIG_VIDEO_VIM2M=m
 CONFIG_VIDEO_VICODEC=m
-
 #
 # FireWire (IEEE 1394) Adapters
 #
 CONFIG_DVB_FIREDTV=m
 CONFIG_DVB_FIREDTV_INPUT=y
 # end of Media drivers
-
 #
 # Media ancillary drivers
 #
 CONFIG_MEDIA_ATTACH=y
-
 #
 # Audio decoders, processors and mixers
 #
@@ -7267,13 +6844,11 @@ CONFIG_VIDEO_WM8739=m
 CONFIG_VIDEO_VP27SMPX=m
 CONFIG_VIDEO_SONY_BTF_MPX=m
 # end of Audio decoders, processors and mixers
-
 #
 # RDS decoders
 #
 CONFIG_VIDEO_SAA6588=m
 # end of RDS decoders
-
 #
 # Video decoders
 #
@@ -7300,14 +6875,12 @@ CONFIG_VIDEO_TW9903=m
 CONFIG_VIDEO_TW9906=m
 CONFIG_VIDEO_TW9910=m
 CONFIG_VIDEO_VPX3220=m
-
 #
 # Video and audio decoders
 #
 CONFIG_VIDEO_SAA717X=m
 CONFIG_VIDEO_CX25840=m
 # end of Video decoders
-
 #
 # Video encoders
 #
@@ -7323,26 +6896,22 @@ CONFIG_VIDEO_AD9389B=m
 CONFIG_VIDEO_AK881X=m
 CONFIG_VIDEO_THS8200=m
 # end of Video encoders
-
 #
 # Video improvement chips
 #
 CONFIG_VIDEO_UPD64031A=m
 CONFIG_VIDEO_UPD64083=m
 # end of Video improvement chips
-
 #
 # Audio/Video compression chips
 #
 CONFIG_VIDEO_SAA6752HS=m
 # end of Audio/Video compression chips
-
 #
 # SDR tuner chips
 #
 CONFIG_SDR_MAX2175=m
 # end of SDR tuner chips
-
 #
 # Miscellaneous helper chips
 #
@@ -7351,7 +6920,6 @@ CONFIG_VIDEO_M52790=m
 CONFIG_VIDEO_I2C=m
 CONFIG_VIDEO_ST_MIPID02=m
 # end of Miscellaneous helper chips
-
 #
 # Camera sensor devices
 #
@@ -7406,7 +6974,6 @@ CONFIG_VIDEO_SMIAPP=m
 CONFIG_VIDEO_ET8EK8=m
 CONFIG_VIDEO_S5C73M3=m
 # end of Camera sensor devices
-
 #
 # Lens drivers
 #
@@ -7415,7 +6982,6 @@ CONFIG_VIDEO_AK7375=m
 CONFIG_VIDEO_DW9714=m
 CONFIG_VIDEO_DW9807_VCM=m
 # end of Lens drivers
-
 #
 # Flash devices
 #
@@ -7423,21 +6989,17 @@ CONFIG_VIDEO_ADP1653=m
 CONFIG_VIDEO_LM3560=m
 CONFIG_VIDEO_LM3646=m
 # end of Flash devices
-
 #
 # SPI helper chips
 #
 CONFIG_VIDEO_GS1662=m
 # end of SPI helper chips
-
 #
 # Media SPI Adapters
 #
 CONFIG_CXD2880_SPI_DRV=m
 # end of Media SPI Adapters
-
 CONFIG_MEDIA_TUNER=m
-
 #
 # Customize TV tuners
 #
@@ -7479,11 +7041,9 @@ CONFIG_MEDIA_TUNER_MXL301RF=m
 CONFIG_MEDIA_TUNER_QM1D1C0042=m
 CONFIG_MEDIA_TUNER_QM1D1B0004=m
 # end of Customize TV tuners
-
 #
 # Customise DVB Frontends
 #
-
 #
 # Multistandard (satellite) frontends
 #
@@ -7495,7 +7055,6 @@ CONFIG_DVB_STV6110x=m
 CONFIG_DVB_STV6111=m
 CONFIG_DVB_MXL5XX=m
 CONFIG_DVB_M88DS3103=m
-
 #
 # Multistandard (cable + terrestrial) frontends
 #
@@ -7504,7 +7063,6 @@ CONFIG_DVB_TDA18271C2DD=m
 CONFIG_DVB_SI2165=m
 CONFIG_DVB_MN88472=m
 CONFIG_DVB_MN88473=m
-
 #
 # DVB-S (satellite) frontends
 #
@@ -7535,7 +7093,6 @@ CONFIG_DVB_TS2020=m
 CONFIG_DVB_DS3000=m
 CONFIG_DVB_MB86A16=m
 CONFIG_DVB_TDA10071=m
-
 #
 # DVB-T (terrestrial) frontends
 #
@@ -7568,7 +7125,6 @@ CONFIG_DVB_SI2168=m
 CONFIG_DVB_AS102_FE=m
 CONFIG_DVB_ZD1301_DEMOD=m
 CONFIG_DVB_CXD2880=m
-
 #
 # DVB-C (cable) frontends
 #
@@ -7576,7 +7132,6 @@ CONFIG_DVB_VES1820=m
 CONFIG_DVB_TDA10021=m
 CONFIG_DVB_TDA10023=m
 CONFIG_DVB_STV0297=m
-
 #
 # ATSC (North American/Korean Terrestrial/Cable DTV) frontends
 #
@@ -7593,27 +7148,23 @@ CONFIG_DVB_AU8522=m
 CONFIG_DVB_AU8522_DTV=m
 CONFIG_DVB_AU8522_V4L=m
 CONFIG_DVB_S5H1411=m
-
 #
 # ISDB-T (terrestrial) frontends
 #
 CONFIG_DVB_S921=m
 CONFIG_DVB_DIB8000=m
 CONFIG_DVB_MB86A20S=m
-
 #
 # ISDB-S (satellite) & ISDB-T (terrestrial) frontends
 #
 CONFIG_DVB_TC90522=m
 CONFIG_DVB_MN88443X=m
-
 #
 # Digital terrestrial only tuners/PLL
 #
 CONFIG_DVB_PLL=m
 CONFIG_DVB_TUNER_DIB0070=m
 CONFIG_DVB_TUNER_DIB0090=m
-
 #
 # SEC control devices for DVB-S
 #
@@ -7636,20 +7187,17 @@ CONFIG_DVB_AF9033=m
 CONFIG_DVB_HORUS3A=m
 CONFIG_DVB_ASCOT2E=m
 CONFIG_DVB_HELENE=m
-
 #
 # Common Interface (EN50221) controller drivers
 #
 CONFIG_DVB_CXD2099=m
 CONFIG_DVB_SP2=m
 # end of Customise DVB Frontends
-
 #
 # Tools to develop new frontends
 #
 CONFIG_DVB_DUMMY_FE=m
 # end of Media ancillary drivers
-
 #
 # Graphics support
 #
@@ -7683,7 +7231,6 @@ CONFIG_DRM_GEM_CMA_HELPER=y
 CONFIG_DRM_KMS_CMA_HELPER=y
 CONFIG_DRM_GEM_SHMEM_HELPER=y
 CONFIG_DRM_SCHED=m
-
 #
 # I2C encoder or helper chips
 #
@@ -7692,12 +7239,10 @@ CONFIG_DRM_I2C_SIL164=m
 CONFIG_DRM_I2C_NXP_TDA998X=m
 CONFIG_DRM_I2C_NXP_TDA9950=m
 # end of I2C encoder or helper chips
-
 #
 # ARM devices
 #
 # end of ARM devices
-
 CONFIG_DRM_RADEON=m
 # CONFIG_DRM_RADEON_USERPTR is not set
 CONFIG_DRM_AMDGPU=m
@@ -7705,13 +7250,11 @@ CONFIG_DRM_AMDGPU_SI=y
 CONFIG_DRM_AMDGPU_CIK=y
 CONFIG_DRM_AMDGPU_USERPTR=y
 # CONFIG_DRM_AMDGPU_GART_DEBUGFS is not set
-
 #
 # ACP (Audio CoProcessor) Configuration
 #
 CONFIG_DRM_AMD_ACP=y
 # end of ACP (Audio CoProcessor) Configuration
-
 #
 # Display Engine Configuration
 #
@@ -7720,7 +7263,6 @@ CONFIG_DRM_AMD_DC_DCN=y
 # CONFIG_DRM_AMD_DC_HDCP is not set
 # CONFIG_DEBUG_KERNEL_DC is not set
 # end of Display Engine Configuration
-
 CONFIG_HSA_AMD=y
 CONFIG_DRM_NOUVEAU=m
 # CONFIG_NOUVEAU_LEGACY_CTX_SUPPORT is not set
@@ -7736,7 +7278,6 @@ CONFIG_DRM_I915_COMPRESS_ERROR=y
 CONFIG_DRM_I915_USERPTR=y
 CONFIG_DRM_I915_GVT=y
 CONFIG_DRM_I915_GVT_KVMGT=m
-
 #
 # drm/i915 Debugging
 #
@@ -7751,7 +7292,6 @@ CONFIG_DRM_I915_GVT_KVMGT=m
 # CONFIG_DRM_I915_DEBUG_VBLANK_EVADE is not set
 # CONFIG_DRM_I915_DEBUG_RUNTIME_PM is not set
 # end of drm/i915 Debugging
-
 #
 # drm/i915 Profile Guided Optimisation
 #
@@ -7763,7 +7303,6 @@ CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT=8000
 CONFIG_DRM_I915_STOP_TIMEOUT=100
 CONFIG_DRM_I915_TIMESLICE_DURATION=1
 # end of drm/i915 Profile Guided Optimisation
-
 CONFIG_DRM_VGEM=m
 CONFIG_DRM_VKMS=m
 CONFIG_DRM_VMWGFX=m
@@ -7778,23 +7317,19 @@ CONFIG_DRM_QXL=m
 CONFIG_DRM_BOCHS=m
 CONFIG_DRM_VIRTIO_GPU=m
 CONFIG_DRM_PANEL=y
-
 #
 # Display Panels
 #
 CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN=m
 # end of Display Panels
-
 CONFIG_DRM_BRIDGE=y
 CONFIG_DRM_PANEL_BRIDGE=y
-
 #
 # Display Interface Bridges
 #
 CONFIG_DRM_ANALOGIX_ANX78XX=m
 CONFIG_DRM_ANALOGIX_DP=m
 # end of Display Interface Bridges
-
 # CONFIG_DRM_ETNAVIV is not set
 CONFIG_DRM_CIRRUS_QEMU=m
 # CONFIG_DRM_GM12U320 is not set
@@ -7811,7 +7346,6 @@ CONFIG_DRM_XEN_FRONTEND=m
 CONFIG_DRM_VBOXVIDEO=m
 # CONFIG_DRM_LEGACY is not set
 CONFIG_DRM_PANEL_ORIENTATION_QUIRKS=y
-
 #
 # Frame buffer Devices
 #
@@ -7835,7 +7369,6 @@ CONFIG_FB_SVGALIB=m
 CONFIG_FB_BACKLIGHT=m
 CONFIG_FB_MODE_HELPERS=y
 CONFIG_FB_TILEBLITTING=y
-
 #
 # Frame buffer hardware drivers
 #
@@ -7915,7 +7448,7 @@ CONFIG_FB_SMSCUFX=m
 CONFIG_FB_UDL=m
 # CONFIG_FB_IBM_GXT4500 is not set
 # CONFIG_FB_VIRTUAL is not set
-CONFIG_XEN_FBDEV_FRONTEND=m
+CONFIG_XEN_FBDEV_FRONTEND=y
 CONFIG_FB_METRONOME=m
 CONFIG_FB_MB862XX=m
 CONFIG_FB_MB862XX_PCI_GDC=y
@@ -7924,7 +7457,6 @@ CONFIG_FB_HYPERV=m
 CONFIG_FB_SIMPLE=y
 CONFIG_FB_SM712=m
 # end of Frame buffer Devices
-
 #
 # Backlight & LCD device support
 #
@@ -7972,11 +7504,9 @@ CONFIG_BACKLIGHT_BD6107=m
 CONFIG_BACKLIGHT_ARCXCNN=m
 CONFIG_BACKLIGHT_RAVE_SP=m
 # end of Backlight & LCD device support
-
 CONFIG_VGASTATE=m
 CONFIG_VIDEOMODE_HELPERS=y
 CONFIG_HDMI=y
-
 #
 # Console display driver support
 #
@@ -7989,12 +7519,9 @@ CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
 CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
 CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER=y
 # end of Console display driver support
-
 # CONFIG_LOGO is not set
 # end of Graphics support
-
 # CONFIG_SOUND is not set
-
 #
 # HID support
 #
@@ -8003,7 +7530,6 @@ CONFIG_HID_BATTERY_STRENGTH=y
 CONFIG_HIDRAW=y
 CONFIG_UHID=m
 CONFIG_HID_GENERIC=m
-
 #
 # Special HID drivers
 #
@@ -8117,14 +7643,12 @@ CONFIG_HID_SENSOR_CUSTOM_SENSOR=m
 CONFIG_HID_ALPS=m
 # CONFIG_HID_MCP2221 is not set
 # end of Special HID drivers
-
 #
 # USB HID support
 #
 CONFIG_USB_HID=m
 CONFIG_HID_PID=y
 CONFIG_USB_HIDDEV=y
-
 #
 # USB HID Boot Protocol drivers
 #
@@ -8132,13 +7656,11 @@ CONFIG_USB_KBD=m
 CONFIG_USB_MOUSE=m
 # end of USB HID Boot Protocol drivers
 # end of USB HID support
-
 #
 # I2C HID support
 #
 CONFIG_I2C_HID=m
 # end of I2C HID support
-
 #
 # Intel ISH HID support
 #
@@ -8146,7 +7668,6 @@ CONFIG_INTEL_ISH_HID=m
 CONFIG_INTEL_ISH_FIRMWARE_DOWNLOADER=m
 # end of Intel ISH HID support
 # end of HID support
-
 CONFIG_USB_OHCI_LITTLE_ENDIAN=y
 CONFIG_USB_SUPPORT=y
 CONFIG_USB_COMMON=y
@@ -8157,7 +7678,6 @@ CONFIG_USB_ARCH_HAS_HCD=y
 CONFIG_USB=y
 CONFIG_USB_PCI=y
 CONFIG_USB_ANNOUNCE_NEW_DEVICES=y
-
 #
 # Miscellaneous USB options
 #
@@ -8169,7 +7689,6 @@ CONFIG_USB_DYNAMIC_MINORS=y
 CONFIG_USB_LEDS_TRIGGER_USBPORT=m
 CONFIG_USB_AUTOSUSPEND_DELAY=2
 CONFIG_USB_MON=m
-
 #
 # USB Host Controller Drivers
 #
@@ -8200,7 +7719,6 @@ CONFIG_USB_R8A66597_HCD=m
 CONFIG_USB_HCD_BCMA=m
 CONFIG_USB_HCD_SSB=m
 # CONFIG_USB_HCD_TEST_MODE is not set
-
 #
 # USB Device Class drivers
 #
@@ -8208,11 +7726,9 @@ CONFIG_USB_ACM=m
 CONFIG_USB_PRINTER=m
 CONFIG_USB_WDM=m
 CONFIG_USB_TMC=m
-
 #
 # NOTE: USB_STORAGE depends on SCSI but BLK_DEV_SD may
 #
-
 #
 # also be needed; see USB_STORAGE Help for more info
 #
@@ -8233,7 +7749,6 @@ CONFIG_USB_STORAGE_KARMA=m
 CONFIG_USB_STORAGE_CYPRESS_ATACB=m
 CONFIG_USB_STORAGE_ENE_UB6250=m
 CONFIG_USB_UAS=m
-
 #
 # USB Imaging devices
 #
@@ -8251,11 +7766,9 @@ CONFIG_USB_MUSB_HDRC=m
 # CONFIG_USB_MUSB_HOST is not set
 # CONFIG_USB_MUSB_GADGET is not set
 CONFIG_USB_MUSB_DUAL_ROLE=y
-
 #
 # Platform Glue Layer
 #
-
 #
 # MUSB DMA mode
 #
@@ -8265,7 +7778,6 @@ CONFIG_USB_DWC3_ULPI=y
 # CONFIG_USB_DWC3_HOST is not set
 # CONFIG_USB_DWC3_GADGET is not set
 CONFIG_USB_DWC3_DUAL_ROLE=y
-
 #
 # Platform Glue Driver Support
 #
@@ -8273,7 +7785,6 @@ CONFIG_USB_DWC3_PCI=m
 CONFIG_USB_DWC3_HAPS=m
 CONFIG_USB_DWC2=y
 CONFIG_USB_DWC2_HOST=y
-
 #
 # Gadget/Dual-role mode requires USB Gadget support to be enabled
 #
@@ -8292,7 +7803,6 @@ CONFIG_USB_ISP1761_UDC=y
 # CONFIG_USB_ISP1760_HOST_ROLE is not set
 # CONFIG_USB_ISP1760_GADGET_ROLE is not set
 CONFIG_USB_ISP1760_DUAL_ROLE=y
-
 #
 # USB port drivers
 #
@@ -8351,7 +7861,6 @@ CONFIG_USB_SERIAL_SSU100=m
 CONFIG_USB_SERIAL_QT2=m
 CONFIG_USB_SERIAL_UPD78F0730=m
 CONFIG_USB_SERIAL_DEBUG=m
-
 #
 # USB Miscellaneous drivers
 #
@@ -8387,7 +7896,6 @@ CONFIG_USB_SPEEDTOUCH=m
 CONFIG_USB_CXACRU=m
 CONFIG_USB_UEAGLEATM=m
 CONFIG_USB_XUSBATM=m
-
 #
 # USB Physical Layer drivers
 #
@@ -8398,7 +7906,6 @@ CONFIG_TAHVO_USB=m
 CONFIG_TAHVO_USB_HOST_BY_DEFAULT=y
 CONFIG_USB_ISP1301=m
 # end of USB Physical Layer drivers
-
 CONFIG_USB_GADGET=m
 # CONFIG_USB_GADGET_DEBUG is not set
 # CONFIG_USB_GADGET_DEBUG_FILES is not set
@@ -8406,7 +7913,6 @@ CONFIG_USB_GADGET=m
 CONFIG_USB_GADGET_VBUS_DRAW=2
 CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS=2
 CONFIG_U_SERIAL_CONSOLE=y
-
 #
 # USB Peripheral Controller
 #
@@ -8419,7 +7925,6 @@ CONFIG_USB_MV_U3D=m
 CONFIG_USB_SNP_CORE=m
 # CONFIG_USB_M66592 is not set
 CONFIG_USB_BDC_UDC=m
-
 #
 # Platform Support
 #
@@ -8433,7 +7938,6 @@ CONFIG_USB_EG20T=m
 # CONFIG_USB_MAX3420_UDC is not set
 # CONFIG_USB_DUMMY_HCD is not set
 # end of USB Peripheral Controller
-
 CONFIG_USB_LIBCOMPOSITE=m
 CONFIG_USB_F_ACM=m
 CONFIG_USB_F_SS_LB=m
@@ -8470,7 +7974,6 @@ CONFIG_USB_CONFIGFS_F_HID=y
 CONFIG_USB_CONFIGFS_F_UVC=y
 CONFIG_USB_CONFIGFS_F_PRINTER=y
 CONFIG_USB_CONFIGFS_F_TCM=y
-
 #
 # USB Gadget precomposed configurations
 #
@@ -8499,7 +8002,6 @@ CONFIG_USB_G_DBGP_SERIAL=y
 CONFIG_USB_G_WEBCAM=m
 # CONFIG_USB_RAW_GADGET is not set
 # end of USB Gadget precomposed configurations
-
 CONFIG_TYPEC=m
 CONFIG_TYPEC_TCPM=m
 CONFIG_TYPEC_TCPCI=m
@@ -8510,20 +8012,17 @@ CONFIG_UCSI_CCG=m
 CONFIG_UCSI_ACPI=m
 # CONFIG_TYPEC_HD3SS3220 is not set
 CONFIG_TYPEC_TPS6598X=m
-
 #
 # USB Type-C Multiplexer/DeMultiplexer Switch support
 #
 CONFIG_TYPEC_MUX_PI3USB30532=m
 # end of USB Type-C Multiplexer/DeMultiplexer Switch support
-
 #
 # USB Type-C Alternate Mode drivers
 #
 CONFIG_TYPEC_DP_ALTMODE=m
 CONFIG_TYPEC_NVIDIA_ALTMODE=m
 # end of USB Type-C Alternate Mode drivers
-
 CONFIG_USB_ROLE_SWITCH=m
 CONFIG_USB_ROLES_INTEL_XHCI=m
 CONFIG_MMC=y
@@ -8531,7 +8030,6 @@ CONFIG_MMC_BLOCK=m
 CONFIG_MMC_BLOCK_MINORS=8
 CONFIG_SDIO_UART=m
 # CONFIG_MMC_TEST is not set
-
 #
 # MMC/SD/SDIO Host Controller Drivers
 #
@@ -8564,7 +8062,6 @@ CONFIG_NEW_LEDS=y
 CONFIG_LEDS_CLASS=y
 CONFIG_LEDS_CLASS_FLASH=m
 CONFIG_LEDS_BRIGHTNESS_HW_CHANGED=y
-
 #
 # LED drivers
 #
@@ -8608,7 +8105,6 @@ CONFIG_LEDS_TLC591XX=m
 CONFIG_LEDS_MAX8997=m
 CONFIG_LEDS_LM355x=m
 CONFIG_LEDS_MENF21BMC=m
-
 #
 # LED driver for blink(1) USB RGB LED is under Special HID drivers (HID_THINGM)
 #
@@ -8621,7 +8117,6 @@ CONFIG_LEDS_TI_LMU_COMMON=m
 CONFIG_LEDS_LM36274=m
 CONFIG_LEDS_TPS6105X=m
 # CONFIG_LEDS_SGM3140 is not set
-
 #
 # LED Triggers
 #
@@ -8635,7 +8130,6 @@ CONFIG_LEDS_TRIGGER_CPU=y
 CONFIG_LEDS_TRIGGER_ACTIVITY=m
 CONFIG_LEDS_TRIGGER_GPIO=m
 CONFIG_LEDS_TRIGGER_DEFAULT_ON=m
-
 #
 # iptables trigger is under Netfilter config (LED target)
 #
@@ -8680,7 +8174,6 @@ CONFIG_RTC_SYSTOHC=y
 CONFIG_RTC_SYSTOHC_DEVICE="rtc0"
 # CONFIG_RTC_DEBUG is not set
 CONFIG_RTC_NVMEM=y
-
 #
 # RTC interfaces
 #
@@ -8689,7 +8182,6 @@ CONFIG_RTC_INTF_PROC=y
 CONFIG_RTC_INTF_DEV=y
 # CONFIG_RTC_INTF_DEV_UIE_EMUL is not set
 # CONFIG_RTC_DRV_TEST is not set
-
 #
 # I2C RTC drivers
 #
@@ -8736,7 +8228,6 @@ CONFIG_RTC_DRV_RV3028=m
 CONFIG_RTC_DRV_RV8803=m
 CONFIG_RTC_DRV_S5M=m
 CONFIG_RTC_DRV_SD3078=m
-
 #
 # SPI RTC drivers
 #
@@ -8756,7 +8247,6 @@ CONFIG_RTC_DRV_MAX6902=m
 CONFIG_RTC_DRV_PCF2123=m
 CONFIG_RTC_DRV_MCP795=m
 CONFIG_RTC_I2C_AND_SPI=y
-
 #
 # SPI and I2C RTC drivers
 #
@@ -8765,7 +8255,6 @@ CONFIG_RTC_DRV_DS3232_HWMON=y
 CONFIG_RTC_DRV_PCF2127=m
 CONFIG_RTC_DRV_RV3029C2=m
 CONFIG_RTC_DRV_RV3029_HWMON=y
-
 #
 # Platform RTC drivers
 #
@@ -8797,7 +8286,6 @@ CONFIG_RTC_DRV_WM8350=m
 CONFIG_RTC_DRV_PCF50633=m
 CONFIG_RTC_DRV_AB3100=m
 CONFIG_RTC_DRV_CROS_EC=m
-
 #
 # on-CPU RTC drivers
 #
@@ -8805,14 +8293,12 @@ CONFIG_RTC_DRV_FTRTC010=m
 CONFIG_RTC_DRV_PCAP=m
 CONFIG_RTC_DRV_MC13XXX=m
 CONFIG_RTC_DRV_MT6397=m
-
 #
 # HID Sensor RTC drivers
 #
 CONFIG_RTC_DRV_WILCO_EC=m
 CONFIG_DMADEVICES=y
 # CONFIG_DMADEVICES_DEBUG is not set
-
 #
 # DMA Devices
 #
@@ -8834,14 +8320,12 @@ CONFIG_DW_EDMA=m
 CONFIG_DW_EDMA_PCIE=m
 CONFIG_HSU_DMA=m
 # CONFIG_SF_PDMA is not set
-
 #
 # DMA Clients
 #
 CONFIG_ASYNC_TX_DMA=y
 # CONFIG_DMATEST is not set
 CONFIG_DMA_ENGINE_RAID=y
-
 #
 # DMABUF options
 #
@@ -8852,7 +8336,6 @@ CONFIG_UDMABUF=y
 # CONFIG_DMABUF_SELFTESTS is not set
 # CONFIG_DMABUF_HEAPS is not set
 # end of DMABUF options
-
 CONFIG_DCA=m
 CONFIG_AUXDISPLAY=y
 CONFIG_HD44780=m
@@ -8886,7 +8369,7 @@ CONFIG_VFIO_MDEV=m
 CONFIG_VFIO_MDEV_DEVICE=m
 CONFIG_IRQ_BYPASS_MANAGER=y
 CONFIG_VIRT_DRIVERS=y
-CONFIG_VBOXGUEST=m
+CONFIG_VBOXGUEST=y
 CONFIG_VIRTIO=y
 CONFIG_VIRTIO_MENU=y
 CONFIG_VIRTIO_PCI=y
@@ -8906,7 +8389,6 @@ CONFIG_VHOST_NET=m
 CONFIG_VHOST_SCSI=m
 CONFIG_VHOST_VSOCK=m
 # CONFIG_VHOST_CROSS_ENDIAN_LEGACY is not set
-
 #
 # Microsoft Hyper-V guest support
 #
@@ -8915,7 +8397,6 @@ CONFIG_HYPERV_TIMER=y
 CONFIG_HYPERV_UTILS=m
 CONFIG_HYPERV_BALLOON=m
 # end of Microsoft Hyper-V guest support
-
 #
 # Xen driver support
 #
@@ -8949,7 +8430,6 @@ CONFIG_XEN_SYMS=y
 CONFIG_XEN_HAVE_VPMU=y
 CONFIG_XEN_FRONT_PGDIR_SHBUF=m
 # end of Xen driver support
-
 CONFIG_GREYBUS=m
 CONFIG_GREYBUS_ES2=m
 CONFIG_STAGING=y
@@ -9098,7 +8578,6 @@ CONFIG_RTS5208=m
 CONFIG_VT6655=m
 CONFIG_VT6656=m
 CONFIG_FB_SM750=m
-
 #
 # Speakup console speech
 #
@@ -9115,23 +8594,19 @@ CONFIG_SPEAKUP_SYNTH_SPKOUT=m
 CONFIG_SPEAKUP_SYNTH_TXPRT=m
 CONFIG_SPEAKUP_SYNTH_DUMMY=m
 # end of Speakup console speech
-
 CONFIG_STAGING_MEDIA=y
 # CONFIG_INTEL_ATOMISP is not set
 CONFIG_VIDEO_IPU3_IMGU=m
-
 #
 # soc_camera sensor drivers
 #
 CONFIG_VIDEO_USBVISION=m
-
 #
 # Android
 #
 # CONFIG_ASHMEM is not set
 # CONFIG_ION is not set
 # end of Android
-
 CONFIG_LTE_GDM724X=m
 CONFIG_FIREWIRE_SERIAL=m
 CONFIG_FWTTY_MAX_TOTAL_PORTS=64
@@ -9166,14 +8641,12 @@ CONFIG_GREYBUS_SPI=m
 CONFIG_GREYBUS_UART=m
 CONFIG_GREYBUS_USB=m
 CONFIG_PI433=m
-
 #
 # Gasket devices
 #
 CONFIG_STAGING_GASKET_FRAMEWORK=m
 CONFIG_STAGING_APEX_DRIVER=m
 # end of Gasket devices
-
 CONFIG_FIELDBUS_DEV=m
 CONFIG_KPC2000=y
 CONFIG_KPC2000_CORE=m
@@ -9263,13 +8736,11 @@ CONFIG_TOUCHSCREEN_DMI=y
 CONFIG_INTEL_IPS=m
 CONFIG_INTEL_RST=m
 CONFIG_INTEL_SMARTCONNECT=m
-
 #
 # Intel Speed Select Technology interface support
 #
 CONFIG_INTEL_SPEED_SELECT_INTERFACE=m
 # end of Intel Speed Select Technology interface support
-
 CONFIG_INTEL_TURBO_MAX_3=y
 # CONFIG_INTEL_UNCORE_FREQ_CONTROL is not set
 CONFIG_INTEL_CHTDC_TI_PWRBTN=m
@@ -9321,7 +8792,6 @@ CONFIG_CLK_TWL6040=m
 CONFIG_COMMON_CLK_PALMAS=m
 CONFIG_COMMON_CLK_PWM=m
 CONFIG_HWSPINLOCK=y
-
 #
 # Clock Source drivers
 #
@@ -9329,7 +8799,6 @@ CONFIG_CLKEVT_I8253=y
 CONFIG_I8253_LOCK=y
 CONFIG_CLKBLD_I8253=y
 # end of Clock Source drivers
-
 CONFIG_MAILBOX=y
 CONFIG_PCC=y
 CONFIG_ALTERA_MBOX=m
@@ -9337,12 +8806,10 @@ CONFIG_IOMMU_IOVA=y
 CONFIG_IOASID=y
 CONFIG_IOMMU_API=y
 CONFIG_IOMMU_SUPPORT=y
-
 #
 # Generic IOMMU Pagetable Support
 #
 # end of Generic IOMMU Pagetable Support
-
 # CONFIG_IOMMU_DEBUGFS is not set
 # CONFIG_IOMMU_DEFAULT_PASSTHROUGH is not set
 CONFIG_IOMMU_DMA=y
@@ -9356,13 +8823,11 @@ CONFIG_INTEL_IOMMU_FLOPPY_WA=y
 # CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON is not set
 CONFIG_IRQ_REMAP=y
 CONFIG_HYPERV_IOMMU=y
-
 #
 # Remoteproc drivers
 #
 # CONFIG_REMOTEPROC is not set
 # end of Remoteproc drivers
-
 #
 # Rpmsg drivers
 #
@@ -9372,58 +8837,45 @@ CONFIG_RPMSG_QCOM_GLINK=m
 CONFIG_RPMSG_QCOM_GLINK_RPM=m
 CONFIG_RPMSG_VIRTIO=m
 # end of Rpmsg drivers
-
 CONFIG_SOUNDWIRE=y
-
 #
 # SoundWire Devices
 #
-
 #
 # SOC (System On Chip) specific Drivers
 #
-
 #
 # Amlogic SoC drivers
 #
 # end of Amlogic SoC drivers
-
 #
 # Aspeed SoC drivers
 #
 # end of Aspeed SoC drivers
-
 #
 # Broadcom SoC drivers
 #
 # end of Broadcom SoC drivers
-
 #
 # NXP/Freescale QorIQ SoC drivers
 #
 # end of NXP/Freescale QorIQ SoC drivers
-
 #
 # i.MX SoC drivers
 #
 # end of i.MX SoC drivers
-
 #
 # Qualcomm SoC drivers
 #
 # end of Qualcomm SoC drivers
-
 CONFIG_SOC_TI=y
-
 #
 # Xilinx SoC drivers
 #
 CONFIG_XILINX_VCU=m
 # end of Xilinx SoC drivers
 # end of SOC (System On Chip) specific Drivers
-
 CONFIG_PM_DEVFREQ=y
-
 #
 # DEVFREQ Governors
 #
@@ -9432,13 +8884,11 @@ CONFIG_DEVFREQ_GOV_PERFORMANCE=y
 CONFIG_DEVFREQ_GOV_POWERSAVE=y
 CONFIG_DEVFREQ_GOV_USERSPACE=y
 CONFIG_DEVFREQ_GOV_PASSIVE=y
-
 #
 # DEVFREQ Drivers
 #
 CONFIG_PM_DEVFREQ_EVENT=y
 CONFIG_EXTCON=y
-
 #
 # Extcon Device Drivers
 #
@@ -9474,18 +8924,15 @@ CONFIG_PWM_LPSS_PLATFORM=y
 CONFIG_PWM_PCA9685=m
 CONFIG_PWM_TWL=m
 CONFIG_PWM_TWL_LED=m
-
 #
 # IRQ chip support
 #
 CONFIG_MADERA_IRQ=m
 # end of IRQ chip support
-
 # CONFIG_IPACK_BUS is not set
 CONFIG_RESET_CONTROLLER=y
 # CONFIG_RESET_BRCMSTB_RESCAL is not set
 CONFIG_RESET_TI_SYSCON=m
-
 #
 # PHY Subsystem
 #
@@ -9499,30 +8946,25 @@ CONFIG_PHY_SAMSUNG_USB2=m
 CONFIG_PHY_TUSB1210=m
 # CONFIG_PHY_INTEL_EMMC is not set
 # end of PHY Subsystem
-
 CONFIG_POWERCAP=y
 CONFIG_INTEL_RAPL_CORE=m
 CONFIG_INTEL_RAPL=m
 CONFIG_IDLE_INJECT=y
 # CONFIG_MCB is not set
-
 #
 # Performance monitor support
 #
 # end of Performance monitor support
-
 CONFIG_RAS=y
 CONFIG_RAS_CEC=y
 # CONFIG_RAS_CEC_DEBUG is not set
 # CONFIG_USB4 is not set
-
 #
 # Android
 #
 CONFIG_ANDROID=y
 # CONFIG_ANDROID_BINDER_IPC is not set
 # end of Android
-
 CONFIG_LIBNVDIMM=y
 CONFIG_BLK_DEV_PMEM=m
 CONFIG_ND_BLK=m
@@ -9544,7 +8986,6 @@ CONFIG_NVMEM=y
 CONFIG_NVMEM_SYSFS=y
 # CONFIG_NVMEM_SPMI_SDAM is not set
 CONFIG_RAVE_SP_EEPROM=m
-
 #
 # HW tracing support
 #
@@ -9564,7 +9005,6 @@ CONFIG_INTEL_TH_MSU=m
 CONFIG_INTEL_TH_PTI=m
 # CONFIG_INTEL_TH_DEBUG is not set
 # end of HW tracing support
-
 # CONFIG_FPGA is not set
 # CONFIG_TEE is not set
 CONFIG_PM_OPP=y
@@ -9576,7 +9016,6 @@ CONFIG_SLIM_QCOM_CTRL=m
 CONFIG_COUNTER=m
 CONFIG_MOST=m
 # end of Device Drivers
-
 #
 # File systems
 #
@@ -9637,7 +9076,6 @@ CONFIG_OVERLAY_FS_REDIRECT_ALWAYS_FOLLOW=y
 # CONFIG_OVERLAY_FS_INDEX is not set
 CONFIG_OVERLAY_FS_XINO_AUTO=y
 # CONFIG_OVERLAY_FS_METACOPY is not set
-
 #
 # Caches
 #
@@ -9650,7 +9088,6 @@ CONFIG_CACHEFILES=m
 # CONFIG_CACHEFILES_DEBUG is not set
 # CONFIG_CACHEFILES_HISTOGRAM is not set
 # end of Caches
-
 #
 # CD-ROM/DVD Filesystems
 #
@@ -9659,7 +9096,6 @@ CONFIG_JOLIET=y
 CONFIG_ZISOFS=y
 CONFIG_UDF_FS=m
 # end of CD-ROM/DVD Filesystems
-
 #
 # DOS/FAT/EXFAT/NT Filesystems
 #
@@ -9674,7 +9110,6 @@ CONFIG_NTFS_FS=m
 # CONFIG_NTFS_DEBUG is not set
 # CONFIG_NTFS_RW is not set
 # end of DOS/FAT/EXFAT/NT Filesystems
-
 #
 # Pseudo filesystems
 #
@@ -9699,7 +9134,6 @@ CONFIG_ARCH_HAS_GIGANTIC_PAGE=y
 CONFIG_CONFIGFS_FS=y
 CONFIG_EFIVAR_FS=y
 # end of Pseudo filesystems
-
 CONFIG_MISC_FILESYSTEMS=y
 CONFIG_ORANGEFS_FS=m
 CONFIG_ADFS_FS=m
@@ -9890,7 +9324,6 @@ CONFIG_UNICODE=y
 # CONFIG_UNICODE_NORMALIZATION_SELFTEST is not set
 CONFIG_IO_WQ=y
 # end of File systems
-
 #
 # Security options
 #
@@ -9986,11 +9419,9 @@ CONFIG_EVM_ADD_XATTRS=y
 CONFIG_DEFAULT_SECURITY_APPARMOR=y
 # CONFIG_DEFAULT_SECURITY_DAC is not set
 CONFIG_LSM="yama,integrity,apparmor"
-
 #
 # Kernel hardening options
 #
-
 #
 # Memory initialization
 #
@@ -10004,7 +9435,6 @@ CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
 # end of Memory initialization
 # end of Kernel hardening options
 # end of Security options
-
 CONFIG_XOR_BLOCKS=m
 CONFIG_ASYNC_CORE=m
 CONFIG_ASYNC_MEMCPY=m
@@ -10012,7 +9442,6 @@ CONFIG_ASYNC_XOR=m
 CONFIG_ASYNC_PQ=m
 CONFIG_ASYNC_RAID6_RECOV=m
 CONFIG_CRYPTO=y
-
 #
 # Crypto core or helper
 #
@@ -10046,7 +9475,6 @@ CONFIG_CRYPTO_TEST=m
 CONFIG_CRYPTO_SIMD=y
 CONFIG_CRYPTO_GLUE_HELPER_X86=y
 CONFIG_CRYPTO_ENGINE=m
-
 #
 # Public-key cryptography
 #
@@ -10057,7 +9485,6 @@ CONFIG_CRYPTO_ECDH=y
 CONFIG_CRYPTO_ECRDSA=y
 # CONFIG_CRYPTO_CURVE25519 is not set
 # CONFIG_CRYPTO_CURVE25519_X86 is not set
-
 #
 # Authenticated Encryption with Associated Data
 #
@@ -10068,7 +9495,6 @@ CONFIG_CRYPTO_AEGIS128=m
 CONFIG_CRYPTO_AEGIS128_AESNI_SSE2=m
 CONFIG_CRYPTO_SEQIV=y
 CONFIG_CRYPTO_ECHAINIV=y
-
 #
 # Block modes
 #
@@ -10087,7 +9513,6 @@ CONFIG_CRYPTO_NHPOLY1305_SSE2=m
 CONFIG_CRYPTO_NHPOLY1305_AVX2=m
 CONFIG_CRYPTO_ADIANTUM=m
 CONFIG_CRYPTO_ESSIV=y
-
 #
 # Hash modes
 #
@@ -10095,7 +9520,6 @@ CONFIG_CRYPTO_CMAC=m
 CONFIG_CRYPTO_HMAC=y
 CONFIG_CRYPTO_XCBC=m
 CONFIG_CRYPTO_VMAC=m
-
 #
 # Digest
 #
@@ -10131,7 +9555,6 @@ CONFIG_CRYPTO_STREEBOG=y
 CONFIG_CRYPTO_TGR192=m
 CONFIG_CRYPTO_WP512=y
 CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL=m
-
 #
 # Ciphers
 #
@@ -10171,7 +9594,6 @@ CONFIG_CRYPTO_TWOFISH_COMMON=y
 CONFIG_CRYPTO_TWOFISH_X86_64=m
 CONFIG_CRYPTO_TWOFISH_X86_64_3WAY=m
 CONFIG_CRYPTO_TWOFISH_AVX_X86_64=m
-
 #
 # Compression
 #
@@ -10181,7 +9603,6 @@ CONFIG_CRYPTO_842=m
 CONFIG_CRYPTO_LZ4=m
 CONFIG_CRYPTO_LZ4HC=m
 CONFIG_CRYPTO_ZSTD=m
-
 #
 # Random Number Generation
 #
@@ -10199,7 +9620,6 @@ CONFIG_CRYPTO_USER_API_RNG=y
 CONFIG_CRYPTO_USER_API_AEAD=y
 CONFIG_CRYPTO_STATS=y
 CONFIG_CRYPTO_HASH_INFO=y
-
 #
 # Crypto library routines
 #
@@ -10254,7 +9674,6 @@ CONFIG_TPM_KEY_PARSER=m
 CONFIG_PKCS7_MESSAGE_PARSER=y
 CONFIG_PKCS7_TEST_KEY=m
 CONFIG_SIGNED_PE_FILE_VERIFICATION=y
-
 #
 # Certificates for signature checking
 #
@@ -10267,9 +9686,7 @@ CONFIG_SECONDARY_TRUSTED_KEYRING=y
 CONFIG_SYSTEM_BLACKLIST_KEYRING=y
 CONFIG_SYSTEM_BLACKLIST_HASH_LIST=""
 # end of Certificates for signature checking
-
 CONFIG_BINARY_PRINTF=y
-
 #
 # Library routines
 #
@@ -10355,7 +9772,6 @@ CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED=y
 CONFIG_SWIOTLB=y
 CONFIG_DMA_COHERENT_POOL=y
 CONFIG_DMA_CMA=y
-
 #
 # Default contiguous memory area size:
 #
@@ -10411,11 +9827,9 @@ CONFIG_PARMAN=m
 CONFIG_OBJAGG=m
 # CONFIG_STRING_SELFTEST is not set
 # end of Library routines
-
 #
 # Kernel hacking
 #
-
 #
 # printk and dmesg options
 #
@@ -10430,7 +9844,6 @@ CONFIG_DYNAMIC_DEBUG_CORE=y
 CONFIG_SYMBOLIC_ERRNAME=y
 CONFIG_DEBUG_BUGVERBOSE=y
 # end of printk and dmesg options
-
 #
 # Compile-time checks and compiler options
 #
@@ -10452,7 +9865,6 @@ CONFIG_FRAME_POINTER=y
 CONFIG_STACK_VALIDATION=y
 # CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
 # end of Compile-time checks and compiler options
-
 #
 # Generic Kernel Debugging Instruments
 #
@@ -10474,10 +9886,8 @@ CONFIG_ARCH_HAS_EARLY_DEBUG=y
 CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=y
 # CONFIG_UBSAN is not set
 # end of Generic Kernel Debugging Instruments
-
 CONFIG_DEBUG_KERNEL=y
 CONFIG_DEBUG_MISC=y
-
 #
 # Memory Debugging
 #
@@ -10516,9 +9926,7 @@ CONFIG_CC_HAS_WORKING_NOSANITIZE_ADDRESS=y
 # CONFIG_KASAN is not set
 CONFIG_KASAN_STACK=1
 # end of Memory Debugging
-
 # CONFIG_DEBUG_SHIRQ is not set
-
 #
 # Debug Oops, Lockups and Hangs
 #
@@ -10541,7 +9949,6 @@ CONFIG_BOOTPARAM_HUNG_TASK_PANIC_VALUE=0
 # CONFIG_WQ_WATCHDOG is not set
 # CONFIG_TEST_LOCKUP is not set
 # end of Debug Oops, Lockups and Hangs
-
 #
 # Scheduler Debugging
 #
@@ -10549,9 +9956,7 @@ CONFIG_SCHED_DEBUG=y
 CONFIG_SCHED_INFO=y
 CONFIG_SCHEDSTATS=y
 # end of Scheduler Debugging
-
 # CONFIG_DEBUG_TIMEKEEPING is not set
-
 #
 # Lock Debugging (spinlocks, mutexes, etc...)
 #
@@ -10569,11 +9974,9 @@ CONFIG_LOCK_DEBUGGING_SUPPORT=y
 # CONFIG_LOCK_TORTURE_TEST is not set
 # CONFIG_WW_MUTEX_SELFTEST is not set
 # end of Lock Debugging (spinlocks, mutexes, etc...)
-
 CONFIG_STACKTRACE=y
 # CONFIG_WARN_ALL_UNSEEDED_RANDOM is not set
 # CONFIG_DEBUG_KOBJECT is not set
-
 #
 # Debug kernel data structures
 #
@@ -10583,9 +9986,7 @@ CONFIG_STACKTRACE=y
 # CONFIG_DEBUG_NOTIFIERS is not set
 # CONFIG_BUG_ON_DATA_CORRUPTION is not set
 # end of Debug kernel data structures
-
 # CONFIG_DEBUG_CREDENTIALS is not set
-
 #
 # RCU Debugging
 #
@@ -10596,7 +9997,6 @@ CONFIG_RCU_CPU_STALL_TIMEOUT=60
 # CONFIG_RCU_TRACE is not set
 # CONFIG_RCU_EQS_DEBUG is not set
 # end of RCU Debugging
-
 # CONFIG_DEBUG_WQ_FORCE_RR_CPU is not set
 # CONFIG_DEBUG_BLOCK_EXT_DEVT is not set
 # CONFIG_CPU_HOTPLUG_STATE_CONTROL is not set
@@ -10686,7 +10086,6 @@ CONFIG_HAVE_ARCH_KCSAN=y
 CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED=y
 CONFIG_STRICT_DEVMEM=y
 # CONFIG_IO_STRICT_DEVMEM is not set
-
 #
 # x86 Debugging
 #
@@ -10715,7 +10114,6 @@ CONFIG_PUNIT_ATOM_DEBUG=m
 CONFIG_UNWINDER_FRAME_POINTER=y
 # CONFIG_UNWINDER_GUESS is not set
 # end of x86 Debugging
-
 #
 # Kernel Testing and Coverage
 #
@@ -10777,14 +10175,12 @@ CONFIG_MEMTEST=y
 # CONFIG_HYPERV_TESTING is not set
 # end of Kernel Testing and Coverage
 # end of Kernel hacking
-
 #
 # Gentoo Linux
 #
 CONFIG_GENTOO_LINUX=y
 CONFIG_GENTOO_LINUX_UDEV=y
 CONFIG_GENTOO_LINUX_PORTAGE=y
-
 #
 # Support for init systems, system and service managers
 #
@@ -10792,7 +10188,6 @@ CONFIG_GENTOO_LINUX_INIT_SCRIPT=y
 CONFIG_GENTOO_LINUX_INIT_SYSTEMD=y
 # end of Support for init systems, system and service managers
 # end of Gentoo Linux
-
 EOF
 							}
 							KERNCONF_DEFCONFIG () {
@@ -10827,14 +10222,12 @@ EOF
 								make -j $(nproc) oldconfig
 							NOTICE_END
 							}
-
 							if [ "$KERNCONFD" != "DEFCONFIG" ]; then
 								KERNCONF_PASTE
 								KERNCONF_$KERNCONFD
 							else
 								KERNCONF_DEFCONFIG
 							fi
-							
 						}
 						KERN_BUILD () {  # (!incomplete (works but) modules setup *smart)
 						NOTICE_START
@@ -10935,17 +10328,16 @@ EOF
 				KERN_LOAD  # load kernel source (download, copy ; etc ....)
 				KERN_DEPLOY  # config / build
 			NOTICE_END
-			}                                                     
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			}
 			INITRAMFS () {  # https://wiki.gentoo.org/wiki/Initramfs
 			NOTICE_START
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				# 
 				INITRFS_GENKERNEL () {
 				NOTICE_START
 					# genkernel --config=/etc/genkernel.conf initramfs
 					genkernel $GENKERNEL_CMD
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				# 
 				INITRFS_DRACUT () {  # https://wiki.gentoo.org/wiki/Dracut
 				NOTICE_START
 					APPAPP_EMERGE="sys-kernel/dracut"
@@ -10976,17 +10368,17 @@ EOF
 					dracut --force '' $(ls /lib/modules)
 				NOTICE_END
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				# 
 				INITRFS_$GENINITRAMFS  # config / build
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			# 
 			MODPROBE_CHROOT () {
 			NOTICE_START
 				modprobe -a dm-mod dm-crypt sha256 aes aes_generic xts
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			# 
 			VIRTUALIZATION () {
 			NOTICE_START
 				SYS_HOST () {
@@ -10998,10 +10390,11 @@ EOF
 					GUE_VIRTUALBOX () {
 					NOTICE_START
 						APPAPP_EMERGE="app-emulation/virtualbox-guest-additions"
-						AUTOSTART_NAME_OPENRC=""
+						AUTOSTART_NAME_OPENRC="virtualbox-guest-additions"
 						EMERGE_USERAPP_DEF
 						AUTOSTART_DEFAULT_OPENRC
 						ADD_DBUS_DEFAULT
+						rc-update add dbus boot
 					NOTICE_END
 					}
 					GUE_VIRTUALBOX
@@ -11010,10 +10403,9 @@ EOF
 				SYS_$SYSVARD
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			# 
 			AUDIO () {  # (!todo)
 			NOTICE_START
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				SOUND_API () {
 				NOTICE_START
 					ALSA () {  # https://wiki.gentoo.org/wiki/ALSA
@@ -11024,29 +10416,27 @@ EOF
 						# euse -E alsa
 						EMERGE_ATWORLD_B
 						EMERGE_USERAPP_DEF
-						###################################################
+
 						APPAPP_EMERGE="media-plugins/alsa-plugins "
 						# USE="ffmpeg" emerge -q media-plugins/alsa-plugins
 						EMERGE_USERAPP_DEF
-						AUTOSTART_$SYSINITVAR
+						AUTOSTART_DEFAULT_$SYSINITVAR
 					NOTICE_END
 					}
 					ALSA
 				NOTICE_END
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				SOUND_SERVER () {
 				NOTICE_START
 					PULSEAUDIO () {
 					NOTICE_START
-						#  just gibberish here - ignore for now or fix it xD
+						#  (!todo)
 						# EMERGE_ATWORLD_B
 					NOTICE_END
 					}
 					PULSEAUDIO
 				NOTICE_END
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				SOUND_MIXER () {
 				NOTICE_START
 					PAVUCONTROL () {
@@ -11058,44 +10448,42 @@ EOF
 					PAVUCONTROL
 				NOTICE_END
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 				SOUND_API
 				SOUND_SERVER
 				SOUND_MIXER
 			NOTICE_END
-			}          
-			# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
-			GPU () {  # (!todo) (!unfinished)
+			}
+			GPU () {  # (!todo) (!todo)
 			NOTICE_START
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				# 
 				SET_NONE () {
 				NOTICE_START
 					NOTICE_PLACEHOLDER
 				NOTICE_END
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				SET_NVIDIA () {  # (!unfinished)
+				# 
+				SET_NVIDIA () {  # (!todo)
 				NOTICE_START
 					NOTICE_PLACEHOLDER
 				NOTICE_END
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-				SET_AMD () {  # (!unfinished)
+				# 
+				SET_AMD () {  # (!todo)
 				NOTICE_START
-					RADEON () {  # (!unfinished)
+					RADEON () {  # (!todo)
 					NOTICE_START
 						APPAPP_EMERGE=" "
 						EMERGE_USERAPP_DEF
 					NOTICE_END
 					}
-					AMDGPUDEF () {  # (!unfinished)
+					AMDGPUDEF () {  # (!todo)
 					NOTICE_START
 						APPAPP_EMERGE=" "
 						EMERGE_USERAPP_DEF
 						# radeon-ucode
 					NOTICE_END
 					}
-					AMDGPUPRO () {  # (!unfinished)
+					AMDGPUPRO () {  # (!todo)
 					NOTICE_START
 						APPAPP_EMERGE="dev-libs/amdgpu-pro-opencl "
 						EMERGE_USERAPP_DEF
@@ -11106,14 +10494,14 @@ EOF
 					AMDGPUPRO
 				NOTICE_END
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				# 
 				$GPU_SET
 			NOTICE_END
 			}
-			# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+			# 
 			NETWORK_MAIN () {  # (!todo)
 			NOTICE_START
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				# 
 				HOSTSFILE () {  # (! default)
 				NOTICE_START
 					echo "$HOSTNAME" > /etc/hostname
@@ -11123,10 +10511,9 @@ EOF
 					cat /etc/hosts
 				NOTICE_END
 				}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+				# 
 				NETWORK_MGMT () {
 				NOTICE_START
-
 					GENTOO_DEFAULT () {
 					NOTICE_START
 						NETIFRC () {  # (! default)
@@ -11149,7 +10536,6 @@ EOF
 						NETIFRC
 					NOTICE_END
 					}
-
 					OPENRC_DEFAULT () {
 					NOTICE_START
 						NOTICE_PLACEHOLDER
@@ -11171,7 +10557,6 @@ EOF
 								cat << 'EOF' > /etc/systemd/network/20-wired.network
 								[ Match ]
 								Name=enp0s3
-
 								[ Network ]
 								DHCP=ipv4
 EOF
@@ -11182,7 +10567,6 @@ EOF
 								cat << 'EOF' > /etc/systemd/network/20-wired.network
 								[ Match ]
 								Name=enp0s3
-
 								[ Network ]
 								Address=10.1.10.9/24
 								Gateway=10.1.10.1
@@ -11244,29 +10628,22 @@ EOF
 			#I_FSTOOLS
 			#BOOTLOAD
 			KERNEL
-
-			#if [ "$CONFIGBUILDKERN" != "AUTO" ]; then
-			#	INITRAMFS
-			#else
-			#	echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
-			#fi
-
+			if [ "$CONFIGBUILDKERN" != "AUTO" ]; then
+				INITRAMFS
+			else
+				echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
+			fi
 			## MODPROBE_CHROOT  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-			#VIRTUALIZATION
+			VIRTUALIZATION
 			#AUDIO
 			##GPU
-			#NETWORK_MAIN
+		#	NETWORK_MAIN
 		NOTICE_END
 		}
-				# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
 		SCREENDSP () {  # note: replace visual header with "screen and desktop"
 		NOTICE_START
-			# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 			WINDOWSYS () {
 			NOTICE_START
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 				X11 () {  # (! default) # https://wiki.gentoo.org/wiki/Xorg/Guide
 				NOTICE_START
 					EMERGE_XORG () {
@@ -11274,7 +10651,6 @@ EOF
 						APPAPP_EMERGE="x11-libs/gdk-pixbuf "
 						EMERGE_USERAPP_DEF
 						APPAPP_EMERGE="x11-base/xorg-server "
-						#echo "$APPAPP_EMERGE xvfb" > /etc/portage/package.use/xorg-server  # add xfvb flag for firefox support
 						PACKAGE_USE
 						EMERGE_USERAPP_DEF
 						ENVUD 
@@ -11286,7 +10662,6 @@ EOF
 						NOTICE_START
 							touch /usr/share/X11/xorg.conf.d/10-keyboard.conf
 							cat << EOF > /usr/share/X11/xorg.conf.d/10-keyboard.conf
-
 							Section "InputClass"
 							    Identifier "keyboard-all"
 								
@@ -11307,80 +10682,80 @@ EOF
 				$DISPLAYSERV
 			NOTICE_END
 			}
-			# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+			# 
 			DESKTOP_ENV () {  # https://wiki.gentoo.org/wiki/Desktop_environment
 			NOTICE_START
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                 
+
 				#  BUDGIE - https://wiki.gentoo.org/wiki/Budgie
 				BUDGIE_DSTENV_XEC=budgie_dpmexec
 				BUDGIE_DSTENV_STARTX=budgie
-				BUDGIE_DSTENV_EMERGE=budgie                                                       
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
+				BUDGIE_DSTENV_EMERGE=budgie
+
 				#  CINNAMON - https://wiki.gentoo.org/wiki/Cinnamon
 				CINNAMON_DSTENV_XEC=gnome-session-cinnamon
 				CINNAMON_DSTENV_STARTX=cinnamon-session
-				CINNAMON_DSTENV_EMERGE=gnome-extra/cinnamon                
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
+				CINNAMON_DSTENV_EMERGE=gnome-extra/cinnamon
+
 				#  DDE "Deepin Desktop Environment" - https://wiki.gentoo.org/wiki/DDE
 				DDE_DSTENV_XEC=DDE
 				DDE_DSTENV_STARTX=DDE
-				DDE_DSTENV_EMERGE=DDE                                                                     
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                              
+				DDE_DSTENV_EMERGE=DDE
+
 				#  FVWM-Crystal - FVWM-Crystal
 				FVWMCRYSTAL_DSTENV_XEC=fvwm-crystal
 				FVWMCRYSTAL_DSTENV_STARTX=fvwm-crystal
-				FVWMCRYSTAL_DSTENV_EMERGE=x11-themes/fvwm-crystal                             
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+				FVWMCRYSTAL_DSTENV_EMERGE=x11-themes/fvwm-crystal
+
 				#  GNOME - https://wiki.gentoo.org/wiki/GNOME
 				GNOME_DSTENV_XEC=gnome-session
 				GNOME_DSTENV_STARTX=GNOME
-				GNOME_DSTENV_EMERGE=gnome-base/gnome           
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-				#  KDE - FVWM-Crystal					
+				GNOME_DSTENV_EMERGE=gnome-base/gnome
+
+				#  KDE - FVWM-Crystal
 				KDE_DSTENV_XEC=kde-plasma/startkde
 				KDE_DSTENV_STARTX=startkde
 				KDE_DSTENV_EMERGE=kde-plasma/plasma-meta
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 				#  LXDE - https://wiki.gentoo.org/wiki/LXDE
 				LXDE_DSTENV_XEC=startlxde
 				LXDE_DSTENV_STARTX=startlxde
-				LXDE_DSTENV_EMERGE=lxde-base/lxde-meta              
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-				#  LXQT - FVWM-Crystal		
+				LXDE_DSTENV_EMERGE=lxde-base/lxde-meta
+
+				#  LXQT - FVWM-Crystal
 				LXQT_DSTENV_XEC=startlxqt
 				LXQT_DSTENV_STARTX=startlxqt
 				LXQT_DSTENV_EMERGE=lxqt-base/lxqt-meta
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+
 				#  LUMINA - https://wiki.gentoo.org/wiki/Lumina
 				LUMINA_DSTENV_XEC=start-lumina-desktop
 				LUMINA_DSTENV_STARTX=start-lumina-desktop
-				LUMINA_DSTENV_EMERGE=x11-wm/lumina                     
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                                  
+				LUMINA_DSTENV_EMERGE=x11-wm/lumina
+
 				#  MATE - https://wiki.gentoo.org/wiki/MATE
 				MATE_DSTENV_XEC=mate-session
 				MATE_DSTENV_STARTX=mate-session
-				MATE_DSTENV_EMERGE=mate-base/mate                                             
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+				MATE_DSTENV_EMERGE=mate-base/mate
+
 				#  PANTHEON - https://wiki.gentoo.org/wiki/Pantheon
 				PANTHEON_DSTENV_XEC=PANTHEON
 				PANTHEON_DSTENV_STARTX=PANTHEON
-				PANTHEON_DSTENV_EMERGE=PANTHEON    
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+				PANTHEON_DSTENV_EMERGE=PANTHEON
+
 				#  RAZORQT - FVWM-Crystal
 				RAZORQT_DSTENV_XEC=razor-session
 				RAZORQT_DSTENV_STARTX=razor-session
-				RAZORQT_DSTENV_EMERGE=RAZORQT              
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+				RAZORQT_DSTENV_EMERGE=RAZORQT
+
 				#  TDE - https://wiki.gentoo.org/wiki/Trinity_Desktop_Environment
 				TDE_DSTENV_XEC=tde-session
 				TDE_DSTENV_STARTX=tde-session
 				TDE_DSTENV_EMERGE=trinity-base/tdebase-meta
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 				#  XFCE - https://wiki.gentoo.org/wiki/Xfce
 				XFCE_DSTENV_XEC=xfce4-session
 				XFCE_DSTENV_STARTX=startxfce4
 				XFCE_DSTENV_EMERGE=xfce-base/xfce4-meta
-				# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 				SETVAR_DSKTENV () {
 				NOTICE_START
 					for i in $DESKTOPENV ; do
@@ -11401,7 +10776,6 @@ EOF
 					fi
 				NOTICE_END
 				}
-
 				EMERGE_DSTENV () {
 				NOTICE_START
 					# emerge --ask gnome-extra/nm-applet
@@ -11433,7 +10807,6 @@ EOF
 						GIT
 						ESELECT
 						DEEPIN_GIT
-
 					elif [ "$DESKTOPENV" == "PANTHEON" ]; then
 						PANTHEON_MAIN () {
 						NOTICE_START
@@ -11449,12 +10822,10 @@ EOF
 						}
 						PANTHEON_MAIN
 						PANTHEON_ADDON
-
 					elif [ "$DESKTOPENV" == "XFCE" ]; then
 					
 						MISC_XFCE () {
 						NOTICE_START
-
 							XFCEADDON () {
 								emerge xfce-base/xfce4-session
 								emerge xfce-base/xfce4-settings
@@ -11471,13 +10842,11 @@ EOF
 								emerge xfce-extra/xfce4-alsa-plugin
 								# emerge xfce-extra/thunar-volman
 							}
-
 							APPAPP_EMERGE="xfce-base/xfce4-meta "
 							PACKAGE_USE
 							EMERGE_ATWORLD_B
 							EMERGE_USERAPP_DEF
 							EMERGE_ATWORLD_B
-
 						}
 						MISC_XFCE
 					else
@@ -11544,54 +10913,51 @@ EOF
 				}
 				W_D_MGR () {  # Display_manager https://wiki.gentoo.org/wiki/Display_manager
 				NOTICE_START
-					# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,					
 					#  CDM - The Console Display Manager https://wiki.gentoo.org/wiki/CDM -- https://github.com/evertiro/cdm
 					CDM_DSPMGR_SYSTEMD=cdm.service
 					CDM_DSPMGR_OPENRC=cdm
 					CDM_APPAPP_EMERGE=x11-misc/cdm
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 					#  GDM - https://wiki.gentoo.org/wiki/GNOME/gdm
 					GDM_DSPMGR_SYSTEMD=cdm.service
 					GDM_DSPMGR_OPENRC=gdm
 					GDM_APPAPP_EMERGE=gnome-base/gdm                                     
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 					#  LIGHTDM - https://wiki.gentoo.org/wiki/LightDM
 					LIGHTDM_DSPMGR_SYSTEMD=lightdm.service
 					LIGHTDM_DSPMGR_OPENRC=lightdm
 					LIGHTDM_APPAPP_EMERGE=x11-misc/lightdm                       
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 					#  LXDM - https://wiki.gentoo.org/wiki/LXDE (always links to lxde by time of this writing)					
 					LXDM_DSPMGR_SYSTEMD=lxdm.service
 					LXDM_DSPMGR_OPENRC=lxdm # (startlxde ?)
-					LXDM_APPAPP_EMERGE=lxde-base/lxdm                          
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					#  QINGY - https://wiki.gentoo.org/wiki/ QINGY				
+					LXDM_APPAPP_EMERGE=lxde-base/lxdm
+
+					#  QINGY - https://wiki.gentoo.org/wiki/ QINGY
 					QINGY_DSPMGR_SYSTEMD=qingy.service
 					QINGY_DSPMGR_OPENRC=qingy
-					QINGY_APPAPP_EMERGE=placeholder                      
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+					QINGY_APPAPP_EMERGE=placeholder
+
 					#  SSDM - https://wiki.gentoo.org/wiki/SSDM
 					SSDM_DSPMGR_SYSTEMD=sddm.service
 					SSDM_DSPMGR_OPENRC=sddm
 					SSDM_APPAPP_EMERGE=x11-misc/sddm                      
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 					#  SLIM - https://wiki.gentoo.org/wiki/SLiM
 					SLIM_DSPMGR_SYSTEMD=slim.service
 					SLIM_DSPMGR_OPENRC=slim
 					SLIM_APPAPP_EMERGE=x11-misc/slim                                            
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 					#  WDM - https://wiki.gentoo.org/wiki/WDM
 					WDM_DSPMGR_SYSTEMD=wdm.service
 					WDM_DSPMGR_OPENRC=wdm
 					WDM_APPAPP_EMERGE=x11-misc/wdm                 
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 					#  XDM - https://packages.gentoo.org/packages/x11-apps/xdm
 					XDM_DSPMGR_SYSTEMD=xdm.service
 					XDM_DSPMGR_OPENRC=xdm
 					XDM_APPAPP_EMERGE=x11-apps/xdm
-					# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-					# ########################################################################################################################
+
 					SETVAR_DSPMGR () {
 					NOTICE_START
 						for i in $DISPLAYMGR
@@ -11610,7 +10976,6 @@ EOF
 						sed -ie "s#llxdm#xdm#g" /etc/conf.d/xdm
 						sed -ie "s#lxdm#xdm#g" /etc/conf.d/xdm
 						sed -ie "s#xdm#${!DSPMGR_AS}#g" /etc/conf.d/xdm
-
 						 cat /etc/conf.d/xdm
 						cat << EOF > ~/.xinitrc 
 						exec ${!DSTENV_STARTX}
@@ -11642,19 +11007,16 @@ EOF
 						fi
 					NOTICE_END
 					}
-
 					SETVAR_DSPMGR
-					#EMERGE_USERAPP_RD1
-
+					EMERGE_USERAPP_RD1
 					DSPMGR_$SYSINITVAR
-
 					CONFIGURE_DSPMGR
 				NOTICE_END
 				}
-				#SETVAR_DSKTENV  # set the variables
-				#ADDREPO_DSTENV
-				#EMERGE_DSTENV
-				#MAIN_DESKTPENV_$SYSINITVAR
+				SETVAR_DSKTENV  # set the variables
+				ADDREPO_DSTENV
+				EMERGE_DSTENV
+				MAIN_DESKTPENV_$SYSINITVAR
 				$DISPLAYMGR_YESNO
 			NOTICE_END
 			}
@@ -11662,8 +11024,7 @@ EOF
 			DESKTOP_ENV
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''  
-
+		#   
 		USERAPP () {  # (!todo)
 		NOTICE_START
 			# APPAPP_EMERGE=placeholder  # (!important: this is supposed to be a placeholder, dont remove)
@@ -11683,14 +11044,14 @@ EOF
 					EMERGE_USERAPP_DEF
 				NOTICE_END
 				}
-				USERAPP_CHROMIUM () {  # (!unfinished)
+				USERAPP_CHROMIUM () {  # (!todo)
 				NOTICE_START
 					APPAPP_EMERGE="www-client/chromium"
 					PACKAGE_USE
 					EMERGE_USERAPP_DEF
 				NOTICE_END
 				}
-				USERAPP_MIDORI () {  # (!unfinished)
+				USERAPP_MIDORI () {  # (!todo)
 				NOTICE_START
 					APPAPP_EMERGE="www-client/midori"
 					PACKAGE_USE
@@ -11706,7 +11067,7 @@ EOF
 						else 
 							printf '%s\n' "$i is set to ${!i}, test for boot fs ..." 
 						fi
-					done	
+					done
 				NOTICE_END
 				}
 				RUN_ALLYES
@@ -11716,11 +11077,10 @@ EOF
 			WEBBROWSER
 		NOTICE_END
 		}
-		# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
+		# 
 		USERS () {
 		NOTICE_START
-			# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+			# 
 			ROOT () {  # (! default)
 			NOTICE_START
 				echo "${bold}enter new root password${normal}"
@@ -11729,7 +11089,7 @@ EOF
 				  echo "${bold}enter new root password${normal}"
 				done
 			}
-			# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+			# 
 			ADMIN () {  # (!note: default) - ok 
 			NOTICE_START
 				ADD_GROUPS () {
@@ -11762,38 +11122,33 @@ EOF
 			}
 			ROOT
 			ADMIN
-		NOTICE_END			
-		}
-		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		NOTICE_END
+		} 
 		FINISH () {  # tidy up installation files - ok
 		NOTICE_START
 			rm -f /stage3-*.tar.*
 			echo "${bold}Script finished all operations - END${normal}"
 		NOTICE_START
-		}
-		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		} 
 		## (RUN ENTIRE SCRIPT) (!changeme)
-		BASE
-		#CORE
+		#BASE  # (!test 19.01.2021 - ok) (keymaps for multilang !todo)
+		CORE
 		#SCREENDSP
 		#USERAPP
 		#USERS
 		# FINISH
-
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 	NOTICE_END
 INNERSCRIPT
 )
-
 	echo "$INNER_SCRIPT" > $CHROOTX/chroot_run.sh
 	chmod +x $CHROOTX/chroot_run.sh
 	chroot $CHROOTX /bin/bash ./chroot_run.sh
-
 NOTICE_END
 }
-
 ####  RUN ALL ## (!changeme)
-
-#PRE  # no err 08.01.2021
+#PRE  # no err 19.01.2021
 CHROOT
+
+
 
