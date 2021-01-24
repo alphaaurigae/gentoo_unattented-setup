@@ -11,23 +11,23 @@ Format: ![Reboot from CHROOT - default sample setup - XFCE4](url)
 Format: ![Virtualbox Motherboard RAM settings](url)
 
 > enable processor "true cores" .
-![Virtualbox Pocessor core settings](img/scrnshts/VIRTB_1.png)
+![Virtualbox Pocessor core settings](img/scrnshts/VIRTB_2.png)
 Format: ![Virtualbox Pocessor core settings](url)
 
 > KVM as virt in order to make the hardware available in the virtual-machine.
-![Virtualbox Acceleration (VIRT MODE) settings](img/scrnshts/VIRTB_1.png)
+![Virtualbox Acceleration (VIRT MODE) settings](img/scrnshts/VIRTB_3.png)
 Format: ![Virtualbox Acceleration (VIRT MODE) settings](url)
 
 > add screen memory
-![Virtualbox screen memory settings](img/scrnshts/VIRTB_1.png)
+![Virtualbox screen memory settings](img/scrnshts/VIRTB_4.png)
 Format: ![Virtualbox screen memory settings](url)
 
 > mount CD rom img as IDE, set SSD mark if ... (add space for swap CHROOT if req) 
-![Virtualbox disk settings](img/scrnshts/VIRTB_1.png)
+![Virtualbox disk settings](img/scrnshts/VIRTB_5.png)
 Format: ![Virtualbox disk settings](url)
 
 > samplenetwork -> ssh host to guest: HOST bridged to br0 ipv4 only. (wrong adapter type may prevent coonnect) | ssh ...
-![Virtualbox network settings](img/scrnshts/VIRTB_1.png)
+![Virtualbox network settings](img/scrnshts/VIRTB_6.png)
 Format: ![Virtualbox network settings](url)
 
 
