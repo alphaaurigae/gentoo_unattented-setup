@@ -60,8 +60,7 @@ Format: ![make the script exec. ](url)
 Format: ![run PRE ... so we continue  with a ready partitioned and configured chroot. ](url)
 
 > there are (possible) 3 interruptions during the script ... the first is for the drive encryption (if turned on) (screenshot), 2nd for the kernel config and the 3rd for the user passwoord setup.
-![there are (possible) 3 interruptions during the script .. ](img/scrnshts/VIRTB_1.png)
-Format: ![rthere are (possible) 3 interruptions during the script .. ](url)
 
 > it might be fortunate to run every section on its own and safe progress with virtualbox clones .. most of config parsing etc is automatically overwritten if a function is run twice.
+
 > work in progress....
