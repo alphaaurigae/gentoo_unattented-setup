@@ -56,7 +56,7 @@ Format: ![transfer the configured script with the functions to run enabled to th
 Format: ![make the script exec. ](url)
 
 > run PRE ... so we continue  with a ready partitioned and configured chroot.
-![run PRE ... so we continue  with a ready partitioned and configured chroot. ](img/scrnshts/setup_chroot_pr_crypt1.png)
+![run PRE ... so we continue  with a ready partitioned and configured chroot. ](img/scrnshts/setup_chroot_pr_crypt0.png)
 Format: ![run PRE ... so we continue  with a ready partitioned and configured chroot. ](url)
 
 > there are (possible) 3 interruptions during the script ... the first is for the drive encryption (if turned on) (screenshot), 2nd for the kernel config and the 3rd for the user passwoord setup.
