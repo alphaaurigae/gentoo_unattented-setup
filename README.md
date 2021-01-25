@@ -4,7 +4,7 @@
 > all infos in the script file!
 ![Reboot from CHROOT - default sample setup - XFCE4](img/scrnshts/REBOOT_DONE_1.png)
 
-## EX: Virtualbox
+## EX: Virtualbox (> v6.*)
 > have plenty of RAM, compensate for lack of RAM with SWAP (CHROOT).
 ![Virtualbox Motherboard RAM settings](img/scrnshts/VIRTB_1.png)
 
