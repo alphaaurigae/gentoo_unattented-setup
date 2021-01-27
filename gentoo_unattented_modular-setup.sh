@@ -1087,20 +1087,20 @@ EOF
 				alias hohoho='git push'
 EOF
 			}
-			#SWAPFILE
+			SWAPFILE
 			MAKECONF
-			#PORTAGE
-			#EMERGE_SYNC  # probably can leave this out if everything already latest ...
-			#ESELECT_PROFILE
-			#SETFLAGS1
+			PORTAGE
+			# EMERGE_SYNC  # probably can leave this out if everything already latest ...
+			ESELECT_PROFILE
+			SETFLAGS1
 			EMERGE_ATWORLD_A
-			#MISC1_CHROOT
-			#RELOADING_SYS
-			#SYSTEMTIME
-			#CONF_LOCALES
-			#KEYMAPS
+			MISC1_CHROOT
+			RELOADING_SYS
+			SYSTEMTIME
+			CONF_LOCALES
+			KEYMAPS
 			FIRMWARE
-			#BASHRC
+			BASHRC
 		NOTICE_END
 		}
 		# ############################################################################################################################################################################
@@ -13509,7 +13509,7 @@ DEBUG () {
 }
 
 ####  RUN ALL ## (!changeme)
-#PRE
+PRE
 CHROOT
 
 #DEBUG

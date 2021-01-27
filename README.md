@@ -1,10 +1,9 @@
 # Automated, modular - 1 file - setup for GENTOO linux.
-
-### status alpha ... script runs through ... system boots with network and desktop.
+- 1 file configurable setup script for a automated - unattended & modular gentoo linux system installation. 
 > all infos in the script file!
 ![Reboot from CHROOT - default sample setup - XFCE4](img/scrnshts/REBOOT_DONE_1.png)
 
-## EX: Virtualbox (> v6.*)
+## EX: Virtualbox (> v6.*).
 > have plenty of RAM, compensate for lack of RAM with SWAP (CHROOT).
 ![Virtualbox Motherboard RAM settings](img/scrnshts/VIRTB_1.png)
 
@@ -14,14 +13,14 @@
 > KVM as virt in order to make the hardware available in the virtual-machine.
 ![Virtualbox Acceleration (VIRT MODE) settings](img/scrnshts/VIRTB_3.png)
 
-> add screen memory
+> add screen memory.
 ![Virtualbox screen memory settings](img/scrnshts/VIRTB_4.png)
 
-> mount CD rom img as IDE, set SSD mark if ... (add space for swap CHROOT if req) 
-![Virtualbox disk settings](img/scrnshts/VIRTB_5.png)
+> mount CD rom img as IDE, set SSD mark if ... (add space for swap CHROOT if req.) 
+![Virtualbox disk settings.](img/scrnshts/VIRTB_5.png)
 
 > samplenetwork -> ssh host to guest: HOST bridged to br0 ipv4 only. (wrong adapter type may prevent coonnect) | ssh ...
-![Virtualbox network settings](img/scrnshts/VIRTB_6.png)
+![Virtualbox network settings.](img/scrnshts/VIRTB_6.png)
 
 
 ## GET STARTED
@@ -29,22 +28,22 @@
 ### Prepare the guest
 
 > virtualbox main window after boot of the minimal image. 
-![virtualbox main window after boot of the minimal image. ](img/scrnshts/intitial.png)
+![virtualbox main window... ](img/scrnshts/intitial.png)
 
-> set variables functions in the setup script, define which functions to run ... here we only run the PRE function.... always find the wrapped up function run on the bottom of the function stack.
-![set variables functions in the setup script ](img/scrnshts/sample_funct_onoff_0.png)
+> set variables functions in the setup script. define which functions to run ... here we only run the PRE function.... always find the wrapped up function run on the bottom of the function stack.
+![set variables functions in the setup script.](img/scrnshts/sample_funct_onoff_0.png)
 
-> virtbualbox net ... 
-![virtbualbox net.  ](img/scrnshts/get_network.png)
+> virtbualbox net.
+![virtbualbox net.](img/scrnshts/get_network.png)
 
 > transfer the configured script with the functions to run enabled to the guest.
-![transfer the configured script with the functions to run enabled to the guest. ](img/scrnshts/initial0.png)
+![transfer the configured script.](img/scrnshts/initial0.png)
 
 > make the script exec.
 ![make the script exec. ](img/scrnshts/exec.png)
 
-> run PRE ... continue  with a ready partitioned and configured chroot.
-![run PRE ... continue  with a ready partitioned and configured chroot. ](img/scrnshts/setup_chroot_pr_crypt0.png)
+> run PRE ... continue with a ready partitioned and configured chroot.
+![run PRE ... continue...](img/scrnshts/setup_chroot_pr_crypt0.png)
 
 > there are (possible) 3 interruptions during the script ... the first is for the drive encryption (if turned on) (screenshot), 2nd for the kernel config and the 3rd for the user passwoord setup.
 
