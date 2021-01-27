@@ -28,7 +28,7 @@
 ## Virtualbox (v6.*) Test Deployment Instructions, "3 steps": (!NOTE: see  readme.md / img fold for GUI settings. Virtualbox 6.* or higher)
 # I:
 #1. config variables - default settings should do for a testrun.
-#2. IF VIRT GUEST may w sufficient RAM (test system has 32G RAM, where 25 are for the guest) and possibly KVM to avoid flag conflics (!note: ex firefox avx2 err).
+#2. IF VIRT GUEST may w sufficient RAM (test system has 32G RAM, where 25 are for the guest) and possibly KVM to avoid flag conflics (!NOTE: ex firefox avx2 err).
 
 # II:
 # sample 1:
@@ -47,7 +47,7 @@
 #1. chmod +x run.sh
 #2. prepare to be prompted for cryptsetup password setup, youll need this a little later to unlock the luks container for the CHROOT!. see relevant sections for details.
 #3. have dinner, this may take a long while.
-#4. kernel setup will require interaction! w the default setup the included config (cryptsetup settings included) will be parsed and updated with menuconfig. make changes and save ,(!note: youll also be prompted for kernel updates not included in the config yet - hit yes ffor default values)
+#4. kernel setup will require interaction! w the default setup the included config (cryptsetup settings included) will be parsed and updated with menuconfig. make changes and save ,(!NOTE: youll also be prompted for kernel updates not included in the config yet - hit yes ffor default values)
 #5. this may take another while, desktop and apps will be installed before the next stop. may have another dinner - firefox alone takes 40 minutes on a ryzen threadripper 1920x to build.
 #6. user password will be asked for the future root and admin (user) account.
 
@@ -76,7 +76,7 @@
 # https://wiki.gentoo.org/wiki/Handbook:AMD64/Full/Installation
 # https://wiki.gentoo.org/wiki/Security_Handbook/Full
 
-# (!note: edit the variables, not the script ..... where possible ^^)
+# (!NOTE: edit the variables, not the script ..... where possible ^^)
 # VARIABLES (note!: there are 2 places to edit variables! here: pre-script and CHROOT! go to inner script to edit the other variables! (!todo: parse variables to chroot to have all variables in one place)
 
 ##  DRIVES & PARTITIONS
@@ -131,7 +131,7 @@ NOTICE_END () {
 
 PRE () {  # PREPARE CHROOT
 NOTICE_START
-	INIT () {  # (!note:: in this section the script starts off with everything that has to be done prior to the setup action.)
+	INIT () {  # (!NOTE:: in this section the script starts off with everything that has to be done prior to the setup action.)
 	NOTICE_START
 		TIMEUPD () {  # TIME ... update the system time ... (!important) # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Setting_the_date_and_time
 		NOTICE_START
@@ -149,7 +149,7 @@ NOTICE_START
 	}
 	PARTITIONING () { # (!todo /var/tmp partition in ramfs)
 	NOTICE_START
-		PARTED () {  # (!note: partitioning for LVM on LUKS cryptsetup)
+		PARTED () {  # (!NOTE: partitioning for LVM on LUKS cryptsetup)
 		NOTICE_START
 			# https://wiki.archlinux.org/index.php/GNU_Parted
 			sgdisk --zap-all /dev/sda
@@ -184,8 +184,8 @@ NOTICE_START
 		MAKEFS_BOOT
 	NOTICE_END
 	}
-	#  (!note: lvm on luks! Lets put EVERYTHING IN THE LUKS CONTAINER, to put the LVM INSIDE and the installation inside of the LVM "CRYPT --> BOOT/LVM2 --> OS" ... )
-	#  (!note: for the main disk $MAIN_PART - you will be prompted for passohrase)
+	#  (!NOTE: lvm on luks! Lets put EVERYTHING IN THE LUKS CONTAINER, to put the LVM INSIDE and the installation inside of the LVM "CRYPT --> BOOT/LVM2 --> OS" ... )
+	#  (!NOTE: for the main disk $MAIN_PART - you will be prompted for passohrase)
 	CRYPTSETUP () {  # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS && https://blog.stigok.com/2018/05/03/lvm-in-luks-with-encrypted-boot-partition-and-suspend-to-disk.html
 	NOTICE_START
 		echo "${bold}enter the $PV_MAIN password${normal}"
@@ -194,23 +194,23 @@ NOTICE_START
 	NOTICE_END
 	}
 	#  LVM = "PV (Physical volume)-> VG (Volume group) > LV (Logical volume) inside of the luks crypt container ...             
-	LVMONLUKS () {  # (!note: LVM2 in the luks container on $MAIN_PART)
+	LVMONLUKS () {  # (!NOTE: LVM2 in the luks container on $MAIN_PART)
 	NOTICE_START
-		LVM_PV () {  # (!note: physical volume $PV_MAIN) only for the $MAIN_PART)
+		LVM_PV () {  # (!NOTE: physical volume $PV_MAIN) only for the $MAIN_PART)
 			pvcreate /dev/mapper/$PV_MAIN
 		}
-		LVM_VG () {  # (!note: volume group $VG_MAIN only on the $VG_MAIN)
+		LVM_VG () {  # (!NOTE: volume group $VG_MAIN only on the $VG_MAIN)
 			vgcreate $VG_MAIN /dev/mapper/$PV_MAIN
 		}
-		LVM_LV () {  # (!note: volume group $LV_MAIN on $PV_MAIN)
+		LVM_LV () {  # (!NOTE: volume group $LV_MAIN on $PV_MAIN)
 			# lvcreate -L $SWAP_SIZE -n $SWAP0 $VG_MAIN
 			lvcreate -l 98%FREE -n $LV_MAIN $VG_MAIN
 		}
-		MAKEFS_LVM () {  # (!note: filesystems $LV_MAIN)
+		MAKEFS_LVM () {  # (!NOTE: filesystems $LV_MAIN)
 			mkfs.ext4 /dev/$VG_MAIN/$LV_MAIN # logical volume for OS inst.
 			# mkswap /dev/$VG_MAIN/$SWAP0 # swap ...
 		}
-		MOUNT_LVM_LV () {  # (!note: mount the LVM for CHROOT.)
+		MOUNT_LVM_LV () {  # (!NOTE: mount the LVM for CHROOT.)
 			mkdir -p $CHROOTX
 			mount /dev/mapper/$VG_MAIN-$LV_MAIN $CHROOTX
 			# swapon /dev/$VG_MAIN/$SWAP0
@@ -243,7 +243,7 @@ NOTICE_START
 			NOTICE_START
 				for i in $LIST; do
 					echo "${bold}FETCH $i ....${normal}"
-					wget -P $CHROOTX/ $GENTOO_RELEASE_URL/"$i"  # stage3.tar.xz (!note: main stage3 archive) # OLD single: wget -P $CHROOTX/ http://distfiles.gentoo.org/releases/amd64/autobuilds/"$STAGE3_FILENAME"  # stage3.tar.xz (!note: main stage3 archive)
+					wget -P $CHROOTX/ $GENTOO_RELEASE_URL/"$i"  # stage3.tar.xz (!NOTE: main stage3 archive) # OLD single: wget -P $CHROOTX/ http://distfiles.gentoo.org/releases/amd64/autobuilds/"$STAGE3_FILENAME"  # stage3.tar.xz (!NOTE: main stage3 archive)
 					if [ -f "$CHROOTX/$( echo $i| rev | cut -d'/' -f-1 | rev)" ]; then
 						echo "$CHROOTX/$(echo "$i" | rev | cut -d'/' -f-1 | rev) found - OK"
 					else
@@ -419,14 +419,14 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		PRESET_CHOST_LIBC="gnu"
  		# https://wiki.gentoo.org/wiki/CHOST https://wiki.gentoo.org/wiki/GCC_optimization
 		PRESET_CPU_FLAGS_X86="$(if [[ $(lscpu | grep Flags:) =~ "ssse3" ]]; then echo "$(lscpu | grep Flags: | sed -e 's/^\w*\ *//' | sed 's/: //g' ) sse3 sse4a "; fi)"  # workaround to insert sse3 and sse4a - intentianal, no idea if requ - testing…
-		PRESET_MARCH=znver1  # default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2  # https://wiki.gentoo.org/wiki/Safe_CFLAGS#Finding_the_CPU (!note: fetch before PRESET_CFLAGS, see MAKEFILE)
+		PRESET_MARCH=znver1  # default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2  # https://wiki.gentoo.org/wiki/Safe_CFLAGS#Finding_the_CPU (!NOTE: fetch before PRESET_CFLAGS, see MAKEFILE)
 		PRESET_CFLAGS="-march=$PRESET_MARCH -O2 -pipe"  # https://wiki.gentoo.org/wiki/Safe_CFLAGS
 		PRESET_CXXFLAGS="${PRESET_CFLAGS}"
 		PRESET_FCFLAGS="${PRESET_CFLAGS}"
 		PRESET_FFLAGS="${PRESET_CFLAGS}"
 		# clone https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#CFLAGS_and_CXXFLAGS
 		PRESET_INPUTEVICE="libinput keyboard"
-		PRESET_VIDEODRIVER="virtualbox"  # amdgpu, radeonsi, radeon, virtualbox ; (!note: if running in virtualbox and intend to build firefox - run KVM and set to your hardware ... "avx2 error firefox")
+		PRESET_VIDEODRIVER="virtualbox"  # amdgpu, radeonsi, radeon, virtualbox ; (!NOTE: if running in virtualbox and intend to build firefox - run KVM and set to your hardware ... "avx2 error firefox")
 		PRESET_LICENCES="*"  # default is: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software) (!todo)
 
 		# https://www.gentoo.org/support/use-flags/
@@ -566,14 +566,14 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		# USERAPP
 		USERAPP_GIT=NO  # (!todo)
 		USERAPP_FIREFOX=YES
-		USERAPP_CHROMIUM=NO  # (!note !todo !bug ..)
-		USERAPP_MIDORI=NO  # (!note: some unmask thing .. ruby?)  # https://astian.org/en/midori-browser/
+		USERAPP_CHROMIUM=NO  # (!NOTE !todo !bug ..)
+		USERAPP_MIDORI=NO  # (!NOTE: some unmask thing .. ruby?)  # https://astian.org/en/midori-browser/
 
 		## USER
 		SYSUSERNAME=admini  # (!changeme) wheel group member - name of the login sysadmin user
-		USERGROUPS="wheel,plugdev,power,video"  # (!note: virtualbox groups set if guest / host system is set)
+		USERGROUPS="wheel,plugdev,power,video"  # (!NOTE: virtualbox groups set if guest / host system is set)
 
-		# SET USEFLAGS (!note: names follow a pattern which must be kept for functions to read it ... "USERFLADS_"emerge_ name"  : "-" is replaced with "_" and lower converted to uppercase letters)
+		# SET USEFLAGS (!NOTE: names follow a pattern which must be kept for functions to read it ... "USERFLADS_"emerge_ name"  : "-" is replaced with "_" and lower converted to uppercase letters)
 		USEFLAGS_LINUX_FIRMWARE="initramfs redistributable unknown-license"
 		USEFLAGS_CRYPTSETUP="udev"
 		USEFLAGS_DRACUT="device-mapper"  # if systemd - systemd useflag required?
@@ -623,7 +623,7 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 		NOTICE_END
 		}
 
-		APPAPP_NAME_SIMPLE="$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}')"  # get the name of the app (!note: fetch EMERGE_USERAPP_DEF --> remove slash --> show second coloumn = name
+		APPAPP_NAME_SIMPLE="$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}')"  # get the name of the app (!NOTE: fetch EMERGE_USERAPP_DEF --> remove slash --> show second coloumn = name
 		PORTAGE_USE_DIR="/etc/portage/package.use"
 
 		PACKAGE_USE () {
@@ -735,7 +735,7 @@ CHROOT () {	#  4.0 CHROOT  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Install
 					ACCEPT_KEYWORDS="$PRESET_ACCEPT_KEYWORDS"
 					CHOST="$PRESET_CHOST_ARCH-$PRESET_CHOST_VENDOR-$PRESET_CHOST_OS-$PRESET_CHOST_LIBC"
 					
-					# (!note) (!todo - not sure if this is "perfect" yet.. anyways, "it works". 
+					# (!NOTE) (!todo - not sure if this is "perfect" yet.. anyways, "it works". 
 					CPU_FLAGS_X86="$PRESET_CPU_FLAGS_X86" # workaround to insert sse3 and sse4a - intentianal, no idea if requ - testing…
 					# CPU_FLAGS_X86="$(lscpu | grep Flags: | sed -e 's/Flags:               //g')" # lscpu hides sse3 and sse4a which are shown in cpuid.
 					CFLAGS="$PRESET_CFLAGS"
@@ -773,7 +773,7 @@ EOF
 				eselect profile set $ESELECT_PROFILE
 			NOTICE_END
 			}
-			SETFLAGS1 () {  # set custom flags (!note: disabled by default) (!note; was systemd specific, systemd not compete yet 05.11.2020)
+			SETFLAGS1 () {  # set custom flags (!NOTE: disabled by default) (!NOTE; was systemd specific, systemd not compete yet 05.11.2020)
 			NOTICE_START
 				SETFLAGSS1_OPENRC () {
 				NOTICE_START
@@ -944,7 +944,7 @@ EOF
 						cat << EOF > /etc/env.d/02locale
 						LANG="$SYSLOCALE"
 						LC_COLLATE="C" # Define alphabetical ordering of strings. This affects e.g. output of sorted directory listings.
-						# LC_CTYPE=$PRESET_LOCALE_A.UTF-8 # (!note: not tested yet)
+						# LC_CTYPE=$PRESET_LOCALE_A.UTF-8 # (!NOTE: not tested yet)
 EOF
 					NOTICE_END
 					}
@@ -1031,9 +1031,9 @@ EOF
 				LINUX_FIRMWARE
 			NOTICE_END
 			}
-			BASHRC () {  # (!note: custom .bashrc) (!todo) (!changeme)
+			BASHRC () {  # (!NOTE: custom .bashrc) (!todo) (!changeme)
 				cat << 'EOF' > $CHROOTX/etc/skel/.bashrc
-				#  (!note: .bash.rc by alphaaurigae 11.08.19)
+				#  (!NOTE: .bash.rc by alphaaurigae 11.08.19)
 				#  ~/.bashrc: executed by bash(1) for non-login shells.
 				#  Examples: /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 				[[ $- != *i* ]] && return  # If not running interactively, don't do anything
@@ -1388,7 +1388,7 @@ EOF
 				}
 			BOOTLOAD () {  # BOOTSYSINITVAR=BIOS/UEFI
 			NOTICE_START
-				# (!note:  https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt) 
+				# (!NOTE:  https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt) 
 				SETUP_GRUB2 () {
 				NOTICE_START
 					LOAD_GRUB2 () {
@@ -1429,8 +1429,8 @@ EOF
 							}
 							PRE_GRUB2UEFI
 							grub-install --target=x86_64-efi --efi-directory=/boot
-							## (!note: optional)# mount -o remount,rw /sys/firmware/efi/efivars  # If grub_install returns an error like Could not prepare Boot variable: Read-only file system, it may be necessary to remount the efivars special mount as read-write in order to succeed:
-							## (!note: optional)# grub-install --target=x86_64-efi --efi-directory=/boot --removable  # Some motherboard manufacturers seem to only support the /efi/boot/ directory location for the .EFI file in the EFI System Partition (ESP). 
+							## (!NOTE: optional)# mount -o remount,rw /sys/firmware/efi/efivars  # If grub_install returns an error like Could not prepare Boot variable: Read-only file system, it may be necessary to remount the efivars special mount as read-write in order to succeed:
+							## (!NOTE: optional)# grub-install --target=x86_64-efi --efi-directory=/boot --removable  # Some motherboard manufacturers seem to only support the /efi/boot/ directory location for the .EFI file in the EFI System Partition (ESP). 
 						NOTICE_END
 						}
 						PRE_GRUB2
@@ -1499,7 +1499,7 @@ EOF
 							cat << EOF >> /etc/default/grub
 							# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
 							GRUB_CMDLINE_LINUX="raid=noautodetect cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value $MAIN_PART):$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm"
-							# (!note: etc/crypttab not required under default openrc, "luks on lvm", GPT, bios - setup) # Warning: If you are using /etc/crypttab or /etc/crypttab.initramfs together with luks.* or rd.luks.* parameters, only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line.. To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*. To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
+							# (!NOTE: etc/crypttab not required under default openrc, "luks on lvm", GPT, bios - setup) # Warning: If you are using /etc/crypttab or /etc/crypttab.initramfs together with luks.* or rd.luks.* parameters, only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line.. To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*. To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
 EOF
 						NOTICE_END
 						}
@@ -1670,6 +1670,7 @@ EOF
 								touch /usr/src/linux/.config
 								cat << 'EOF' > /usr/src/linux/.config  # stripped version infos for refetch
 
+# (!NOTE: edited!)
 
 #
 # Automatically generated file; DO NOT EDIT.
@@ -1691,7 +1692,7 @@ CONFIG_THREAD_INFO_IN_TASK=y
 CONFIG_INIT_ENV_ARG_LIMIT=32
 # CONFIG_COMPILE_TEST is not set
 CONFIG_LOCALVERSION=""
-# CONFIG_LOCALVERSION_AUTO is not set
+CONFIG_LOCALVERSION_AUTO=y
 CONFIG_BUILD_SALT=""
 CONFIG_HAVE_KERNEL_GZIP=y
 CONFIG_HAVE_KERNEL_BZIP2=y
@@ -1776,7 +1777,7 @@ CONFIG_PREEMPT_VOLUNTARY=y
 # CPU/Task time and stats accounting
 #
 CONFIG_VIRT_CPU_ACCOUNTING=y
-CONFIG_TICK_CPU_ACCOUNTING=y
+# CONFIG_TICK_CPU_ACCOUNTING is not set
 CONFIG_VIRT_CPU_ACCOUNTING_GEN=y
 CONFIG_IRQ_TIME_ACCOUNTING=y
 CONFIG_HAVE_SCHED_AVG_IRQ=y
@@ -1800,7 +1801,6 @@ CONFIG_RCU_EXPERT=y
 CONFIG_SRCU=y
 CONFIG_TREE_SRCU=y
 CONFIG_TASKS_RCU_GENERIC=y
-CONFIG_TASKS_RCU=y
 CONFIG_TASKS_RUDE_RCU=y
 CONFIG_TASKS_TRACE_RCU=y
 CONFIG_RCU_STALL_COMMON=y
@@ -2000,7 +2000,7 @@ CONFIG_SMP=y
 CONFIG_X86_FEATURE_NAMES=y
 CONFIG_X86_X2APIC=y
 CONFIG_X86_MPPARSE=y
-# CONFIG_GOLDFISH is not set
+CONFIG_GOLDFISH=y
 CONFIG_RETPOLINE=y
 CONFIG_X86_CPU_RESCTRL=y
 CONFIG_X86_EXTENDED_PLATFORM=y
@@ -2138,7 +2138,6 @@ CONFIG_X86_INTEL_TSX_MODE_OFF=y
 CONFIG_EFI=y
 CONFIG_EFI_STUB=y
 CONFIG_EFI_MIXED=y
-CONFIG_SECCOMP=y
 # CONFIG_HZ_100 is not set
 CONFIG_HZ_250=y
 # CONFIG_HZ_300 is not set
@@ -2273,7 +2272,6 @@ CONFIG_ACPI_EXTLOG=y
 CONFIG_ACPI_ADXL=y
 CONFIG_ACPI_CONFIGFS=y
 # CONFIG_PMIC_OPREGION is not set
-CONFIG_ACPI_CONFIGFS=y
 CONFIG_TPS68470_PMIC_OPREGION=y
 CONFIG_X86_PM_TIMER=y
 CONFIG_SFI=y
@@ -2423,7 +2421,7 @@ CONFIG_KVM_WERROR=y
 CONFIG_KVM_INTEL=y
 CONFIG_KVM_AMD=y
 CONFIG_KVM_AMD_SEV=y
-# CONFIG_KVM_MMU_AUDIT is not set
+CONFIG_KVM_MMU_AUDIT=y
 CONFIG_AS_AVX512=y
 CONFIG_AS_SHA1_NI=y
 CONFIG_AS_SHA256_NI=y
@@ -2514,7 +2512,6 @@ CONFIG_ARCH_MMAP_RND_BITS=28
 CONFIG_HAVE_ARCH_MMAP_RND_COMPAT_BITS=y
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS=8
 CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES=y
-CONFIG_HAVE_COPY_THREAD_TLS=y
 CONFIG_HAVE_STACK_VALIDATION=y
 CONFIG_HAVE_RELIABLE_STACKTRACE=y
 CONFIG_ISA_BUS_API=y
@@ -2677,7 +2674,6 @@ CONFIG_SELECT_MEMORY_MODEL=y
 CONFIG_SPARSEMEM_MANUAL=y
 CONFIG_SPARSEMEM=y
 CONFIG_NEED_MULTIPLE_NODES=y
-CONFIG_HAVE_MEMORY_PRESENT=y
 CONFIG_SPARSEMEM_EXTREME=y
 CONFIG_SPARSEMEM_VMEMMAP_ENABLE=y
 CONFIG_SPARSEMEM_VMEMMAP=y
@@ -5685,6 +5681,7 @@ CONFIG_KEYBOARD_MPR121=y
 CONFIG_KEYBOARD_NEWTON=y
 CONFIG_KEYBOARD_OPENCORES=y
 CONFIG_KEYBOARD_SAMSUNG=y
+# CONFIG_KEYBOARD_GOLDFISH_EVENTS is not set
 CONFIG_KEYBOARD_STOWAWAY=y
 CONFIG_KEYBOARD_SUNKBD=y
 CONFIG_KEYBOARD_IQS62X=y
@@ -6065,6 +6062,7 @@ CONFIG_SYNCLINKMP=y
 CONFIG_SYNCLINK_GT=y
 CONFIG_ISI=y
 CONFIG_N_HDLC=y
+# CONFIG_GOLDFISH_TTY is not set
 CONFIG_N_GSM=y
 CONFIG_NOZOMI=y
 CONFIG_NULL_TTY=y
@@ -6474,6 +6472,7 @@ CONFIG_GPIO_WM8994=y
 # PCI GPIO expanders
 #
 CONFIG_GPIO_AMD8111=y
+# CONFIG_GPIO_BT8XX is not set
 CONFIG_GPIO_ML_IOH=y
 CONFIG_GPIO_PCI_IDIO_16=y
 CONFIG_GPIO_PCIE_IDIO_24=y
@@ -6602,6 +6601,7 @@ CONFIG_CHARGER_BQ25980=y
 CONFIG_CHARGER_SMB347=y
 CONFIG_CHARGER_TPS65090=y
 CONFIG_BATTERY_GAUGE_LTC2941=y
+# CONFIG_BATTERY_GOLDFISH is not set
 CONFIG_BATTERY_RT5033=y
 CONFIG_CHARGER_RT9455=y
 CONFIG_CHARGER_CROS_USBPD=y
@@ -7193,51 +7193,13 @@ CONFIG_REGULATOR_WM8350=y
 CONFIG_REGULATOR_WM8400=y
 CONFIG_REGULATOR_WM8994=y
 CONFIG_REGULATOR_QCOM_LABIBB=y
-CONFIG_RC_CORE=y
-CONFIG_RC_MAP=y
-CONFIG_LIRC=y
-CONFIG_BPF_LIRC_MODE2=y
-CONFIG_RC_DECODERS=y
-CONFIG_IR_NEC_DECODER=y
-CONFIG_IR_RC5_DECODER=y
-CONFIG_IR_RC6_DECODER=y
-CONFIG_IR_JVC_DECODER=y
-CONFIG_IR_SONY_DECODER=y
-CONFIG_IR_SANYO_DECODER=y
-CONFIG_IR_SHARP_DECODER=y
-CONFIG_IR_MCE_KBD_DECODER=y
-CONFIG_IR_XMP_DECODER=y
-CONFIG_IR_IMON_DECODER=y
-CONFIG_IR_RCMM_DECODER=y
-CONFIG_RC_DEVICES=y
-CONFIG_RC_ATI_REMOTE=y
-CONFIG_IR_ENE=y
-CONFIG_IR_IMON=y
-CONFIG_IR_IMON_RAW=y
-CONFIG_IR_MCEUSB=y
-CONFIG_IR_ITE_CIR=y
-CONFIG_IR_FINTEK=y
-CONFIG_IR_NUVOTON=y
-CONFIG_IR_REDRAT3=y
-CONFIG_IR_STREAMZAP=y
-CONFIG_IR_WINBOND_CIR=y
-CONFIG_IR_IGORPLUGUSB=y
-CONFIG_IR_IGUANA=y
-CONFIG_IR_TTUSBIR=y
-CONFIG_RC_LOOPBACK=y
-CONFIG_IR_SERIAL=y
-CONFIG_IR_SERIAL_TRANSMITTER=y
-CONFIG_IR_SIR=y
-CONFIG_RC_XBOX_DVD=y
-CONFIG_IR_TOY=y
+# CONFIG_RC_CORE is not set
 CONFIG_CEC_CORE=y
 CONFIG_CEC_NOTIFIER=y
-CONFIG_MEDIA_CEC_RC=y
 CONFIG_MEDIA_CEC_SUPPORT=y
 CONFIG_CEC_CH7322=y
 CONFIG_CEC_CROS_EC=y
 CONFIG_CEC_SECO=y
-CONFIG_CEC_SECO_RC=y
 CONFIG_USB_PULSE8_CEC=y
 CONFIG_USB_RAINSHADOW_CEC=y
 CONFIG_MEDIA_SUPPORT=y
@@ -7393,46 +7355,13 @@ CONFIG_VIDEO_GO7007_USB_S2250_BOARD=y
 #
 CONFIG_VIDEO_AU0828=y
 CONFIG_VIDEO_AU0828_V4L2=y
-CONFIG_VIDEO_AU0828_RC=y
 CONFIG_VIDEO_CX231XX=y
-CONFIG_VIDEO_CX231XX_RC=y
 CONFIG_VIDEO_CX231XX_ALSA=y
 CONFIG_VIDEO_CX231XX_DVB=y
-CONFIG_VIDEO_TM6000=y
-CONFIG_VIDEO_TM6000_ALSA=y
-CONFIG_VIDEO_TM6000_DVB=y
 
 #
 # Digital TV USB devices
 #
-CONFIG_DVB_USB=y
-# CONFIG_DVB_USB_DEBUG is not set
-CONFIG_DVB_USB_DIB3000MC=y
-CONFIG_DVB_USB_A800=y
-CONFIG_DVB_USB_DIBUSB_MB=y
-# CONFIG_DVB_USB_DIBUSB_MB_FAULTY is not set
-CONFIG_DVB_USB_DIBUSB_MC=y
-CONFIG_DVB_USB_DIB0700=y
-CONFIG_DVB_USB_UMT_010=y
-CONFIG_DVB_USB_CXUSB=y
-CONFIG_DVB_USB_CXUSB_ANALOG=y
-CONFIG_DVB_USB_M920X=y
-CONFIG_DVB_USB_DIGITV=y
-CONFIG_DVB_USB_VP7045=y
-CONFIG_DVB_USB_VP702X=y
-CONFIG_DVB_USB_GP8PSK=y
-CONFIG_DVB_USB_NOVA_T_USB2=y
-CONFIG_DVB_USB_TTUSB2=y
-CONFIG_DVB_USB_DTT200U=y
-CONFIG_DVB_USB_OPERA1=y
-CONFIG_DVB_USB_AF9005=y
-CONFIG_DVB_USB_AF9005_REMOTE=y
-CONFIG_DVB_USB_PCTV452E=y
-CONFIG_DVB_USB_DW2102=y
-CONFIG_DVB_USB_CINERGY_T2=y
-CONFIG_DVB_USB_DTV5100=y
-CONFIG_DVB_USB_AZ6027=y
-CONFIG_DVB_USB_TECHNISAT_USB2=y
 CONFIG_DVB_USB_V2=y
 CONFIG_DVB_USB_AF9015=y
 CONFIG_DVB_USB_AF9035=y
@@ -7442,7 +7371,6 @@ CONFIG_DVB_USB_AZ6007=y
 CONFIG_DVB_USB_CE6230=y
 CONFIG_DVB_USB_EC168=y
 CONFIG_DVB_USB_GL861=y
-CONFIG_DVB_USB_LME2510=y
 CONFIG_DVB_USB_MXL111SF=y
 CONFIG_DVB_USB_RTL28XXU=y
 CONFIG_DVB_USB_DVBSKY=y
@@ -7461,7 +7389,6 @@ CONFIG_VIDEO_EM28XX=y
 CONFIG_VIDEO_EM28XX_V4L2=y
 CONFIG_VIDEO_EM28XX_ALSA=y
 CONFIG_VIDEO_EM28XX_DVB=y
-CONFIG_VIDEO_EM28XX_RC=y
 
 #
 # Software defined radio USB devices
@@ -7483,11 +7410,6 @@ CONFIG_VIDEO_TW686X=y
 #
 # Media capture/analog TV support
 #
-CONFIG_VIDEO_IVTV=y
-# CONFIG_VIDEO_IVTV_DEPRECATED_IOCTLS is not set
-CONFIG_VIDEO_IVTV_ALSA=y
-CONFIG_VIDEO_FB_IVTV=y
-CONFIG_VIDEO_FB_IVTV_FORCE_PAT=y
 CONFIG_VIDEO_HEXIUM_GEMINI=y
 CONFIG_VIDEO_HEXIUM_ORION=y
 CONFIG_VIDEO_MXB=y
@@ -7496,24 +7418,10 @@ CONFIG_VIDEO_DT3155=y
 #
 # Media capture/analog/hybrid TV support
 #
-CONFIG_VIDEO_CX18=y
-CONFIG_VIDEO_CX18_ALSA=y
-CONFIG_VIDEO_CX23885=y
-CONFIG_MEDIA_ALTERA_CI=y
 CONFIG_VIDEO_CX25821=y
 CONFIG_VIDEO_CX25821_ALSA=y
-CONFIG_VIDEO_CX88=y
-CONFIG_VIDEO_CX88_ALSA=y
-CONFIG_VIDEO_CX88_BLACKBIRD=y
-CONFIG_VIDEO_CX88_DVB=y
-CONFIG_VIDEO_CX88_ENABLE_VP3054=y
-CONFIG_VIDEO_CX88_VP3054=y
-CONFIG_VIDEO_CX88_MPEG=y
-CONFIG_VIDEO_BT848=y
-CONFIG_DVB_BT8XX=y
 CONFIG_VIDEO_SAA7134=y
 CONFIG_VIDEO_SAA7134_ALSA=y
-CONFIG_VIDEO_SAA7134_RC=y
 CONFIG_VIDEO_SAA7134_DVB=y
 CONFIG_VIDEO_SAA7134_GO7007=y
 CONFIG_VIDEO_SAA7164=y
@@ -7522,27 +7430,20 @@ CONFIG_VIDEO_COBALT=y
 #
 # Media digital TV PCI Adapters
 #
-CONFIG_DVB_AV7110_IR=y
 CONFIG_DVB_AV7110=y
 CONFIG_DVB_AV7110_OSD=y
 CONFIG_DVB_BUDGET_CORE=y
 CONFIG_DVB_BUDGET=y
-CONFIG_DVB_BUDGET_CI=y
 CONFIG_DVB_BUDGET_AV=y
 CONFIG_DVB_BUDGET_PATCH=y
 CONFIG_DVB_B2C2_FLEXCOP_PCI=y
 # CONFIG_DVB_B2C2_FLEXCOP_PCI_DEBUG is not set
 CONFIG_DVB_PLUTO2=y
-CONFIG_DVB_DM1105=y
 CONFIG_DVB_PT1=y
 CONFIG_DVB_PT3=y
-CONFIG_MANTIS_CORE=y
-CONFIG_DVB_MANTIS=y
-CONFIG_DVB_HOPPER=y
 CONFIG_DVB_NGENE=y
 CONFIG_DVB_DDBRIDGE=y
 # CONFIG_DVB_DDBRIDGE_MSIENABLE is not set
-CONFIG_DVB_SMIPCIE=y
 CONFIG_DVB_NETUP_UNIDVB=y
 CONFIG_VIDEO_IPU3_CIO2=y
 # CONFIG_VIDEO_PCI_SKELETON is not set
@@ -7589,7 +7490,6 @@ CONFIG_DVB_B2C2_FLEXCOP=y
 CONFIG_VIDEO_SAA7146=y
 CONFIG_VIDEO_SAA7146_VV=y
 CONFIG_SMS_SIANO_MDTV=y
-CONFIG_SMS_SIANO_RC=y
 CONFIG_SMS_SIANO_DEBUGFS=y
 CONFIG_VIDEO_V4L2_TPG=y
 CONFIG_V4L_PLATFORM_DRIVERS=y
@@ -7629,11 +7529,6 @@ CONFIG_DVB_FIREDTV_INPUT=y
 # Media ancillary drivers
 #
 CONFIG_MEDIA_ATTACH=y
-
-#
-# IR I2C driver auto-selected by 'Autoselect ancillary drivers'
-#
-CONFIG_VIDEO_IR_I2C=y
 
 #
 # Audio decoders, processors and mixers
@@ -7957,7 +7852,6 @@ CONFIG_DVB_RTL2832_SDR=y
 CONFIG_DVB_SI2168=y
 CONFIG_DVB_AS102_FE=y
 CONFIG_DVB_ZD1301_DEMOD=y
-CONFIG_DVB_GP8PSK_FE=y
 CONFIG_DVB_CXD2880=y
 
 #
@@ -8306,6 +8200,7 @@ CONFIG_FB_SM501=y
 CONFIG_FB_SMSCUFX=y
 CONFIG_FB_UDL=y
 # CONFIG_FB_IBM_GXT4500 is not set
+# CONFIG_FB_GOLDFISH is not set
 CONFIG_FB_VIRTUAL=y
 CONFIG_XEN_FBDEV_FRONTEND=y
 CONFIG_FB_METRONOME=y
@@ -9054,7 +8949,6 @@ CONFIG_HID_PICOLCD_FB=y
 CONFIG_HID_PICOLCD_BACKLIGHT=y
 CONFIG_HID_PICOLCD_LCD=y
 CONFIG_HID_PICOLCD_LEDS=y
-CONFIG_HID_PICOLCD_CIR=y
 CONFIG_HID_PLANTRONICS=y
 CONFIG_HID_PRIMAX=y
 CONFIG_HID_RETRODE=y
@@ -9540,6 +9434,7 @@ CONFIG_MMC_SDHCI_F_SDH30=y
 CONFIG_MMC_WBSD=y
 CONFIG_MMC_ALCOR=y
 CONFIG_MMC_TIFM_SD=y
+# CONFIG_MMC_GOLDFISH is not set
 CONFIG_MMC_SPI=y
 CONFIG_MMC_SDRICOH_CS=y
 CONFIG_MMC_CB710=y
@@ -10254,6 +10149,7 @@ CONFIG_LTE_GDM724X=m
 CONFIG_FIREWIRE_SERIAL=y
 CONFIG_FWTTY_MAX_TOTAL_PORTS=64
 CONFIG_FWTTY_MAX_CARD_PORTS=32
+# CONFIG_GOLDFISH_AUDIO is not set
 CONFIG_GS_FPGABOOT=y
 CONFIG_UNISYSSPAR=y
 CONFIG_UNISYS_VISORNIC=y
@@ -10406,6 +10302,7 @@ CONFIG_INTEL_SCU_PLATFORM=y
 CONFIG_INTEL_SCU_IPC_UTIL=y
 CONFIG_INTEL_TELEMETRY=y
 CONFIG_PMC_ATOM=y
+# CONFIG_GOLDFISH_PIPE is not set
 CONFIG_CHROME_PLATFORMS=y
 CONFIG_CHROMEOS_LAPTOP=y
 CONFIG_CHROMEOS_PSTORE=y
@@ -12650,6 +12547,7 @@ CONFIG_GENTOO_LINUX_INIT_SCRIPT=y
 # end of Gentoo Linux
 
 
+
 EOF
 							}
 							KERNCONF_DEFCONFIG () {
@@ -13089,7 +12987,7 @@ EOF
 			}
 			#FSTAB
 			## CRYPTTABD  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-			#SYSAPP  # (!note !todo !bug : virtualbox) other issues?
+			#SYSAPP  # (!NOTE !todo !bug : virtualbox) other issues?
 			#I_FSTOOLS
 			BOOTLOAD
 			KERNEL
@@ -13549,7 +13447,7 @@ EOF
 				  echo "${bold}enter new root password${normal}"
 				done
 			}
-			ADMIN () {  # (!note: default) - ok 
+			ADMIN () {  # (!NOTE: default) - ok 
 			NOTICE_START
 				ADD_GROUPS () {
 				NOTICE_START  # for group user sets in var do groupadd -- changeme
@@ -13592,7 +13490,7 @@ EOF
 		} 
 		## (RUN ENTIRE SCRIPT) (!changeme)
 		BASE  # (!test 19.01.2021 - ok) (keymaps for multilang ; update config aat keymaps corerct? !todo)
-		#CORE
+		CORE
 		SCREENDSP
 		#USERAPP
 		#USERS
