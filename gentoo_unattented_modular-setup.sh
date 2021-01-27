@@ -1053,8 +1053,7 @@ EOF
 				    fi
 				fi
 				if [ "$color_prompt" = yes ]; then
-				# PS1='${arch_chroot:+($arch_chroot)}\[\033[01;32m\]\u@\h\[\036[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '  # default
-				PS1='${gentoo_chroot:+($debian_chroot)}\[\033[0;35m\][\[\033[0;32m\]\u\[\033[0;37m\]@\[\033[0;36m\]\h\[\033[0;37m\]:\[\033[0;37m\]\w\[\033[0;35m\]]\[\033[0;37m\]\$\[\033[01;38;5;220m\] '  # mod
+				PS1='\t ${gentoo_chroot:+($gentoo_chroot)}\[\033[0;35m\][\[\033[0;32m\]\u\[\033[0;37m\]@\[\033[0;36m\]\h\[\033[0;37m\]:\[\033[0;37m\]\w\[\033[0;35m\]]\[\033[0;37m\]\$\[\033[01;38;5;220m\] '  # mod
 				else
 				    PS1='${gentoo_chroot:+($gentoo_chroot)}\u@\h:\w\$ '
 				fi
