@@ -5,22 +5,22 @@
 
 ## EX: Virtualbox (> v6.*).
 > have plenty of RAM, compensate for lack of RAM with SWAP (CHROOT).
-![Virtualbox Motherboard RAM settings](img/scrnshts/VIRTB_1.png)
+![Virtualbox RAM .](img/scrnshts/VIRTB_1.png)
 
 > enable processor "true cores" .
-![Virtualbox Pocessor core settings](img/scrnshts/VIRTB_2.png)
+![Virtualbox Pocessor](img/scrnshts/VIRTB_2.png)
 
 > KVM as virt in order to make the hardware available in the virtual-machine.
-![Virtualbox Acceleration (VIRT MODE) settings](img/scrnshts/VIRTB_3.png)
+![Virtualbox Acceleration.](img/scrnshts/VIRTB_3.png)
 
 > add screen memory.
 ![Virtualbox screen memory settings](img/scrnshts/VIRTB_4.png)
 
 > mount CD rom img as IDE, set SSD mark if ... (add space for swap CHROOT if req.) 
-![Virtualbox disk settings.](img/scrnshts/VIRTB_5.png)
+![Virtualbox disk.](img/scrnshts/VIRTB_5.png)
 
 > samplenetwork -> ssh host to guest: HOST bridged to br0 ipv4 only. (wrong adapter type may prevent coonnect) | ssh ...
-![Virtualbox network settings.](img/scrnshts/VIRTB_6.png)
+![Virtualbox network.](img/scrnshts/VIRTB_6.png)
 
 
 ## GET STARTED
