@@ -15,7 +15,7 @@ bold=$(tput bold) # staticvar bold text
 normal=$(tput sgr0) # # staticvar reverse to normal text
 
 
-# STATIC FUNCTIONS
+# STATIC FUNCTIONS - left the START / END notices in for a moment ... ( !note: remove?)
 NOTICE_START () {
 	echo "${bold} ${FUNCNAME[1]} ... START ... ${normal}"
 }
