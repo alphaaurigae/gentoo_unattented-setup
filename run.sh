@@ -1196,7 +1196,7 @@ EOF
 					CONF_LILO () {  # https://wiki.gentoo.org/wiki/LILO # https://github.com/a2o/lilo/blob/master/sample/lilo.example.conf
 					NOTICE_START
 						cat << EOF > /etc/lilo.conf
-						# [ !PASTE_CONFIG: paste lilo config (!note: not fully integrated / automated yet) ]
+						# [ !PASTE_OPTIONAL_CONFIG: lilo config (!note: not fully integrated / automated yet) ]
 EOF
 					NOTICE_END
 					}
@@ -1245,7 +1245,7 @@ EOF
 								echo "ignore err"
 								touch /usr/src/linux/.config
 								
-								[ !PASTE_DEF_CONFIG: .config for the kernel in the cat paste below. and comment this line + below out ] 
+								[ !PASTE_DEF_CONFIG: "KERNEL" .config for the kernel in the cat paste below. and comment this line + below out ] 
 								############################################################################################################################################################################################################################################################################################################################################################################################
 								cat << 'EOF' > /usr/src/linux/.config  # stripped version infos for refetch
 
@@ -1315,7 +1315,7 @@ EOF
 							NOTICE_START
 								touch /etc/genkernel.conf
 								cat << 'EOF' > /etc/genkernel.conf
-								# [!PASTE_CONFIG: config/other_optional/genkernel.conf - not yet intgreated in variables and fully tested, ]
+								# [!PASTE_OPTIONAL_CONFIG: config/other_optional/genkernel.conf - not yet intgreated in variables and fully tested, ]
 EOF
 							NOTICE_END
 							}
