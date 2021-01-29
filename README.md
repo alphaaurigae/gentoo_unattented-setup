@@ -14,15 +14,6 @@
 
 ![Reboot from CHROOT - default sample setup - XFCE4](img/scrnshts/REBOOT_DONE.png)
 
-## CONFIG:
-- find the configs in "config/required/default-testing/" , eventually edit and paste to the main script "run.sh" --> in place of " [ !PASTE_DEF_CONFIG ... ] "
-> there are 3 places for default configs / variables to be copy pasted.
-1. !PASTE_DEF_CONFIG copy paste content of "config/required/default-testing/1_ variables_pre.default-testing.sh" --> TO: "run.sh --> EDITOR [ !PASTE_DEF_CONFIG VARIABLES_1 ...]
-- variables for the pre setup.
-2. !PASTE_DEF_CONFIG copy paste content of "2_variables_chroot_default-testing.sh" --> TO: "run.sh" --> EDITOR [ !PASTE_DEF_CONFIG VARIABLES_2 ...]
-- combined with the variables for the pre setup .. these setup everything for the chroot.
-3. !PASTE_DEF_CONFIG copy paste content of "kernel_.config_default-testing.sh (template of /usr/src/linux/.config" to be pasted during setup) --> TO: "run.sh" --> EDITOR [ !PASTE_DEF_CONFIG the linux kernel configuration file (there are options to work off default configs - see var)
-- you still get a menuconfig by default, but based on the premade config. there are more optiosn for kernel setup.
 
 <p>
 > work in progress! 24.01.2021
