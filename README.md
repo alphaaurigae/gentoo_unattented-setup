@@ -1,5 +1,7 @@
 # Automated, modular - 1 file - setup for GENTOO linux.
 
+- find the CHROOT.sh for the chroot setup in /src ... paste to run.sh in / repo.
+
 - find the configs in "config/required/default-testing/" , eventually edit and paste to the main script "run.sh" --> in place of " [ !PASTE_DEF_CONFIG ... ] "
 > there are 3 places for default configs / variables to be copy pasted.
 1. !PASTE_DEF_CONFIG copy paste content of "config/required/default-testing/1_ variables_pre.default-testing.sh" --> TO: "run.sh --> EDITOR [ !PASTE_DEF_CONFIG VARIABLES_1 ...]
