@@ -1,7 +1,7 @@
 # Documenting the setup
 ## THIS PAGE NEEDS AN UPDATE 03.09.2022
 
-TODO: docs/TODO/Readme.md
+TODO: https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc/TODO
 
  > configurable setup script for a automated - unattended & modular gentoo linux system installation. 
 
