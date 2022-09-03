@@ -3,7 +3,7 @@
 
 # status 03.09.2022
 
-- work / redo all the things ... things maybe not ordered neatley yet.
+- work / redo / TESTING all the things ... things maybe not ordered neatley yet.
 - basic mockup, work in progress
 - script runs with "very little" interaction required to setup a gentoo desktop. ... testing
 - bugs that prevented the script to run to the finish (desktop environment) removed ... xfce deskop boots.
