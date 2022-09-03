@@ -1,6 +1,7 @@
 		# MISC VAR
 		bold=$(tput bold)  # (!important)
 		normal=$(tput sgr0)  # (!important)
+		# these funtions dont belong in a variable file but want to get done quick now 27.8.22
 		NOTICE_START () {
 			echo "${bold} ${FUNCNAME[1]} ... START ... ${normal}"
 		}
@@ -51,10 +52,10 @@
 		SYSINITVAR=OPENRC  # OPENRC (!default); SYSTEMD (!todo)
 
 		# STATIC CUSTOM  # lets make some variables to avoid repeats.
-		LANG_MAIN_LOWER="de"
-		LANG_MAIN_UPPER="DE"
-		LANG_SECOND_LOWER="en"
-		LANG_SECOND_UPPER="US"
+		LANG_MAIN_LOWER="en"
+		LANG_MAIN_UPPER="US"
+		LANG_SECOND_LOWER="de"
+		LANG_SECOND_UPPER="DE"
 
 		## MAKE.CONF PRESET
 		PRESET_CC=gcc  # gcc (!default); the preset compiler
@@ -77,14 +78,19 @@
 		PRESET_LICENCES="*"  # default is: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software) (!todo)
 
 		# https://www.gentoo.org/support/use-flags/
+		# cjk why?
+		# hardened flag but no hardened image, why?
 		PRESET_USEFLAG="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
-				cpudetection cjk crypt cryptsetup cxx dbus elogind ffmpeg git -gtk gtk+ gtk3 gzip \
-				hardened initramfs int64 lzma lzo mount opengl pulseaudio policykit postproc secure-delete \
+				cpudetection cjk crypt cryptsetup cxx dbus elogind ffmpeg git gtk gtk+ gtk3 gzip \
+				hardened initramfs int64 lzma lzo mount opengl pulseaudio jack policykit postproc secure-delete \
 				sqlite threads udev udisks unicode zip \
 				-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
 				-systemd -mssql -postgres -ppp -telnet"
-
-		PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip binpkg-dostrip candy cgroup binpkg-logs collision-protect \
+		# mount sandbox missing?
+		# noman, srsly?
+		# sandbox maybe?
+		# userpriv and sandbox?
+		PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip candy cgroup binpkg-logs collision-protect \
 				compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
 				network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
 
@@ -119,7 +125,7 @@
 		PRESET_LOCALE_B=$LANG_SECOND_LOWER\_$LANG_SECOND_UPPER # lang set 2 # "
 
 		# LOCALES LANG KEYMAPS MAIN
-		KEYMAP="$LANG_MAIN_LOWER" # set common
+		KEYMAP="de" # set common (!channgeme)
 		CONSOLEFONT="default8x16" # https://wiki.gentoo.org/wiki/Fonts
 
 		## LOCALES TIME / DATE MAIN
@@ -133,7 +139,7 @@
 		KERNDEPLOY=MANUAL  # (!default); AUTO (genkernel)
 		KERNVERS=5.3-rc4  # for MANUAL setup
 		KERNSOURCES=EMERGE  # EMERGE (!default) ; TORVALDS (git repository)
-		KERNCONFD=MENUCONFIG  # DEFCONFIG
+		KERNCONFD=PASTE  # DEFCONFIG
 
 		### INITRAMFS
 		GENINITRAMFS=DRACUT  # DRACUT (!default); GENKERNEL
@@ -142,7 +148,8 @@
 		GENKERNEL_CMD="--luks --lvm --no-zfs all"
 		# DRACUT
 		## DRACUT_CONF
-		DRACUT_CONF_MODULES="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg gensplash lvm debug dm"
+		# just removed gensplash "ERR dracut: dracut module 'gensplash' cannot be found or installed."
+		DRACUT_CONF_MODULES="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg lvm debug dm"
 		DRACUT_CONF_HOSTONLY="yes"
 		DRACUT_CONF_LVMCONF="yes"
 		DRACUT_CONFD_ADD_DRACUT_MODULES="usrmount"
@@ -226,8 +233,9 @@
 		USEFLAGS_DRACUT="device-mapper"  # if systemd - systemd useflag required?
 		USEFLAGS_GENKERNEL="cryptsetup"
 		
+		USEFLAGS_PULSEAUDIO=""
 		USEFLAGS_XORG_SERVER="xvfb"
-		USEFLAGS_XFCE4_META="gtk3"
+		USEFLAGS_XFCE4_META="gtk3 gcr"
 		USEFLAGS_NETWORKMANAGER="dhcpcd -modemmanager -ppp"
 		
 		USEFLAGS_GRUB2="fonts"
