@@ -198,57 +198,6 @@ CHROOT () {	# 4.0 CHROOT # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installat
 			#. /kern.config.sh
 			#. func/chroot_static-functions.sh
 
-	BUGFIX_LIBGC_TO_LIBXCRYPT () {
-		## BUG libgc --> libxcrypt
-
-		# https://wiki.gentoo.org/wiki/Project:Toolchain/libcrypt_implementation
-
-		LC_SYNC () {
-			emerge --sync  # sync your copy of the repository 
-			emerge -a -uvDU @world # Fully upgrade the system 
-			emerge -acv  # Depclean
-		}
-
-		LC_PACKAGE_USE () {
-			# Disable libcrypt in glibc
-			echo ">=sys-libs/glibc-2.33-r3 -crypt" > /etc/portage/package.use/glibc
-			# Provide libcrypt
-			echo ">=sys-libs/libxcrypt-4.4.23-r2 system" > /etc/portage/package.use/libxcrypt
-		}
-		LC_ACCEPT_KEYWORDS () {
-			touch /etc/portage/package.accept_keywords/common
-			# Allow the new libcrypt virtual which includes libxcrypt
-			echo "~virtual/libcrypt-2" > /etc/portage/package.accept_keywords/common
-
-			# Needed for the right masks to kick in, we revbumped for the migration
-			echo "=sys-libs/glibc-2.33-r5" >> /etc/portage/package.accept_keywords/common
-			echo "=sys-libs/libxcrypt-4.4.23-r2" >> /etc/portage/package.accept_keywords/common
-		}
-		LC_PACKAGE_UNMASK () {
-			# Allow virtual which specifies libxcrypt
-			echo "~virtual/libcrypt-2" > /etc/portage/package.unmask
-		}
-		LC_PACKAGE_USE_MASK () {
-			# Allow libxcrypt to be the system provider of libcrypt, not glibc
-			echo ">=sys-libs/libxcrypt-4.4.23-r2 -system -split-usr" > /etc/portage/profile/package.use.mask
-		}
-		LC_PROFILE_PACKAGE_USE_FORCE () {
-			# Don't force glibc to provide libcrypt
-			echo ">=sys-libs/glibc-2.33-r3 -crypt" > /etc/portage/profile/package.use.force
-		}
-		LC_EMERGE () {
-			emerge --ask -p -uvDU @world
-		}
-		LC_SYNC
-		LC_PACKAGE_USE
-		LC_ACCEPT_KEYWORDS
-		LC_PACKAGE_UNMASK
-		LC_PACKAGE_USE_MASK
-		LC_PROFILE_PACKAGE_USE_FORCE
-		LC_EMERGE
-		
-	}
-
 	# MISC FUNCTIONS
 	EMERGE_USERAPP_DEF () {
 		echo "emerging $APPAPP_EMERGE "
@@ -518,47 +467,41 @@ EOF
 					SET_SYSTEMCLOCK  # echos err for systemd, if install medium isnt systemd
 					SET_HWCLOCK
 				}
-				KEYMAPS () {  # https://wiki.gentoo.org/wiki/Keyboard_layout_switching  ## (note:: theres a second place where keymaps are set, which is:"X11 KEYS SET = WINDOWSYS --> X11")
-					KEYMAPS_OPENRC () {
-						KEYLANGORC () { # (!changeme in var)
+
+				KEYMAP_CONSOLEFONT () {  # https://wiki.gentoo.org/wiki/Keyboard_layout_switching  ## (note:: theres a second place where keymaps are set, which is:"X11 KEYS SET = WINDOWSYS --> X11")
+
+					KEYMAP_CONSOLEFONT_OPENRC () {
+						KEYMAP_OPENRC () { # (!changeme in var)
 							AUTOSTART_NAME_OPENRC="keymaps"
-							CONFIG_KEYLANGORC () {
-								sed -ie 's/keymap="d"/keymap="$KEYMAP"/g' /etc/conf.d/keymaps
-								sed -ie "s/\$KEYMAP/$KEYMAP/g" /etc/conf.d/keymaps
-							}
-							CONFIG_KEYLANGORC
+							sed -ie 's/keymap="us"/keymap="$KEYMAP"/g' /etc/conf.d/keymaps
+							sed -ie 's/keymap="de"/keymap="$KEYMAP"/g' /etc/conf.d/keymaps
+							sed -ie "s/\$KEYMAP/$KEYMAP/g" /etc/conf.d/keymaps
 							AUTOSTART_BOOT_OPENRC
 							rc-update add keymaps boot
 						}
-						CONSOLEFONTORC () {
+						CONSOLEFONT_OPENRC () {
 							AUTOSTART_NAME_OPENRC="consolefont"
-							CONFIG_CONSOLEFONTORC () {
-								sed -ie 's/consolefont="default8x16"/consolefont="$CONSOLEFONT"/g' /etc/conf.d/consolefont
-								sed -ie "s/\$CONSOLEFONT/$CONSOLEFONT/g" /etc/conf.d/consolefont  # note: consolefont file also contains "conoletranslation=" ;  "unicodemap=" - not set here - disabled by default.
-							}
-							CONFIG_CONSOLEFONTORC
+							sed -ie 's/consolefont="default8x16"/consolefont="$CONSOLEFONT"/g' /etc/conf.d/consolefont
+							sed -ie "s/\$CONSOLEFONT/$CONSOLEFONT/g" /etc/conf.d/consolefont  # note: consolefont file also contains "conoletranslation=" ;  "unicodemap=" - not set here - disabled by default.
 							AUTOSTART_BOOT_OPENRC
 						}
 						etc-update --automode -3
-						KEYLANGORC
-						CONSOLEFONTORC
+						KEYMAP_OPENRC
+						CONSOLEFONT_OPENRC
 					}
-					KEYMAPS_SYSTEMD () {
-						VCONSOLE_CONF () {  # https://wiki.archlinux.org/index.php/Keyboard_configuration_in_console
-							AUTOSTART_NAME_SYSTEMD="placeholder"
-							### LOCALES LANG KEYMAPS SYSTEMD
-							# -------------------------------------------
-							VCONSOLE_KEYMAP=$KEYMAP-latin1 # (!changeme) console keymap systemd
-							VCONSOLE_FONT="$CONSOLEFONT" # (!changeme)
-							cat << EOF > /etc/vconsole.conf
-							KEYMAP=$VCONSOLE_KEYMAP
-							FONT=$VCONSOLE_FONT
+
+					KEYMAP_CONSOLEFONT_SYSTEMD () {   # https://wiki.archlinux.org/index.php/Keyboard_configuration_in_console
+						AUTOSTART_NAME_SYSTEMD="placeholder"
+						VCONSOLE_KEYMAP=$KEYMAP-latin1 # (!changeme) console keymap systemd
+						VCONSOLE_FONT="$CONSOLEFONT" # (!changeme)
+						cat << EOF > /etc/vconsole.conf
+						KEYMAP=$VCONSOLE_KEYMAP
+						FONT=$VCONSOLE_FONT
 EOF
-						}
-						VCONSOLE_CONF
 					}
+					
 					ENVUD
-					KEYMAPS_$SYSINITVAR
+					KEYMAP_CONSOLEFONT_$SYSINITVAR
 				}
 				FIRMWARE () {  # BUG https://bugs.gentoo.org/318841#c20
 					LINUX_FIRMWARE () {  # https://wiki.gentoo.org/wiki/Linux_firmware
@@ -578,7 +521,7 @@ EOF
 				#df -h
 # backup vom last stop
 				#cat /etc/portage/make.conf
-				MAKECONF
+				#MAKECONF
 				# cat /etc/portage/make.conf
 				#CONF_LOCALES
 
@@ -591,7 +534,7 @@ EOF
 				##MISC1_CHROOT
 				##RELOADING_SYS
 				#SYSTEMTIME
-				#KEYMAPS
+				KEYMAP_CONSOLEFONT
 				#FIRMWARE
 				#BASHRC
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -874,7 +817,7 @@ VIXICRON_CRON_EMERGE=sys-process/vixie-cron
 							PRE_GRUB2
 							GRUB2_$BOOTSYSINITVAR
 						}
-						CONFIGGRUB2_DMCRYPT () { # ( !note: config is edited partially after pasting, to be fully integrated in variables. )
+						CONFIG_GRUB2_DMCRYPT () { # ( !note: config is edited partially after pasting, to be fully integrated in variables. )
 						
 							CONFGRUBDMCRYPT_MAIN () {
 								etc-update --automode -3
@@ -902,12 +845,12 @@ EOF
 							CONFGRUBDMCRYPT_MAIN
 							CONFGRUBDMCRYPT_$SYSINITVAR
 						}
-						UPDTE_GRUB () {
+						UPDATE_GRUB () {
 							grub-mkconfig -o /boot/grub/grub.cfg
 						}
 						LOAD_GRUB2
-						CONFIGGRUB2_DMCRYPT
-						UPDTE_GRUB
+						CONFIG_GRUB2_DMCRYPT
+						UPDATE_GRUB
 					}
 					SETUP_LILO () {
 						APPAPP_EMERGE="sys-boot/lilo "
@@ -1041,6 +984,13 @@ EOF
 							}
 							DRACUT_DRACUTCONF () {
 								cat << EOF > /etc/dracut.conf
+# i18n
+#i18n_vars="/etc/sysconfig/keyboard:KEYTABLE-KEYMAP /etc/sysconfig/i18n:SYSFONT-FONT,FONTACM-FONT_MAP,FONT_UNIMAP"
+#i18n_default_font="eurlatgr"
+								#i18n_vars="/etc/conf.d/keymaps:KEYMAP,EXTENDED_KEYMAPS-EXT_KEYMAPS /etc/conf.d/consolefont:CONSOLEFONT-FONT,CONSOLETRANSLATION-FONT_MAP /etc/rc.conf:UNICODE"
+								#i18n_install_all="yes"
+								i18n_vars="/etc/conf.d/keymaps:keymap-KEYMAP,extended_keymaps-EXT_KEYMAPS /etc/conf.d/consolefont:consolefont-FONT,consoletranslation-FONT_MAP /etc/rc.conf:unicode-UNICODE"
+
 								hostonly="$DRACUT_CONF_HOSTONLY"
 								lvmconf="$DRACUT_CONF_LVMCONF"
 								dracutmodules+="$DRACUT_CONF_MODULES"
@@ -1257,11 +1207,11 @@ EOF
 				#I_FSTOOLS # notice during setup  unsupporeted locale setting
 				BOOTLOAD
 				#KERNEL
-				#if [ "$CONFIGBUILDKERN" != "AUTO" ]; then
-				#	INITRAMFS
-				#else
-				#	echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
-				#fi
+				if [ "$CONFIGBUILDKERN" != "AUTO" ]; then
+					INITRAMFS
+				else
+					echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
+				fi
 				##MODPROBE_CHROOT  # (!info: not required for the default lvm on luks gpt bios grub - setup)
 				#VIRTUALIZATION  # (!info !bug !todo : worked previously with virtualbox set as gpu in make.conf, curiously.)
 				#AUDIO # circular dependencies err "minimal, pulse3audio"
@@ -1585,7 +1535,7 @@ EOF
 					$DISPLAYMGR_YESNO
 				}
 				WINDOWSYS
-				DESKTOP_ENV
+				#DESKTOP_ENV
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			}
 			USERAPP () {  # (!todo)
@@ -1675,13 +1625,11 @@ EOF
 			} 
 			## (RUN ENTIRE SCRIPT) (!changeme)
 
-#BASE  # (!test 19.01.2021 - ok) (keymaps for multilang ; update config at keymaps corerct? !todo)
-##BUGFIX_LIBGC_TO_LIBXCRYPT
-##emerge -a -uvDU @world
-#CORE
+BASE
+CORE
 #SCREENDSP
 #USERAPP
-USERS
+#USERS
 #FINISH
 echo "end chroot"
 INNERSCRIPT
