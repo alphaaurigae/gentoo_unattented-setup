@@ -5,6 +5,10 @@
 
 > TODO list of ideas for improvements
 
+### SUDO
+- run.sh SYSAPP_SUDO ~ line 591 ... 
+- ... /etc/sudoers '# %wheel ALL=(ALL) ALL' supposed to be replaced by '%wheel ALL=(ALL) ALL' w sed -ie 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers ; either didnt work or did not run properly in last test 04.09.2022 
+
 ### Bootloader
 - grub timeout font? kernel title? kernel font? idk
 - preconf alt bootloaders beside grub

@@ -503,7 +503,7 @@ EOF
 					ENVUD
 					KEYMAP_CONSOLEFONT_$SYSINITVAR
 				}
-				FIRMWARE () {  # BUG https://bugs.gentoo.org/318841#c20
+				FIRMWARE () {
 					LINUX_FIRMWARE () {  # https://wiki.gentoo.org/wiki/Linux_firmware
 						APPAPP_EMERGE="sys-kernel/linux-firmware "
 						PACKAGE_USE				
@@ -515,7 +515,7 @@ EOF
 					LINUX_FIRMWARE
 				}
 				BASHRC () {  # (!NOTE: custom .bashrc) (!todo) (!changeme)
-					cp /.bashrc etc/skel/.bashrc
+					cp /.bashrc.sh /etc/skel/.bashrc
 				}
 				#SWAPFILE
 				#df -h
@@ -534,9 +534,9 @@ EOF
 				##MISC1_CHROOT
 				##RELOADING_SYS
 				#SYSTEMTIME
-				KEYMAP_CONSOLEFONT
+				#KEYMAP_CONSOLEFONT
 				#FIRMWARE
-				#BASHRC
+				BASHRC
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			}
 			CORE () {
@@ -1536,7 +1536,7 @@ EOF
 					$DISPLAYMGR_YESNO
 				}
 				WINDOWSYS
-				#DESKTOP_ENV
+				DESKTOP_ENV
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			}
 			USERAPP () {  # (!todo)
@@ -1626,9 +1626,9 @@ EOF
 			} 
 			## (RUN ENTIRE SCRIPT) (!changeme)
 
-#BASE
+BASE
 #CORE
-SCREENDSP
+#SCREENDSP
 #USERAPP
 #USERS
 #FINISH
