@@ -1,44 +1,58 @@
 # TODO
-## work in progress 03.09.2022
+> https://wiki.gentoo.org/wiki/Main_Page
 
-- a todo list of ideas for improvements
-> (may not up to date if updates pushed hastely ^^⁾
+## work in progress 04.09.2022
 
-> work in progress! 24.01.2021
-- minimal default kernel configuration - automate kernel functions set y/n . probably different default kernels .. testing..
+> TODO list of ideas for improvements
+
+### Bootloader
 - grub timeout font? kernel title? kernel font? idk
-- keyboard keymap.. after chroot reboot into new system the keyboard is still default in xfce4
-> may boots with US keyboard layout for cryptsetup luks password.
-- tidy up 
-- modulize ... automate all the things.... ; modulize partitions, useflags ... all the things.
-- IOMMU for virt?
-- improve readability.
-- improve default build time and script time (avoid reconfigs @world)
+- preconf alt bootloaders beside grub
+
+### USEFLAGS
+- optimize USEFLAGS set, per application dynamic?
+
+### doc tut
 - virt-manager KVM qemu yet todo for testing, virtualbox was quick and "easy".
 
-notes:
-https://wiki.gentoo.org/wiki/Main_Page
-1. KERNEL version
+### KERNEL
+- choose version
+- test setups.
+- new preconf file(s)
+- minimal default kernel configuration? 
+- automate kernel functions set y/n . not sure whats most effective yet.
 
-2. keymap
+### audio 
+- preconfigure options.
+- optional setup wo luks preconfigure - luks as optional feature.
 
-3. optional setup wo luks preconfigure - luks as optional feature.
+### network
+- static preconf
+- firewalls options, preconfigure
+> https://packages.gentoo.org/categories/net-firewall
+- bridgin? nmcli options?
 
-4. network
+### GPU
+- preconf amd
+- preconf nvidia
 
+### browsers
+- test different browsers beside firefox
 
+### MISC
+- modulize ... automate all the things.... ; modulize partitions, useflags ... all the things.
+- IOMMU for virt?
+- improve readability (split up more in seperate files? keep single file setup aside?
+- improve default build time and script time (avoid reconfigs @world)?
 
-## firewall, basic hardening, policies
-### Hardened/FAQ
+#### firewall, basic hardening, policies
+#### Hardened/FAQ
 https://wiki.gentoo.org/wiki/Hardened/FAQ
-### other
+#### other
 https://packages.gentoo.org/packages/app-admin/bastille
 https://wiki.gentoo.org/wiki/Hardened/PaX_Quickstart
 https://packages.gentoo.org/packages/sys-apps/elfix
 
-### gentoo firewall list
-
-https://packages.gentoo.org/categories/net-firewall
 
 ### policies 
 https://projects.gentoo.org/qa/policy-guide/index.html
