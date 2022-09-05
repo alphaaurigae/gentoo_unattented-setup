@@ -514,29 +514,28 @@ EOF
 					}
 					LINUX_FIRMWARE
 				}
-				BASHRC () {  # (!NOTE: custom .bashrc) (!todo) (!changeme)
+				BASHRC () {  # (!NOTE: custom .bashrc) (!changeme)
 					cp /.bashrc.sh /etc/skel/.bashrc
 				}
-				#SWAPFILE
-				#df -h
-# backup vom last stop
-				#cat /etc/portage/make.conf
-				#MAKECONF
-				# cat /etc/portage/make.conf
-				#CONF_LOCALES
-
-				 #PORTAGE
-				## EMERGE_SYNC  # probably can leave this out if everything already latest ...
-				#eselect profile list
-				#ESELECT_PROFILE
-				# SETFLAGS1
-				#EMERGE_ATWORLD_A
-				##MISC1_CHROOT
-				##RELOADING_SYS
-				#SYSTEMTIME
-				#KEYMAP_CONSOLEFONT
-				#FIRMWARE
-				BASHRC
+				# SWAPFILE  # pass 05.09.22 no err output
+				# df -h  # debug if swap set, alt swapon blah may work ...
+				# cat /etc/portage/make.conf  # debug makefile.conf pre paste
+				# MAKECONF  # pass 05.09.22 no err output
+				# cat /etc/portage/make.conf  # debug makefile.conf after paste   # pass 05.09.22 no err output
+				# CONF_LOCALES  # pass 05.09.22 no err output
+				# PORTAGE  # pass 05.09.22 no err output # warnign to be ignored -> "!!! Section 'gentoo' in repos.conf has location attribute set to nonexistent directory: '/var/db/repos/gentoo' !!! Invalid Repository Location (not a dir): '/var/db/repos/gentoo'"
+				## EMERGE_SYNC  # probably can leave this out if minimal img is latest. (skipped 05.09.22)
+				# eselect profile list  # debug to check if profile number matches (skipped 05.09.22)
+				# ESELECT_PROFILE  # pass 05.09.22 no err output
+				# SETFLAGS1  # PLACEHOLDER w openrc setup
+				#EMERGE_ATWORLD_A  # pass 05.09.22 no err output (vmcopy last stop)
+				##MISC1_CHROOT  # PLACEHOLDER w openrc setup
+				##RELOADING_SYS  # PLACEHOLDER w openrc setup
+				# SYSTEMTIME  # pass 05.09.22 no err output
+				# KEYMAP_CONSOLEFONT  # pass 05.09.22 no err output
+				# FIRMWARE  # pass 05.09.22 no err output
+				#BASHRC  # pass 05.09.22 no err output
+				# cat /etc/skel/.bashrc  # debug /etc/skel/.bashrc # pass 05.09.22 no err output
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			}
 			CORE () {
@@ -865,10 +864,14 @@ EOF
 				KERNEL () {  # https://wiki.gentoo.org/wiki/Kernel
 					KERN_LOAD () {
 						KERN_EMERGE () {
-							APPAPP_EMERGE="sys-kernel/gentoo-sources "
+							APPAPP_EMERGE="sys-kernel/gentoo-sources-5.15.59"
 							ACC_KEYWORDS_USERAPP
 							EMERGE_ATWORLD_A
 							EMERGE_USERAPP_DEF
+#emerge =sys-kernel/gentoo-sources-5.15.59
+#emerge --search "%@^sys-kernel/.*sources"
+							#eselect kernel list
+							#eselect kernel set 1
 						}
 						KERN_TORVALDS () {
 							rm -rf /usr/src/linux
@@ -1201,17 +1204,19 @@ EOF
 					HOSTSFILE
 					NETWORK_MGMT
 				}
-				#FSTAB
+				# FSTAB  # pass 05.09.22 no err output
+				# cat /etc/fstab  # debug  # pass 05.09.22 no err output
 				## CRYPTTABD  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-				#SYSAPP  # (!NOTE !todo !bug : virtualbox) other issues?  # notice during setup  unsupporeted locale setting
-				#I_FSTOOLS # notice during setup  unsupporeted locale setting
-				BOOTLOAD
-				#KERNEL
-				if [ "$CONFIGBUILDKERN" != "AUTO" ]; then
-					INITRAMFS
-				else
-					echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
-				fi
+				#SYSAPP  # pass 05.09.22 no err output w config as is.  # warning Failed to stop Logical Volume Manager  prob bec it isnt started before ^^
+				# I_FSTOOLS  # pass 05.09.22 no err
+				# BOOTLOAD  # pass 05.09.22 no err
+				# /etc/default/grub  # debug  # pass 05.09.22 no err
+				KERNEL  # (!needs update) not latest config (its really dated ~2020-21 ... pasted but it works for VM testing w luks crypt cryptsetup. (!note: in current test 05.09.22: hit enter to accept default settings for new function in the kernel)
+				#if [ "$CONFIGBUILDKERN" != "AUTO" ]; then
+				#	INITRAMFS
+				#else
+				#	echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
+				#fi
 				##MODPROBE_CHROOT  # (!info: not required for the default lvm on luks gpt bios grub - setup)
 				#VIRTUALIZATION  # (!info !bug !todo : worked previously with virtualbox set as gpu in make.conf, curiously.)
 				#AUDIO # circular dependencies err "minimal, pulse3audio"
@@ -1626,8 +1631,9 @@ EOF
 			} 
 			## (RUN ENTIRE SCRIPT) (!changeme)
 
-BASE
-#CORE
+#BASE  # pass 05.09.22 no err output
+CORE # 05.09.22 testing disrupt - kernel setp BUG: https://forums.gentoo.org/viewtopic-p-8742904.html?sid=6cae39809debda9a7e670fb4a4ef2cf5
+
 #SCREENDSP
 #USERAPP
 #USERS
@@ -1660,7 +1666,7 @@ DEBUG () {
 }
 
 ####  RUN ALL ## (!changeme)
-#PRE # TESTING 26_8_22
+#PRE # TEST pass 05.09.22
 CHROOT
 
 #DEBUG
