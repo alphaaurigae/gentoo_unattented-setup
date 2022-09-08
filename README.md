@@ -1,15 +1,9 @@
 # Automated modular GENTOO linux setup
 
 
-# status 05.09.2022
+# status 07.09.2022 .. boots to desktop
 
-## kernel doesent compile .... 
-> kernel setup BUG: https://forums.gentoo.org/viewtopic-p-8742904.html?sid=6cae39809debda9a7e670fb4a4ef2cf5
-
-- PRE no errors
-- CORE -> BASE no errors
-- KERNEL ERR bug
-
+> testing ... functions may but commented out ;)
 - work / redo / TESTING all the things ... things maybe not ordered neatley yet.
 - basic mockup, work in progress
 - script runs with "very little" interaction required to setup a gentoo desktop. ... testing

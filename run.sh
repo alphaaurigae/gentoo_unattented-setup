@@ -216,8 +216,8 @@ CHROOT () {	# 4.0 CHROOT # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installat
 	}
 	ACC_KEYWORDS_USERAPP () {
 		touch /etc/portage/package.accept_keywords/common
-		sed -ie "s#$APPAPP_EMERGE ~amd64##g" /etc/portage/package.accept_keywords/common
-		echo "$APPAPP_EMERGE ~amd64" >> /etc/portage/package.accept_keywords/common
+		sed -ie "s#$APPAPP_EMERGE $PRESET_ACCEPT_KEYWORDS##g" /etc/portage/package.accept_keywords/common
+		echo "$APPAPP_EMERGE $PRESET_ACCEPT_KEYWORDS" >> /etc/portage/package.accept_keywords/common
 	}
 
 	APPAPP_NAME_SIMPLE="$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}')"  # get the name of the app (!NOTE: fetch EMERGE_USERAPP_DEF --> remove slash --> show second coloumn = name
@@ -517,25 +517,25 @@ EOF
 				BASHRC () {  # (!NOTE: custom .bashrc) (!changeme)
 					cp /.bashrc.sh /etc/skel/.bashrc
 				}
-				# SWAPFILE  # pass 05.09.22 no err output
-				# df -h  # debug if swap set, alt swapon blah may work ...
-				# cat /etc/portage/make.conf  # debug makefile.conf pre paste
-				# MAKECONF  # pass 05.09.22 no err output
-				# cat /etc/portage/make.conf  # debug makefile.conf after paste   # pass 05.09.22 no err output
-				# CONF_LOCALES  # pass 05.09.22 no err output
-				# PORTAGE  # pass 05.09.22 no err output # warnign to be ignored -> "!!! Section 'gentoo' in repos.conf has location attribute set to nonexistent directory: '/var/db/repos/gentoo' !!! Invalid Repository Location (not a dir): '/var/db/repos/gentoo'"
-				## EMERGE_SYNC  # probably can leave this out if minimal img is latest. (skipped 05.09.22)
+				#SWAPFILE  # pass 07.09.22 no err output
+				#df -h  # debug if swap set, alt swapon blah may work ...
+				#cat /etc/portage/make.conf  # debug makefile.conf pre paste
+				#MAKECONF  # pass 07.09.22 no err output
+				#cat /etc/portage/make.conf  # debug makefile.conf after paste   # pass 05.09.22 no err output
+				#CONF_LOCALES  # pass 07.09.22 no err output
+				#PORTAGE  # pass 07.09.22 no err output # warnign to be ignored -> "!!! Section 'gentoo' in repos.conf has location attribute set to nonexistent directory: '/var/db/repos/gentoo' !!! Invalid Repository Location (not a dir): '/var/db/repos/gentoo'"
+				EMERGE_SYNC # pass 07.09.22 no err output
 				# eselect profile list  # debug to check if profile number matches (skipped 05.09.22)
-				# ESELECT_PROFILE  # pass 05.09.22 no err output
+				#ESELECT_PROFILE  # pass 07.09.22 no err output
 				# SETFLAGS1  # PLACEHOLDER w openrc setup
-				#EMERGE_ATWORLD_A  # pass 05.09.22 no err output (vmcopy last stop)
+				EMERGE_ATWORLD_A  # pass 07.09.22 no err output
 				##MISC1_CHROOT  # PLACEHOLDER w openrc setup
 				##RELOADING_SYS  # PLACEHOLDER w openrc setup
-				# SYSTEMTIME  # pass 05.09.22 no err output
-				# KEYMAP_CONSOLEFONT  # pass 05.09.22 no err output
-				# FIRMWARE  # pass 05.09.22 no err output
-				#BASHRC  # pass 05.09.22 no err output
-				# cat /etc/skel/.bashrc  # debug /etc/skel/.bashrc # pass 05.09.22 no err output
+				#SYSTEMTIME  # pass 07.09.22 no err output
+				#KEYMAP_CONSOLEFONT  # pass 07.09.22 no err output
+				#FIRMWARE  # pass 07.09.22 no err output
+				#BASHRC  # pass 07.09.22 no err output
+				#cat /etc/skel/.bashrc  # debug /etc/skel/.bashrc # pass 07.09.22 no err output
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			}
 			CORE () {
@@ -864,14 +864,14 @@ EOF
 				KERNEL () {  # https://wiki.gentoo.org/wiki/Kernel
 					KERN_LOAD () {
 						KERN_EMERGE () {
-							APPAPP_EMERGE="sys-kernel/gentoo-sources-5.15.59"
+							APPAPP_EMERGE="sys-kernel/gentoo-sources"
 							ACC_KEYWORDS_USERAPP
 							EMERGE_ATWORLD_A
 							EMERGE_USERAPP_DEF
-#emerge =sys-kernel/gentoo-sources-5.15.59
+# emerge =sys-kernel/gentoo-sources-4.19.250
 #emerge --search "%@^sys-kernel/.*sources"
 							#eselect kernel list
-							#eselect kernel set 1
+							eselect kernel set 1
 						}
 						KERN_TORVALDS () {
 							rm -rf /usr/src/linux
@@ -887,11 +887,13 @@ EOF
 						KERN_MANUAL () {
 							KERN_CONF () {
 								KERNCONF_PASTE () {  # paste own config here ( ~ this should go to auto)
-									mv /usr/src/$(ls /usr/src) /usr/src/linux			
+									# mv /usr/src/$(ls /usr/src) /usr/src/linux
+			
 									mv /usr/src/linux/.config /usr/src/linux/.oldconfig 
 									echo "ignore err"
 									touch /usr/src/linux/.config
-									cp /kern.config /usr/src/$(ls /usr/src)/.config  # stripped version infos for refetch # ls function to get the dirname quick - probably not the best hack but want to get done here now.
+									cp /kern.config /usr/src/linux/.config  # stripped version infos for refetch # ls function to get the dirname quick - probably not the best hack but want to get done here now.
+
 								}
 								KERNCONF_DEFCONFIG () {
 									cd /usr/src/linux
@@ -899,7 +901,7 @@ EOF
 									make proper
 									make -j $(nproc) defconfig
 								}
-								KERNCONF_MENUCONFIG () {
+								KERNCONF_MENUCONFIG_NEW () {
 									cd /usr/src/linux
 									make clean
 									make proper
@@ -918,7 +920,7 @@ EOF
 									make -j $(nproc) oldconfig
 								}
 								if [ "$KERNCONFD" != "DEFCONFIG" ]; then
-									KERNCONF_PASTE
+									# KERNCONF_PASTE
 									KERNCONF_$KERNCONFD
 								else
 									KERNCONF_DEFCONFIG
@@ -927,7 +929,7 @@ EOF
 							KERN_BUILD () {  # (!incomplete (works but) modules setup *smart)
 								cd /usr/src/linux  # enter build directory (required?)
 								make -j$(nproc) dep
-								make -j$(nproc) -o /usr/src/linux/.config # build kernel based on .config file
+								make -j$(nproc) -o /usr/src/linux/.config menuconfig # build kernel based on .config file
 								make -j$(nproc) -o /usr/src/linux/.config modules # build modules based on .config file
 								make -j$(nproc) bzImage
 								sudo make install  # install the kernel
@@ -1204,24 +1206,24 @@ EOF
 					HOSTSFILE
 					NETWORK_MGMT
 				}
-				# FSTAB  # pass 05.09.22 no err output
-				# cat /etc/fstab  # debug  # pass 05.09.22 no err output
+				#FSTAB  # pass 07.09.22 no err output
+				# cat /etc/fstab  # debug  # pass 07.09.22 no err output
 				## CRYPTTABD  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-				#SYSAPP  # pass 05.09.22 no err output w config as is.  # warning Failed to stop Logical Volume Manager  prob bec it isnt started before ^^
-				# I_FSTOOLS  # pass 05.09.22 no err
-				# BOOTLOAD  # pass 05.09.22 no err
-				# /etc/default/grub  # debug  # pass 05.09.22 no err
-				KERNEL  # (!needs update) not latest config (its really dated ~2020-21 ... pasted but it works for VM testing w luks crypt cryptsetup. (!note: in current test 05.09.22: hit enter to accept default settings for new function in the kernel)
-				#if [ "$CONFIGBUILDKERN" != "AUTO" ]; then
+				#SYSAPP  # pass 07.09.22 no err output w config as is.  # warning Failed to stop Logical Volume Manager  prob bec it isnt started before ^^
+				#I_FSTOOLS  # pass 07.09.22 no err
+				# BOOTLOAD  # pass 07.09.22 no err
+				# /etc/default/grub  # debug  # pass 07.09.22 no err
+				#KERNEL  # pass 07.09.22 no err # (!needs update) not latest config (its really dated ~2020-21 ... pasted but it works for VM testing w luks crypt cryptsetup. (!note: in current test 07.09.22: hit enter to accept default settings for new function in the kernel)
+				# if [ "$CONFIGBUILDKERN" != "AUTO" ]; then # pass 07.09.22 no err
 				#	INITRAMFS
 				#else
 				#	echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
 				#fi
 				##MODPROBE_CHROOT  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-				#VIRTUALIZATION  # (!info !bug !todo : worked previously with virtualbox set as gpu in make.conf, curiously.)
-				#AUDIO # circular dependencies err "minimal, pulse3audio"
+				#VIRTUALIZATION  # pass 07.09.22 no err
+				#AUDIO # # pass 07.09.22 no err
 				##GPU # (!note: incomplete)
-				#NETWORK_MAIN
+				#NETWORK_MAIN  # pass 07.09.22 no err
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			
 			}
@@ -1630,14 +1632,13 @@ EOF
 			
 			} 
 			## (RUN ENTIRE SCRIPT) (!changeme)
+#BASE  # pass 07.09.22 no err output
+#CORE  # pass 07.09.22
 
-#BASE  # pass 05.09.22 no err output
-CORE # 05.09.22 testing disrupt - kernel setp BUG: https://forums.gentoo.org/viewtopic-p-8742904.html?sid=6cae39809debda9a7e670fb4a4ef2cf5
-
-#SCREENDSP
-#USERAPP
-#USERS
-#FINISH
+#SCREENDSP  # pass 07.09.22
+#USERAPP  # err 07.09.22
+#USERS  # pass 07.09.22
+#FINISH  # not tested 07.09.22
 echo "end chroot"
 INNERSCRIPT
 )
@@ -1666,7 +1667,7 @@ DEBUG () {
 }
 
 ####  RUN ALL ## (!changeme)
-#PRE # TEST pass 05.09.22
+# PRE  # no ERR 07.09.22 
 CHROOT
 
 #DEBUG

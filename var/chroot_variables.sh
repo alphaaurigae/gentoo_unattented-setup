@@ -59,7 +59,8 @@
 
 		## MAKE.CONF PRESET
 		PRESET_CC=gcc  # gcc (!default); the preset compiler
-		PRESET_ACCEPT_KEYWORDS="amd64 ~amd64"
+		# https://wiki.gentoo.org/wiki/ACCEPT_KEYWORDS
+		PRESET_ACCEPT_KEYWORDS="amd64 ~amd64" # ~amd64"  # "amd64" = stable  If the user wants to be able to install and work with ebuilds that are not considered production-ready yet, they can add the same architecture but with the ~
 		# CHOST # https://wiki.gentoo.org/wiki/CHOST
 		PRESET_CHOST_ARCH="x86_64"
 		PRESET_CHOST_VENDOR="pc"
@@ -136,10 +137,10 @@
 
 		# CORE
 		### KERNEL
-		KERNDEPLOY=MANUAL  # (!default); AUTO (genkernel)
+		KERNDEPLOY="MANUAL"  # (!default); AUTO (genkernel)
 		KERNVERS=5.3-rc4  # for MANUAL setup
 		KERNSOURCES=EMERGE  # EMERGE (!default) ; TORVALDS (git repository)
-		KERNCONFD=PASTE  # DEFCONFIG
+		KERNCONFD="PASTE" # PASTE  # DEFCONFIG
 
 		### INITRAMFS
 		GENINITRAMFS=DRACUT  # DRACUT (!default); GENKERNEL
