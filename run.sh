@@ -1206,24 +1206,24 @@ EOF
 					HOSTSFILE
 					NETWORK_MGMT
 				}
-				#FSTAB  # pass 07.09.22 no err output
-				#cat /etc/fstab  # debug  # pass 07.09.22 no err output
+				FSTAB  # pass 08.09.22 no err output
+				cat /etc/fstab  # debug  # pass 07.09.22 no err output
 				## CRYPTTABD  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-				#SYSAPP  # pass 07.09.22 no err output w config as is.  # warning Failed to stop Logical Volume Manager  prob bec it isnt started before ^^
-				#I_FSTOOLS  # pass 07.09.22 no err
-				BOOTLOAD  # pass 07.09.22 no err
-				#/etc/default/grub  # debug  # pass 07.09.22 no err
-				#KERNEL  # pass 07.09.22 no err # (!needs update) not latest config (its really dated ~2020-21 ... pasted but it works for VM testing w luks crypt cryptsetup. (!note: in current test 07.09.22: hit enter to accept default settings for new function in the kernel)
-				# if [ "$CONFIGBUILDKERN" != "AUTO" ]; then # pass 07.09.22 no err
-				#	INITRAMFS
-				#else
-				#	echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
-				#fi
+				SYSAPP  # pass 08.09.22 no err output w config as is.  # warning Failed to stop Logical Volume Manager  prob bec it isnt started before ^^
+				I_FSTOOLS  # pass 08.09.22 no err
+				BOOTLOAD  # pass 08.09.22 no err
+				/etc/default/grub  # debug  # pass 08.09.22 no err
+				KERNEL  # pass 08.09.22 no err # (!needs update) not latest config (its really dated ~2020-21 ... pasted but it works for VM testing w luks crypt cryptsetup. (!note: in current test 07.09.22: hit enter to accept default settings for new function in the kernel)
+				if [ "$CONFIGBUILDKERN" != "AUTO" ]; then # pass 07.09.22 no err
+					INITRAMFS
+				else
+					echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
+				fi
 				##MODPROBE_CHROOT  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-				#VIRTUALIZATION  # pass 07.09.22 no err
-				#AUDIO # # pass 07.09.22 no err
+				VIRTUALIZATION  # pass 08.09.22 no err
+				AUDIO # # pass 08.09.22 no err
 				##GPU # (!note: incomplete)
-				#NETWORK_MAIN  # pass 07.09.22 no err
+				NETWORK_MAIN  # pass 08.09.22 no err
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			
 			}
@@ -1632,11 +1632,11 @@ EOF
 			
 			} 
 			## (RUN ENTIRE SCRIPT) (!changeme)
-#BASE  # pass 08.09.22 no err output
+BASE  # pass 08.09.22 no err output
 CORE  # pass 08.09.22
 
-#SCREENDSP  # pass 08.09.22
-#USERAPP  # err 08.09.22
+SCREENDSP  # pass 08.09.22
+USERAPP  # err 08.09.22
 USERS  # pass 08.08.22
 #FINISH  # not tested 08.09.22
 echo "end chroot"
@@ -1667,7 +1667,7 @@ DEBUG () {
 }
 
 ####  RUN ALL ## (!changeme)
-# PRE  # no ERR 07.09.22 
-CHROOT
+ PRE  # no ERR 08.09.22 
+#CHROOT
 
 #DEBUG
