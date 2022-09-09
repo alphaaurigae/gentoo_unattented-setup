@@ -20,7 +20,7 @@
 		}
 		SOURCE_CHROOT  # (must run before CHROOT VARIABLES??)
 
-		# CHROOT VARIABLES
+		### CHROOT VARIABLES
 
 		## DRIVES & PARTITIONS
 		HDD1=/dev/sda # GENTOO
