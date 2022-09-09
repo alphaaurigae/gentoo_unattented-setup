@@ -60,7 +60,7 @@
 		## MAKE.CONF PRESET
 		PRESET_CC=gcc  # gcc (!default); the preset compiler
 		# https://wiki.gentoo.org/wiki/ACCEPT_KEYWORDS
-		PRESET_ACCEPT_KEYWORDS="amd64 ~amd64" # ~amd64"  # "amd64" = stable  If the user wants to be able to install and work with ebuilds that are not considered production-ready yet, they can add the same architecture but with the ~
+		PRESET_ACCEPT_KEYWORDS="amd64" # build 8.9.22 "amd64 ~amd64" - build 7.9.22 # ~amd64" # alone not tested yet # all on profile 1 .  # "amd64" = stable  If the user wants to be able to install and work with ebuilds that are not considered production-ready yet, they can add the same architecture but with the ~
 		# CHOST # https://wiki.gentoo.org/wiki/CHOST
 		PRESET_CHOST_ARCH="x86_64"
 		PRESET_CHOST_VENDOR="pc"

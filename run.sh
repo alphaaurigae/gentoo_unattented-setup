@@ -517,25 +517,25 @@ EOF
 				BASHRC () {  # (!NOTE: custom .bashrc) (!changeme)
 					cp /.bashrc.sh /etc/skel/.bashrc
 				}
-				#SWAPFILE  # pass 07.09.22 no err output
-				#df -h  # debug if swap set, alt swapon blah may work ...
-				#cat /etc/portage/make.conf  # debug makefile.conf pre paste
-				#MAKECONF  # pass 07.09.22 no err output
-				#cat /etc/portage/make.conf  # debug makefile.conf after paste   # pass 05.09.22 no err output
-				#CONF_LOCALES  # pass 07.09.22 no err output
-				#PORTAGE  # pass 07.09.22 no err output # warnign to be ignored -> "!!! Section 'gentoo' in repos.conf has location attribute set to nonexistent directory: '/var/db/repos/gentoo' !!! Invalid Repository Location (not a dir): '/var/db/repos/gentoo'"
-				EMERGE_SYNC # pass 07.09.22 no err output
-				# eselect profile list  # debug to check if profile number matches (skipped 05.09.22)
-				#ESELECT_PROFILE  # pass 07.09.22 no err output
+				SWAPFILE  # pass 08.09.22 no err output
+				df -h  # debug if swap set, alt swapon blah may work ...
+				cat /etc/portage/make.conf  # debug makefile.conf pre paste
+				MAKECONF  # pass 08.09.22 no err output
+				cat /etc/portage/make.conf  # debug makefile.conf after paste   # pass 08.09.22 no err output
+				CONF_LOCALES  # pass 08.09.22 no err output
+				PORTAGE  # pass 08.09.22 no err output # warnign to be ignored -> "!!! Section 'gentoo' in repos.conf has location attribute set to nonexistent directory: '/var/db/repos/gentoo' !!! Invalid Repository Location (not a dir): '/var/db/repos/gentoo'"
+				EMERGE_SYNC # pass 08.09.22 no err output
+				eselect profile list  # debug to check if profile number matches (skipped 08.09.22)
+				ESELECT_PROFILE  # pass 08.09.22 no err output
 				# SETFLAGS1  # PLACEHOLDER w openrc setup
-				EMERGE_ATWORLD_A  # pass 07.09.22 no err output
+				EMERGE_ATWORLD_A  # pass 08.09.22 no err output
 				##MISC1_CHROOT  # PLACEHOLDER w openrc setup
 				##RELOADING_SYS  # PLACEHOLDER w openrc setup
-				#SYSTEMTIME  # pass 07.09.22 no err output
-				#KEYMAP_CONSOLEFONT  # pass 07.09.22 no err output
-				#FIRMWARE  # pass 07.09.22 no err output
-				#BASHRC  # pass 07.09.22 no err output
-				#cat /etc/skel/.bashrc  # debug /etc/skel/.bashrc # pass 07.09.22 no err output
+				SYSTEMTIME  # pass 08.09.22 no err output
+				KEYMAP_CONSOLEFONT  # pass 08.09.22 no err output
+				FIRMWARE  # pass 08.09.22 no err output
+				BASHRC  # pass 08.09.22 no err output
+				cat /etc/skel/.bashrc  # debug /etc/skel/.bashrc # pass 08.09.22 no err output
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			}
 			CORE () {
@@ -1207,12 +1207,12 @@ EOF
 					NETWORK_MGMT
 				}
 				#FSTAB  # pass 07.09.22 no err output
-				# cat /etc/fstab  # debug  # pass 07.09.22 no err output
+				#cat /etc/fstab  # debug  # pass 07.09.22 no err output
 				## CRYPTTABD  # (!info: not required for the default lvm on luks gpt bios grub - setup)
 				#SYSAPP  # pass 07.09.22 no err output w config as is.  # warning Failed to stop Logical Volume Manager  prob bec it isnt started before ^^
 				#I_FSTOOLS  # pass 07.09.22 no err
-				# BOOTLOAD  # pass 07.09.22 no err
-				# /etc/default/grub  # debug  # pass 07.09.22 no err
+				BOOTLOAD  # pass 07.09.22 no err
+				#/etc/default/grub  # debug  # pass 07.09.22 no err
 				#KERNEL  # pass 07.09.22 no err # (!needs update) not latest config (its really dated ~2020-21 ... pasted but it works for VM testing w luks crypt cryptsetup. (!note: in current test 07.09.22: hit enter to accept default settings for new function in the kernel)
 				# if [ "$CONFIGBUILDKERN" != "AUTO" ]; then # pass 07.09.22 no err
 				#	INITRAMFS
@@ -1632,13 +1632,13 @@ EOF
 			
 			} 
 			## (RUN ENTIRE SCRIPT) (!changeme)
-#BASE  # pass 07.09.22 no err output
-#CORE  # pass 07.09.22
+#BASE  # pass 08.09.22 no err output
+CORE  # pass 08.09.22
 
-#SCREENDSP  # pass 07.09.22
-#USERAPP  # err 07.09.22
-#USERS  # pass 07.09.22
-#FINISH  # not tested 07.09.22
+#SCREENDSP  # pass 08.09.22
+#USERAPP  # err 08.09.22
+USERS  # pass 08.08.22
+#FINISH  # not tested 08.09.22
 echo "end chroot"
 INNERSCRIPT
 )
