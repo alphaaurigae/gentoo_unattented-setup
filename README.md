@@ -1,7 +1,7 @@
 # Automated modular GENTOO linux setup
 
 
-# status 08.09.2022 .. 
+# status 09.09.2022 .. 
 > grub setup rerun on end, else boot failed
 > boots to desktop xfce -> firefox, network, audio ...
 > no significant errors, logs attached log dir
@@ -16,4 +16,4 @@
 DOCS: https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc
 
 > <p>screen</p>
-![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-09_02-07-24.png)
+![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-10_02-59-58.png)

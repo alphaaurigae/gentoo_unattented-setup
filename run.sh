@@ -517,25 +517,25 @@ EOF
 				BASHRC () {  # (!NOTE: custom .bashrc) (!changeme)
 					cp /.bashrc.sh /etc/skel/.bashrc
 				}
-				SWAPFILE  # pass 08.09.22 no err output
+				SWAPFILE  # pass 09.09.22 no err output
 				df -h  # debug if swap set, alt swapon blah may work ...
 				cat /etc/portage/make.conf  # debug makefile.conf pre paste
-				MAKECONF  # pass 08.09.22 no err output
+				MAKECONF  # pass 09.09.22 no err output
 				cat /etc/portage/make.conf  # debug makefile.conf after paste   # pass 08.09.22 no err output
-				CONF_LOCALES  # pass 08.09.22 no err output
-				PORTAGE  # pass 08.09.22 no err output # warnign to be ignored -> "!!! Section 'gentoo' in repos.conf has location attribute set to nonexistent directory: '/var/db/repos/gentoo' !!! Invalid Repository Location (not a dir): '/var/db/repos/gentoo'"
-				EMERGE_SYNC # pass 08.09.22 no err output
-				eselect profile list  # debug to check if profile number matches (skipped 08.09.22)
-				ESELECT_PROFILE  # pass 08.09.22 no err output
+				CONF_LOCALES  # pass 09.09.22 no err output
+				PORTAGE  # pass 09.09.22 no err output # warnign to be ignored -> "!!! Section 'gentoo' in repos.conf has location attribute set to nonexistent directory: '/var/db/repos/gentoo' !!! Invalid Repository Location (not a dir): '/var/db/repos/gentoo'"
+				EMERGE_SYNC # pass 09.09.22 no err output
+				eselect profile list  # debug to check if profile number matches
+				ESELECT_PROFILE  # pass 09.09.22 no err output
 				# SETFLAGS1  # PLACEHOLDER w openrc setup
-				EMERGE_ATWORLD_A  # pass 08.09.22 no err output
+				EMERGE_ATWORLD_A  # pass 09.09.22 no err output
 				##MISC1_CHROOT  # PLACEHOLDER w openrc setup
 				##RELOADING_SYS  # PLACEHOLDER w openrc setup
-				SYSTEMTIME  # pass 08.09.22 no err output
-				KEYMAP_CONSOLEFONT  # pass 08.09.22 no err output
-				FIRMWARE  # pass 08.09.22 no err output
-				BASHRC  # pass 08.09.22 no err output
-				cat /etc/skel/.bashrc  # debug /etc/skel/.bashrc # pass 08.09.22 no err output
+				SYSTEMTIME  # pass 09.09.22 no err output
+				KEYMAP_CONSOLEFONT  # pass 09.09.22 no err output
+				FIRMWARE  # pass 09.09.22 no err output
+				BASHRC  # pass 09.09.22 no err output
+				cat /etc/skel/.bashrc  # debug /etc/skel/.bashrc # pass 09.09.22
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			}
 			CORE () {
@@ -973,49 +973,50 @@ EOF
 					KERN_DEPLOY  # config / build
 					KERNEL_HEADERS
 				}
-				INITRAMFS () {  # https://wiki.gentoo.org/wiki/Initramfs
-					INITRFS_GENKERNEL () {
-						# genkernel --config=/etc/genkernel.conf initramfs
-						genkernel $GENKERNEL_CMD
-					}
-					INITRFS_DRACUT () {  # https://wiki.gentoo.org/wiki/Dracut
-						APPAPP_EMERGE="sys-kernel/dracut"
-						CONFIG_DRACUT () {
-							DRACUT_USERMOUNTCONF () {
-								cat << EOF > /etc/dracut.conf.d/usrmount.conf
-								add_dracutmodules+="$DRACUT_CONFD_ADD_DRACUT_MODULES" # Dracut modules to add to the default
-EOF
-								cat /etc/dracut.conf.d/usrmount.conf
-							}
-							DRACUT_DRACUTCONF () {
-								cat << EOF > /etc/dracut.conf
-# i18n
-#i18n_vars="/etc/sysconfig/keyboard:KEYTABLE-KEYMAP /etc/sysconfig/i18n:SYSFONT-FONT,FONTACM-FONT_MAP,FONT_UNIMAP"
-#i18n_default_font="eurlatgr"
-								#i18n_vars="/etc/conf.d/keymaps:KEYMAP,EXTENDED_KEYMAPS-EXT_KEYMAPS /etc/conf.d/consolefont:CONSOLEFONT-FONT,CONSOLETRANSLATION-FONT_MAP /etc/rc.conf:UNICODE"
-								#i18n_install_all="yes"
-								i18n_vars="/etc/conf.d/keymaps:keymap-KEYMAP,extended_keymaps-EXT_KEYMAPS /etc/conf.d/consolefont:consolefont-FONT,consoletranslation-FONT_MAP /etc/rc.conf:unicode-UNICODE"
-
-								hostonly="$DRACUT_CONF_HOSTONLY"
-								lvmconf="$DRACUT_CONF_LVMCONF"
-								dracutmodules+="$DRACUT_CONF_MODULES"
-EOF
-								cat /etc/dracut.conf
-							}
-							DRACUT_USERMOUNTCONF
-							DRACUT_DRACUTCONF
+				INITRAM () {
+					INITRAMFS () {  # https://wiki.gentoo.org/wiki/Initramfs
+						INITRFS_GENKERNEL () {
+							# genkernel --config=/etc/genkernel.conf initramfs
+							genkernel $GENKERNEL_CMD
 						}
-						PACKAGE_USE
-						EMERGE_USERAPP_DEF
-						CONFIG_DRACUT
-						dracut --force '' $(ls /lib/modules)
+						INITRFS_DRACUT () {  # https://wiki.gentoo.org/wiki/Dracut
+							APPAPP_EMERGE="sys-kernel/dracut"
+							CONFIG_DRACUT () {
+								DRACUT_USERMOUNTCONF () {
+									cat << EOF > /etc/dracut.conf.d/usrmount.conf
+									add_dracutmodules+="$DRACUT_CONFD_ADD_DRACUT_MODULES" # Dracut modules to add to the default
+EOF
+									cat /etc/dracut.conf.d/usrmount.conf
+								}
+								DRACUT_DRACUTCONF () {
+									cat << EOF > /etc/dracut.conf
+
+									#i18n_install_all="yes"
+									i18n_vars="/etc/conf.d/keymaps:keymap-KEYMAP,extended_keymaps-EXT_KEYMAPS /etc/conf.d/consolefont:consolefont-FONT,consoletranslation-FONT_MAP /etc/rc.conf:unicode-UNICODE"
+
+									hostonly="$DRACUT_CONF_HOSTONLY"
+									lvmconf="$DRACUT_CONF_LVMCONF"
+									dracutmodules+="$DRACUT_CONF_MODULES"
+EOF
+									cat /etc/dracut.conf
+								}
+								DRACUT_USERMOUNTCONF
+								DRACUT_DRACUTCONF
+							}
+							PACKAGE_USE
+							EMERGE_USERAPP_DEF
+							CONFIG_DRACUT
+							dracut --force '' $(ls /lib/modules)
+						}
+						INITRFS_$GENINITRAMFS  # config / build
+						etc-update --automode -3
 					}
-					INITRFS_$GENINITRAMFS  # config / build
-					etc-update --automode -3
+					if [ "$CONFIGBUILDKERN" != "AUTO" ]; then # pass 07.09.22 no err
+						INITRAMFS
+					else
+						echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
+					fi
 				}
-
-
-
 				MODPROBE_CHROOT () {
 					modprobe -a dm-mod dm-crypt sha256 aes aes_generic xts
 				}
@@ -1203,27 +1204,50 @@ EOF
 						DHCCLIENT
 						$NETWMGR
 					}
+					
 					HOSTSFILE
 					NETWORK_MGMT
 				}
-				FSTAB  # pass 08.09.22 no err output
-				cat /etc/fstab  # debug  # pass 07.09.22 no err output
+				NETWORK_FIREWALL () {
+					#UFW () {  # https://wiki.gentoo.org/wiki/Ufw
+					#	
+					#	APPAPP_EMERGE="net-firewall/ufw"
+					#	AUTOSTART_NAME_OPENRC="ufw"
+					#	AUTOSTART_NAME_SYSTEMD="ufw"
+					#	PACKAGE_USE
+					#	ACC_KEYWORDS_USERAPP
+					#	EMERGE_USERAPP_DEF
+					#	AUTOSTART_DEFAULT_$SYSINITVAR							
+					#}
+					IPTABLES () {  # https://wiki.gentoo.org/wiki/Iptables
+						
+						APPAPP_EMERGE="net-firewall/iptables"
+						AUTOSTART_NAME_OPENRC="iptables"
+						AUTOSTART_NAME_SYSTEMD="iptables"
+						PACKAGE_USE
+						ACC_KEYWORDS_USERAPP
+						EMERGE_USERAPP_DEF
+						AUTOSTART_DEFAULT_$SYSINITVAR							
+					}
+					#UFW
+					IPTABLES
+				}
+				#FSTAB  # pass 09.09.22 no err output
+				#cat /etc/fstab  # debug  # pass 09.09.22 no err output
 				## CRYPTTABD  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-				SYSAPP  # pass 08.09.22 no err output w config as is.  # warning Failed to stop Logical Volume Manager  prob bec it isnt started before ^^
-				I_FSTOOLS  # pass 08.09.22 no err
-				BOOTLOAD  # pass 08.09.22 no err
-				/etc/default/grub  # debug  # pass 08.09.22 no err
-				KERNEL  # pass 08.09.22 no err # (!needs update) not latest config (its really dated ~2020-21 ... pasted but it works for VM testing w luks crypt cryptsetup. (!note: in current test 07.09.22: hit enter to accept default settings for new function in the kernel)
-				if [ "$CONFIGBUILDKERN" != "AUTO" ]; then # pass 07.09.22 no err
-					INITRAMFS
-				else
-					echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
-				fi
+				#SYSAPP  # pass 09.09.22 no err output w config as is.  # warning Failed to stop Logical Volume Manager  prob bec it isnt started before ^^
+				# note: todo htop
+				#I_FSTOOLS  # pass 09.09.22 no err
+				BOOTLOAD  # pass 09.09.22 no err
+				#cat /etc/default/grub  # debug  # pass 09.09.22 no err
+				#KERNEL  # pass 09.09.22 no err # (!needs update) not latest config (its really dated ~2020-21 ... pasted but it works for VM testing w luks crypt cryptsetup. (!note: in current test 07.09.22: hit enter to accept default settings for new function in the kernel)
+				#INITRAM  # pass 09.09.22 no err
 				##MODPROBE_CHROOT  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-				VIRTUALIZATION  # pass 08.09.22 no err
-				AUDIO # # pass 08.09.22 no err
+				#VIRTUALIZATION  # pass 08.09.22 no err
+				#AUDIO # # pass 08.09.22 no err
 				##GPU # (!note: incomplete)
-				NETWORK_MAIN  # pass 08.09.22 no err
+				#NETWORK_MAIN  # pass 08.09.22 no err
+				NETWORK_FIREWALL
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			
 			}
@@ -1632,13 +1656,13 @@ EOF
 			
 			} 
 			## (RUN ENTIRE SCRIPT) (!changeme)
-BASE  # pass 08.09.22 no err output
-CORE  # pass 08.09.22
+# BASE  # pass 09.09.22 no err output
+CORE  # pass 09.09.22 # rerun grub after end of setup (USERS) else boot err 09.09.22
 
-SCREENDSP  # pass 08.09.22
-USERAPP  # err 08.09.22
-USERS  # pass 08.08.22
-#FINISH  # not tested 08.09.22
+#SCREENDSP  # pass 09.09.22
+#USERAPP  # err 09.09.22
+USERS  # pass 09.08.22
+#FINISH  # not tested 09.09.22
 echo "end chroot"
 INNERSCRIPT
 )
@@ -1651,7 +1675,7 @@ INNERSCRIPT
 	# cp src/chroot_main.sh $CHROOTX/chroot.sh # old kept as sample
 	#mkdir $CHROOTX/gentoo_unattented_setup_chroot
 	cp var/chroot_variables.sh $CHROOTX/chroot_variables.sh # sourced on top of the INNERSCRIPT
-	cp configs/required/kern.config.sh $CHROOTX/kern.config # linux kernel config! this could also be pasted in the INNERSCRIPT above but for readability this should be outside, else this file is bblow up for xxxxx lines.
+	cp configs/required/kern.config.sh $CHROOTX/kern.config # 09.09.22 updated for linux-5.15.59-gentoo on virtualbox # linux kernel config! this could also be pasted in the INNERSCRIPT above but for readability this should be outside, else this file is bblow up for xxxxx lines.
 	cp configs/default/.bashrc.sh $CHROOTX/.bashrc.sh
 	# cp -R configs/default $CHROOTX/configs/default  # old kept as sample
 	# cp -R configs/optional $CHROOTX/configs/optional # old kept as sample
@@ -1667,7 +1691,7 @@ DEBUG () {
 }
 
 ####  RUN ALL ## (!changeme)
- PRE  # no ERR 08.09.22 
-#CHROOT
+# PRE  # no ERR 09.09.22 
+CHROOT
 
 #DEBUG
