@@ -797,93 +797,7 @@ EOF
 					CRON
 					TOP
 				}
-				SYSBOOT () {
-					SYSBOOT_OSPROBER () {
-						APPAPP_EMERGE="sys-boot/os-prober "
-						EMERGE_USERAPP_DEF
-					}
-					BOOTLOAD () {  # BOOTSYSINITVAR=BIOS/UEFI
-						SETUP_GRUB2 () {  # (!NOTE:  https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt) 
-							LOAD_GRUB2 () {
-								PRE_GRUB2 () {
-									etc-update --automode -3
-									APPAPP_EMERGE="sys-boot/grub:2 "
-									ACC_KEYWORDS_USERAPP
-									PACKAGE_USE
-									EMERGE_ATWORLD_A
-									EMERGE_USERAPP_DEF
-								}
-								GRUB2_BIOS () {
-									PRE_GRUB2BIOS () {
-										sed -ie '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
-										echo 'GRUB_PLATFORMS="pc"' >> /etc/portage/make.conf
-										EMERGE_ATWORLD_A
-									}
-									PRE_GRUB2BIOS
-									grub-install --recheck --target=i386-pc $HDD1
-								}
-								GRUB2_UEFI () {
-									PRE_GRUB2UEFI () {
-										sed -ie '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
-										sed -ie '/GRUB_PLATFORMS="efi-64/d' /etc/portage/make.conf
-										echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
-										EMERGE_ATWORLD_A
-									}
-									PRE_GRUB2UEFI
-									grub-install --target=x86_64-efi --efi-directory=/boot
-									## (!NOTE: optional)# mount -o remount,rw /sys/firmware/efi/efivars  # If grub_install returns an error like Could not prepare Boot variable: Read-only file system, it may be necessary to remount the efivars special mount as read-write in order to succeed:
-									## (!NOTE: optional)# grub-install --target=x86_64-efi --efi-directory=/boot --removable  # Some motherboard manufacturers seem to only support the /efi/boot/ directory location for the .EFI file in the EFI System Partition (ESP). 
-								}
-								PRE_GRUB2
-								GRUB2_$BOOTSYSINITVAR
-							}
-							CONFIG_GRUB2_DMCRYPT () { # ( !note: config is edited partially after pasting, to be fully integrated in variables. )
-								CONFGRUBDMCRYPT_MAIN () {
-									etc-update --automode -3
-									cp  /configs/default/grub /etc/default/grub
-									echo "may ignore complaining cp"
-								}
-								CONFGRUBDMCRYPT_OPENRC () {  # https://wiki.gentoo.org/wiki/GRUB2
-								
-									sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
-									cat << EOF >> /etc/default/grub
-									# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
-									GRUB_CMDLINE_LINUX="raid=noautodetect cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value $MAIN_PART):$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm"
-									# (!NOTE: etc/crypttab not required under default openrc, "luks on lvm", GPT, bios - setup) # Warning: If you are using /etc/crypttab or /etc/crypttab.initramfs together with luks.* or rd.luks.* parameters, only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line.. To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*. To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
-EOF
-								}
-								CONFGRUBDMCRYPT_SYSTEMD () {  # https://wiki.gentoo.org/wiki/GRUB2
-								
-									sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
-									cat << EOF >> /etc/default/grub
-									# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
-									GRUB_CMDLINE_LINUX="rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm " #real_init=/lib/systemd/systemd
-									# rd.luks.name= is honored only by initial RAM disk (initrd) while luks.name= is honored by both the main system and the initrd. https://www.freedesktop.org/software/systemd/man/systemd-cryptsetup-generator.html
-EOF
-								}
-								CONFGRUBDMCRYPT_MAIN
-								CONFGRUBDMCRYPT_$SYSINITVAR
-							}
-							UPDATE_GRUB () {
-								grub-mkconfig -o /boot/grub/grub.cfg
-							}
-							LOAD_GRUB2
-							CONFIG_GRUB2_DMCRYPT
-							UPDATE_GRUB
-						}
-						SETUP_LILO () {
-							APPAPP_EMERGE="sys-boot/lilo "
-							CONF_LILO () {  # https://wiki.gentoo.org/wiki/LILO # https://github.com/a2o/lilo/blob/master/sample/lilo.example.conf
-								cp /configs/optional/lilo.conf /etc/lilo.conf
-							}
-							EMERGE_USERAPP_DEF
-							CONF_LILO
-						}
-						SETUP_$BOOTLOADER
-					}   
-					SYSBOOT_OSPROBER
-					BOOTLOAD
-				}
+
 ###################################################################################################################################################################
 
 				KERNEL () {  # https://wiki.gentoo.org/wiki/Kernel
@@ -1043,6 +957,93 @@ EOF
 				MODPROBE_CHROOT () {
 					modprobe -a dm-mod dm-crypt sha256 aes aes_generic xts
 				}
+				SYSBOOT () {
+					SYSBOOT_OSPROBER () {
+						APPAPP_EMERGE="sys-boot/os-prober "
+						EMERGE_USERAPP_DEF
+					}
+					BOOTLOAD () {  # BOOTSYSINITVAR=BIOS/UEFI
+						SETUP_GRUB2 () {  # (!NOTE:  https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt) 
+							LOAD_GRUB2 () {
+								PRE_GRUB2 () {
+									etc-update --automode -3
+									APPAPP_EMERGE="sys-boot/grub:2 "
+									ACC_KEYWORDS_USERAPP
+									PACKAGE_USE
+									EMERGE_ATWORLD_A
+									EMERGE_USERAPP_DEF
+								}
+								GRUB2_BIOS () {
+									PRE_GRUB2BIOS () {
+										sed -ie '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
+										echo 'GRUB_PLATFORMS="pc"' >> /etc/portage/make.conf
+										EMERGE_ATWORLD_A
+									}
+									PRE_GRUB2BIOS
+									grub-install --recheck --target=i386-pc $HDD1
+								}
+								GRUB2_UEFI () {
+									PRE_GRUB2UEFI () {
+										sed -ie '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
+										sed -ie '/GRUB_PLATFORMS="efi-64/d' /etc/portage/make.conf
+										echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
+										EMERGE_ATWORLD_A
+									}
+									PRE_GRUB2UEFI
+									grub-install --target=x86_64-efi --efi-directory=/boot
+									## (!NOTE: optional)# mount -o remount,rw /sys/firmware/efi/efivars  # If grub_install returns an error like Could not prepare Boot variable: Read-only file system, it may be necessary to remount the efivars special mount as read-write in order to succeed:
+									## (!NOTE: optional)# grub-install --target=x86_64-efi --efi-directory=/boot --removable  # Some motherboard manufacturers seem to only support the /efi/boot/ directory location for the .EFI file in the EFI System Partition (ESP). 
+								}
+								PRE_GRUB2
+								GRUB2_$BOOTSYSINITVAR
+							}
+							CONFIG_GRUB2_DMCRYPT () { # ( !note: config is edited partially after pasting, to be fully integrated in variables. )
+								CONFGRUBDMCRYPT_MAIN () {
+									etc-update --automode -3
+									cp  /configs/default/grub /etc/default/grub
+									echo "may ignore complaining cp"
+								}
+								CONFGRUBDMCRYPT_OPENRC () {  # https://wiki.gentoo.org/wiki/GRUB2
+								
+									sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
+									cat << EOF >> /etc/default/grub
+									# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
+									GRUB_CMDLINE_LINUX="raid=noautodetect cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value $MAIN_PART):$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm"
+									# (!NOTE: etc/crypttab not required under default openrc, "luks on lvm", GPT, bios - setup) # Warning: If you are using /etc/crypttab or /etc/crypttab.initramfs together with luks.* or rd.luks.* parameters, only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line.. To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*. To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
+EOF
+								}
+								CONFGRUBDMCRYPT_SYSTEMD () {  # https://wiki.gentoo.org/wiki/GRUB2
+								
+									sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
+									cat << EOF >> /etc/default/grub
+									# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
+									GRUB_CMDLINE_LINUX="rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm " #real_init=/lib/systemd/systemd
+									# rd.luks.name= is honored only by initial RAM disk (initrd) while luks.name= is honored by both the main system and the initrd. https://www.freedesktop.org/software/systemd/man/systemd-cryptsetup-generator.html
+EOF
+								}
+								CONFGRUBDMCRYPT_MAIN
+								CONFGRUBDMCRYPT_$SYSINITVAR
+							}
+							UPDATE_GRUB () {
+								grub-mkconfig -o /boot/grub/grub.cfg
+							}
+							LOAD_GRUB2
+							CONFIG_GRUB2_DMCRYPT
+							UPDATE_GRUB
+						}
+						SETUP_LILO () {
+							APPAPP_EMERGE="sys-boot/lilo "
+							CONF_LILO () {  # https://wiki.gentoo.org/wiki/LILO # https://github.com/a2o/lilo/blob/master/sample/lilo.example.conf
+								cp /configs/optional/lilo.conf /etc/lilo.conf
+							}
+							EMERGE_USERAPP_DEF
+							CONF_LILO
+						}
+						SETUP_$BOOTLOADER
+					}   
+					SYSBOOT_OSPROBER
+					BOOTLOAD
+				}
 				APPEMULATION () {
 					VIRTUALBOX () {
 						SYS_HOST () {
@@ -1143,7 +1144,7 @@ EOF
 			#		$GPU_SET
 			#	}
 				NETWORK () {  # (!todo)
-					NETWORK_SYS () {
+					NET_SYS () {
 						HOSTSFILE () {  # (! default)
 							echo "$HOSTNAME" > /etc/hostname
 							echo "127.0.0.1	localhost
@@ -1153,7 +1154,7 @@ EOF
 						}
 						HOSTSFILE
 					}
-					NETWORK_MGMT () {
+					NET_MGMT () {
 						GENTOO_DEFAULT () {
 							NETIFRC () {  # (! default)
 								APPAPP_EMERGE="net-misc/netifrc "
@@ -1233,7 +1234,7 @@ EOF
 						DHCCLIENT
 						$NETWMGR
 					}
-					NETWORK_FIREWALL () {
+					NET_FIREWALL () {
 						#UFW () {  # https://wiki.gentoo.org/wiki/Ufw
 						#	
 						#	APPAPP_EMERGE="net-firewall/ufw"
@@ -1257,24 +1258,46 @@ EOF
 						#UFW
 						IPTABLES
 					}
-					
-					NETWORK_SYS
-					NETWORK_MGMT
-					NETWORK_FIREWALL
+					#NET_FTP () {
+					#	CLIENT () {
+					#		FTP () {
+					#			APPAPP_EMERGE="net-ftp/ftp"
+					#			# PACKAGE_USE
+					#			ACC_KEYWORDS_USERAPP
+					#			EMERGE_USERAPP_DEF
+					#			AUTOSTART_DEFAULT_$SYSINITVAR
+					#		}
+					#		#FILEZILLA () {  (# build fail # dep x11?)
+					#		#	APPAPP_EMERGE="net-ftp/filezilla"
+					#		#	# PACKAGE_USE
+					#		#	ACC_KEYWORDS_USERAPP
+					#		#	EMERGE_USERAPP_DEF
+					#		#	AUTOSTART_DEFAULT_$SYSINITVAR
+					#		#}
+					#		FTP
+					#		#FILEZILLA
+					#	}
+					#	CLIENT
+					#}
+					NET_SYS
+					NET_MGMT
+					NET_FIREWALL
+					##NET_FTP
 				}
-				##SYSCONFIG_CORE  # pass 10.09.22
-				##SYSFS
-				##APPADMIN
+				#SYSCONFIG_CORE  # pass 10.09.22
+				#SYSFS
+				#APPADMIN
+				#SYSAPP
 				#APP
 				#SYSPROCESS
-				KERNEL
-				INITRAM
-				SYSBOOT # didnt boot w bootloader pre initram, mabye grub-mkconfig -o /boot/grub/grub.cfg does the trick but left as tested ... moved this down
+				#KERNEL
+				#INITRAM
+				#SYSBOOT  # didnt boot w bootloader pre initram, mabye grub-mkconfig -o /boot/grub/grub.cfg does the trick but left as tested ... moved this down
 				## MODPROBE_CHROOT
-				#APPEMULATION
-				#AUDIO
-				##GPU
-				#NETWORK
+				APPEMULATION
+				AUDIO
+				## GPU
+				NETWORK
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			}
 			SCREENDSP () {  # note: replace visual header with "screen and desktop"
@@ -1682,8 +1705,8 @@ EOF
 			
 			} 
 			## (RUN ENTIRE SCRIPT) (!changeme)
-#BASE  # pass 09.09.22 no err outpu
-CORE  # pass 09.09.22 # rerun grub after end of setup (USERS) else boot err 09.09.22
+#BASE  # pass 12.09.22 no err outpu
+#CORE  # pass 09.09.22 # rerun grub after end of setup (USERS) else boot err 09.09.22
 
 #SCREENDSP  # pass 09.09.22
 #USERAPP  # err 09.09.22

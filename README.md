@@ -1,8 +1,9 @@
 # Automated modular GENTOO linux setup
 
 
-# status 12.09.2022 .. 
-> grub needed rerun on end, else boot failed ,,, apparently needed to run after initram ,, grub-mkconfig -o /boot/grub/grub.cfg may does the trick too but moved bootloader after initram meanwhile.... should boot now without grub rerun.
+# status 12.09.2022 .. no err, script runs through - enter passwords cryptsetup, confirm kernel config in menuconfig, enter userpass end - done...
+> functions may be commented out for chroot ...
+
 > boots to desktop xfce -> firefox, network, audio ...
 > no significant errors, logs attached log dir (exc 12.09.22
 > adding core apps.
