@@ -92,7 +92,7 @@
 		# sandbox maybe?
 		# userpriv and sandbox?
 		PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip candy cgroup binpkg-logs collision-protect \
-				compress-build-logs downgrade-backup fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
+				compress-build-logs downgrade-backup ebuild-locks fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
 				network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
 
 		# https://www.gentoo.org/downloads/mirrors/

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # current work branch. at this point the repo is transitioning from singlefile to multifile setup .. not sure to keep both.. anyways this is the latest setup now 27.8.22
-
 # github.com/alphaaurigae/gentoo_unattended_modular-setup.sh
 
 #########################################################################################################################################################################################################################################################################################################################################################################
@@ -85,7 +84,7 @@ PRE () {  # PREPARE CHROOT
 		STAGE3_FETCH () {
 			SET_VAR_STAGE3_FETCH (){
 				STAGE3_FILEPATH="$(curl -s http://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE3DEFAULT.txt | sed '/^#/ d' | awk '{print $1}' | sed -r 's/\.tar\.xz//g' )"
-#echo $STAGE3_FILEPATH
+				#echo $STAGE3_FILEPATH
 				LIST="$STAGE3_FILEPATH.tar.xz
 					$STAGE3_FILEPATH.tar.xz.CONTENTS.gz
 					$STAGE3_FILEPATH.tar.xz.DIGESTS
@@ -94,7 +93,7 @@ PRE () {  # PREPARE CHROOT
 			FETCH_STAGE3_FETCH () {
 				for i in $LIST; do
 					#echo "${bold}FETCH $i ....${normal}"
-echo $GENTOO_RELEASE_URL/$i
+					echo $GENTOO_RELEASE_URL/$i
 					wget -P $CHROOTX/ $GENTOO_RELEASE_URL/"$i"  # stage3.tar.xz (!NOTE: main stage3 archive) # OLD single: wget -P $CHROOTX/ http://distfiles.gentoo.org/releases/amd64/autobuilds/"$STAGE3_FILENAME"  # stage3.tar.xz (!NOTE: main stage3 archive)
 
 					if [ -f "$CHROOTX/$( echo $i| rev | cut -d'/' -f-1 | rev)" ]; then
@@ -129,13 +128,11 @@ echo $GENTOO_RELEASE_URL/$i
 			VERIFY_UNPACK () {
 				if gpg  --verify "$CHROOTX/$STAGE3_FILENAME.tar.xz.asc" ; then 
 					echo "gpg  --verify $CHROOTX/$STAGE3_FILENAME.tar.xz.asc - OK"
-						
 					# unfinished https://forums.gentoo.org/viewtopic-t-1044026-start-0.html			
-					 grep -A 1 -i sha512 $CHROOTX/$STAGE3_FILENAME.tar.xz.asc  # With the cryptographic signature validated, next verify the checksum to make sure the downloaded ISO file is not corrupted. The .DIGESTS.asc file contains multiple hashing algorithms, so one of the methods to validate the right one is to first look at the checksum registered in the .DIGESTS.asc file. For instance, to get the SHA512 checksum:  In the above output, two SHA512 checksums are shown - one for the install-amd64-minimal-20141204.iso file and one for its accompanying .CONTENTS file. Only the first checksum is of interest, as it needs to be compared with the calculated SHA512 checksum which can be generated as follows: 
+					grep -A 1 -i sha512 $CHROOTX/$STAGE3_FILENAME.tar.xz.asc  # With the cryptographic signature validated, next verify the checksum to make sure the downloaded ISO file is not corrupted. The .DIGESTS.asc file contains multiple hashing algorithms, so one of the methods to validate the right one is to first look at the checksum registered in the .DIGESTS.asc file. For instance, to get the SHA512 checksum:  In the above output, two SHA512 checksums are shown - one for the install-amd64-minimal-20141204.iso file and one for its accompanying .CONTENTS file. Only the first checksum is of interest, as it needs to be compared with the calculated SHA512 checksum which can be generated as follows: 
 						#echo "grep -A 1 -i sha512 $CHROOTX/$STAGE3_FILENAME.tar.xz.asc - OK"
 						echo 'STAGE3_UNPACK ....'
 						tar xvJpf $CHROOTX/$STAGE3_FILENAME.tar.xz --xattrs-include='*.*' --numeric-owner -C $CHROOTX
-
 				else 
 					echo "SIGNATURE ALERT!"
 				fi
@@ -149,9 +146,9 @@ echo $GENTOO_RELEASE_URL/$i
 	}
 	MNTFS () {
 		MOUNT_BASESYS () {  # (!important) # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Mounting_the_necessary_filesystems
-					# Warning
-					# When using non-Gentoo installation media, this might not be sufficient. 
-					# Some distributions make /dev/shm a symbolic link to /run/shm/ which, after the chroot, becomes invalid. Making /dev/shm/ a proper tmpfs mount up front can fix this: 
+			# Warning
+			# When using non-Gentoo installation media, this might not be sufficient. 
+			# Some distributions make /dev/shm a symbolic link to /run/shm/ which, after the chroot, becomes invalid. Making /dev/shm/ a proper tmpfs mount up front can fix this: 
 			mount --types proc /proc $CHROOTX/proc
 			mount --rbind /sys $CHROOTX/sys
 			mount --make-rslave $CHROOTX/sys
@@ -189,15 +186,13 @@ echo $GENTOO_RELEASE_URL/$i
 }
 CHROOT () {	# 4.0 CHROOT # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment 
 	INNER_SCRIPT=$(cat << 'INNERSCRIPT'
-	#https://github.com/alphaaurigae/gentoo_unattented-setup
+	# https://github.com/alphaaurigae/gentoo_unattented-setup
 
 	#!/bin/bash
-			# CHROOT START >>> alphaaurigae/gentoo_unattented-setup | https://github.com/alphaaurigae/gentoo_unattented-setup
-
-			. /chroot_variables.sh
-			#. /kern.config.sh
-			#. func/chroot_static-functions.sh
-
+	# CHROOT START >>> alphaaurigae/gentoo_unattented-setup | https://github.com/alphaaurigae/gentoo_unattented-setup
+	. /chroot_variables.sh
+	#. /kern.config.sh
+	#. func/chroot_static-functions.sh
 	# MISC FUNCTIONS
 	EMERGE_USERAPP_DEF () {
 		echo "emerging $APPAPP_EMERGE "
@@ -219,10 +214,8 @@ CHROOT () {	# 4.0 CHROOT # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installat
 		sed -ie "s#$APPAPP_EMERGE $PRESET_ACCEPT_KEYWORDS##g" /etc/portage/package.accept_keywords/common
 		echo "$APPAPP_EMERGE $PRESET_ACCEPT_KEYWORDS" >> /etc/portage/package.accept_keywords/common
 	}
-
 	APPAPP_NAME_SIMPLE="$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}')"  # get the name of the app (!NOTE: fetch EMERGE_USERAPP_DEF --> remove slash --> show second coloumn = name
 	PORTAGE_USE_DIR="/etc/portage/package.use"
-
 	PACKAGE_USE () {
 			SETVAR_PACKAGE_USE () {
 				x=$(echo 'USEFLAGS_')
@@ -270,8 +263,6 @@ CHROOT () {	# 4.0 CHROOT # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installat
 		emerge --update --deep --newuse @world
 	}
 	# END MISC FUNCTIONS
-
-
 			BASE () {
 				SWAPFILE () {
 					DEBUG_SWAPFILE () {
@@ -467,9 +458,7 @@ EOF
 					SET_SYSTEMCLOCK  # echos err for systemd, if install medium isnt systemd
 					SET_HWCLOCK
 				}
-
 				KEYMAP_CONSOLEFONT () {  # https://wiki.gentoo.org/wiki/Keyboard_layout_switching  ## (note:: theres a second place where keymaps are set, which is:"X11 KEYS SET = WINDOWSYS --> X11")
-
 					KEYMAP_CONSOLEFONT_OPENRC () {
 						KEYMAP_OPENRC () { # (!changeme in var)
 							AUTOSTART_NAME_OPENRC="keymaps"
@@ -489,7 +478,6 @@ EOF
 						KEYMAP_OPENRC
 						CONSOLEFONT_OPENRC
 					}
-
 					KEYMAP_CONSOLEFONT_SYSTEMD () {   # https://wiki.archlinux.org/index.php/Keyboard_configuration_in_console
 						AUTOSTART_NAME_SYSTEMD="placeholder"
 						VCONSOLE_KEYMAP=$KEYMAP-latin1 # (!changeme) console keymap systemd
@@ -539,33 +527,38 @@ EOF
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			}
 			CORE () {
-				FSTAB () {  # https://wiki.gentoo.org/wiki/Fstab
-					FSTAB_LVMONLUKS_BIOS () {  # (!default)
-						cat << EOF > /etc/fstab
-						# ROOT MAIN FS
-						/dev/mapper/$VG_MAIN-$LV_MAIN	/	$FILESYSTEM_MAIN	errors=remount-ro	0 1
-						# BOOT
-						UUID="$(blkid -o value -s UUID $BOOT_PART)"	/boot	$FILESYSTEM_BOOT	rw,relatime	0 2
+				SYSCONFIG_CORE () {
+					FSTAB () {  # https://wiki.gentoo.org/wiki/Fstab
+						FSTAB_LVMONLUKS_BIOS () {  # (!default)
+							cat << EOF > /etc/fstab
+							# ROOT MAIN FS
+							/dev/mapper/$VG_MAIN-$LV_MAIN	/	$FILESYSTEM_MAIN	errors=remount-ro	0 1
+							# BOOT
+							UUID="$(blkid -o value -s UUID $BOOT_PART)"	/boot	$FILESYSTEM_BOOT	rw,relatime	0 2
 EOF
-					} 
-					FSTAB_LVMONLUKS_UEFI () {
-						cat << EOF > /etc/fstab
-						# ROOT MAIN FS
-						/dev/mapper/$VG_MAIN-$LV_MAIN	/	$FILESYSTEM_MAIN	errors=remount-ro	0 1
-						# BOOT
-						UUID="$(blkid -o value -s UUID $BOOT_PART)"	/boot	$FILESYSTEM_BOOT	rw,relatime	0 2
+						} 
+						FSTAB_LVMONLUKS_UEFI () {
+							cat << EOF > /etc/fstab
+							# ROOT MAIN FS
+							/dev/mapper/$VG_MAIN-$LV_MAIN	/	$FILESYSTEM_MAIN	errors=remount-ro	0 1
+							# BOOT
+							UUID="$(blkid -o value -s UUID $BOOT_PART)"	/boot	$FILESYSTEM_BOOT	rw,relatime	0 2
+EOF
+						}
+						FSTAB_LVMONLUKS_$BOOTSYSINITVAR
+					}
+					CRYPTTABD () {
+						cat << EOF > /etc/crypttab
+							# crypt-container
+							$PV_MAIN UUID=$(blkid -o value -s UUID $MAIN_PART) none luks,discard
 EOF
 					}
-					FSTAB_LVMONLUKS_$BOOTSYSINITVAR
+					FSTAB
+					cat /etc/fstab  # debug  # pass 09.09.22 no err output
+					# CRYPTTABD
 				}
-				CRYPTTABD () {
-					cat << EOF > /etc/crypttab
-						# crypt-container
-						$PV_MAIN UUID=$(blkid -o value -s UUID $MAIN_PART) none luks,discard
-EOF
-				}
-				SYSAPP () {
-					SYSAPP_DMCRYPT () {  # https://wiki.gentoo.org/wiki/Dm-crypt
+				SYSFS () {
+					SYSFS_DMCRYPT () {  # https://wiki.gentoo.org/wiki/Dm-crypt
 						APPAPP_EMERGE="sys-fs/cryptsetup "
 						AUTOSTART_NAME_OPENRC="dmcrypt"
 						AUTOSTART_NAME_SYSTEMD="systemd-cryptsetup"
@@ -575,8 +568,8 @@ EOF
 						EMERGE_USERAPP_DEF
 						etc-update --automode -3  # (automode -3 = merge all)
 						AUTOSTART_BOOT_$SYSINITVAR
-					} 
-					SYSAPP_LVM2 () {  # https://wiki.gentoo.org/wiki/LVM/de
+					}
+					SYSFS_LVM2 () {  # https://wiki.gentoo.org/wiki/LVM/de
 						APPAPP_EMERGE="sys-fs/lvm2"
 						AUTOSTART_NAME_OPENRC="lvm"  # (!important: "lvm" instead of "lvm2" as label)
 						AUTOSTART_NAME_SYSTEMD="$APPAPP_NAME_SIMPLE-monitor"
@@ -588,135 +581,12 @@ EOF
 						AUTOSTART_BOOT_$SYSINITVAR
 						CONFIG_LVM2
 					}
-					SYSAPP_SUDO () {  # https://wiki.gentoo.org/wiki/Sudo
-						APPAPP_EMERGE="app-admin/sudo "  # (note!: must keep trailing)
-						CONFIG_SUDO () {
-							cp /etc/sudoers /etc/sudoers_bak
-							sed -ie 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
-						}
-						EMERGE_USERAPP_DEF
-						CONFIG_SUDO
-					}
-					SYSAPP_PCIUTILS () {
-						APPAPP_EMERGE="sys-apps/pciutils "
-						EMERGE_USERAPP_DEF
-					}
 					SYSAPP_MULTIPATH () {  # https://wiki.gentoo.org/wiki/Multipath
 						APPAPP_EMERGE="sys-fs/multipath-tools "
 						EMERGE_USERAPP_DEF
 					}
-					SYSAPP_GNUPG () {
-						APPAPP_EMERGE="app/crypt/gnupg "
-						EMERGE_USERAPP_DEF
-						gpg --full-gen-key
-					}
-					SYSAPP_OSPROBER () {
-						APPAPP_EMERGE="sys-boot/os-prober "
-						EMERGE_USERAPP_DEF
-					}
-					SYSAPP_SYSLOG () {
-						# (!todo) # . /var/app/syslog.sh
-						# SYSLOGNG
-SYSLOGNG_SYSLOG_SYSTEMD="syslog-ng@default"
-SYSLOGNG_SYSLOG_OPENRC="syslog-ng"
-SYSLOGNG_SYSLOG_EMERGE="app-admin/syslog-ng "
-# SYSKLOGD
-SYSKLOGD_SYSLOG_SYSTEMD=rsyslog
-SYSKLOGD_SYSLOG_OPENRC=sysklogd
-SYSKLOGD_SYSLOG_EMERGE="app-admin/sysklogd "
-
-						SETVAR_SYSLOG () {
-						
-							if [ "$SYSLOG" == "SYSLOGNG" ]; then
-								AUTOSTART_NAME_SYSTEMD=$SYSLOGNG_SYSLOG_SYSTEMD
-								AUTOSTART_NAME_OPENRC=$SYSLOGNG_SYSLOG_OPENRC
-								SYSLOG_EMERGE=$SYSLOGNG_SYSLOG_EMERGE
-							elif [ "$SYSLOG" == "SYSKLOGD" ] 
-								then AUTOSTART_NAME_SYSTEMD=$SYSKLOGD_SYSLOG_SYSTEMD
-								AUTOSTART_NAME_OPENRC=$SYSKLOGD_SYSLOG_OPENRC
-								SYSLOG_EMERGE=$SYSLOGNG_SYSLOG_EMERGE
-							else
-								echo "${bold}ERROR: Could not detect '$SYSLOG' - debug syslog $SYSLOG ${normal}"
-							fi
-						
-						}
-						SETVAR_SYSLOG
-						APPAPP_EMERGE="$SYSLOG_EMERGE "
-						EMERGE_USERAPP_DEF
-						# SYSLOG_$SYSINITVAR  # (note!: autostart TODO)
-						LOGROTATE () {
-							APPAPP_EMERGE="app-admin/logrotate "
-							CONFIG_LOGROTATE_OPENRC () {
-								NOTICE_PLACEHOLDER
-							}
-							CONFIG_LOGROTATE_SYSTEMD () {
-								systemd-tmpfiles --create /usr/lib/tmpfiles.d/logrotate.conf
-							}
-							EMERGE_USERAPP_DEF
-							CONFIG_LOGROTATE_$SYSINITVAR
-						}
-						LOGROTATE
-					}
-					SYSAPP_CRON () {
-						# (!todo) . /var/app/cron.sh
-## CRON - https://wiki.gentoo.org/wiki/Cron#Which_cron_is_right_for_the_job.3F
-# BCRON # http://untroubled.org/bcron
-BCRON_CRON_SYSTEMD=placeholder
-BCRON_CRON_OPENRC=placeholder
-BCRON_CRON_EMERGE=sys-process/bcron
-# FCRON # http://www.linuxfromscratch.org/blfs/view/systemd/general/fcron.html
-FCRON_CRON_SYSTEMD=fcron
-FCRON_CRON_OPENRC=fcron
-FCRON_CRON_EMERGE=sys-process/fcron
-# DCRON # http://www.linuxfromscratch.org/hints/downloads/files/dcron.txt
-DCRON_CRON_SYSTEMD=razor-session
-DCRON_CRON_OPENRC=razor-session
-DCRON_CRON_EMERGE=sys-process/dcron
-# CRONIE
-CRONIE_CRON_SYSTEMD=cronie
-CRONIE_CRON_OPENRC=cronie
-CRONIE_CRON_EMERGE=sys-process/cronie
-# VIXICRON
-VIXICRON_CRON_SYSTEMD=vixi
-VIXICRON_CRON_OPENRC=vixi
-VIXICRON_CRON_EMERGE=sys-process/vixie-cron
-
-						SETVAR_CRON () {
-							for i in $CRON
-							do
-								CRON_SYSTEMD=$i\_CRON_SYSTEMD
-								CRON_OPENRC=$i\_CRON_OPENRC
-								CRON_EMERGE=$i\_CRON_EMERGE
-							done
-						}
-						CONFIG_CRON () {
-							crontab /etc/crontab	
-						}
-						SETVAR_CRON
-						APPAPP_EMERGE="${!CRON_EMERGE}"
-						AUTOSTART_NAME_OPENRC="${!CRON_OPENRC}"
-						AUTOSTART_NAME_OPENRC="${!CRON_SYSTEMD}"
-						echo $APPAPP_EMERGE
-						EMERGE_USERAPP_DEF
-						CONFIG_CRON
-						AUTOSTART_DEFAULT_$SYSINITVAR
-					}
-					SYSAPP_FILEINDEXING () {
-						APPAPP_EMERGE="sys-apps/mlocate "
-						EMERGE_USERAPP_DEF
-					}
-				SYSAPP_DMCRYPT
-					RUN_ALL_YES () {
-						for i in ${!SYSAPP_*}
-						do
-							$i
-						done
-					}
-					RUN_ALL_YES
-				}
-				# (note!: kernel configuration for filesystems not automated yet)
-				I_FSTOOLS () {  # (! e2fsprogs # Ext2, 3, and 4) # optional, add to variables at time.
-					## (note!: this is a little workaround to make sure FS support is installed.  This is missing a routine to avoid double emerges as of 16 01 2021)
+					SYSFS_FSTOOLS () {  # (! e2fsprogs # Ext2, 3, and 4) # optional, add to variables at time.
+						## (note!: this is a little workaround to make sure FS support is installed.  This is missing a routine to avoid double emerges as of 16 01 2021)
 						## FSTOOLS
 						FST_EMERGE_EXT=sys-fs/e2fsprogs
 						FST_EMERGE_XFS=sys-fs/xfsprogs
@@ -781,86 +651,241 @@ VIXICRON_CRON_EMERGE=sys-process/vixie-cron
 						}
 						MAIN
 					}
-				BOOTLOAD () {  # BOOTSYSINITVAR=BIOS/UEFI
-					SETUP_GRUB2 () {  # (!NOTE:  https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt) 
-						LOAD_GRUB2 () {
-							PRE_GRUB2 () {
-								etc-update --automode -3
-								APPAPP_EMERGE="sys-boot/grub:2 "
-								ACC_KEYWORDS_USERAPP
-								PACKAGE_USE
-								EMERGE_ATWORLD_A
-								EMERGE_USERAPP_DEF
-							}
-							GRUB2_BIOS () {
-								PRE_GRUB2BIOS () {
-									sed -ie '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
-									echo 'GRUB_PLATFORMS="pc"' >> /etc/portage/make.conf
-									EMERGE_ATWORLD_A
-								}
-								PRE_GRUB2BIOS
-								grub-install --recheck --target=i386-pc $HDD1
-							}
-							GRUB2_UEFI () {
-								PRE_GRUB2UEFI () {
-									sed -ie '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
-									sed -ie '/GRUB_PLATFORMS="efi-64/d' /etc/portage/make.conf
-									echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
-									EMERGE_ATWORLD_A
-								}
-								PRE_GRUB2UEFI
-								grub-install --target=x86_64-efi --efi-directory=/boot
-								## (!NOTE: optional)# mount -o remount,rw /sys/firmware/efi/efivars  # If grub_install returns an error like Could not prepare Boot variable: Read-only file system, it may be necessary to remount the efivars special mount as read-write in order to succeed:
-								## (!NOTE: optional)# grub-install --target=x86_64-efi --efi-directory=/boot --removable  # Some motherboard manufacturers seem to only support the /efi/boot/ directory location for the .EFI file in the EFI System Partition (ESP). 
-							}
-							PRE_GRUB2
-							GRUB2_$BOOTSYSINITVAR
-						}
-						CONFIG_GRUB2_DMCRYPT () { # ( !note: config is edited partially after pasting, to be fully integrated in variables. )
-						
-							CONFGRUBDMCRYPT_MAIN () {
-								etc-update --automode -3
-								cp  /configs/default/grub /etc/default/grub
-								echo "may ignore complaining cp"
-							}
-							CONFGRUBDMCRYPT_OPENRC () {  # https://wiki.gentoo.org/wiki/GRUB2
-							
-								sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
-								cat << EOF >> /etc/default/grub
-								# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
-								GRUB_CMDLINE_LINUX="raid=noautodetect cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value $MAIN_PART):$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm"
-								# (!NOTE: etc/crypttab not required under default openrc, "luks on lvm", GPT, bios - setup) # Warning: If you are using /etc/crypttab or /etc/crypttab.initramfs together with luks.* or rd.luks.* parameters, only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line.. To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*. To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
-EOF
-							}
-							CONFGRUBDMCRYPT_SYSTEMD () {  # https://wiki.gentoo.org/wiki/GRUB2
-							
-								sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
-								cat << EOF >> /etc/default/grub
-								# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
-								GRUB_CMDLINE_LINUX="rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm " #real_init=/lib/systemd/systemd
-								# rd.luks.name= is honored only by initial RAM disk (initrd) while luks.name= is honored by both the main system and the initrd. https://www.freedesktop.org/software/systemd/man/systemd-cryptsetup-generator.html
-EOF
-							}
-							CONFGRUBDMCRYPT_MAIN
-							CONFGRUBDMCRYPT_$SYSINITVAR
-						}
-						UPDATE_GRUB () {
-							grub-mkconfig -o /boot/grub/grub.cfg
-						}
-						LOAD_GRUB2
-						CONFIG_GRUB2_DMCRYPT
-						UPDATE_GRUB
-					}
-					SETUP_LILO () {
-						APPAPP_EMERGE="sys-boot/lilo "
-						CONF_LILO () {  # https://wiki.gentoo.org/wiki/LILO # https://github.com/a2o/lilo/blob/master/sample/lilo.example.conf
-							cp /configs/optional/lilo.conf /etc/lilo.conf
+					SYSFS_DMCRYPT
+					SYSFS_LVM2
+					SYSAPP_MULTIPATH
+					SYSFS_FSTOOLS
+				}
+				APPADMIN () {
+					SUDO () {  # https://wiki.gentoo.org/wiki/Sudo
+						APPAPP_EMERGE="app-admin/sudo "  # (note!: must keep trailing)
+						CONFIG_SUDO () {
+							cp /etc/sudoers /etc/sudoers_bak
+							sed -ie 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
 						}
 						EMERGE_USERAPP_DEF
-						CONF_LILO
+						CONFIG_SUDO
 					}
-					SETUP_$BOOTLOADER
-				}                        
+					SYSLOG () {
+						# (!todo) # . /var/app/syslog.sh
+						# SYSLOGNG
+						SYSLOGNG_SYSLOG_SYSTEMD="syslog-ng@default"
+						SYSLOGNG_SYSLOG_OPENRC="syslog-ng"
+						SYSLOGNG_SYSLOG_EMERGE="app-admin/syslog-ng "
+						# SYSKLOGD
+						SYSKLOGD_SYSLOG_SYSTEMD=rsyslog
+						SYSKLOGD_SYSLOG_OPENRC=sysklogd
+						SYSKLOGD_SYSLOG_EMERGE="app-admin/sysklogd "
+
+						SETVAR_SYSLOG () {
+						
+							if [ "$SYSLOG" == "SYSLOGNG" ]; then
+								AUTOSTART_NAME_SYSTEMD=$SYSLOGNG_SYSLOG_SYSTEMD
+								AUTOSTART_NAME_OPENRC=$SYSLOGNG_SYSLOG_OPENRC
+								SYSLOG_EMERGE=$SYSLOGNG_SYSLOG_EMERGE
+							elif [ "$SYSLOG" == "SYSKLOGD" ] 
+								then AUTOSTART_NAME_SYSTEMD=$SYSKLOGD_SYSLOG_SYSTEMD
+								AUTOSTART_NAME_OPENRC=$SYSKLOGD_SYSLOG_OPENRC
+								SYSLOG_EMERGE=$SYSLOGNG_SYSLOG_EMERGE
+							else
+								echo "${bold}ERROR: Could not detect '$SYSLOG' - debug syslog $SYSLOG ${normal}"
+							fi
+						
+						}
+						SETVAR_SYSLOG
+						APPAPP_EMERGE="$SYSLOG_EMERGE "
+						EMERGE_USERAPP_DEF
+						# SYSLOG_$SYSINITVAR  # (note!: autostart TODO)
+						LOGROTATE () {
+							APPAPP_EMERGE="app-admin/logrotate "
+							CONFIG_LOGROTATE_OPENRC () {
+								NOTICE_PLACEHOLDER
+							}
+							CONFIG_LOGROTATE_SYSTEMD () {
+								systemd-tmpfiles --create /usr/lib/tmpfiles.d/logrotate.conf
+							}
+							EMERGE_USERAPP_DEF
+							CONFIG_LOGROTATE_$SYSINITVAR
+						}
+						LOGROTATE
+					}
+					SUDO
+					SYSLOG
+				}
+
+				SYSAPP () {
+					SYSAPPS_PCIUTILS () {
+						APPAPP_EMERGE="sys-apps/pciutils "
+						EMERGE_USERAPP_DEF
+					}
+					SYSAPPS_FILEINDEXING () {
+						APPAPP_EMERGE="sys-apps/mlocate "
+						EMERGE_USERAPP_DEF
+					}
+					SYSAPPS_PCIUTILS
+					SYSAPPS_FILEINDEXING
+				}
+				APP () {
+					APP_CRYPT () {
+						SYSAPP_GNUPG () {
+							APPAPP_EMERGE="app/crypt/gnupg "
+							EMERGE_USERAPP_DEF
+							gpg --full-gen-key
+						}
+						SYSAPP_GNUPG
+					}
+					APP_CRYPT
+				}
+
+				SYSPROCESS () {
+					CRON () {
+						# (!todo) . /var/app/cron.sh
+						## CRON - https://wiki.gentoo.org/wiki/Cron#Which_cron_is_right_for_the_job.3F
+						# BCRON # http://untroubled.org/bcron
+						BCRON_CRON_SYSTEMD=placeholder
+						BCRON_CRON_OPENRC=placeholder
+						BCRON_CRON_EMERGE=sys-process/bcron
+						# FCRON # http://www.linuxfromscratch.org/blfs/view/systemd/general/fcron.html
+						FCRON_CRON_SYSTEMD=fcron
+						FCRON_CRON_OPENRC=fcron
+						FCRON_CRON_EMERGE=sys-process/fcron
+						# DCRON # http://www.linuxfromscratch.org/hints/downloads/files/dcron.txt
+						DCRON_CRON_SYSTEMD=razor-session
+						DCRON_CRON_OPENRC=razor-session
+						DCRON_CRON_EMERGE=sys-process/dcron
+						# CRONIE
+						CRONIE_CRON_SYSTEMD=cronie
+						CRONIE_CRON_OPENRC=cronie
+						CRONIE_CRON_EMERGE=sys-process/cronie
+						# VIXICRON
+						VIXICRON_CRON_SYSTEMD=vixi
+						VIXICRON_CRON_OPENRC=vixi
+						VIXICRON_CRON_EMERGE=sys-process/vixie-cron
+
+						SETVAR_CRON () {
+							for i in $CRON
+							do
+								CRON_SYSTEMD=$i\_CRON_SYSTEMD
+								CRON_OPENRC=$i\_CRON_OPENRC
+								CRON_EMERGE=$i\_CRON_EMERGE
+							done
+						}
+						CONFIG_CRON () {
+							crontab /etc/crontab	
+						}
+						SETVAR_CRON
+						APPAPP_EMERGE="${!CRON_EMERGE}"
+						AUTOSTART_NAME_OPENRC="${!CRON_OPENRC}"
+						AUTOSTART_NAME_OPENRC="${!CRON_SYSTEMD}"
+						echo $APPAPP_EMERGE
+						EMERGE_USERAPP_DEF
+						CONFIG_CRON
+						AUTOSTART_DEFAULT_$SYSINITVAR
+					}
+					TOP () {
+						HTOP () {
+							APPAPP_EMERGE="sys-process/htop "
+							EMERGE_USERAPP_DEF
+						}
+						IOTOP () {
+							APPAPP_EMERGE="sys-process/iotop "
+							EMERGE_USERAPP_DEF
+						}
+						HTOP
+						IOTOP
+					}
+					CRON
+					TOP
+				}
+				SYSBOOT () {
+					SYSBOOT_OSPROBER () {
+						APPAPP_EMERGE="sys-boot/os-prober "
+						EMERGE_USERAPP_DEF
+					}
+					BOOTLOAD () {  # BOOTSYSINITVAR=BIOS/UEFI
+						SETUP_GRUB2 () {  # (!NOTE:  https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt) 
+							LOAD_GRUB2 () {
+								PRE_GRUB2 () {
+									etc-update --automode -3
+									APPAPP_EMERGE="sys-boot/grub:2 "
+									ACC_KEYWORDS_USERAPP
+									PACKAGE_USE
+									EMERGE_ATWORLD_A
+									EMERGE_USERAPP_DEF
+								}
+								GRUB2_BIOS () {
+									PRE_GRUB2BIOS () {
+										sed -ie '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
+										echo 'GRUB_PLATFORMS="pc"' >> /etc/portage/make.conf
+										EMERGE_ATWORLD_A
+									}
+									PRE_GRUB2BIOS
+									grub-install --recheck --target=i386-pc $HDD1
+								}
+								GRUB2_UEFI () {
+									PRE_GRUB2UEFI () {
+										sed -ie '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
+										sed -ie '/GRUB_PLATFORMS="efi-64/d' /etc/portage/make.conf
+										echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
+										EMERGE_ATWORLD_A
+									}
+									PRE_GRUB2UEFI
+									grub-install --target=x86_64-efi --efi-directory=/boot
+									## (!NOTE: optional)# mount -o remount,rw /sys/firmware/efi/efivars  # If grub_install returns an error like Could not prepare Boot variable: Read-only file system, it may be necessary to remount the efivars special mount as read-write in order to succeed:
+									## (!NOTE: optional)# grub-install --target=x86_64-efi --efi-directory=/boot --removable  # Some motherboard manufacturers seem to only support the /efi/boot/ directory location for the .EFI file in the EFI System Partition (ESP). 
+								}
+								PRE_GRUB2
+								GRUB2_$BOOTSYSINITVAR
+							}
+							CONFIG_GRUB2_DMCRYPT () { # ( !note: config is edited partially after pasting, to be fully integrated in variables. )
+								CONFGRUBDMCRYPT_MAIN () {
+									etc-update --automode -3
+									cp  /configs/default/grub /etc/default/grub
+									echo "may ignore complaining cp"
+								}
+								CONFGRUBDMCRYPT_OPENRC () {  # https://wiki.gentoo.org/wiki/GRUB2
+								
+									sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
+									cat << EOF >> /etc/default/grub
+									# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
+									GRUB_CMDLINE_LINUX="raid=noautodetect cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value $MAIN_PART):$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm"
+									# (!NOTE: etc/crypttab not required under default openrc, "luks on lvm", GPT, bios - setup) # Warning: If you are using /etc/crypttab or /etc/crypttab.initramfs together with luks.* or rd.luks.* parameters, only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line.. To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*. To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
+EOF
+								}
+								CONFGRUBDMCRYPT_SYSTEMD () {  # https://wiki.gentoo.org/wiki/GRUB2
+								
+									sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
+									cat << EOF >> /etc/default/grub
+									# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
+									GRUB_CMDLINE_LINUX="rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm " #real_init=/lib/systemd/systemd
+									# rd.luks.name= is honored only by initial RAM disk (initrd) while luks.name= is honored by both the main system and the initrd. https://www.freedesktop.org/software/systemd/man/systemd-cryptsetup-generator.html
+EOF
+								}
+								CONFGRUBDMCRYPT_MAIN
+								CONFGRUBDMCRYPT_$SYSINITVAR
+							}
+							UPDATE_GRUB () {
+								grub-mkconfig -o /boot/grub/grub.cfg
+							}
+							LOAD_GRUB2
+							CONFIG_GRUB2_DMCRYPT
+							UPDATE_GRUB
+						}
+						SETUP_LILO () {
+							APPAPP_EMERGE="sys-boot/lilo "
+							CONF_LILO () {  # https://wiki.gentoo.org/wiki/LILO # https://github.com/a2o/lilo/blob/master/sample/lilo.example.conf
+								cp /configs/optional/lilo.conf /etc/lilo.conf
+							}
+							EMERGE_USERAPP_DEF
+							CONF_LILO
+						}
+						SETUP_$BOOTLOADER
+					}   
+					SYSBOOT_OSPROBER
+					BOOTLOAD
+				}
+###################################################################################################################################################################
+
 				KERNEL () {  # https://wiki.gentoo.org/wiki/Kernel
 					KERN_LOAD () {
 						KERN_EMERGE () {
@@ -868,8 +893,8 @@ EOF
 							ACC_KEYWORDS_USERAPP
 							EMERGE_ATWORLD_A
 							EMERGE_USERAPP_DEF
-# emerge =sys-kernel/gentoo-sources-4.19.250
-#emerge --search "%@^sys-kernel/.*sources"
+							# emerge =sys-kernel/gentoo-sources-4.19.250
+							# emerge --search "%@^sys-kernel/.*sources"
 							#eselect kernel list
 							eselect kernel set 1
 						}
@@ -888,12 +913,10 @@ EOF
 							KERN_CONF () {
 								KERNCONF_PASTE () {  # paste own config here ( ~ this should go to auto)
 									# mv /usr/src/$(ls /usr/src) /usr/src/linux
-			
 									mv /usr/src/linux/.config /usr/src/linux/.oldconfig 
 									echo "ignore err"
 									touch /usr/src/linux/.config
 									cp /kern.config /usr/src/linux/.config  # stripped version infos for refetch # ls function to get the dirname quick - probably not the best hack but want to get done here now.
-
 								}
 								KERNCONF_DEFCONFIG () {
 									cd /usr/src/linux
@@ -951,7 +974,7 @@ EOF
 								RUN_GENKERNEL () {
 									# genkernel --config=/etc/genkernel.conf all
 									genkernel --luks --lvm --no-zfs all
-									rub-mkconfig -o /boot/grub/grub.cfg  # update grub in case its already installed ....
+									grub-mkconfig -o /boot/grub/grub.cfg  # update grub in case its already installed ....
 								}
 								APPAPP_EMERGE="sys-kernel/genkernel-next"
 								PACKAGE_USE
@@ -1020,25 +1043,28 @@ EOF
 				MODPROBE_CHROOT () {
 					modprobe -a dm-mod dm-crypt sha256 aes aes_generic xts
 				}
-				VIRTUALIZATION () {
-					SYS_HOST () {
-						NOTICE_PLACEHOLDER
-					}
-					SYS_GUEST () {
-						GUE_VIRTUALBOX () {
-						# which kernel variables set the dependencies?
-							APPAPP_EMERGE="app-emulation/virtualbox-guest-additions"
-							AUTOSTART_NAME_OPENRC="virtualbox-guest-additions"
-							PACKAGE_USE
-							EMERGE_ATWORLD_B
-							EMERGE_USERAPP_DEF
-							AUTOSTART_DEFAULT_OPENRC
-							VBoxClient-all
-							rc-update add dbus boot
+				APPEMULATION () {
+					VIRTUALBOX () {
+						SYS_HOST () {
+							NOTICE_PLACEHOLDER
 						}
-						GUE_VIRTUALBOX
+						SYS_GUEST () {
+							GUE_VIRTUALBOX () {
+							# which kernel variables set the dependencies?
+								APPAPP_EMERGE="app-emulation/virtualbox-guest-additions"
+								AUTOSTART_NAME_OPENRC="virtualbox-guest-additions"
+								PACKAGE_USE
+								EMERGE_ATWORLD_B
+								EMERGE_USERAPP_DEF
+								AUTOSTART_DEFAULT_OPENRC
+								VBoxClient-all
+								rc-update add dbus boot
+							}
+							GUE_VIRTUALBOX
+						}
+						SYS_$SYSVARD
 					}
-					SYS_$SYSVARD
+					VIRTUALBOX					
 				}
 				AUDIO () {  # (!todo)
 					SOUND_API () {
@@ -1116,13 +1142,16 @@ EOF
 			#		}
 			#		$GPU_SET
 			#	}
-				NETWORK_MAIN () {  # (!todo)
-					HOSTSFILE () {  # (! default)
-						echo "$HOSTNAME" > /etc/hostname
-						echo "127.0.0.1	localhost
-						::1		localhost
-						127.0.1.1	$HOSTNAME.$DOMAIN	$HOSTNAME" > /etc/hosts
-						cat /etc/hosts
+				NETWORK () {  # (!todo)
+					NETWORK_SYS () {
+						HOSTSFILE () {  # (! default)
+							echo "$HOSTNAME" > /etc/hostname
+							echo "127.0.0.1	localhost
+							::1		localhost
+							127.0.1.1	$HOSTNAME.$DOMAIN	$HOSTNAME" > /etc/hosts
+							cat /etc/hosts
+						}
+						HOSTSFILE
 					}
 					NETWORK_MGMT () {
 						GENTOO_DEFAULT () {
@@ -1204,52 +1233,49 @@ EOF
 						DHCCLIENT
 						$NETWMGR
 					}
-					
-					HOSTSFILE
-					NETWORK_MGMT
-				}
-				NETWORK_FIREWALL () {
-					#UFW () {  # https://wiki.gentoo.org/wiki/Ufw
-					#	
-					#	APPAPP_EMERGE="net-firewall/ufw"
-					#	AUTOSTART_NAME_OPENRC="ufw"
-					#	AUTOSTART_NAME_SYSTEMD="ufw"
-					#	PACKAGE_USE
-					#	ACC_KEYWORDS_USERAPP
-					#	EMERGE_USERAPP_DEF
-					#	AUTOSTART_DEFAULT_$SYSINITVAR							
-					#}
-					IPTABLES () {  # https://wiki.gentoo.org/wiki/Iptables
-						
-						APPAPP_EMERGE="net-firewall/iptables"
-						AUTOSTART_NAME_OPENRC="iptables"
-						AUTOSTART_NAME_SYSTEMD="iptables"
-						PACKAGE_USE
-						ACC_KEYWORDS_USERAPP
-						EMERGE_USERAPP_DEF
-						AUTOSTART_DEFAULT_$SYSINITVAR							
+					NETWORK_FIREWALL () {
+						#UFW () {  # https://wiki.gentoo.org/wiki/Ufw
+						#	
+						#	APPAPP_EMERGE="net-firewall/ufw"
+						#	AUTOSTART_NAME_OPENRC="ufw"
+						#	AUTOSTART_NAME_SYSTEMD="ufw"
+						#	PACKAGE_USE
+						#	ACC_KEYWORDS_USERAPP
+						#	EMERGE_USERAPP_DEF
+						#	AUTOSTART_DEFAULT_$SYSINITVAR							
+						#}
+						IPTABLES () {  # https://wiki.gentoo.org/wiki/Iptables
+							
+							APPAPP_EMERGE="net-firewall/iptables"
+							AUTOSTART_NAME_OPENRC="iptables"
+							AUTOSTART_NAME_SYSTEMD="iptables"
+							PACKAGE_USE
+							ACC_KEYWORDS_USERAPP
+							EMERGE_USERAPP_DEF
+							AUTOSTART_DEFAULT_$SYSINITVAR							
+						}
+						#UFW
+						IPTABLES
 					}
-					#UFW
-					IPTABLES
+					
+					NETWORK_SYS
+					NETWORK_MGMT
+					NETWORK_FIREWALL
 				}
-				#FSTAB  # pass 09.09.22 no err output
-				#cat /etc/fstab  # debug  # pass 09.09.22 no err output
-				## CRYPTTABD  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-				#SYSAPP  # pass 09.09.22 no err output w config as is.  # warning Failed to stop Logical Volume Manager  prob bec it isnt started before ^^
-				# note: todo htop
-				#I_FSTOOLS  # pass 09.09.22 no err
-				BOOTLOAD  # pass 09.09.22 no err
-				#cat /etc/default/grub  # debug  # pass 09.09.22 no err
-				#KERNEL  # pass 09.09.22 no err # (!needs update) not latest config (its really dated ~2020-21 ... pasted but it works for VM testing w luks crypt cryptsetup. (!note: in current test 07.09.22: hit enter to accept default settings for new function in the kernel)
-				#INITRAM  # pass 09.09.22 no err
-				##MODPROBE_CHROOT  # (!info: not required for the default lvm on luks gpt bios grub - setup)
-				#VIRTUALIZATION  # pass 08.09.22 no err
-				#AUDIO # # pass 08.09.22 no err
-				##GPU # (!note: incomplete)
-				#NETWORK_MAIN  # pass 08.09.22 no err
-				NETWORK_FIREWALL
+				##SYSCONFIG_CORE  # pass 10.09.22
+				##SYSFS
+				##APPADMIN
+				#APP
+				#SYSPROCESS
+				KERNEL
+				INITRAM
+				SYSBOOT # didnt boot w bootloader pre initram, mabye grub-mkconfig -o /boot/grub/grub.cfg does the trick but left as tested ... moved this down
+				## MODPROBE_CHROOT
+				#APPEMULATION
+				#AUDIO
+				##GPU
+				#NETWORK
 				# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-			
 			}
 			SCREENDSP () {  # note: replace visual header with "screen and desktop"
 				WINDOWSYS () {
@@ -1287,62 +1313,62 @@ EOF
 				}
 				DESKTOP_ENV () {  # https://wiki.gentoo.org/wiki/Desktop_environment
 					#. /var/app/desk-env.sh
-#  BUDGIE - https://wiki.gentoo.org/wiki/Budgie
-BUDGIE_DSTENV_XEC=budgie_dpmexec
-BUDGIE_DSTENV_STARTX=budgie
-BUDGIE_DSTENV_EMERGE=budgie
-#  CINNAMON - https://wiki.gentoo.org/wiki/Cinnamon
-CINNAMON_DSTENV_XEC=gnome-session-cinnamon
-CINNAMON_DSTENV_STARTX=cinnamon-session
-CINNAMON_DSTENV_EMERGE=gnome-extra/cinnamon
-#  DDE "Deepin Desktop Environment" - https://wiki.gentoo.org/wiki/DDE
-DDE_DSTENV_XEC=DDE
-DDE_DSTENV_STARTX=DDE
-DDE_DSTENV_EMERGE=DDE
-#  FVWM-Crystal - FVWM-Crystal
-FVWMCRYSTAL_DSTENV_XEC=fvwm-crystal
-FVWMCRYSTAL_DSTENV_STARTX=fvwm-crystal
-FVWMCRYSTAL_DSTENV_EMERGE=x11-themes/fvwm-crystal
-#  GNOME - https://wiki.gentoo.org/wiki/GNOME
-GNOME_DSTENV_XEC=gnome-session
-GNOME_DSTENV_STARTX=GNOME
-GNOME_DSTENV_EMERGE=gnome-base/gnome
-#  KDE - FVWM-Crystal
-KDE_DSTENV_XEC=kde-plasma/startkde
-KDE_DSTENV_STARTX=startkde
-KDE_DSTENV_EMERGE=kde-plasma/plasma-meta
-#  LXDE - https://wiki.gentoo.org/wiki/LXDE
-LXDE_DSTENV_XEC=startlxde
-LXDE_DSTENV_STARTX=startlxde
-LXDE_DSTENV_EMERGE=lxde-base/lxde-meta
-#  LXQT - FVWM-Crystal
-LXQT_DSTENV_XEC=startlxqt
-LXQT_DSTENV_STARTX=startlxqt
-LXQT_DSTENV_EMERGE=lxqt-base/lxqt-meta
-#  LUMINA - https://wiki.gentoo.org/wiki/Lumina
-LUMINA_DSTENV_XEC=start-lumina-desktop
-LUMINA_DSTENV_STARTX=start-lumina-desktop
-LUMINA_DSTENV_EMERGE=x11-wm/lumina
-#  MATE - https://wiki.gentoo.org/wiki/MATE
-MATE_DSTENV_XEC=mate-session
-MATE_DSTENV_STARTX=mate-session
-MATE_DSTENV_EMERGE=mate-base/mate
-#  PANTHEON - https://wiki.gentoo.org/wiki/Pantheon
-PANTHEON_DSTENV_XEC=PANTHEON
-PANTHEON_DSTENV_STARTX=PANTHEON
-PANTHEON_DSTENV_EMERGE=PANTHEON
-#  RAZORQT - FVWM-Crystal
-RAZORQT_DSTENV_XEC=razor-session
-RAZORQT_DSTENV_STARTX=razor-session
-RAZORQT_DSTENV_EMERGE=RAZORQT
-#  TDE - https://wiki.gentoo.org/wiki/Trinity_Desktop_Environment
-TDE_DSTENV_XEC=tde-session
-TDE_DSTENV_STARTX=tde-session
-TDE_DSTENV_EMERGE=trinity-base/tdebase-meta
-#  XFCE - https://wiki.gentoo.org/wiki/Xfce
-XFCE_DSTENV_XEC=xfce4-session
-XFCE_DSTENV_STARTX=startxfce4
-XFCE_DSTENV_EMERGE=xfce-base/xfce4-meta
+					#  BUDGIE - https://wiki.gentoo.org/wiki/Budgie
+					BUDGIE_DSTENV_XEC=budgie_dpmexec
+					BUDGIE_DSTENV_STARTX=budgie
+					BUDGIE_DSTENV_EMERGE=budgie
+					#  CINNAMON - https://wiki.gentoo.org/wiki/Cinnamon
+					CINNAMON_DSTENV_XEC=gnome-session-cinnamon
+					CINNAMON_DSTENV_STARTX=cinnamon-session
+					CINNAMON_DSTENV_EMERGE=gnome-extra/cinnamon
+					#  DDE "Deepin Desktop Environment" - https://wiki.gentoo.org/wiki/DDE
+					DDE_DSTENV_XEC=DDE
+					DDE_DSTENV_STARTX=DDE
+					DDE_DSTENV_EMERGE=DDE
+					#  FVWM-Crystal - FVWM-Crystal
+					FVWMCRYSTAL_DSTENV_XEC=fvwm-crystal
+					FVWMCRYSTAL_DSTENV_STARTX=fvwm-crystal
+					FVWMCRYSTAL_DSTENV_EMERGE=x11-themes/fvwm-crystal
+					#  GNOME - https://wiki.gentoo.org/wiki/GNOME
+					GNOME_DSTENV_XEC=gnome-session
+					GNOME_DSTENV_STARTX=GNOME
+					GNOME_DSTENV_EMERGE=gnome-base/gnome
+					#  KDE - FVWM-Crystal
+					KDE_DSTENV_XEC=kde-plasma/startkde
+					KDE_DSTENV_STARTX=startkde
+					KDE_DSTENV_EMERGE=kde-plasma/plasma-meta
+					#  LXDE - https://wiki.gentoo.org/wiki/LXDE
+					LXDE_DSTENV_XEC=startlxde
+					LXDE_DSTENV_STARTX=startlxde
+					LXDE_DSTENV_EMERGE=lxde-base/lxde-meta
+					#  LXQT - FVWM-Crystal
+					LXQT_DSTENV_XEC=startlxqt
+					LXQT_DSTENV_STARTX=startlxqt
+					LXQT_DSTENV_EMERGE=lxqt-base/lxqt-meta
+					#  LUMINA - https://wiki.gentoo.org/wiki/Lumina
+					LUMINA_DSTENV_XEC=start-lumina-desktop
+					LUMINA_DSTENV_STARTX=start-lumina-desktop
+					LUMINA_DSTENV_EMERGE=x11-wm/lumina
+					#  MATE - https://wiki.gentoo.org/wiki/MATE
+					MATE_DSTENV_XEC=mate-session
+					MATE_DSTENV_STARTX=mate-session
+					MATE_DSTENV_EMERGE=mate-base/mate
+					#  PANTHEON - https://wiki.gentoo.org/wiki/Pantheon
+					PANTHEON_DSTENV_XEC=PANTHEON
+					PANTHEON_DSTENV_STARTX=PANTHEON
+					PANTHEON_DSTENV_EMERGE=PANTHEON
+					#  RAZORQT - FVWM-Crystal
+					RAZORQT_DSTENV_XEC=razor-session
+					RAZORQT_DSTENV_STARTX=razor-session
+					RAZORQT_DSTENV_EMERGE=RAZORQT
+					#  TDE - https://wiki.gentoo.org/wiki/Trinity_Desktop_Environment
+					TDE_DSTENV_XEC=tde-session
+					TDE_DSTENV_STARTX=tde-session
+					TDE_DSTENV_EMERGE=trinity-base/tdebase-meta
+					#  XFCE - https://wiki.gentoo.org/wiki/Xfce
+					XFCE_DSTENV_XEC=xfce4-session
+					XFCE_DSTENV_STARTX=startxfce4
+					XFCE_DSTENV_EMERGE=xfce-base/xfce4-meta
 					SETVAR_DSKTENV () {
 						for i in $DESKTOPENV ; do
 							DSTENV_XEC=$DESKTOPENV\_DSTENV_XEC
@@ -1477,42 +1503,42 @@ EOF
 					}
 					W_D_MGR () {  # Display_manager https://wiki.gentoo.org/wiki/Display_manager
 						#. /var/app/display-mgr.sh
-#  CDM - The Console Display Manager https://wiki.gentoo.org/wiki/CDM -- https://github.com/evertiro/cdm
-CDM_DSPMGR_SYSTEMD=cdm.service
-CDM_DSPMGR_OPENRC=cdm
-CDM_APPAPP_EMERGE=x11-misc/cdm
-#  GDM - https://wiki.gentoo.org/wiki/GNOME/gdm
-GDM_DSPMGR_SYSTEMD=cdm.service
-GDM_DSPMGR_OPENRC=gdm
-GDM_APPAPP_EMERGE=gnome-base/gdm                                     
-#  LIGHTDM - https://wiki.gentoo.org/wiki/LightDM
-LIGHTDM_DSPMGR_SYSTEMD=lightdm.service
-LIGHTDM_DSPMGR_OPENRC=lightdm
-LIGHTDM_APPAPP_EMERGE=x11-misc/lightdm                       
-#  LXDM - https://wiki.gentoo.org/wiki/LXDE (always links to lxde by time of this writing)					
-LXDM_DSPMGR_SYSTEMD=lxdm.service
-LXDM_DSPMGR_OPENRC=lxdm # (startlxde ?)
-LXDM_APPAPP_EMERGE=lxde-base/lxdm
-#  QINGY - https://wiki.gentoo.org/wiki/ QINGY
-QINGY_DSPMGR_SYSTEMD=qingy.service
-QINGY_DSPMGR_OPENRC=qingy
-QINGY_APPAPP_EMERGE=placeholder
-#  SSDM - https://wiki.gentoo.org/wiki/SSDM
-SSDM_DSPMGR_SYSTEMD=sddm.service
-SSDM_DSPMGR_OPENRC=sddm
-SSDM_APPAPP_EMERGE=x11-misc/sddm                      
-#  SLIM - https://wiki.gentoo.org/wiki/SLiM
-SLIM_DSPMGR_SYSTEMD=slim.service
-SLIM_DSPMGR_OPENRC=slim
-SLIM_APPAPP_EMERGE=x11-misc/slim                                            
-#  WDM - https://wiki.gentoo.org/wiki/WDM
-WDM_DSPMGR_SYSTEMD=wdm.service
-WDM_DSPMGR_OPENRC=wdm
-WDM_APPAPP_EMERGE=x11-misc/wdm                 
-#  XDM - https://packages.gentoo.org/packages/x11-apps/xdm
-XDM_DSPMGR_SYSTEMD=xdm.service
-XDM_DSPMGR_OPENRC=xdm
-XDM_APPAPP_EMERGE=x11-apps/xdm
+						#  CDM - The Console Display Manager https://wiki.gentoo.org/wiki/CDM -- https://github.com/evertiro/cdm
+						CDM_DSPMGR_SYSTEMD=cdm.service
+						CDM_DSPMGR_OPENRC=cdm
+						CDM_APPAPP_EMERGE=x11-misc/cdm
+						#  GDM - https://wiki.gentoo.org/wiki/GNOME/gdm
+						GDM_DSPMGR_SYSTEMD=cdm.service
+						GDM_DSPMGR_OPENRC=gdm
+						GDM_APPAPP_EMERGE=gnome-base/gdm                                     
+						#  LIGHTDM - https://wiki.gentoo.org/wiki/LightDM
+						LIGHTDM_DSPMGR_SYSTEMD=lightdm.service
+						LIGHTDM_DSPMGR_OPENRC=lightdm
+						LIGHTDM_APPAPP_EMERGE=x11-misc/lightdm                       
+						#  LXDM - https://wiki.gentoo.org/wiki/LXDE (always links to lxde by time of this writing)					
+						LXDM_DSPMGR_SYSTEMD=lxdm.service
+						LXDM_DSPMGR_OPENRC=lxdm # (startlxde ?)
+						LXDM_APPAPP_EMERGE=lxde-base/lxdm
+						#  QINGY - https://wiki.gentoo.org/wiki/ QINGY
+						QINGY_DSPMGR_SYSTEMD=qingy.service
+						QINGY_DSPMGR_OPENRC=qingy
+						QINGY_APPAPP_EMERGE=placeholder
+						#  SSDM - https://wiki.gentoo.org/wiki/SSDM
+						SSDM_DSPMGR_SYSTEMD=sddm.service
+						SSDM_DSPMGR_OPENRC=sddm
+						SSDM_APPAPP_EMERGE=x11-misc/sddm                      
+						#  SLIM - https://wiki.gentoo.org/wiki/SLiM
+						SLIM_DSPMGR_SYSTEMD=slim.service
+						SLIM_DSPMGR_OPENRC=slim
+						SLIM_APPAPP_EMERGE=x11-misc/slim                                            
+						#  WDM - https://wiki.gentoo.org/wiki/WDM
+						WDM_DSPMGR_SYSTEMD=wdm.service
+						WDM_DSPMGR_OPENRC=wdm
+						WDM_APPAPP_EMERGE=x11-misc/wdm                 
+						#  XDM - https://packages.gentoo.org/packages/x11-apps/xdm
+						XDM_DSPMGR_SYSTEMD=xdm.service
+						XDM_DSPMGR_OPENRC=xdm
+						XDM_APPAPP_EMERGE=x11-apps/xdm
 
 						SETVAR_DSPMGR () {
 							for i in $DISPLAYMGR
@@ -1656,7 +1682,7 @@ EOF
 			
 			} 
 			## (RUN ENTIRE SCRIPT) (!changeme)
-# BASE  # pass 09.09.22 no err output
+#BASE  # pass 09.09.22 no err outpu
 CORE  # pass 09.09.22 # rerun grub after end of setup (USERS) else boot err 09.09.22
 
 #SCREENDSP  # pass 09.09.22
@@ -1666,7 +1692,6 @@ USERS  # pass 09.08.22
 echo "end chroot"
 INNERSCRIPT
 )
-
 	# since the chroot script cant be run outside of chroot the script and possibly sourced functions and variables scripts need to be copied accordingly.
 	# for the onefile setup this is simply done by echoing the 'INNERSCRIPT" ... if the setup is split in multiple files for readability, every file or alt the gentoo script repo needs to be copied to make all functions and variables available.
 	# only variables outside the chroot innerscript for now 27.8.22
@@ -1685,13 +1710,11 @@ INNERSCRIPT
 	chmod +x $CHROOTX/chroot_run.sh
 	chroot $CHROOTX /bin/bash ./chroot_run.sh
 }
-
 DEBUG () { 
 	rc update -v show
 }
 
 ####  RUN ALL ## (!changeme)
-# PRE  # no ERR 09.09.22 
+#PRE  # no ERR 10.09.22 
 CHROOT
-
 #DEBUG
