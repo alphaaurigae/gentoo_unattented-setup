@@ -19,4 +19,4 @@
 DOCS: https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc
 
 > <p>screen</p>
-![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-10_02-59-58.png)
+![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-12_20-55-20.png)
