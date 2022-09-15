@@ -1,26 +1,6 @@
 # VARIABLES (note!: there are 2 places to edit variables! here: pre-script and CHROOT! go to inner script to edit the other variables! (!todo: parse variables to chroot to have all variables in one place)
 
-SYSINITVAR=openrc  # openrc (lowercase !important (for url fetch stage3 (!default); SYSTEMD (!todo)# for gpg verification (unfinished but work for testing # only openrc working yet
-
-##  DRIVES & PARTITIONS
-HDD1=/dev/sda  # OS DRIVE - the drive you want to install gentoo to.
-## GRUB_PART=/dev/sda1  # bios grub
-BOOT_PART=/dev/sda2  # boot # unencrypted unless required changes are made - see CRYPTSETUP_BOOT 
-MAIN_PART=/dev/sda3  # mainfs - lukscrypt cryptsetup container with LVM env inside
-
-## SWAP PARTITION- DISABLED -- SEE VAR & LVM SECTION TO ENABLE!
-# SWAP0=swap0 # LVM swap NAME for sorting of swap partitions.
-# SWAP_SIZE="1GB"  # (INSIDE LVM MAIN_PART - mainhdd only has boot & fainfs
-# SWAP_FS=linux-swap # swapfs
-
-## FILESYSTEMS # !FSTOOLS
-FILESYSTEM_BOOT=ext2  # boot filesystem
-FILESYSTEM_MAIN=ext4  # main filesystem for the OS
-
-## LVM
-PV_MAIN=pv0crypt  # LVM PV physical volume
-VG_MAIN=vg0crypt  # LVM VG volume group
-LV_MAIN=lv0crypt  # LVM LV logical volume
+SYSINITVAR="openrc"  # openrc (lowercase !important (for url fetch stage3 (!default); SYSTEMD (!todo)# for gpg verification (unfinished but work for testing # only openrc working yet
 
 ## PARTITION SIZE
 GRUB_SIZE="1M 1G"  # (!changeme) bios grub sector start/end M for megabytes, G for gigabytes
@@ -40,14 +20,4 @@ GENTOO_EBUILD_KEYFINGERPRINT3="534E4209AB49EEE1C19D96162C44695DB9F6043D"  # 534E
 GENTOO_EBUILD_KEYFINGERPRINT4="D99EAC7379A850BCE47DA5F29E6438C817072058"  # Gentoo Linux Release Engineering (Gentoo Linux Release Signing Key) https://www.gentoo.org/downloads/signatures/
 GENTOO_RELEASE_URL="http://distfiles.gentoo.org/releases/amd64/autobuilds"
 
-# MISC
-bold=$(tput bold) # staticvar bold text
-normal=$(tput sgr0) # # staticvar reverse to normal text
 
-# STATIC FUNCTIONS - left the START / END notices in for a moment ... ( !note: remove?)
-NOTICE_START () {  # echo function name
-	echo "${bold} ${FUNCNAME[1]} ... START ... ${normal}"
-}
-NOTICE_END () {
-	echo "${bold}${FUNCNAME[1]}  ... END ... ${normal}"
-}
