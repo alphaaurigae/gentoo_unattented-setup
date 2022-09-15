@@ -1,7 +1,8 @@
 # Automated modular GENTOO linux setup
 
-
-# status 14.09.2022 - no full test but "should work" - lvm solo & cryptsetup booted after basic setup wo desktop... testing...:
+# status 15.09 : split script for readibility, 
+- moved chroot to src/chroot_main.sh ... testing
+- 14.09.2022 - no full test but "should work" - lvm solo & cryptsetup booted after basic setup wo desktop... testing...:
 > changes: adapt option to make cryptsetup an option and lvm on root another, split variables / functions in sub files, add start / stop notice per function ...
 > ..edit readme to reflect basic default setup info.
 
@@ -32,18 +33,18 @@ DOCS: https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc
 
 ### PRE
 
-#### partitioning
+#### PARTITIONING
 - sda single drive setup (240gb on test, may use way less...)
 - sda1 bios boot
 - sda2 bios boot - fs ext2
 - sda3 main part - fs ext4 - lvm on cryptsetup or alt lvm on root
 
-#### stage3 load
+#### STAGE3
 - curl off http://distfiles.gentoo.org/releases/amd64/autobuilds/
 - gpg verify and print err if. 
 - unpack to chroot
 
-#### prep chroot
+#### PREP CHROOT
 - copy files for chroot
 
 ### CHROOT
@@ -86,5 +87,8 @@ DOCS: https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc
 
 #### USERAPP - git, firefox
 
-# USERS
-- add admin, add requ groups
+### USERS
+- root pw
+- add groups
+- add admin, add admin to groups
+- addvirtualbox vbox groups, add admin to vbox groups
