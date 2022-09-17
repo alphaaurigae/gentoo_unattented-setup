@@ -1,7 +1,13 @@
 # Automated modular GENTOO linux setup
 
-# status 15.09 : split script for readibility.
-- moved chroot to src/chroot_main.sh ... testing
+# status 17.09 : split script for readibility.
+- moved functions to seperate files for chroot and pre
+> files for chroot and pre functions located in src/PRE src/CHROOT ; may split this further but should already improve readability for the moment.
+> easy functions on of in main run.sh , no more scrolling to on off functions ,,,,
+
+## todo tidy up further for readability....
+
+### prevoiusly ...
 - 14.09.2022 - no full test but "should work" - lvm solo & cryptsetup booted after basic setup wo desktop... testing...:
 > changes: adapt option to make cryptsetup an option and lvm on root another, split variables / functions in sub files, add start / stop notice per function ...
 > ..edit readme to reflect basic default setup info.
