@@ -4,6 +4,7 @@
 # STATUS main Readme.md
 # github.com/alphaaurigae/gentoo_unattended_modular-setup.sh
 
+# FUNCTION  # run FUNCTION  > placeholder to easy replace uncommented / commented with sed -ie 's/PRE  # run PRE/#PRE  # run PRE/g' 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # VARIABLE && FUNCTONS (options) ##unfinished
 ## PRE
@@ -26,7 +27,7 @@ NOTICE_START
 	#. src/PRE/MNTFS.sh
 	#. src/PRE/COPY_CONFIGS.sh
 
-	INIT   
+	INIT
 	PARTITIONING
 	CRYPTSETUP
 	LVMSETUP
@@ -70,25 +71,20 @@ NOTICE_START
 	. /CP_BASHRC.sh
 
 
-	SWAPFILE
-	df -h
-	#cat /etc/portage/make.conf
-	#MAKECONF
-	#cat /etc/portage/make.conf
-	#CONF_LOCALES
-	#PORTAGE
-	#EMERGE_SYNC
-	#eselect profile list
-	#ESELECT_PROFILE
-	# SETFLAGS1  # PLACEHOLDER
-	#EMERGE_ATWORLD_A
-	##MISC1_CHROOT  # PLACEHOLDER
-	##RELOADING_SYS  # PLACEHOLDER
-	#SYSTEMTIME
-	#KEYMAP_CONSOLEFONT
-	#FIRMWARE
-	#CP_BASHRC
-	#cat /etc/skel/.bashrc
+	#SWAPFILE  # run SWAPFILE
+	#MAKECONF  # run MAKECONF
+	#CONF_LOCALES  # run CONF_LOCALES
+	#PORTAGE  # run PORTAGE
+	#EMERGE_SYNC  # run EMERGE_SYNC
+	#ESELECT_PROFILE  # run ESELECT_PROFILE
+	##SETFLAGS1  # run SETFLAGS1 #  PLACEHOLDER
+	#EMERGE_ATWORLD_A  # run EMERGE_ATWORLD_A
+	##MISC1_CHROOT  # run MISC1_CHROOT  # PLACEHOLDER
+	##RELOADING_SYS  # run RELOADING_SYS  # PLACEHOLDER
+	#SYSTEMTIME  # run SYSTEMTIME
+	#KEYMAP_CONSOLEFONT  # run KEYMAP_CONSOLEFONT
+	#FIRMWARE  # run FIRMWARE
+	#CP_BASHRC  # run CP_BASHRC
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 }
 CORE () {
@@ -109,20 +105,20 @@ NOTICE_START
 	# . /GPU.sh
 	. /NETWORK.sh
 
-	#SYSCONFIG_CORE
-	#SYSFS
-	#APPADMIN
-	#SYSAPP
-	#APP
-	#SYSPROCESS
-	#KERNEL
-	#INITRAM
-	SYSBOOT
-	## MODPROBE_CHROOT
-	#APPEMULATION
-	#AUDIO
-	## GPU
-	#NETWORK
+	#SYSCONFIG_CORE  # run SYSCONFIG_CORE
+	#SYSFS  # run SYSFS
+	#APPADMIN  # run APPADMIN
+	#SYSAPP  # run SYSAPP
+	#APP  # run APP
+	#SYSPROCESS  # run SYSPROCESS
+	#KERNEL  # run KERNEL
+	#INITRAM  # run INITRAM
+	#SYSBOOT  # run SYSBOOT
+	## MODPROBE_CHROOT  # run MODPROBE_CHROOT
+	#APPEMULATION  # run APPEMULATION
+	#AUDIO  # run AUDIO
+	## GPU  # run GPU
+	#NETWORK  # run NETWORK
 NOTICE_END
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 }
@@ -169,12 +165,12 @@ NOTICE_END
 }
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ## (RUN ENTIRE SCRIPT) (!changeme)
-BASE
-#CORE
-#SCREENDSP
-#USERAPP
-#USERS
-#FINISH
+#BASE  # run BASE
+#CORE  # run BASE
+#SCREENDSP  # run BASE
+#USERAPP  # run BASE
+#USERS  # run BASE
+#FINISH  # run BASE
 NOTICE_END
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ########## CHROOT ENDS HERE ##########
@@ -255,8 +251,8 @@ NOTICE_END
 }
 #####  RUN ALL #####
 
-PRE
-#CHROOT
-#DEBUG
+#PRE  # run PRE
+#CHROOT  # run CHROOT
+#DEBUG  # run DEBUG
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

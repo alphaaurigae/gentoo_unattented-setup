@@ -44,7 +44,9 @@ EOF
 			fi
 		NOTICE_END
 		}
+		cat /etc/portage/make.conf
 		MAKECONF_VARIABLES
+		cat /etc/portage/make.conf
 		EMERGE_ATWORLD_B
 	NOTICE_END
 	}
