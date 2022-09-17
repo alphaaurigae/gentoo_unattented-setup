@@ -5,6 +5,9 @@
 > files for chroot and pre functions located in src/PRE src/CHROOT ; may split this further but should already improve readability for the moment.
 > easy functions on of in main run.sh , no more scrolling to on off functions ,,,,
 
+> testing pre
+[![asciicast](https://asciinema.org/a/CA6uIojMimYQYjiSFgaWZf3iW.png)](https://asciinema.org/a/CA6uIojMimYQYjiSFgaWZf3iW)
+
 ## todo tidy up further for readability....
 
 ### prevoiusly ...

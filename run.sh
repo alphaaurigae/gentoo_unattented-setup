@@ -4,7 +4,7 @@
 # STATUS main Readme.md
 # github.com/alphaaurigae/gentoo_unattended_modular-setup.sh
 
-# FUNCTION  # run FUNCTION  > placeholder to easy replace uncommented / commented with sed -ie 's/PRE  # run PRE/#PRE  # run PRE/g' 
+# FUNCTION  # run FUNCTION  > placeholder to easy replace uncommented / commented with sed -ie 's/PRE  # run PRE/PRE  # run PRE/g' 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # VARIABLE && FUNCTONS (options) ##unfinished
 ## PRE
