@@ -12,6 +12,7 @@
 4. ssh to serv || vm; cd reporoot; ./run.sh - repeat 3 & 4 as needed ...
 - Sample setup on Virtualbox VM with bridged adaper. (Sample bridge setup in sript/)
 > PRE with CRYPTSETUP="YES" - CRYPTSETUP="NO" == LVM on root (successful previous test - https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/var/var_main.sh
+> asciinema recording of PRE setup:
 [![asciicast](https://asciinema.org/a/CA6uIojMimYQYjiSFgaWZf3iW.png)](https://asciinema.org/a/CA6uIojMimYQYjiSFgaWZf3iW)
 - CHROOT logs attached in logdir https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/dev_log  |  no signifcant errors - last testrun
 > Boots to desktop xfce -> firefox, network, audio ...
