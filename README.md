@@ -1,68 +1,64 @@
 # Automated modular GENTOO linux setup
 
-# status 17.09 : split script for readibility.
-- moved functions to seperate files for chroot and pre
-> files for chroot and pre functions located in src/PRE src/CHROOT ; may split this further but should already improve readability for the moment.
-> easy functions on of in main run.sh , no more scrolling to on off functions ,,,,
+# status 17.09.22
+> Files for chroot and pre functions located in src/PRE src/CHROOT.
+> Easy functions ON OFF gentoo_unattented-setup/run.sh
+- updated https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/var/chroot_variables.sh during test setup but shouldn`t produce errors - minor.
 
-> testing pre
+## Get started
+1. Adjust var/* - default is cryptsetup / cryptsetup off works too for lvm on root. Default set as outlined below.
+2. Adhust run.sh functions to run parts - useful for debugging and backup state of VM.
+3. rsync reporoot to serv / chroot; sample script in script/.
+4. ssh to serv || vm; cd reporoot; ./run.sh - repeat 3 & 4 as needed ...
+- Sample setup on Virtualbox VM with bridged adaper. (Sample bridge setup in sript/)
+> PRE with CRYPTSETUP="YES" - CRYPTSETUP="NO" == LVM on root (successful previous test - https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/var/var_main.sh
 [![asciicast](https://asciinema.org/a/CA6uIojMimYQYjiSFgaWZf3iW.png)](https://asciinema.org/a/CA6uIojMimYQYjiSFgaWZf3iW)
+- CHROOT logs attached in logdir https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/dev_log  |  no signifcant errors - last testrun
+> Boots to desktop xfce -> firefox, network, audio ...
+- Basic mockup, work in progress
+- Script runs with "very little" interaction required to setup a gentoo desktop. See logs.
 
-## todo tidy up further for readability....
-
-### prevoiusly ...
-- 14.09.2022 - no full test but "should work" - lvm solo & cryptsetup booted after basic setup wo desktop... testing...:
-> changes: adapt option to make cryptsetup an option and lvm on root another, split variables / functions in sub files, add start / stop notice per function ...
-> ..edit readme to reflect basic default setup info.
-
-- 12.09.22 commit workign tested cryptsetup, boots to desktop - screenshot 12.09.22
-> ... no err, script runs through - enter passwords cryptsetup, confirm kernel config in menuconfig, enter userpass end - done...
- functions may be commented out for chroot ...
-
-- testing optionable cryptsetup / lvm on root ... pure root setup to be setup... make everything modular option without interferrence in the main setup.
-> boots to desktop xfce -> firefox, network, audio ...
-> no significant errors, logs attached log dir (exc 12.09.22)
-> adding core apps.
-- tidy, sort script to match gentoo categories.
-- PRESET_ACCEPT_KEYWORDS="amd64" # build 8.9.22 "amd64 ~amd64" - build 7.9.22 # ~amd64" # alone not tested yet # all on profile 1
-> testing ... functions may but commented out ;)
-- work / redo / TESTING all the things ... things maybe not ordered neatley yet.
-- basic mockup, work in progress
-- script runs with "very little" interaction required to setup a gentoo desktop. ... testing
-- bugs that prevented the script to run to the finish (desktop environment) removed ... xfce deskop boots.
-
-
-DOCS: https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc
-
-> <p>screen</p>
-![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-12_20-55-20.png)
+DOCS (maybe dated - this page is updated first): https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc
+> <p>crypt boot</p>
+![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-18_03-22-34.png)
+> <p>booted gentoo VM lxdm - xfce</p>
+![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-18_03-24-46.png)
 
 ## Default (main testing)
 - OPENRC
+> .bashrc, kernel.conf cp during setup from configs/ https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/configs
+> Variables:  https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/var
+> Amd 1920 and m.2 ssd with other load while building for full default setup +9h on Vbox KVM.
+> Vbox sample setup /home/a/Desktop/testing_dev/main/gentoo_unattented-setup/img/screenshots/virtual_machine/virtualbox/
 
 ### PRE
 
 #### PARTITIONING
+> https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/src/PRE/PARTITIONING.sh
+> testing on 240gb VM, may requires less...
 - sda single drive setup (240gb on test, may use way less...)
 - sda1 bios boot
 - sda2 bios boot - fs ext2
 - sda3 main part - fs ext4 - lvm on cryptsetup or alt lvm on root
 
 #### STAGE3
+> https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/src/PRE/STAGE3.sh
 - curl off http://distfiles.gentoo.org/releases/amd64/autobuilds/
-- gpg verify and print err if. 
+- GPG verify and print err if. 
 - unpack to chroot
 
 #### PREP CHROOT
+> bottom --> https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/run.sh
 - copy files for chroot
 
 ### CHROOT
 #### BASE
+> https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/src/CHROOT/BASE
 - SWAPFILE - 50gb + 28gb test vm ram
 - MAKECONF 
 - CONF_LOCALES
 - PORTAGE
-- ESELECT_PROFILE - 1 stable
+- ESELECT_PROFILE - profile 1 stable . var/ PRESET_ACCEPT_KEYWORDS="amd64" default | "amd64 ~amd64" - build 7.9.22 
 - EMERGE_ATWORLD
 - SYSTEMTIME - openntpd
 - KEYMAP_CONSOLEFONT - def /etc/conf.d/keymaps, /etc/conf.d/consolefont, x11 X11/xorg.conf.d/10-keyboard.conf - dracut load for cryptset.
@@ -70,6 +66,7 @@ DOCS: https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc
 - CP_BASHR
 
 #### CORE
+> https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/src/CHROOT/CORE
 - FSTAB
 - SYSFS = DMCRYPT, LVM, MULTIPATH
 - FSTOOLS = ext2
@@ -90,13 +87,18 @@ DOCS: https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc
 - NET_FIREWALL - iptables
 
 #### SCREENDSP
+> https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/src/CHROOT/SCREENDSP
 - WINDOWSYS - x11
 - DESKTOP_ENV - xfce4
 - MGR - LXDM
 
 #### USERAPP - git, firefox
+> https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/src/CHROOT/USERAPP
+- firefox and dep libwebp take DECENT CPU TIME!!!! and require space +15gb - more time than updateworld portage & kernel... but you get the full source compiled ^^...
+- chromium and oher alternatives not tested yet.
 
 #### USERS
+> https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/src/CHROOT/USERS
 - root pw
 - add groups
 - add admin, add admin to groups

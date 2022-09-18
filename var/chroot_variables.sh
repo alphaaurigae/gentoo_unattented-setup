@@ -1,7 +1,7 @@
 		. /var_main.sh
 
 		# CHROOT ENV
-		SOURCE_CHROOT () {
+		SOURCE_CHROOT () {  # function may not belong in vars but lazy to sort this in functions and possibly debug again ...
 		NOTICE_START
 			env-update
 			source /etc/profile
@@ -9,7 +9,6 @@
 		NOTICE_END
 		}
 		SOURCE_CHROOT  # (must run before CHROOT VARIABLES??)
-
 
 		# BASE
 		### INITSYSTEM
@@ -20,19 +19,22 @@
 		LANG_MAIN_UPPER="US"
 		LANG_SECOND_LOWER="de"
 		LANG_SECOND_UPPER="DE"
-
+		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		## MAKE.CONF PRESET
 		PRESET_CC="gcc"  # gcc (!default); the preset compiler
 		# https://wiki.gentoo.org/wiki/ACCEPT_KEYWORDS
-		PRESET_ACCEPT_KEYWORDS="amd64" # build 8.9.22 "amd64 ~amd64" - build 7.9.22 # ~amd64" # alone not tested yet # all on profile 1 .  # "amd64" = stable  If the user wants to be able to install and work with ebuilds that are not considered production-ready yet, they can add the same architecture but with the ~
+		PRESET_ACCEPT_KEYWORDS="amd64" # 1/2 # build 8.9.22 "amd64 ~amd64" - build 7.9.22 # ~amd64" # alone not tested yet # all on profile 1 .  
+		# 2/2 # "amd64" = stable  If the user wants to be able to install and work with ebuilds that are not considered production-ready yet, they can add the same architecture but with the ~
 		# CHOST # https://wiki.gentoo.org/wiki/CHOST
 		PRESET_CHOST_ARCH="x86_64"
 		PRESET_CHOST_VENDOR="pc"
 		PRESET_CHOST_OS="linux"
 		PRESET_CHOST_LIBC="gnu"
  		# https://wiki.gentoo.org/wiki/CHOST https://wiki.gentoo.org/wiki/GCC_optimization
-		PRESET_CPU_FLAGS_X86="$(if [[ $(lscpu | grep Flags:) =~ "ssse3" ]]; then echo "$(lscpu | grep Flags: | sed -e 's/^\w*\ *//' | sed 's/: //g' ) sse3 sse4a "; fi)"  # workaround to insert sse3 and sse4a - intentianal, no idea if requ - testing…
-		PRESET_MARCH="znver1"  # default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2  # https://wiki.gentoo.org/wiki/Safe_CFLAGS#Finding_the_CPU (!NOTE: fetch before PRESET_CFLAGS, see MAKEFILE)
+		PRESET_CPU_FLAGS_X86="$(if [[ $(lscpu | grep Flags:) =~ "ssse3" ]]; then echo "$(lscpu | grep Flags: | sed -e 's/^\w*\ *//' | sed 's/: //g' ) sse3 sse4a "; fi)"  # 1/2 # workaround to insert sse3 and sse4a -
+		# 2/2 intentianal, no idea if requ - testing…
+		PRESET_MARCH="znver1"  # 1/2 default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2 
+		# 2/2 # https://wiki.gentoo.org/wiki/Safe_CFLAGS#Finding_the_CPU (!NOTE: fetch before PRESET_CFLAGS, see MAKEFILE)
 		PRESET_CFLAGS="-march=$PRESET_MARCH -O2 -pipe"  # https://wiki.gentoo.org/wiki/Safe_CFLAGS
 		PRESET_CXXFLAGS="${PRESET_CFLAGS}"
 		PRESET_FCFLAGS="${PRESET_CFLAGS}"
@@ -86,10 +88,11 @@
 		PRESET_L10N="$LANG_MAIN_LOWER $LANG_MAIN_LOWER-$LANG_MAIN_UPPER $LANG_SECOND_LOWER $LANG_SECOND_LOWER-$LANG_SECOND_UPPER"
 		PRESET_LC_MESSAGES="C"
 		# PRESET_CURL_SSL="$SSLD_CONF"
-
+		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		
 		# ESELECT PROFILE  # https://wiki.gentoo.org/wiki/Profile_(Portage)
 		ESELECT_PROFILE="1"
-		# AS OF 29.10.2020 | AMD64/17.1 (stable) ; 2. 17.1 selinux; 3. hardened; 4. hardnened + selinux; 5. desktop, 6. desk + gnome; 7. 6+ systemd; 8. desk + plasma ; 9. 8 + systemd; 10 dev; 11. no multilib; ;12. 11+ hardened; 13 12+selkinux; 14 systemd 
+		# AS OF 17.09.2022 | AMD64/17.1 (stable)
 
 		# LOCALES
 		# LOCALES / LANG MAIN 
@@ -125,7 +128,7 @@
 		DRACUT_CONF_MODULES_CRYPTSETUP="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg lvm debug dm"  # for LVM on cryptsetup /dev/sd** (CRYPSETUP="YES" /var/var_main )
 		DRACUT_CONF_HOSTONLY="yes"
 		DRACUT_CONF_LVMCONF="yes"
-		DRACUT_CONFD_ADD_DRACUT_MODULES="usrmount"
+		#DRACUT_CONFD_ADD_DRACUT_MODULES="usrmount"
 		##INITRAMFSVAR="--lvm --mdadm"
 
 		### BOOT
@@ -199,23 +202,40 @@
 		## USER
 		SYSUSERNAME="admini"  # (!changeme) wheel group member - name of the login sysadmin user
 		USERGROUPS="wheel,plugdev,power,video"  # (!NOTE: virtualbox groups set if guest / host system is set)
-
+		
+		# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		# USEFLAGS
+		
 		# SET USEFLAGS (!NOTE: names follow a pattern which must be kept for functions to read it ... "USERFLADS_"emerge_ name"  : "-" is replaced with "_" and lower converted to uppercase letters)
-		USEFLAGS_LINUX_FIRMWARE="initramfs redistributable unknown-license"
-		USEFLAGS_CRYPTSETUP="udev"
-		USEFLAGS_DRACUT="device-mapper"  # if systemd - systemd useflag required?
+		USEFLAGS_LINUX_FIRMWARE="initramfs redistributable unknown-license"  # https://packages.gentoo.org/packages/sys-kernel/linux-firmware https://wiki.gentoo.org/wiki/Linux_firmware
+
+		#CRYPTSETUP
+		USEFLAGS_CRYPTSETUP="udev"  # udev global enough? https://packages.gentoo.org/packages/sys-fs/cryptsetup
+
+		# INITRAM
+		USEFLAGS_DRACUT="device-mapper"  # devicemapper dated?  https://wiki.gentoo.org/wiki/Dracut https://packages.gentoo.org/packages/sys-kernel/dracut
+
+		# KERNEL
 		USEFLAGS_GENKERNEL="cryptsetup"
 		
-		USEFLAGS_PULSEAUDIO=""
-		USEFLAGS_XORG_SERVER="xvfb"
-		USEFLAGS_XFCE4_META="gtk3 gcr"
-		USEFLAGS_NETWORKMANAGER="dhcpcd -modemmanager -ppp"
+		#AUDIO
+		#USEFLAGS_ALSA=""  ## https://packages.gentoo.org/packages/media-sound/alsa-utils  https://wiki.gentoo.org/wiki/ALSA
+		USEFLAGS_PULSEAUDIO=""  # https://packages.gentoo.org/packages/media-sound/pulseaudio https://wiki.gentoo.org/wiki/PulseAudio
+
+		# SCREENDSP
+		USEFLAGS_XORG_SERVER="xvfb"  # https://packages.gentoo.org/packages/x11-base/xorg-server https://wiki.gentoo.org/wiki/Xorg 
+		USEFLAGS_XFCE4_META="gtk3 gcr"  # https://packages.gentoo.org/packages/xfce-base/xfce4-meta https://wiki.gentoo.org/wiki/Xfce
+
+		# NETWORK
+		USEFLAGS_NETWORKMANAGER="dhcpcd -modemmanager -ppp"  # https://packages.gentoo.org/packages/net-misc/networkmanager https://wiki.gentoo.org/wiki/NetworkManager
 		
-		USEFLAGS_GRUB2="fonts"
+		# BOOTLOADER
+		USEFLAGS_GRUB2="fonts"  # https://packages.gentoo.org/packages/sys-boot/grub https://wiki.gentoo.org/wiki/GRUB2
 		
-		USEFLAGS_VIRTUALBOX_GUEST_ADDITIONS="X"
+		# VIRTUALBOX
+		USEFLAGS_VIRTUALBOX_GUEST_ADDITIONS="X"  # https://packages.gentoo.org/packages/app-emulation/virtualbox-guest-additions
 
 		# WEBBROWSER 
-		USEFLAGS_FIREFOX="bindist eme-free geckodriver hwaccel jack -system-libvpx -system-icu"  # system-av1 system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-webp hwaccel jack lto pgo screencast wifi
-		USEFLAGS_CHROMIUM="official -cups -hangouts -kerberos -screencast -pic"  # hangouts proprietary-codecs system-ffmpeg system-icu # https://wiki.gentoo.org/wiki/Chromium
+		USEFLAGS_FIREFOX="bindist eme-free geckodriver hwaccel jack -system-libvpx -system-icu"  # https://packages.gentoo.org/packages/www-client/firefox
+		USEFLAGS_CHROMIUM="official -cups -hangouts -kerberos -screencast -pic"  # https://packages.gentoo.org/packages/www-client/chromium # https://wiki.gentoo.org/wiki/Chromium
 		USEFLAGS_MIDORI=""

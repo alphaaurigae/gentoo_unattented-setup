@@ -37,7 +37,7 @@
 					NOTICE_START
 						# mv /usr/src/$(ls /usr/src) /usr/src/linux
 						mv /usr/src/linux/.config /usr/src/linux/.oldconfig 
-						echo "ignore err"
+						echo "ignore mv err"
 						touch /usr/src/linux/.config
 						cp /kern.config /usr/src/linux/.config  # stripped version infos for refetch # ls function to get the dirname quick - probably not the best hack but want to get done here now.
 					NOTICE_END
@@ -96,6 +96,7 @@
 				lsmod  # active modules by install medium.
 				KERN_CONF  # kernel configure set
 				KERN_BUILD  # kernel build set
+				echo "ignore err grub-mkconfig if grub not installed yet"
 				grub-mkconfig -o /boot/grub/grub.cfg  # update grub in case its already installed ....
 			NOTICE_END
 			}
@@ -115,6 +116,7 @@ EOF
 					NOTICE_START
 						# genkernel --config=/etc/genkernel.conf all
 						genkernel --luks --lvm --no-zfs all
+						echo "ignore err grub-mkconfig if grub not installed yet"
 						grub-mkconfig -o /boot/grub/grub.cfg  # update grub in case its already installed ....
 					NOTICE_END
 					}

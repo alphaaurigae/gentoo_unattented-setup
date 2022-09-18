@@ -75,7 +75,7 @@ NOTICE_START
 	#MAKECONF  # run MAKECONF
 	#CONF_LOCALES  # run CONF_LOCALES
 	#PORTAGE  # run PORTAGE
-	#EMERGE_SYNC  # run EMERGE_SYNC
+	##EMERGE_SYNC  # run EMERGE_SYNC
 	#ESELECT_PROFILE  # run ESELECT_PROFILE
 	##SETFLAGS1  # run SETFLAGS1 #  PLACEHOLDER
 	#EMERGE_ATWORLD_A  # run EMERGE_ATWORLD_A
@@ -168,8 +168,8 @@ NOTICE_END
 #BASE  # run BASE
 #CORE  # run BASE
 #SCREENDSP  # run BASE
-#USERAPP  # run BASE
-#USERS  # run BASE
+USERAPP  # run BASE
+USERS  # run BASE
 #FINISH  # run BASE
 NOTICE_END
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -241,7 +241,7 @@ INNERSCRIPT
 	CHROOT_INNER () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment
 	NOTICE_START
 		echo "$INNER_SCRIPT" > $CHROOTX/chroot_main.sh
-		chmod +x $CHROOTX/chroot_run.sh
+		chmod +x $CHROOTX/chroot_main.sh
 		chroot $CHROOTX /bin/bash ./chroot_main.sh
 	NOTICE_END
 	}
@@ -252,7 +252,7 @@ NOTICE_END
 #####  RUN ALL #####
 
 #PRE  # run PRE
-#CHROOT  # run CHROOT
+CHROOT  # run CHROOT
 #DEBUG  # run DEBUG
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

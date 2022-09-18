@@ -13,14 +13,14 @@
 				APPAPP_EMERGE="sys-kernel/dracut"
 				CONFIG_DRACUT () {
 				NOTICE_START
-					DRACUT_USERMOUNTCONF () {
-					NOTICE_START
-						cat << EOF > /etc/dracut.conf.d/usrmount.conf
-						add_dracutmodules+="$DRACUT_CONFD_ADD_DRACUT_MODULES"  # Dracut modules to add to the default
-EOF
-						cat /etc/dracut.conf.d/usrmount.conf
-					NOTICE_END
-					}
+#					DRACUT_USERMOUNTCONF () {
+#					NOTICE_START
+#						cat << EOF > /etc/dracut.conf.d/usrmount.conf
+#						add_dracutmodules+="$DRACUT_CONFD_ADD_DRACUT_MODULES"  # Dracut modules to add to the default
+#EOF
+#						cat /etc/dracut.conf.d/usrmount.conf
+#					NOTICE_END
+#					}
 					DRACUT_DRACUTCONF () {
 					NOTICE_START
 						if [ $CRYPTSETUP = "YES" ]; then
@@ -49,7 +49,7 @@ EOF
 						fi
 					NOTICE_END
 					}
-					DRACUT_USERMOUNTCONF
+					#DRACUT_USERMOUNTCONF
 					DRACUT_DRACUTCONF
 				NOTICE_END
 				}
