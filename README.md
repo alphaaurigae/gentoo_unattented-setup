@@ -24,7 +24,7 @@ DOCS (maybe dated - this page is updated first): https://github.com/alphaaurigae
 > <p>crypt boot</p>
 ![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-18_03-22-34.png)
 > <p>booted gentoo VM lxdm - xfce</p>
-![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-18_03-24-46.png)
+![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-18_06-22-27.png)
 
 ## Default (main testing)
 - OPENRC
