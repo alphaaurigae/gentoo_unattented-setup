@@ -1,9 +1,12 @@
 # Automated modular GENTOO linux setup
 
 # status latest 05.06.23
-> work in progress, only pre and chroot base tested here.
+> work in progress, only pre and chroot base tested here, others follow.... testing w 17.1  default & hardened
+
 > added optional menu to avoid the stress of commenting functions for testing to run.sh ... to run fully unattended run ./run.sh -a, for menu ./run.sh -m
-> removed make.conf feature flags for compress-build-logs as archives didnt open, force-mirror didnt let librsvg emerge and collision-protect prevented cpio to emerge for linux-firmware
+
+> removed make.conf feature flags for compress-build-logs as archives didnt open, force-mirror didnt let librsvg emerge (thx sam_ gentoo irc 4 help)  and collision-protect prevented cpio to emerge for linux-firmware
+
 # status 17.09.22
 > Files for chroot and pre functions located in src/PRE src/CHROOT.
 > Easy functions ON OFF gentoo_unattented-setup/run.sh
