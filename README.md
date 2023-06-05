@@ -1,5 +1,9 @@
 # Automated modular GENTOO linux setup
 
+# status latest 05.06.23
+> work in progress, only pre and chroot base tested here.
+> added optional menu to avoid the stress of commenting functions for testing to run.sh ... to run fully unattended run ./run.sh -a, for menu ./run.sh -m
+> removed make.conf feature flags for compress-build-logs as archives didnt open, force-mirror didnt let librsvg emerge and collision-protect prevented cpio to emerge for linux-firmware
 # status 17.09.22
 > Files for chroot and pre functions located in src/PRE src/CHROOT.
 > Easy functions ON OFF gentoo_unattented-setup/run.sh
@@ -7,14 +11,14 @@
 
 ## Get started
 1. Adjust var/* - default is cryptsetup / cryptsetup off works too for lvm on root. Default set as outlined below.
-2. Adhust run.sh functions to run parts - useful for debugging and backup state of VM.
+2. Adjust run.sh functions to run parts - useful for debugging and backup state of VM.
 3. rsync reporoot to serv / chroot; sample script in script/.
-4. ssh to serv || vm; cd reporoot; ./run.sh - repeat 3 & 4 as needed ...
+4. if serv || vm  ssh root@192.168.178.99 && cd gentoo_unattented-setup && ./run.sh` .... repeat rsync if sections run separately ie PRE, CHROOT
 - Sample setup on Virtualbox VM with bridged adaper. (Sample bridge setup in sript/)
 > PRE with CRYPTSETUP="YES" - CRYPTSETUP="NO" == LVM on root (successful previous test - https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/var/var_main.sh
 
 - asciinema recording of PRE setup:
-[![asciicast](https://asciinema.org/a/CA6uIojMimYQYjiSFgaWZf3iW.png)](https://asciinema.org/a/CA6uIojMimYQYjiSFgaWZf3iW)
+> temporarily removed link as the original one was archived, need  to create new,,,
 - CHROOT logs attached in logdir https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/dev_log  |  no signifcant errors - last testrun
 > Boots to desktop xfce -> firefox, network, audio ...
 - Basic mockup, work in progress

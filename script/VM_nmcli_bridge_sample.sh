@@ -17,11 +17,12 @@ SETUP_BRIDGE () {
 }
 
 MOD_BRIDGE () {
-	nmcli con mod $BRIDGE1 +ipv4.dns $DNS1 +ipv4.dns $DNS2
+	nmcli con mod $BRIDGE1 +ipv4.dns $DNSIPV4_1 +ipv4.dns $DNSIPV4_2
 }
 
 REMOVE_DEFWIRE () {
-	nmcli con down "Wired connection 1"
+	wired1="Wired connection 1"
+	nmcli con down "$(echo $wired1)"
 }
 
 START_BRIDGE () {
@@ -31,5 +32,13 @@ START_BRIDGE () {
 RELOAD_NET () {
 
 	sudo nmcli connection reload
-
+	sudo systemctl restart NetworkManager.service
 }
+
+SHOW_NET
+SETUP_BRIDGE
+MOD_BRIDGE
+brctl show
+REMOVE_DEFWIRE
+START_BRIDGE
+RELOAD_NET

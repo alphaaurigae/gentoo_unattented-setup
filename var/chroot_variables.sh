@@ -1,4 +1,4 @@
-		. /var_main.sh
+		. /gentoo_unattented-setup/var/var_main.sh
 
 		# CHROOT ENV
 		SOURCE_CHROOT () {  # function may not belong in vars but lazy to sort this in functions and possibly debug again ...
@@ -33,7 +33,7 @@
  		# https://wiki.gentoo.org/wiki/CHOST https://wiki.gentoo.org/wiki/GCC_optimization
 		PRESET_CPU_FLAGS_X86="$(if [[ $(lscpu | grep Flags:) =~ "ssse3" ]]; then echo "$(lscpu | grep Flags: | sed -e 's/^\w*\ *//' | sed 's/: //g' ) sse3 sse4a "; fi)"  # 1/2 # workaround to insert sse3 and sse4a -
 		# 2/2 intentianal, no idea if requ - testing…
-		PRESET_MARCH="znver1"  # 1/2 default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2 
+		PRESET_MARCH="znver1" # "znver1"  # 1/2 default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2 
 		# 2/2 # https://wiki.gentoo.org/wiki/Safe_CFLAGS#Finding_the_CPU (!NOTE: fetch before PRESET_CFLAGS, see MAKEFILE)
 		PRESET_CFLAGS="-march=$PRESET_MARCH -O2 -pipe"  # https://wiki.gentoo.org/wiki/Safe_CFLAGS
 		PRESET_CXXFLAGS="${PRESET_CFLAGS}"
@@ -49,13 +49,13 @@
 		# hardened flag but no hardened image, why?
 		# SEE CRYPSETUP $SYSAPP_DMCRYPT bwlow for comment on crypsetup
 		PRESET_USEFLAG_LVMROOTNOCRYPOPT="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
-				cpudetection cjk cxx dbus elogind ffmpeg git gtk gtk+ gtk3 gzip \
+				cpudetection cjk cxx dbus elogind ffmpeg git gtk gtk3 gzip \
 				hardened initramfs int64 lzma lzo mount opengl pulseaudio jack policykit postproc secure-delete \
 				sqlite threads udev udisks unicode zip \
 				-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
 				-systemd -mssql -postgres -ppp -telnet"
 		PRESET_USEFLAG_CRYPTOPTANDCRYPTSETUP="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
-				cpudetection cjk crypt cryptsetup cxx dbus elogind ffmpeg git gtk gtk+ gtk3 gzip \
+				cpudetection cjk crypt cryptsetup cxx dbus elogind ffmpeg git gtk gtk3 gzip \
 				hardened initramfs int64 lzma lzo mount opengl pulseaudio jack policykit postproc secure-delete \
 				sqlite threads udev udisks unicode zip \
 				-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
@@ -64,15 +64,13 @@
 		# noman, srsly?
 		# sandbox maybe?
 		# userpriv and sandbox?
-		PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip candy cgroup binpkg-logs collision-protect \
-				compress-build-logs downgrade-backup ebuild-locks fail-clean fixlafiles force-mirror ipc-sandbox merge-sync \
-				network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox"
+		##collision-protect  removed for protect-owned as linux-firmware failed emerging cpio
+		PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip candy cgroup binpkg-logs \
+				downgrade-backup ebuild-locks fail-clean fixlafiles ipc-sandbox merge-sync \
+				network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox "
 
 		# https://www.gentoo.org/downloads/mirrors/
-		PRESET_GENTOMIRRORS="https://mirror.eu.oneandone.net/linux/distributions/gentoo/gentoo/ \
-					https://ftp.snt.utwente.nl/pub/os/linux/gentoo/ https://mirror.isoc.org.il/pub/gentoo/ \
-					https://mirrors.lug.mtu.edu/gentoo/ https://mirror.csclub.uwaterloo.ca/gentoo-distfiles/ \
-					https://ftp.jaist.ac.jp/pub/Linux/Gentoo/"
+		PRESET_GENTOMIRRORS="http://gentoo-mirror.flux.utah.edu"
 
 		PRESET_MAKE="-j$(expr $(nproc) "*" 1) --quiet "
 		PRESET_EMERGE_LOAD="30"
@@ -83,7 +81,7 @@
 		PRESET_PORTAGE_TMPDIR="/var/tmp"
 		PRESET_PORTAGE_LOGDIR="/var/log/portage"
 		PRESET_PORTAGE_ELOG_CLASSES="log warn error"
-		PRESET_PORTAGE_ELOG_SYSTEM="save"
+		PRESET_PORTAGE_ELOG_SYSTEM="echo save"
 		PRESET_LINGUAS="$LANG_MAIN_LOWER $LANG_MAIN_LOWER-$LANG_MAIN_UPPER $LANG_SECOND_LOWER $LANG_SECOND_LOWER-$LANG_SECOND_UPPER"
 		PRESET_L10N="$LANG_MAIN_LOWER $LANG_MAIN_LOWER-$LANG_MAIN_UPPER $LANG_SECOND_LOWER $LANG_SECOND_LOWER-$LANG_SECOND_UPPER"
 		PRESET_LC_MESSAGES="C"
@@ -91,7 +89,7 @@
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		
 		# ESELECT PROFILE  # https://wiki.gentoo.org/wiki/Profile_(Portage)
-		ESELECT_PROFILE="1"
+		ESELECT_PROFILE="3"
 		# AS OF 17.09.2022 | AMD64/17.1 (stable)
 
 		# LOCALES

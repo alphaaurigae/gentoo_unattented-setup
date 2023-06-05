@@ -2,6 +2,7 @@
 	NOTICE_START
 		LINUX_FIRMWARE () {  # https://wiki.gentoo.org/wiki/Linux_firmware
 		NOTICE_START
+
 			APPAPP_EMERGE="sys-kernel/linux-firmware "
 			PACKAGE_USE				
 			LICENSE_SET
