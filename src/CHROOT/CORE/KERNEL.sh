@@ -39,7 +39,7 @@
 						mv /usr/src/linux/.config /usr/src/linux/.oldconfig 
 						echo "ignore mv err"
 						touch /usr/src/linux/.config
-						cp /kern.config /usr/src/linux/.config  # stripped version infos for refetch # ls function to get the dirname quick - probably not the best hack but want to get done here now.
+						cp /gentoo_unattented-setup/configs/required/kern.config.sh /usr/src/linux/.config  # stripped version infos for refetch # ls function to get the dirname quick - probably not the best hack but want to get done here now.
 					NOTICE_END
 					}
 					KERNCONF_DEFCONFIG () {

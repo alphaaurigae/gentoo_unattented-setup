@@ -119,7 +119,7 @@ EOF
 				APPAPP_EMERGE="sys-boot/lilo "
 				CONF_LILO () {  # https://wiki.gentoo.org/wiki/LILO # https://github.com/a2o/lilo/blob/master/sample/lilo.example.conf
 				NOTICE_START
-					cp /configs/optional/lilo.conf /etc/lilo.conf
+					cp /gentoo_unattented-setup/configs/optional/lilo.conf /etc/lilo.conf
 				NOTICE_END
 				}
 				EMERGE_USERAPP_DEF
