@@ -2,6 +2,11 @@
 	NOTICE_START
 		USERAPP_FIREFOX () {
 		NOTICE_START
+			df -h
+			free -h
+			emerge --sync
+			emerge --update --deep --with-bdeps=y @world
+			emerge --clean www-client/firefox-102.11.0
 			APPAPP_EMERGE="www-client/firefox"
 			PACKAGE_USE
 			ACC_KEYWORDS_USERAPP

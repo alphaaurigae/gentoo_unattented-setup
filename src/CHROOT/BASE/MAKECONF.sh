@@ -33,6 +33,7 @@
 			L10N="$PRESET_L10N"  # IETF language tags
 			LC_MESSAGES="$PRESET_LC_MESSAGES"
 			# CURL_SSL="$PRESET_CURL_SSL"
+			NOCOLOR="true"
 EOF
 			
 			if [ $SYSAPP_DMCRYPT = "YES" ]; then
@@ -44,6 +45,7 @@ EOF
 			fi
 		NOTICE_END
 		}
+		gcc -v
 		cat /etc/portage/make.conf
 		MAKECONF_VARIABLES
 		cat /etc/portage/make.conf
