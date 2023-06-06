@@ -1,3 +1,5 @@
+# variables defined in: gentoo_unattented-setup/var/1_PRE_main.sh && gentoo_unattented-setup/var/var_main.sh unless noted otherwise behind the var line / func
+
 	PARTITIONING () {
 	NOTICE_START
 		PARTED () {  # LVM on LUKS https://wiki.archlinux.org/index.php/GNU_Parted

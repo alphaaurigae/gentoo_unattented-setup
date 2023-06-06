@@ -1,3 +1,4 @@
+# variables defined in gentoo_unattented-setup/var/var_main.sh  && /home/a/Desktop/gentoo_unattented-setup/var/chroot_variables.sh
 # func chroot main
 # APPAPP_EMERGE variable defined in src/CHROOT scripts per application to emerge the application and set keywords and package useflags to avoid typing repeat. ex  linux-firmware APPAPP_EMERGE="sys-kernel/linux-firmware " 
 # only openrc things implemented yet, systemd is placeholder or mockup,

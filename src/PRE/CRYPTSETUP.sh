@@ -1,3 +1,5 @@
+# variables defined in: gentoo_unattented-setup/var/1_PRE_main.sh && gentoo_unattented-setup/var/var_main.sh unless noted otherwise behind the var line / func
+
 	#  (!NOTE: lvm on luks "CRYPT --> BOOT/LVM2 --> OS" ... 
 	#  (!NOTE: for the main disk $MAIN_PART - you will be prompted for passohrase)
 	CRYPTSETUP () {  # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS && https://blog.stigok.com/2018/05/03/lvm-in-luks-with-encrypted-boot-partition-and-suspend-to-disk.html
