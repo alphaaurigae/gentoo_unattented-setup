@@ -115,8 +115,13 @@ DOCS (maybe dated - this page is updated first): https://github.com/alphaaurigae
 
 ### How the it works:
 1.0 run.sh is the executeable file to run the scriptset.
+
 1.1 if run.sh is run with -a it will launch the unattended setup, if launched with -m the simple bash menu will guide through the steps which is useful for testing outlined in the -h.
+
 1.1 its sourcing func/func_main.sh (main functions used in PRE and CHROOT (sourced in chroot again)), var/var_main.sh (main variables for PRE and CHROOT (has to be soruced for chroot again in innserscript) )&& var/1_PRE_main.sh (PRE variables) at the start.
+
 1.2 PRE: source /gentoo_unattented-setup/src/PRE/* functions & run in order defined in run.sh.
+
 1.3 CHROOT: copy the entire gentoo_unattented-setup/ dir to chroot (CP_CHROOT function) as chroot was created in PRE, echo innerscript $CHROOTX/chroot_main.sh and execute it with chroot 
+
 ... the script then sources the chroot and main functions and variables as well as the /gentoo_unattented-setup/src/CHROOT/* functions (per section (base,core etc)) and either run with menu steps if run.sh -m or just loop through every section if run.sh run with -a.
