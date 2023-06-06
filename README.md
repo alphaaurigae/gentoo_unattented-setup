@@ -126,4 +126,4 @@ DOCS (maybe dated - this page is updated first): https://github.com/alphaaurigae
 
 ... the script then sources the chroot and main functions and variables as well as the /gentoo_unattented-setup/src/CHROOT/* functions (per section (base,core etc)) and either run with menu steps if run.sh -m or just loop through every section if run.sh run with -a.
 
-> comments to for the variable & script interactions partly added, most important to start is checking the var/* variables, most if not everything to be adjusted there,
+> comments for the variable & script interactions partly added, most important to start is checking the var/* variables, most if not everything to be adjusted there,
