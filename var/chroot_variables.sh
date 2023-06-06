@@ -12,15 +12,15 @@
 
 		# BASE
 		### INITSYSTEM
-		SYSINITVAR="OPENRC"  # OPENRC (!default); SYSTEMD (!todo)
+		SYSINITVAR="OPENRC"  # OPENRC (!default); SYSTEMD (!todo) # used script wide to choose install routine for based on initsystem
 
 		# STATIC CUSTOM  # lets make some variables to avoid repeats.
-		LANG_MAIN_LOWER="en"
-		LANG_MAIN_UPPER="US"
-		LANG_SECOND_LOWER="de"
-		LANG_SECOND_UPPER="DE"
+		LANG_MAIN_LOWER="en"  # used here in chroot_variables in PRESET_LOCALE_A= var
+		LANG_MAIN_UPPER="US"  # used ex in gentoo_unattented-setup/src/CHROOT/SCREENDSP/WINDOWSYS.sh
+		LANG_SECOND_LOWER="de"  # used here in chroot_variables in PRESET_LOCALE_A= var
+		LANG_SECOND_UPPER="DE"  # used ex in gentoo_unattented-setup/src/CHROOT/SCREENDSP/WINDOWSYS.sh
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		## MAKE.CONF PRESET
+		## MAKE.CONF PRESET as used in gentoo_unattented-setup/src/CHROOT/BASE/MAKECONF.sh
 		PRESET_CC="gcc"  # gcc (!default); the preset compiler
 		# https://wiki.gentoo.org/wiki/ACCEPT_KEYWORDS
 		PRESET_ACCEPT_KEYWORDS="amd64" # 1/2 # build 8.9.22 "amd64 ~amd64" - build 7.9.22 # ~amd64" # alone not tested yet # all on profile 1 .  
@@ -89,55 +89,56 @@
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		
 		# ESELECT PROFILE  # https://wiki.gentoo.org/wiki/Profile_(Portage)
-		ESELECT_PROFILE="3"
+		ESELECT_PROFILE="3"  # used in run.sh and gentoo_unattented-setup/src/CHROOT/BASE/ESELECT_PROFILE.sh
 		# AS OF 17.09.2022 | AMD64/17.1 (stable)
 
 		# LOCALES
 		# LOCALES / LANG MAIN 
-		PRESET_LOCALE_A=$LANG_MAIN_LOWER\_$LANG_MAIN_UPPER # lang set 1 # set ISO-8859-1 & UTF-8 locales in  /etc/locale.gen 
-		PRESET_LOCALE_B=$LANG_SECOND_LOWER\_$LANG_SECOND_UPPER # lang set 2 # "
+		PRESET_LOCALE_A=$LANG_MAIN_LOWER\_$LANG_MAIN_UPPER # lang set 1 # set ISO-8859-1 & UTF-8 locales in  /etc/locale.gen  # used in gentoo_unattented-setup/src/CHROOT/BASE/CONF_LOCALES.sh
+		PRESET_LOCALE_B=$LANG_SECOND_LOWER\_$LANG_SECOND_UPPER # lang set 2 # "   # used in gentoo_unattented-setup/src/CHROOT/BASE/CONF_LOCALES.sh
 
 		# LOCALES LANG KEYMAPS MAIN
-		KEYMAP="de" # set common (!channgeme)
-		CONSOLEFONT="default8x16" # https://wiki.gentoo.org/wiki/Fonts
+		KEYMAP="de" # set common (!channgeme)  # used in /gentoo_unattented-setup/src/CHROOT/BASE/KEYMAP_CONSOLEFONT.sh && /gentoo_unattented-setup/src/CHROOT/SCREENDSP/WINDOWSYS.sh
+		CONSOLEFONT="default8x16" # https://wiki.gentoo.org/wiki/Fonts  # used in gentoo_unattented-setup/src/CHROOT/BASE/KEYMAP_CONSOLEFONT.sh
 
 		## LOCALES TIME / DATE MAIN
-		SYSDATE_MAN="071604551969"  # hack time :)
-		SYSCLOCK_SET="AUTO"  # USE AUTO (!default) / MANUAL -- MANUAL="NO TIMESYNCED SERVICE"
-		SYSCLOCK_MAN="1969-07-16 04:55:42"  # hack time :)
-		SYSTIMEZONE_SET="UTC"  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Timezone # https://wiki.gentoo.org/wiki/System_time#Time_zone
+		SYSDATE_MAN="071604551969"  # hack time :)  # use in gentoo_unattented-setup/src/CHROOT/BASE/SYSTEMTIME.sh
+		SYSCLOCK_SET="AUTO"  # USE AUTO (!default) / MANUAL -- MANUAL="NO TIMESYNCED SERVICE"   # use in gentoo_unattented-setup/src/CHROOT/BASE/SYSTEMTIME.sh
+		SYSCLOCK_MAN="1969-07-16 04:55:42"  # hack time :)   # use in gentoo_unattented-setup/src/CHROOT/BASE/SYSTEMTIME.sh
+		SYSTIMEZONE_SET="UTC"  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Timezone # https://wiki.gentoo.org/wiki/System_time#Time_zone   # use in gentoo_unattented-setup/src/CHROOT/BASE/SYSTEMTIME.sh
 
 		# CORE
 		### KERNEL
-		KERNDEPLOY="MANUAL"  # (!default); AUTO (genkernel)
-		KERNVERS="5.3-rc4"  # for MANUAL setup
-		KERNSOURCES="EMERGE"  # EMERGE (!default) ; TORVALDS (git repository)
-		KERNCONFD="PASTE" # PASTE  # DEFCONFIG
+		KERNDEPLOY="MANUAL"  # (!default); AUTO (genkernel)  # use in gentoo_unattented-setup/src/CHROOT/CORE/KERNEL.sh
+		KERNVERS="5.3-rc4"  # for MANUAL setup  # use in gentoo_unattented-setup/src/CHROOT/CORE/KERNEL.sh
+		KERNSOURCES="EMERGE"  # EMERGE (!default) ; TORVALDS (git repository)  # use in gentoo_unattented-setup/src/CHROOT/CORE/KERNEL.sh
+		KERNCONFD="PASTE" # PASTE  # DEFCONFIG  # use in gentoo_unattented-setup/src/CHROOT/CORE/KERNEL.sh
 
 		### INITRAMFS
-		GENINITRAMFS="DRACUT"  # DRACUT (!default); GENKERNEL
+		GENINITRAMFS="DRACUT"  # DRACUT (!default); GENKERNEL  # use in gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
 		
 		# GENKERNEL
-		GENKERNEL_CMD="--luks --lvm --no-zfs all"
+		GENKERNEL_CMD="--luks --lvm --no-zfs all"  # use in gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
 		# DRACUT
 		## DRACUT_CONF
 		# just removed gensplash "ERR dracut: dracut module 'gensplash' cannot be found or installed."
-		DRACUT_CONF_MODULES_LVM="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown lvm debug dm"  # for LVM on /dev/sd**  (CRYPSETUP="NO" /var/var_main )
-		DRACUT_CONF_MODULES_CRYPTSETUP="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg lvm debug dm"  # for LVM on cryptsetup /dev/sd** (CRYPSETUP="YES" /var/var_main )
-		DRACUT_CONF_HOSTONLY="yes"
-		DRACUT_CONF_LVMCONF="yes"
-		#DRACUT_CONFD_ADD_DRACUT_MODULES="usrmount"
-		##INITRAMFSVAR="--lvm --mdadm"
+		DRACUT_CONF_MODULES_LVM="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown lvm debug dm"  # for LVM on /dev/sd**  (CRYPSETUP="NO" /var/var_main )  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
+		DRACUT_CONF_MODULES_CRYPTSETUP="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg lvm debug dm"  # for LVM on cryptsetup /dev/sd** (CRYPSETUP="YES" /var/var_main )  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
+		DRACUT_CONF_HOSTONLY="yes"  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
+		DRACUT_CONF_LVMCONF="yes"  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
+		#DRACUT_CONFD_ADD_DRACUT_MODULES="usrmount"  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
+		##INITRAMFSVAR="--lvm --mdadm"  # was used in gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh, not defined atm
 
 		### BOOT
-		BOOTLOADER="GRUB2"  # GRUB2 (!default)
-		BOOTSYSINITVAR="BIOS"  # BIOS (!default) / UEFI (!prototype)
+		BOOTLOADER="GRUB2"  # GRUB2 (!default)  # used in /gentoo_unattented-setup/src/CHROOT/CORE/SYSBOOT.sh
+		BOOTSYSINITVAR="BIOS"  # BIOS (!default) / UEFI (!prototype)  # used in /gentoo_unattented-setup/src/CHROOT/CORE/SYSCONFIG_CORE.sh && gentoo_unattented-setup/src/CHROOT/CORE/SYSBOOT.s
 
 		## SYSAPP
 		### CRON
-		CRON="CRONIE"  # CRONIE (!default), DCRON, ANACRON ..... see on your own
+		CRON="CRONIE"  # CRONIE (!default), DCRON, ANACRON ..... see on your own  # used in /gentoo_unattented-setup/src/CHROOT/CORE/SYSPROCESS.sh
 
 		# FSTOOLS -- (note!: this is not activating kernel settings yet - solely for FSTOOLS) # (note!: kernel configuration for filesystems not automated yet)
+		# placeholder? check later
 		FSTOOLS_EXT="YES"
 		FSTOOLS_XFS="NO"
 		FSTOOLS_REISER="NO"
@@ -146,10 +147,10 @@
 		FSTOOLS_BTRFS="NO"
 
 		## LOG
-		SYSLOG="SYSLOGNG"          
+		SYSLOG="SYSLOGNG"   # used in gentoo_unattented-setup/src/CHROOT/CORE/APPADMIN.sh      
 
 		# SYSAPP_ YES / NO
-		SYSAPP_DMCRYPT="YES" #
+		SYSAPP_DMCRYPT="YES" # use in gentoo_unattented-setup/var/chroot_variables.sh && gentoo_unattented-setup/src/CHROOT/BASE/MAKECONF.sh
 		SYSAPP_LVM2="YES"  # must be set to YES, required with all setups for now - lvm on root and lvm on cryptsetup
 		SYSAPP_SUDO="YES"
 		SYSAPP_PCIUTILS="YES"
@@ -160,12 +161,12 @@
 		SYSAPP_CRON="NO"
 		SYSAPP_FILEINDEXING="NO"
 
-		## NETWORK - https://en.wikipedia.org/wiki/Public_recursive_name_server
-		HOSTNAME="gentoo"  # (!changeme) define hostname
-		DOMAIN="gentoo"  # (!changeme) define domain
-		NETWORK_NET="DHCPD"  # DHCPD or STATIC, config static on your own in the network section.	
-		NETIFACE_MAIN="enp0s3"  # eth0
-		NETWMGR="NETWORKMANAGER"  # NETIFRC; DHCPD; NETWORKMANAGER
+		## NETWORK - https://en.wikipedia.org/wiki/Public_recursive_name_server  # use in gentoo_unattented-setup/src/CHROOT/CORE/NETWORK.sh
+		HOSTNAME="gentoo"  # (!changeme) define hostname 
+		DOMAIN="gentoo"  # (!changeme) define domain  
+		NETWORK_NET="DHCPD"  # DHCPD or STATIC, config static on your own in the network section. 
+		NETIFACE_MAIN="enp0s3"  # eth0  
+		NETWMGR="NETWORKMANAGER"  # NETIFRC; DHCPD; NETWORKMANAGER  
 
 		# DNS
 		# NAMESERVER1_IPV4=1.1.1.1  # (!changeme) 1.1.1.1 ns1 cloudflare ipv4
@@ -174,21 +175,21 @@
 		# NAMESERVER2_IPV6=2606:4700:4700::1001  # (!changeme) ipv6 ns2 2606:4700:4700::1001 cloudflare ipv6
 
 		# VIRTUALIZATION
-		SYSVARD="GUEST"  # host is GUEST & HOST ... for virtualbization setup
+		SYSVARD="GUEST"  # host is GUEST & HOST ... for virtualbization setup  # used in gentoo_unattented-setup/src/CHROOT/CORE/APPEMULATION.sh
 
-		# DISPLAY / SCREEN
+		# DISPLAY / SCREEN  # use in gentoo_unattented-setup/src/CHROOT/SCREENDSP/WINDOWSYS.sh
 		DISPLAYSERV="X11"  # see options
 		DISPLAYMGR_YESNO="W_D_MGR"  # W_D_MGR (WITH display manager) / SOLO (without display manager)
 		DISPLAYMGR="LXDM"  # CDM; GDM; LIGHTDM; LXDM (!default - other env untested / todo); QINGY; SSDM; SLIM; WDM; XDM  # sample, check the section for valid setups,
 		DESKTOPENV="XFCE"  # XFCE (!default - other env untested / todo); BUDGIE; CINNAMON; FVWM; GNOME; KDE; LXDE; LXQT; LUMINA; MATE; PANTHEON; RAZORQT; TDE; # sample, check the section for valid setups,
 
 		# X11
-		## X11 KEYBOARD
+		## X11 KEYBOARD  # use in gentoo_unattented-setup/src/CHROOT/SCREENDSP/WINDOWSYS.sh
 		X11_KEYBOARD_XKB_VARIANT="altgr-intl,abnt2"
 		X11_KEYBOARD_XKB_OPTIONS="grp:shift_toggle,grp_led:scroll"
 		X11_KEYBOARD_MATCHISKEYBOARD="on"
 
-		# GRAPHIC UNIT
+		# GRAPHIC UNIT  # use in gentoo_unattented-setup/src/CHROOT/CORE/GPU.sh
 		#GPU_SET=amdgpu  # (!changeme) amdgpu, radeon # (!todo)
 
 		# USERAPP
@@ -198,8 +199,8 @@
 		USERAPP_MIDORI="NO"  # (!NOTE: some unmask thing .. ruby?)  # https://astian.org/en/midori-browser/
 
 		## USER
-		SYSUSERNAME="admini"  # (!changeme) wheel group member - name of the login sysadmin user
-		USERGROUPS="wheel,plugdev,power,video"  # (!NOTE: virtualbox groups set if guest / host system is set)
+		SYSUSERNAME="admini"  # (!changeme) wheel group member - name of the login sysadmin user  # use in gentoo_unattented-setup/src/CHROOT/USERS/ADMIN.sh && /gentoo_unattented-setup/src/CHROOT/SCREENDSP/DESKTOP_ENV.sh
+		USERGROUPS="wheel,plugdev,power,video"  # (!NOTE: virtualbox groups set if guest / host system is set)  # use in gentoo_unattented-setup/src/CHROOT/USERS/ADMIN.sh
 		
 		# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		# USEFLAGS # used with gentoo_unattented-setup/func/func_chroot_main.sh to set the useflags with emegred packages in gentoo_unattented-setup/src/CHROOT/*
