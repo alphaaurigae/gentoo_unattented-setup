@@ -60,11 +60,11 @@
 					CONFGRUB2_MAIN () {
 					NOTICE_START
 						etc-update --automode -3
-						cp /gentoo_unattented-setup/configs/default/grub /etc/default/grub
+						cp /gentoo_unattented-setup/configs/default/grub.sh /etc/default/grub
 						echo "may ignore complaining cp"
 					NOTICE_END
 					}
-					CONFGRUB_OPENRC () {  # https://wiki.gentoo.org/wiki/GRUB2
+					CONFGRUB2_OPENRC () {  # https://wiki.gentoo.org/wiki/GRUB2
 					NOTICE_START
 						sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
 						cat << EOF >> /etc/default/grub
@@ -101,7 +101,7 @@ EOF
 					NOTICE_END
 					}
 					CONFGRUB2_MAIN
-					CONFGRUB2_$SYSINITVAR
+					CONFGRUB2_$SYSINITVAR  # (somehow this was named CONFGRUB_$SYSINITVAR and the script complained cmd not found, but it did work prev, anyways, renamed 06.06.23 note just in case something dowsent work as intended)
 				NOTICE_END
 				}
 				UPDATE_GRUB2 () {
