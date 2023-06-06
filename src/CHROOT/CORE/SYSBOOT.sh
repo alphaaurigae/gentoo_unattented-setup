@@ -60,7 +60,7 @@
 					CONFGRUB2_MAIN () {
 					NOTICE_START
 						etc-update --automode -3
-						cp  /configs/default/grub /etc/default/grub
+						cp /gentoo_unattented-setup/configs/default/grub /etc/default/grub
 						echo "may ignore complaining cp"
 					NOTICE_END
 					}
