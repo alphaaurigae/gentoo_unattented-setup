@@ -1,13 +1,15 @@
 # Automated modular GENTOO linux setup
 
 # status latest 05.06.23
-> # probably firefox build fail if on znver1 and march set to native, need to verify - busy
+> probably firefox build fail if on znver1 and march set to native, need to verify - busy
 
 > work in progress, .... testing w 17.1 hardened .. first run errors resolved, boot test outstanding
 
 > added optional menu to avoid the stress of commenting functions for testing to run.sh ... to run fully unattended run ./run.sh -a, for menu ./run.sh -m
 
 > removed make.conf feature flags for compress-build-logs as archives didnt open, force-mirror didnt let librsvg emerge (thx sam_ gentoo irc 4 help)  and collision-protect prevented cpio to emerge for linux-firmware
+
+> brave browser, ide setup todo
 
 # status 17.09.22
 > Files for chroot and pre functions located in src/PRE src/CHROOT.
