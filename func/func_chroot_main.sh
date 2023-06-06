@@ -1,4 +1,7 @@
 # func chroot main
+# APPAPP_EMERGE variable defined in src/CHROOT scripts per application to emerge the application and set keywords and package useflags to avoid typing repeat. ex  linux-firmware APPAPP_EMERGE="sys-kernel/linux-firmware " 
+# only openrc things implemented yet, systemd is placeholder or mockup,
+
 EMERGE_USERAPP_DEF () {
 NOTICE_START
 	echo "emerging $APPAPP_EMERGE "
@@ -22,7 +25,7 @@ NOTICE_START
 	source /etc/profile
 NOTICE_END
 }
-ACC_KEYWORDS_USERAPP () {
+ACC_KEYWORDS_USERAPP () {  # package use keywords defined in unattented-setup/var/chroot_variables.sh $PRESET_ACCEPT_KEYWORDS
 NOTICE_START
 	touch /etc/portage/package.accept_keywords/common
 	sed -ie "s#$APPAPP_EMERGE $PRESET_ACCEPT_KEYWORDS##g" /etc/portage/package.accept_keywords/common
@@ -33,7 +36,7 @@ NOTICE_END
 APPAPP_NAME_SIMPLE="$(echo $APPAPP_EMERGE | sed -e "s#/# #g" | awk  '{print $2}')"  # get the name of the app (!NOTE: fetch EMERGE_USERAPP_DEF --> remove slash --> show second coloumn = name
 PORTAGE_USE_DIR="/etc/portage/package.use"
 ######
-PACKAGE_USE () {
+PACKAGE_USE () {  # package use variables in gentoo_unattented-setup/var/chroot_variables.sh
 NOTICE_START
 	SETVAR_PACKAGE_USE () {
 	NOTICE_START
