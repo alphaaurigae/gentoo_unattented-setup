@@ -192,15 +192,15 @@
 			DESKTENV_STARTX () {
 			NOTICE_START
 				if [ "$DESKTOPENV" == "LUMINA" ]; then
-					cat << 'EOF' > ~/.xinitrc 
+					cat <<- 'EOF' > ~/.xinitrc 
 					[[ -f ~/.Xresources ]]
 					xrdb -merge -I/home/$SYSUSERNAME ~/.Xresources
 					exec start-lumina-desktop
-EOF
+					EOF
 				else
-					cat << 'EOF' > ~/.xinitrc 
+					cat <<- 'EOF' > ~/.xinitrc 
 					exec $DSTENV_STARTX
-EOF
+					EOF
 				fi
 			NOTICE_END
 			}
@@ -283,9 +283,9 @@ EOF
 				sed -ie "s#lxdm#xdm#g" /etc/conf.d/display-manager
 				sed -ie "s#xdm#${!DSPMGR_AS}#g" /etc/conf.d/display-manager
 				 cat /etc/conf.d/display-manager 
-				cat << EOF > ~/.xinitrc 
+				cat <<- EOF > ~/.xinitrc 
 				exec ${!DSTENV_STARTX}
-EOF
+				EOF
 				cat ~/.xinitrc 
 				rc-update add dbus default
 				rc-update add ${!DSPMGR_AS} default
@@ -302,11 +302,11 @@ EOF
 				printf '%s\n' " ${!DSPMGR_AS}"
 					sed -ie "s;^# session=/usr/bin/startlxde;session=/usr/bin/${!DSTENV_STARTX};g" /etc/lxdm/lxdm.conf
 				elif [ "$DISPLAYMGR" == "LIGHTDM" ]; then 
-					cat << 'EOF' > /usr/share/lightdm/lightdm.conf.d/50-xfce-greeter.conf
+					cat <<- 'EOF' > /usr/share/lightdm/lightdm.conf.d/50-xfce-greeter.conf
 					[SeatDefaults]
 					greeter-session=unity-greeter
 					user-session=xfce
-EOF
+					EOF
 				else
 					NOTICE_PLACEHOLDER
 				fi

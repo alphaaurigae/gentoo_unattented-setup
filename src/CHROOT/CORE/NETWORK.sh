@@ -23,9 +23,9 @@
 					AUTOSTART_NAME_SYSTEMD="net@$NETIFACE_MAIN"
 					CONF_NETIFRC () {
 					NOTICE_START
-						cat << EOF > /etc/conf.d/net  # Please read /usr/share/doc/netifrc-*/net.example.bz2 for a list of all available options. DHCP client man page if specific DHCP options need to be set.
+						cat <<- EOF > /etc/conf.d/net  # Please read /usr/share/doc/netifrc-*/net.example.bz2 for a list of all available options. DHCP client man page if specific DHCP options need to be set.
 						config_$NETIFACE_MAIN="dhcp"
-EOF
+						EOF
 						cat /etc/conf.d/net
 					NOTICE_END
 					}
@@ -54,17 +54,17 @@ EOF
 					}
 					WIRED_DHCPD () {  # (! default)
 					NOTICE_START
-						cat << 'EOF' > /etc/systemd/network/20-wired.network
+						cat <<- 'EOF' > /etc/systemd/network/20-wired.network
 						[ Match ]
 						Name=enp0s3
 						[ Network ]
 						DHCP=ipv4
-EOF
+						EOF
 					NOTICE_END
 					}
 					WIRED_STATIC () {
 					NOTICE_START
-						cat << 'EOF' > /etc/systemd/network/20-wired.network
+						cat <<- 'EOF' > /etc/systemd/network/20-wired.network
 						[ Match ]
 						Name=enp0s3
 						[ Network ]
@@ -72,7 +72,7 @@ EOF
 						Gateway=10.1.10.1
 						DNS=10.1.10.1
 						# DNS=8.8.8.8
-EOF
+						EOF
 					NOTICE_END
 					}
 					REPLACE_RESOLVECONF

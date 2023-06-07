@@ -18,7 +18,7 @@
 				NOTICE_START
 					# changed from Option "XkbLayout" "LANG_MAIN_LOWER,$LANG_SECOND_LOWER" - to have the corect keyboard layout after boot in the desktop environment (testing) 04.09.2022
 					touch /usr/share/X11/xorg.conf.d/10-keyboard.conf
-					cat << EOF > /usr/share/X11/xorg.conf.d/10-keyboard.conf
+					cat <<- EOF > /usr/share/X11/xorg.conf.d/10-keyboard.conf
 					Section "InputClass"
 					    Identifier "keyboard-all"
 					
@@ -27,7 +27,7 @@
 					    Option "XkbOptions" "$X11_KEYBOARD_XKB_OPTIONS"
 					    MatchIsKeyboard "$X11_KEYBOARD_MATCHISKEYBOARD"
 					EndSection
-EOF
+					EOF
 				NOTICE_END
 				}
 				CONF_X11_KEYBOARD

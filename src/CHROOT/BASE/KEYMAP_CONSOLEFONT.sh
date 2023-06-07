@@ -30,10 +30,10 @@
 			AUTOSTART_NAME_SYSTEMD="placeholder"
 			VCONSOLE_KEYMAP=$KEYMAP-latin1 # (!changeme) console keymap systemd
 			VCONSOLE_FONT="$CONSOLEFONT" # (!changeme)
-			cat << EOF > /etc/vconsole.conf
+			cat <<- EOF > /etc/vconsole.conf
 			KEYMAP=$VCONSOLE_KEYMAP
 			FONT=$VCONSOLE_FONT
-EOF
+			EOF
 		NOTICE_END
 		}
 		ENVUD
