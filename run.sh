@@ -19,6 +19,28 @@
 . var/1_PRE_main.sh
 ## CHROOT
 . src/CHROOT/DEBUG.sh
+
+BOLD=$(tput bold)
+RESET=$(tput sgr0)
+# Regular colors
+BLACK=$(tput setaf 0)
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+BLUE=$(tput setaf 4)
+MAGENTA=$(tput setaf 5)
+CYAN=$(tput setaf 6)
+WHITE=$(tput setaf 7)
+
+# Bright colors
+BRIGHT_BLACK=$(tput setaf 8)
+BRIGHT_RED=$(tput setaf 9)
+BRIGHT_GREEN=$(tput setaf 10)
+BRIGHT_YELLOW=$(tput setaf 11)
+BRIGHT_BLUE=$(tput setaf 12)
+BRIGHT_MAGENTA=$(tput setaf 13)
+BRIGHT_CYAN=$(tput setaf 14)
+BRIGHT_WHITE=$(tput setaf 15)
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 PRE_NOMENU () {  # PREPARE CHROOT ALL without menu
 NOTICE_START
@@ -40,7 +62,8 @@ PRE_MENU () {  # PREPARE CHROOT with menu
 NOTICE_START
 
 	PRE_CHOOSE() {
-		printf "OPTION1 Menu:\n"
+		printf "%s%s%s\n" "${BOLD}${GREEN}" "PRE menu:" "${RESET}"
+		#printf "OPTION1 Menu:\n"
 		printf "1. INIT (src/PRE/INIT.sh)\n"
 		printf "2. PARTITIONING (src/PRE/INIT.sh)\n"
 		printf "3. CRYPTSETUP (src/PRE/INIT.sh)\n"
@@ -127,6 +150,27 @@ NOTICE_START
 		#. $CHROOTX//gentoo_unattented-setup/configs/required/kern.config.sh
 		#. $CHROOTX/gentoo_unattented-setup/func/chroot_static-functions.sh
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		BOLD=$(tput bold)
+		RESET=$(tput sgr0)
+		# Regular colors
+		BLACK=$(tput setaf 0)
+		RED=$(tput setaf 1)
+		GREEN=$(tput setaf 2)
+		YELLOW=$(tput setaf 3)
+		BLUE=$(tput setaf 4)
+		MAGENTA=$(tput setaf 5)
+		CYAN=$(tput setaf 6)
+		WHITE=$(tput setaf 7)
+
+		# Bright colors
+		BRIGHT_BLACK=$(tput setaf 8)
+		BRIGHT_RED=$(tput setaf 9)
+		BRIGHT_GREEN=$(tput setaf 10)
+		BRIGHT_YELLOW=$(tput setaf 11)
+		BRIGHT_BLUE=$(tput setaf 12)
+		BRIGHT_MAGENTA=$(tput setaf 13)
+		BRIGHT_CYAN=$(tput setaf 14)
+		BRIGHT_WHITE=$(tput setaf 15)
 		BASE () {
 		NOTICE_START
 			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && echo $f; done
@@ -296,6 +340,28 @@ NOTICE_START
 		#. $CHROOTX//gentoo_unattented-setup/configs/required/kern.config.sh
 		#. $CHROOTX/gentoo_unattented-setup/func/chroot_static-functions.sh
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		BOLD=$(tput bold)
+		RESET=$(tput sgr0)
+		# Regular colors
+		BLACK=$(tput setaf 0)
+		RED=$(tput setaf 1)
+		GREEN=$(tput setaf 2)
+		YELLOW=$(tput setaf 3)
+		BLUE=$(tput setaf 4)
+		MAGENTA=$(tput setaf 5)
+		CYAN=$(tput setaf 6)
+		WHITE=$(tput setaf 7)
+
+		# Bright colors
+		BRIGHT_BLACK=$(tput setaf 8)
+		BRIGHT_RED=$(tput setaf 9)
+		BRIGHT_GREEN=$(tput setaf 10)
+		BRIGHT_YELLOW=$(tput setaf 11)
+		BRIGHT_BLUE=$(tput setaf 12)
+		BRIGHT_MAGENTA=$(tput setaf 13)
+		BRIGHT_CYAN=$(tput setaf 14)
+		BRIGHT_WHITE=$(tput setaf 15)
+
 		BASE () {
 		NOTICE_START
 			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && echo $f; done
@@ -316,7 +382,8 @@ NOTICE_START
 			#CP_BASHRC  # run CP_BASHRC
 		CHROOT_BASE_MENU () {
 			CHROOT_BASE_CHOOSE() {
-				printf "\e[1m chroot base:\e[0m\n"
+				# printf "\e[1m chroot base:\e[0m\n"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot base:" "${RESET}"
 
 				printf "1. step 1. SWAPFILE\n"
 				printf "2. step 2. MAKECONF\n"
@@ -477,7 +544,8 @@ NOTICE_START
 			#NETWORK  # run NETWORK
 		CHROOT_CORE_MENU () {
 			CHROOT_CORE_CHOOSE() {
-				printf "\e[1m chroot core:\e[0m\n"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot core:" "${RESET}"
+				# printf "\e[1m chroot core:\e[0m\n"
 
 				printf  "1. step 1. SYSCONFIG_CORE\n"
 				printf  "2. step 2. SYSFS\n"
@@ -646,7 +714,9 @@ NOTICE_START
 			#DESKTOP_ENV
 		CHROOT_SCREENDSP_MENU () {
 			CHROOT_SCREENDSP_CHOOSE() {
-				printf "\e[1m chroot base:\e[0m\n"
+				#printf "\e[1m chroot screen and display\e[0m\n"
+
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot screen and display" "${RESET}"
 
 				printf  "1. step 1. WINDOWSYS\n"
 				printf  "2. step 2. DESKTOP_ENV\n"
@@ -725,6 +795,7 @@ NOTICE_START
 		CHROOT_MENU () {
 			CHROOT_CHOOSE() {
 				printf "\e[1m CHROOT Menu:\e[0m\n"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "CHROOT Menu:" "${RESET}"
 
 				printf "1. BASE steps menu\n"
 				printf "2. CORE steps menu\n"
@@ -811,7 +882,8 @@ NOTICE_END
 #DEBUG  # run DEBUG
 
 MAIN_MENU() {
-	printf "\e[1m MAIN Menu:\e[0m\n"
+	printf "%s%s%s\n" "${BOLD}${GREEN}" "MAIN Menu:" "${RESET}"
+	# printf "\e[1m MAIN Menu:\e[0m\n"
 
 	printf "1. PRE - no menu\n"
 	printf "2. CHROOT - no menu\n"
@@ -869,24 +941,24 @@ elif [[ "$1" == "-m" ]]; then
 	MAIN_MENU  # Run the program with the menu
 else
 
-	printf "WELCOME TO THE GENTOO SETUP (unattended by default testing in virtualbox) .... \n"
-	printf "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n"
-	printf "|g|e|n|t|o|o|_|u|n|a|t|t|e|n|t|e|d|-|s|e|t|u|p|\n"
-	printf "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n"
-	printf "https://github.com/alphaaurigae/gentoo_unattented-setup\n"
-	printf "hope you enjoy my work in some way even if its just to copy code or figure routines, been a few hours compiling for tests xD \n"
-	printf "use a virtualbox for testing.\n"
-	printf "the PRE setup wipes and encrypts the defined main disk! check the variables if its not a VM. \n"
-	printf "works fine by default in virtualbox else double check the variables. check readme for latest status msg on top \n"
-	printf "if running with -m or commented functions, cloning the VM works fine if its a full clone, so you can run the setup in steps ... \n"
-	printf "Usage: ./script.sh -m enters menu mode (useful fe to save state in vm's\n"
-	printf "same effect as -m menu can be archived by commenting sections && replacing main menu with function tags in run.sh\n"
-	printf "Usage: ./script.sh -a run entire setup unattended ... as pointed out, hope you know what youre doing and everything is configured well if it isnt a virtualbox for testing which shall work by default.\n"
+	#printf "WELCOME TO THE GENTOO SETUP (unattended by default testing in virtualbox) .... \n"
+	printf "\n"
+	printf "%s%s%s\n" "${BOLD}${BRIGHT_GREEN}" "WELCOME :)" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${MAGENTA}" "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${MAGENTA}" "|g|e|n|t|o|o|_|u|n|a|t|t|e|n|t|e|d|-|s|e|t|u|p|" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${MAGENTA}" "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${BRIGHT_GREEN}" "https://github.com/alphaaurigae/gentoo_unattented-setup" "${RESET}"$'\n'
 
-
-
-
-                                                                                                    
+	printf "%s%s%s\n" "${BOLD}${YELLOW}" "Usage: ./run.sh ARG" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -a run entire setup ... CHECK gentoo_unattented-setup/var/*" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -m enters menu mode (useful fe to save state in vm's" "${RESET}"
+	printf "\n"
+	printf "See readme.md for more info. Check readme for latest status msg on top. \n"
+	printf "Check the variables if its not a VM!!!\n"
+	printf "PRE setup wipes and encrypts the defined main disk!  \n"
+	printf "Works by default in virtualbox. \n"
+	printf "Cloning the VM for testing works fine if its a full clone ... \n"
+	printf "\n"
 
 	exit
 fi
