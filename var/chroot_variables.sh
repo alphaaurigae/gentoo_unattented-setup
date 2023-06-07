@@ -33,7 +33,7 @@
  		# https://wiki.gentoo.org/wiki/CHOST https://wiki.gentoo.org/wiki/GCC_optimization
 		PRESET_CPU_FLAGS_X86="$(if [[ $(lscpu | grep Flags:) =~ "ssse3" ]]; then echo "$(lscpu | grep Flags: | sed -e 's/^\w*\ *//' | sed 's/: //g' ) sse3 sse4a "; fi)"  # 1/2 # workaround to insert sse3 and sse4a -
 		# 2/2 intentianal, no idea if requ - testing…
-		PRESET_MARCH="native" # "znver1"  # 1/2 default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2  # probably firefox build fail if on znver1 and march set to native, need to verify - busy
+		PRESET_MARCH="znver1" # "znver1"  # 1/2 default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2  # probably firefox build fail if on znver1 and march set to native, need to verify - busy
 		# 2/2 # https://wiki.gentoo.org/wiki/Safe_CFLAGS#Finding_the_CPU (!NOTE: fetch before PRESET_CFLAGS, see MAKEFILE)
 		PRESET_CFLAGS="-march=$PRESET_MARCH -O2 -pipe"  # https://wiki.gentoo.org/wiki/Safe_CFLAGS
 		PRESET_CXXFLAGS="${PRESET_CFLAGS}"
@@ -50,13 +50,13 @@
 		# SEE CRYPSETUP $SYSAPP_DMCRYPT bwlow for comment on crypsetup
 		PRESET_USEFLAG_LVMROOTNOCRYPOPT="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
 				cpudetection cjk cxx dbus elogind ffmpeg git gtk gtk3 gzip \
-				hardened initramfs int64 lzma lzo mount opengl pulseaudio jack policykit postproc secure-delete \
+				hardened initramfs int64 lzma lzo lvm mount opengl pulseaudio jack policykit postproc secure-delete \
 				sqlite threads udev udisks unicode zip \
 				-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
 				-systemd -mssql -postgres -ppp -telnet"
 		PRESET_USEFLAG_CRYPTOPTANDCRYPTSETUP="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
 				cpudetection cjk crypt cryptsetup cxx dbus elogind ffmpeg git gtk gtk3 gzip \
-				hardened initramfs int64 lzma lzo mount opengl pulseaudio jack policykit postproc secure-delete \
+				hardened initramfs int64 lzma lzo lvm mount opengl pulseaudio jack policykit postproc secure-delete \
 				sqlite threads udev udisks unicode zip \
 				-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
 				-systemd -mssql -postgres -ppp -telnet"
@@ -123,7 +123,7 @@
 		## DRACUT_CONF
 		# just removed gensplash "ERR dracut: dracut module 'gensplash' cannot be found or installed."
 		DRACUT_CONF_MODULES_LVM="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown lvm debug dm"  # for LVM on /dev/sd**  (CRYPSETUP="NO" /var/var_main )  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
-		DRACUT_CONF_MODULES_CRYPTSETUP="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg lvm debug dm"  # for LVM on cryptsetup /dev/sd** (CRYPSETUP="YES" /var/var_main )  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
+		DRACUT_CONF_MODULES_CRYPTSETUP=" i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg lvm debug dm "  # for LVM on cryptsetup /dev/sd** (CRYPSETUP="YES" /var/var_main )  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
 		DRACUT_CONF_HOSTONLY="yes"  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
 		DRACUT_CONF_LVMCONF="yes"  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
 		#DRACUT_CONFD_ADD_DRACUT_MODULES="usrmount"  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh

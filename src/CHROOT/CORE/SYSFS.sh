@@ -20,7 +20,9 @@
 			AUTOSTART_NAME_SYSTEMD="$APPAPP_NAME_SIMPLE-monitor"
 			CONFIG_LVM2 () {
 			NOTICE_START
-				sed -e 's/issue_discards = 0/issue_discards = 1/g' /etc/lvm/lvm.conf > /tmp/lvm.conf
+				echo just a placeholder
+				# sed -e 's/# issue_discards = 0/issue_discards = 1/g' /etc/lvm/lvm.conf > /tmp/lvm.conf  # new line, probably not needed bec it worked well for boot anyways, leaving commented
+				# sed -e 's/issue_discards = 0/issue_discards = 1/g' /etc/lvm/lvm.conf > /tmp/lvm.conf  # old line, didnt uncomment issue discard, probably not needed bec it worked well for boot anyways
 				mv /tmp/lvm.conf /etc/lvm/lvm.conf
 			NOTICE_END
 			}

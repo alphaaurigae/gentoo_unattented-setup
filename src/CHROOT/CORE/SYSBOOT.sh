@@ -26,7 +26,7 @@
 					NOTICE_START
 						PRE_GRUB2BIOS () {
 						NOTICE_START
-							sed -ie '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
+							sed -i '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
 							echo 'GRUB_PLATFORMS="pc"' >> /etc/portage/make.conf
 							EMERGE_ATWORLD_A
 						NOTICE_END
@@ -39,8 +39,8 @@
 					NOTICE_START
 						PRE_GRUB2UEFI () {
 						NOTICE_START
-							sed -ie '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
-							sed -ie '/GRUB_PLATFORMS="efi-64/d' /etc/portage/make.conf
+							sed -i '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
+							sed -i '/GRUB_PLATFORMS="efi-64/d' /etc/portage/make.conf
 							echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
 							EMERGE_ATWORLD_A
 						NOTICE_END
@@ -66,38 +66,40 @@
 					}
 					CONFGRUB2_OPENRC () {  # https://wiki.gentoo.org/wiki/GRUB2
 					NOTICE_START
-						sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
-						cat << EOF >> /etc/default/grub
-						# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
-						GRUB_CMDLINE_LINUX="raid=noautodetect cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value $MAIN_PART):$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm"
-						# (!NOTE: etc/crypttab not required under default openrc, "luks on lvm", GPT, bios - setup) # Warning: If you are using /etc/crypttab or /etc/crypttab.initramfs together with luks.* or rd.luks.* parameters, only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line.. To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*. To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
-EOF
+						#sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
+						#cat <<- EOF >> /etc/default/grub
+						## If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
+						#GRUB_CMDLINE_LINUX="raid=noautodetect cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value $MAIN_PART):$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm"
+						## (!NOTE: etc/crypttab not required under default openrc, "luks on lvm", GPT, bios - setup) # Warning: If you are using /etc/crypttab or /etc/crypttab.initramfs together with luks.* or rd.luks.* parameters, only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line.. To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*. To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
+						#EOF
 
 						if [ $CRYPTSETUP = "YES" ]; then
-							sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
-							cat << EOF >> /etc/default/grub
+							sed -i '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
+							cat <<- EOF >> /etc/default/grub
+
 							# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
 							GRUB_CMDLINE_LINUX="raid=noautodetect cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value $MAIN_PART):$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm"
 							# (!NOTE: etc/crypttab not required under default openrc, "luks on lvm", GPT, bios - setup) # Warning: If you are using /etc/crypttab or /etc/crypttab.initramfs together with luks.* or rd.luks.* parameters, only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line.. To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*. To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
-EOF
+							EOF
 						else
-							sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
-							cat << EOF >> /etc/default/grub
+							sed -i '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
+							cat <<- EOF >> /etc/default/grub
+
 							# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
 							GRUB_CMDLINE_LINUX="raid=noautodetect root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm"
 							# (!NOTE: etc/crypttab not required under default openrc, "luks on lvm", GPT, bios - setup) # Warning: If you are using /etc/crypttab or /etc/crypttab.initramfs together with luks.* or rd.luks.* parameters, only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line.. To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*. To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
-EOF
+							EOF
 						fi
 					NOTICE_END
 					}
 					CONFGRUB_SYSTEMD () {  # https://wiki.gentoo.org/wiki/GRUB2
 					NOTICE_START
-						sed -ie '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
-						cat << EOF >> /etc/default/grub
+						sed -i '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
+						cat <<- EOF >> /etc/default/grub
 						# If the root file system is contained in a logical volume of a fully encrypted LVM, the device mapper for it will be in the general form of root=/dev/volumegroup/logicalvolume. https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration
 						GRUB_CMDLINE_LINUX="rd.luks.name=$(blkid -o value -s UUID $MAIN_PART)=$PV_MAIN root=UUID=$(blkid -s UUID -o value /dev/$VG_MAIN/$LV_MAIN) rootfstype=ext4 dolvm " #real_init=/lib/systemd/systemd
 						# rd.luks.name= is honored only by initial RAM disk (initrd) while luks.name= is honored by both the main system and the initrd. https://www.freedesktop.org/software/systemd/man/systemd-cryptsetup-generator.html
-EOF
+						EOF
 					NOTICE_END
 					}
 					CONFGRUB2_MAIN

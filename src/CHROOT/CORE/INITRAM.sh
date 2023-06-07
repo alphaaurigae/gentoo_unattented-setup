@@ -24,8 +24,8 @@
 					DRACUT_DRACUTCONF () {
 					NOTICE_START
 						if [ $CRYPTSETUP = "YES" ]; then
-							echo "bingo"
-							cat << EOF > /etc/dracut.conf
+							echo "dracut cryptsetup"
+							cat <<- EOF > /etc/dracut.conf
 
 							#i18n_install_all="yes"
 							i18n_vars="/etc/conf.d/keymaps:keymap-KEYMAP,extended_keymaps-EXT_KEYMAPS /etc/conf.d/consolefont:consolefont-FONT,consoletranslation-FONT_MAP /etc/rc.conf:unicode-UNICODE"
@@ -33,10 +33,11 @@
 							hostonly="$DRACUT_CONF_HOSTONLY"
 							lvmconf="$DRACUT_CONF_LVMCONF"
 							dracutmodules+="$DRACUT_CONF_MODULES_CRYPTSETUP"
-EOF
+							EOF
 							cat /etc/dracut.conf
 						else
-							cat << EOF > /etc/dracut.conf
+							echo "dracut lvm"
+							cat <<- EOF > /etc/dracut.conf
 
 							#i18n_install_all="yes"
 							i18n_vars="/etc/conf.d/keymaps:keymap-KEYMAP,extended_keymaps-EXT_KEYMAPS /etc/conf.d/consolefont:consolefont-FONT,consoletranslation-FONT_MAP /etc/rc.conf:unicode-UNICODE"
@@ -44,7 +45,7 @@ EOF
 							hostonly="$DRACUT_CONF_HOSTONLY"
 							lvmconf="$DRACUT_CONF_LVMCONF"
 							dracutmodules+="$DRACUT_CONF_MODULES_LVM"
-EOF
+							EOF
 							cat /etc/dracut.conf
 						fi
 					NOTICE_END

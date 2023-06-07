@@ -47,3 +47,4 @@ GRUB_DISABLE_LINUX_PARTUUID=false
 #GRUB_INIT_TUNE="480 440 1"
 GRUB_ENABLE_CRYPTODISK=y
 GRUB_PRELOAD_MODULES="lvm luks cryptodisk crypto ext2 part_gpt part_msdos gettext gzio"
+GRUB_DISABLE_OS_PROBER=false
