@@ -1,9 +1,10 @@
 # Automated modular GENTOO linux setup
 
-# status latest 05.06.23
-> probably firefox build fail if on znver1 and march set to native, need to verify - busy
+# status latest 05.07.23
 
-> work in progress, .... testing w 17.1 hardened .. first run errors resolved, boot test outstanding
+> work in progress, .... testing w 17.1 hardened .. first run errors resolved, boot worked - full run at once outstanding,
+
+> probably firefox build fail if on znver1 and march set to native, need to verify - busy
 
 > added optional menu to avoid the stress of commenting functions for testing to run.sh ... to run fully unattended run ./run.sh -a, for menu ./run.sh -m
 
