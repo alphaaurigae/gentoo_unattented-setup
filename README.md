@@ -1,6 +1,6 @@
 # Automated modular GENTOO linux setup
 
-# status latest 05.07.23
+# status latest 07.06.23
 
 > work in progress, .... testing w 17.1 hardened .. first run errors resolved, boot worked - full run at once outstanding,
 
