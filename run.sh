@@ -7,12 +7,12 @@
 # 88. ~8~ 88.     88  V888    88    `8b  d8' `8b  d8'         88b  d88 88  V888 88   88    88       88    88.     88  V888    88    88.     88  .8D        db   8D 88.        88    88b  d88 88      
 #  Y888P  Y88888P VP   V8P    YP     `Y88P'   `Y88P'  C88888D ~Y8888P' VP   V8P YP   YP    YP       YP    Y88888P VP   V8P    YP    Y88888P Y8888D'        `8888Y' Y88888P    YP    ~Y8888P' 88     
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# STATUS main Readme.md
+# STATUS Readme.md
 # github.com/alphaaurigae/gentoo_unattended_modular-setup.sh
 
-# FUNCTION  # run FUNCTION  > placeholder to easy replace uncommented / commented with sed -ie 's/PRE  # run PRE/PRE  # run PRE/g' 
+
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# VARIABLE && FUNCTONS (options) ##unfinished
+# VARIABLE && FUNCTONS
 ## PRE
 . func/func_main.sh
 . var/var_main.sh
@@ -164,6 +164,9 @@ NOTICE_START
 
 		BASE () {
 		NOTICE_START
+
+			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && echo $f; done
+
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "######     #     #####  ####### " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "#     #   # #   #     # #       " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "#     #  #   #  #       #       " "${RESET}"
@@ -171,10 +174,7 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "#     # #######       # #       " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "#     # #     # #     # #       " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "######  #     #  #####  ####### " "${RESET}"
-
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot base:" "${RESET}"
-
-			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && echo $f; done
 
 			SWAPFILE  # run SWAPFILE
 			MAKECONF  # run MAKECONF
@@ -194,6 +194,9 @@ NOTICE_START
 		}
 		CORE () {
 		NOTICE_START
+
+			for f in gentoo_unattented-setup/src/CHROOT/CORE/*; do . $f && echo $f; done
+
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "  .d8888b.  .d88888b. 8888888b. 8888888888 " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " d88P  Y88bd88P" "Y88b888   Y88b888        " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " 888    888888     888888    888888        " "${RESET}"
@@ -202,10 +205,7 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " 888    888888     888888 T88b  888        " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " Y88b  d88PY88b. .d88P888  T88b 888        " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "  *Y8888P*  *Y88888P* 888   T88b8888888888 " "${RESET}"
-
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot core:" "${RESET}"
-
-			for f in gentoo_unattented-setup/src/CHROOT/CORE/*; do . $f && echo $f; done
 
 			SYSCONFIG_CORE  # run SYSCONFIG_CORE
 			SYSFS  # run SYSFS
@@ -226,13 +226,14 @@ NOTICE_START
 		}
 		SCREENDSP () {  # note: replace visual header with "screen and desktop"
 		NOTICE_START
+
+			for f in gentoo_unattented-setup/src/CHROOT/SCREENDSP/*; do . $f && echo $f; done
+
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " .--.  .--. .---.  .--.  .--. .-..-..---.  .--. .---.  " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" ": .--': .--': .; :: .--': .--': `: :: .  :: .--': .; : " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "`. `. : :   :   .': `;  : `;  : .` :: :: :`. `. :  _.' " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " _`, :: :__ : :.`.: :__ : :__ : :. :: :; : _`, :: :    " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "`.__.'`.__.':_;:_;`.__.'`.__.':_;:_;:___.'`.__.':_;    " "${RESET}"
-
-			for f in gentoo_unattented-setup/src/CHROOT/SCREENDSP/*; do . $f && echo $f; done
 
 			WINDOWSYS
 			DESKTOP_ENV
@@ -241,6 +242,9 @@ NOTICE_START
 		}
 		USERAPP () {  # (!todo)
 		NOTICE_START
+
+			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && echo $f; done
+
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "     :::    ::: :::::::: :::::::::::::::::::     :::    ::::::::: ::::::::: " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "    :+:    :+::+:    :+::+:       :+:    :+:  :+: :+:  :+:    :+::+:    :+: " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "   +:+    +:++:+       +:+       +:+    +:+ +:+   +:+ +:+    +:++:+    +:+  " "${RESET}"
@@ -249,8 +253,6 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "#+#    #+##+#    #+##+#       #+#    #+##+#     #+##+#       #+#            " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "########  ######## #############    ######     ######       ###             " "${RESET}"
 
-			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && echo $f; done
-
 			# GIT
 			WEBBROWSER
 		NOTICE_END
@@ -258,13 +260,14 @@ NOTICE_START
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		USERS () {
 		NOTICE_START
+
+			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && echo $f; done
+
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|    _|_|_|  _|_|_|_|  _|_|_|      _|_|_|  " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|  _|        _|        _|    _|  _|        " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|    _|_|    _|_|_|    _|_|_|      _|_|    " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|        _|  _|        _|    _|        _|  " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "  _|_|    _|_|_|    _|_|_|_|  _|    _|  _|_|_|    " "${RESET}"
-
-			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && echo $f; done
 
 			ROOT
 			ADMIN
@@ -273,6 +276,9 @@ NOTICE_START
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		FINISH () {  # tidy up installation files - ok
 		NOTICE_START
+
+			for f in gentoo_unattented-setup/src/CHROOT/FINISH/*; do . $f && echo $f; done
+
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "  ________________________________________  " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " / CONGRATS!                              \\" "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " \\ Setup done, you did it!                /" "${RESET}"
@@ -283,7 +289,7 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||----- |                  " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||     ||                  " "${RESET}"
 
-			for f in gentoo_unattented-setup/src/CHROOT/FINISH/*; do . $f && echo $f; done
+
 
 			TIDY_STAGE3
 		NOTICE_END
@@ -291,11 +297,13 @@ NOTICE_START
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		## (RUN ENTIRE SCRIPT) (!changeme)
 		CHROOT_NOMENU () {
+
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " CCCCC  HH   HH RRRRRR   OOOOO   OOOOO  TTTTTTT " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "CC    C HH   HH RR   RR OO   OO OO   OO   TTT   " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "CC      HHHHHHH RRRRRR  OO   OO OO   OO   TTT   " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "CC    C HH   HH RR  RR  OO   OO OO   OO   TTT   " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " CCCCC  HH   HH RR   RR  OOOO0   OOOO0    TTT   " "${RESET}"
+
 			BASE  # src/CHROOT/BASE/*  # as defined in var/
 			CORE  # src/CHROOT/CORE/*  # as defined in var/
 			SCREENDSP  # src/CHROOT/SCREENDSP/*  # as defined in var/
@@ -729,6 +737,7 @@ NOTICE_START
 		USERAPP () {  # (!todo)
 		NOTICE_START
 			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && echo $f; done
+
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "     :::    ::: :::::::: :::::::::::::::::::     :::    ::::::::: ::::::::: " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "    :+:    :+::+:    :+::+:       :+:    :+:  :+: :+:  :+:    :+::+:    :+: " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "   +:+    +:++:+       +:+       +:+    +:+ +:+   +:+ +:+    +:++:+    +:+  " "${RESET}"
@@ -746,6 +755,7 @@ NOTICE_START
 		USERS () {
 		NOTICE_START
 			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && echo $f; done
+
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|    _|_|_|  _|_|_|_|  _|_|_|      _|_|_|  " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|  _|        _|        _|    _|  _|        " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|    _|_|    _|_|_|    _|_|_|      _|_|    " "${RESET}"
@@ -761,6 +771,7 @@ NOTICE_START
 		FINISH () {  # tidy up installation files - ok
 		NOTICE_START
 			for f in gentoo_unattented-setup/src/CHROOT/FINISH/*; do . $f && echo $f; done
+
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "  ________________________________________  " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" " / CONGRATS!                              \\" "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" " \\ Setup done, you did it!                /" "${RESET}"
@@ -838,11 +849,8 @@ NOTICE_START
 		)
 		CP_CHROOT () {
 		NOTICE_START
-			# since the chroot script cant be run outside of chroot the script and possibly sourced functions and variables scripts need to be copied accordingly.
-			# for the onefile setup this is simply done by echoing the 'INNERSCRIPT" ... if the setup is split in multiple files for readability, every file or alt the gentoo script repo needs to be copied to make all functions and variables available.
-			# only variables outside the chroot innerscript for now 27.8.22
-			# IMPORTANT blow commands are executed BEFORE the above INNERSCRIPT! (BELOW chroot $CHROOTX /bin/bash ./chroot_run.sh). if a file needs to be made available in the INNERSCRIPT, copy it before ( chroot $CHROOTX /bin/bash ./chroot_run.sh ) below in this CHROOT function!!!
-
+			# Since the chroot script can't be run outside of chroot, the script, and possibly sourced functions as well as variable scripts, need to be copied accordingly. For simplicity, copy the whole repo.
+			# IMPORTANT: The following commands are executed BEFORE the above INNERSCRIPT (BELOW chroot $CHROOTX /bin/bash ./chroot_run.sh). If a file needs to be made available in the INNERSCRIPT, copy it before (chroot $CHROOTX /bin/bash ./chroot_run.sh) within this CHROOT function!
 			rm -rf $CHROOTX/gentoo_unattented-setup
 			ls -la /root
 			echo $CHROOTX
@@ -871,7 +879,6 @@ MAIN_MENU() {
 	printf "%s%s%s\n" "${BOLD}${GREEN}" " \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ " "${RESET}"
 
 	printf "%s%s%s\n" "${BOLD}${GREEN}" "MAIN Menu:" "${RESET}"
-	# printf "\e[1m MAIN Menu:\e[0m\n"
 
 	printf "1. PRE - no menu\n"
 	printf "2. CHROOT - no menu\n"
@@ -886,12 +893,22 @@ MAIN_MENU() {
 
 	case $choice in
 		1)
+			printf "Running the semi unattended PRE setup as configured in 10 seconds... Exit now to see options with -h or enter the menu when running the program with -m.\n"
+			printf "(default PRE asks for crypt password and disk wipe confirmation)"
+			sleep 10
 			PRE_NOMENU
 			;;
 		2)
+			printf "Running the semi unattended CHROOT setup as configured in 10 seconds... Exit now to see options with -h or enter the menu when running the program with -m.\n"
+			printf "(Default CHROOT asks for kernel config menuconfig confirmation or edit and GPG password)"
+			sleep 10
 			CHROOT_NOMENU
 			;;
 		3)
+			printf "Running the semi unattended setup as configured in 10 seconds... Exit now to see options with -h or enter the menu when running the program with -m.\n"
+			printf "(Default PRE asks for crypt password and disk wipe confirmation)"
+			printf "(Default CHROOT asks for kernel config menuconfig confirmation or edit and GPG password)"
+			sleep 10
 			PRE_NOMENU
 			CHROOT_NOMENU
 			;;
@@ -919,9 +936,10 @@ MAIN_MENU() {
 }
 # Check if the script is run with the -h option
 if [[ "$1" == "-a" ]]; then
-	printf "Running FULLY UNATTENDED SETUP AS CONFIGURED in 10 seconds ... exit now to see options with -h or enter menu when running the program with -m\n"
+	printf "Running the semi unattended setup as configured in 10 seconds... Exit now to see options with -h or enter the menu when running the program with -m.\n"
+	printf "(Default PRE asks for crypt password and disk wipe confirmation)"
+	printf "(Default CHROOT asks for kernel config menuconfig confirmation or edit and GPG password)"
 	sleep 10
-
 
 	PRE_NOMENU
 	CHROOT_NOMENU
@@ -941,9 +959,9 @@ else
 	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -a run entire setup ... CHECK gentoo_unattented-setup/var/*" "${RESET}"
 	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -m enters menu mode (useful fe to save state in vm's" "${RESET}"
 	printf "\n"
-	printf "See readme.md for more info. Check readme for latest status msg on top. \n"
+	printf "Refer to the readme.md file for more information. Check the readme.md file for the latest status message at the top. \n"
 	printf "Check the variables if its not a VM!!!\n"
-	printf "PRE setup wipes and encrypts the defined main disk!  \n"
+	printf "PRE setup wipes and encrypts the defined main disk but issues warning.  \n"
 	printf "Works by default in virtualbox. \n"
 	printf "Cloning the VM for testing works fine if its a full clone ... \n"
 	printf "\n"
