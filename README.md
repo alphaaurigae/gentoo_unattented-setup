@@ -2,6 +2,8 @@
 
 # status latest 07.06.23
 
+> booted to defaul desktop w cryptsetup.
+
 > work in progress, .... testing w 17.1 hardened .. first run errors resolved, boot worked - full run at once outstanding,
 
 > probably firefox build fail if on znver1 and march set to native, need to verify - busy
@@ -26,9 +28,10 @@
 > PRE with CRYPTSETUP="YES" - CRYPTSETUP="NO" == LVM on root (successful previous test - https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/var/var_main.sh
 
 - asciinema recording of PRE setup:
-- asciinema recording of PRE setup:
 [![asciicast](https://asciinema.org/a/7eTtVfn7QJHLsYqGEV1iyfz1j.svg)](https://asciinema.org/a/7eTtVfn7QJHLsYqGEV1iyfz1j)
-- CHROOT logs attached in logdir https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/dev_log  |  no signifcant errors - last testrun
+- asciinema CHROOT sample (just the start as sample, else its wayy to long obv)
+[![asciicast](https://asciinema.org/a/18Y74Ya26UMi1SjLO3OeXRUT6.svg)](https://asciinema.org/a/18Y74Ya26UMi1SjLO3OeXRUT6)
+- (note dated, not updated last tests) CHROOT logs attached in logdir https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/dev_log  |  no signifcant errors - last testrun
 > Boots to desktop xfce -> firefox, network, audio ...
 - Basic mockup, work in progress
 - Script runs with "very little" interaction required to setup a gentoo desktop. See logs.
