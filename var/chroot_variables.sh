@@ -64,7 +64,9 @@
 		# noman, srsly?
 		# sandbox maybe?
 		# userpriv and sandbox?
-		##collision-protect  removed for protect-owned as linux-firmware failed emerging cpio
+		# force-mirror libsrvg build err, looked like rust problem but wasnt.
+		# compress logs removed as it corrupted the archives for unknown reason
+		# collision-protect removed as linux-firmware failed emerging cpio it did emerge but still complained. joro pointed out " app-alternatives were recently introduced and migration won't work with collision-protect unless you manually unmerge the corresponding package in advance which may break your system"
 		PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip candy cgroup binpkg-logs \
 				downgrade-backup ebuild-locks fail-clean fixlafiles ipc-sandbox merge-sync \
 				network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox "
