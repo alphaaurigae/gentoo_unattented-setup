@@ -10,16 +10,22 @@
 			# (!NOTE) (!todo - not sure if this is "perfect" yet.. anyways, "it works". 
 			CPU_FLAGS_X86="$PRESET_CPU_FLAGS_X86" # workaround to insert sse3 and sse4a - intentianal, no idea if requ - testing…
 			# CPU_FLAGS_X86="$(lscpu | grep Flags: | sed -e 's/Flags:               //g')" # lscpu hides sse3 and sse4a which are shown in cpuid.
-			CFLAGS="$PRESET_CFLAGS"
-			CXXFLAGS="${PRESET_CFLAGS}"
-			FCFLAGS="${PRESET_CFLAGS}"
-			FFLAGS="${PRESET_CFLAGS}"
+			COMMON_FLAGS="$PRESET_COMMON_FLAGS"
+			CONFIG_PROTECT="$PRESET_CONFIG_PROTECT"
+			CFLAGS="${PRESET_COMMON_FLAGS}"
+			CXXFLAGS="${PRESET_COMMON_FLAGS}"
+			FCFLAGS="${PRESET_COMMON_FLAGS}"
+			FFLAGS="${PRESET_COMMON_FLAGS}"
+			LDFLAGS="$PRESET_LDFLAGS"
+			RUSTFLAGS="$PRESET_RUSTFLAGS"
 			MAKEOPTS="$PRESET_MAKE"
 			EMERGE_DEFAULT_OPTS="$PRESET_EMERGE_DEFAULT_OPTS"
 			INPUT_DEVICES="$PRESET_INPUTEVICE"
 			VIDEO_CARDS="$PRESET_VIDEODRIVER"
+			# just a placeholder as sane setup sample on znver1 # VIDEO_CARDS="fbdev modesetting v4l vesa nvidia"
 			ACCEPT_LICENSE="$PRESET_LICENCES"
 			FEATURES="$PRESET_FEATURES"
+			# just a placeholder as sane setup sample on znver1 # FEATURES="candy binpkg-logs cgroup config-protect-if-modified nostrip distlocks downgrade-backup ebuild-locks fakeroot fixlafiles merge-sync noauto parallel-fetch parallel-install preserve-libs protect-owned sandbox sfperms suidctl split-elog split-log splitdebug test-fail-continue unknown-features-filter unknown-features-warn unmerge-backup unmerge-orphans userfetch userpriv usersandbox usersync xattr ipc-sandbox lmirror multilib-strict buildpkg  compress-index compressdebug" #collision-protect  compress-build-logs' #fail-clean # strict" # sign
 			USE="PLACEHOLDER_USEFLAGS"
 			GENTOO_MIRRORS="$PRESET_GENTOMIRRORS"
 			PORTDIR="$PRESET_PORTDIR"
@@ -34,6 +40,13 @@
 			LC_MESSAGES="$PRESET_LC_MESSAGES"
 			# CURL_SSL="$PRESET_CURL_SSL"
 			NOCOLOR="true"
+			# just a placeholder as sane setup znver1 for later use # EMERGE_DEFAULT_OPTS="--autounmask=y --color=y --complete-graph=y --fail-clean=n --keep-going=y --misspell-suggestions=y --nospinner --package-moves=y --pkg-format=tar --quiet=n --quiet-build=y --quiet-fail=n --rebuild-if-new-slot=y --rebuild-if-unbuilt=y --search-index=n --tree --use-ebuild-visibility=y --verbose-slot-rebuilds=y  --verbose=y --depclean-lib-check=y --dynamic-deps=y --with-bdeps=y --jobs=15 --load-average=120" #--backtrack=10000000
+			# just a placeholder as sane setup znver1 for later use # UWSGI_PLUGINS="geoip cache carbon corerouter fastrouter forkptyrouter http logfile rawrouter router_access router_basicauth router_cache router_memcached router_metrics router_redirect router_redis router_rewrite router_static router_uwsgi router_xmldir sslrouter transformation_chunked transformation_gzip"
+			# just a placeholder as sane setup znver1 for later use # LLVM_TARGETS="X86 NVPTX"
+			# just a placeholder as sane setup znver1 for later use # NGINX_MODULES_HTTP="access addition brotli charset fastcgi geoip2 gunzip gzip gzip_static headers_more javascript limit_conn limit_req memcached rewrite security slowfs_cache spdy upload_progress uwsgi"
+			# just a placeholder as sane setup znver1 for later use # POSTGRES_TARGETS="postgres14"
+			# just a placeholder as sane setup znver1 for later use # PYTHON_TARGETS="python3_10 python3_11"
+
 			EOF
 			
 			if [ $SYSAPP_DMCRYPT = "YES" ]; then

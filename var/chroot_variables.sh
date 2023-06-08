@@ -35,10 +35,15 @@
 		# 2/2 intentianal, no idea if requ - testing…
 		PRESET_MARCH="znver1" # "znver1"  # 1/2 default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2  # probably firefox build fail if on znver1 and march set to native, need to verify - busy
 		# 2/2 # https://wiki.gentoo.org/wiki/Safe_CFLAGS#Finding_the_CPU (!NOTE: fetch before PRESET_CFLAGS, see MAKEFILE)
-		PRESET_CFLAGS="-march=$PRESET_MARCH -O2 -pipe"  # https://wiki.gentoo.org/wiki/Safe_CFLAGS
-		PRESET_CXXFLAGS="${PRESET_CFLAGS}"
-		PRESET_FCFLAGS="${PRESET_CFLAGS}"
-		PRESET_FFLAGS="${PRESET_CFLAGS}"
+		# just a sample from sane setup znver1 PRESET_COMMON_FLAGS="-march=$PRESET_MARCH --param l1-cache-size=32 --param l1-cache-line-size=64 --param l2-cache-size=512 -mtune=$PRESET_MARCH -fPIC" #-fstack-protector -fstack-protector-all -D_FORTIFY_SOURCE=3 -fPIC"
+		PRESET_CONFIG_PROTECT="/etc /usr/share/gnupg/qualified.txt" # /usr/lib/plexmediaserver/Resources/comskip.ini"
+		PRESET_COMMON_FLAGS="-march=$PRESET_MARCH -mtune=$PRESET_MARCH -fPIC -O2 -pipe" #-fstack-protector -fstack-protector-all -D_FORTIFY_SOURCE=3 -fPIC"
+		PRESET_CFLAGS="${PRESET_COMMON_FLAGS}"  # https://wiki.gentoo.org/wiki/Safe_CFLAGS
+		PRESET_CXXFLAGS="${PRESET_COMMON_FLAGS}"
+		PRESET_FCFLAGS="${PRESET_COMMON_FLAGS}"
+		PRESET_FFLAGS="${PRESET_COMMON_FLAGS}"
+		PRESET_LDFLAGS="-Wl,-O1 -Wl,--sort-common -Wl,-z,now -Wl,-z,relro"  # added .08.06.23, copy off sane setup for znver1
+		PRESET_RUSTFLAGS="-C target-cpu=$PRESET_MARCH"  # added .08.06.23, copy off sane setup for znver1  # https://wiki.gentoo.org/wiki/User:GYakovlev/Rust#Configuration_for_use_with_portage  # https://forums.gentoo.org/viewtopic-p-8492912.html?sid=8298553159a9736fa48ea56002b1b834
 		# clone https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#CFLAGS_and_CXXFLAGS
 		PRESET_INPUTEVICE="libinput keyboard"
 		PRESET_VIDEODRIVER="virtualbox"  # amdgpu, radeonsi, radeon, virtualbox ; (!NOTE: if running in virtualbox and intend to build firefox - run KVM and set to your hardware ... "avx2 error firefox")
