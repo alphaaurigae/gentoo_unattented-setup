@@ -27,7 +27,7 @@
 
 - asciinema recording of PRE setup:
 - asciinema recording of PRE setup:
-[![asciicast](https://asciinema.org/a/Tk2nrgqaHJEchFbRW9IT03yAj.svg)](https://asciinema.org/a/Tk2nrgqaHJEchFbRW9IT03yAj)
+[![asciicast](https://asciinema.org/a/7eTtVfn7QJHLsYqGEV1iyfz1j.svg)](https://asciinema.org/a/7eTtVfn7QJHLsYqGEV1iyfz1j)
 - CHROOT logs attached in logdir https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/dev_log  |  no signifcant errors - last testrun
 > Boots to desktop xfce -> firefox, network, audio ...
 - Basic mockup, work in progress
