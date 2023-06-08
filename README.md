@@ -26,7 +26,8 @@
 > PRE with CRYPTSETUP="YES" - CRYPTSETUP="NO" == LVM on root (successful previous test - https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/var/var_main.sh
 
 - asciinema recording of PRE setup:
-> temporarily removed link as the original one was archived, need  to create new,,,
+- asciinema recording of PRE setup:
+[![asciicast](https://asciinema.org/a/Tk2nrgqaHJEchFbRW9IT03yAj.svg)](https://asciinema.org/a/Tk2nrgqaHJEchFbRW9IT03yAj)
 - CHROOT logs attached in logdir https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/dev_log  |  no signifcant errors - last testrun
 > Boots to desktop xfce -> firefox, network, audio ...
 - Basic mockup, work in progress
