@@ -38,9 +38,9 @@
 
 DOCS (maybe dated - this page is updated first): https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc
 > <p>crypt boot</p>
-![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-18_03-22-34.png)
+![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2023-06-09_14-38-39.png)
 > <p>booted gentoo VM lxdm - xfce</p>
-![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2022-09-18_06-22-27.png)
+![<p>booted...</p> ](img/screenshots/virtual_machine/virtualbox/Screenshot_2023-06-09_14-36-55.png)
 
 ## Default (main testing)
 - OPENRC
