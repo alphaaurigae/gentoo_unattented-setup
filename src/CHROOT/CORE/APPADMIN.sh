@@ -6,7 +6,11 @@
 			CONFIG_SUDO () {
 			NOTICE_START
 				cp /etc/sudoers /etc/sudoers_bak
-				sed -ie 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
+				sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
+				sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
+				# uncommented bec using wheel maybe enough (for now, funny line glitch as commented anyways, verfy later) sed -i 's/# %sudo	ALL=(ALL:ALL) ALL/%sudo ALL=(ALL:ALL) ALL/g' /etc/sudoers  # funny glitch, at least in my current test .... line with sudo appears to contain a tab but only visible if copy pasted to a line with characters before target palce of paste, not if pasted in first place of a line. editor mousepad.
+
+				cat /etc/sudoers
 			NOTICE_END
 			}
 			EMERGE_USERAPP_DEF
@@ -21,8 +25,8 @@
 			SYSLOGNG_SYSLOG_OPENRC="syslog-ng"
 			SYSLOGNG_SYSLOG_EMERGE="app-admin/syslog-ng "
 			# SYSKLOGD
-			SYSKLOGD_SYSLOG_SYSTEMD=rsyslog
-			SYSKLOGD_SYSLOG_OPENRC=sysklogd
+			SYSKLOGD_SYSLOG_SYSTEMD="rsyslog"
+			SYSKLOGD_SYSLOG_OPENRC="sysklogd"
 			SYSKLOGD_SYSLOG_EMERGE="app-admin/sysklogd "
 			SETVAR_SYSLOG () {
 			NOTICE_START
