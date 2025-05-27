@@ -8,7 +8,7 @@
 			CHOST="$PRESET_CHOST_ARCH-$PRESET_CHOST_VENDOR-$PRESET_CHOST_OS-$PRESET_CHOST_LIBC"
 			
 			# (!NOTE) (!todo - not sure if this is "perfect" yet.. anyways, "it works". 
-			CPU_FLAGS_X86="$PRESET_CPU_FLAGS_X86" # workaround to insert sse3 and sse4a - intentianal, no idea if requ - testing…
+			CPU_FLAGS_X86="$PRESET_CPU_FLAGS_X86" # workaround to insert sse3 and sse4a - intentional, no idea if requ - testing ... .
 			# CPU_FLAGS_X86="$(lscpu | grep Flags: | sed -e 's/Flags:               //g')" # lscpu hides sse3 and sse4a which are shown in cpuid.
 			COMMON_FLAGS="$PRESET_COMMON_FLAGS"
 			CONFIG_PROTECT="$PRESET_CONFIG_PROTECT"
@@ -22,10 +22,10 @@
 			EMERGE_DEFAULT_OPTS="$PRESET_EMERGE_DEFAULT_OPTS"
 			INPUT_DEVICES="$PRESET_INPUTEVICE"
 			VIDEO_CARDS="$PRESET_VIDEODRIVER"
-			# just a placeholder as sane setup sample on znver1 # VIDEO_CARDS="fbdev modesetting v4l vesa nvidia"
+			# Just a placeholder as sane setup sample on znver1 # VIDEO_CARDS="fbdev modesetting v4l vesa nvidia"
 			ACCEPT_LICENSE="$PRESET_LICENCES"
 			FEATURES="$PRESET_FEATURES"
-			# just a placeholder as sane setup sample on znver1 # FEATURES="candy binpkg-logs cgroup config-protect-if-modified nostrip distlocks downgrade-backup ebuild-locks fakeroot fixlafiles merge-sync noauto parallel-fetch parallel-install preserve-libs protect-owned sandbox sfperms suidctl split-elog split-log splitdebug test-fail-continue unknown-features-filter unknown-features-warn unmerge-backup unmerge-orphans userfetch userpriv usersandbox usersync xattr ipc-sandbox lmirror multilib-strict buildpkg  compress-index compressdebug" #collision-protect  compress-build-logs' #fail-clean # strict" # sign
+			# Just a placeholder as sane setup sample on znver1 # FEATURES="candy binpkg-logs cgroup config-protect-if-modified nostrip distlocks downgrade-backup ebuild-locks fakeroot fixlafiles merge-sync noauto parallel-fetch parallel-install preserve-libs protect-owned sandbox sfperms suidctl split-elog split-log splitdebug test-fail-continue unknown-features-filter unknown-features-warn unmerge-backup unmerge-orphans userfetch userpriv usersandbox usersync xattr ipc-sandbox lmirror multilib-strict buildpkg  compress-index compressdebug" #collision-protect  compress-build-logs' #fail-clean # strict" # sign
 			USE="PLACEHOLDER_USEFLAGS"
 			GENTOO_MIRRORS="$PRESET_GENTOMIRRORS"
 			PORTDIR="$PRESET_PORTDIR"
@@ -49,12 +49,21 @@
 
 			EOF
 			
-			if [ $SYSAPP_DMCRYPT = "YES" ]; then
+			#if [ $SYSAPP_DMCRYPT = "YES" ]; then
+			#	echo "SYSAPP_DMCRYPT=YES"
+			#	sed -ie "s/PLACEHOLDER_USEFLAGS/$PRESET_USEFLAG_CRYPTOPTANDCRYPTSETUP/g" /etc/portage/make.conf
+			#else
+			#	echo "SYSAPP_DMCRYPT=NO"
+			#	sed -ie "s/PLACEHOLDER_USEFLAGS/$PRESET_USEFLAG_LVMROOTNOCRYPOPT/g" /etc/portage/make.conf
+			#fi
+			if [ "$SYSAPP_DMCRYPT" = "YES" ]; then
 				echo "SYSAPP_DMCRYPT=YES"
-				sed -ie "s/PLACEHOLDER_USEFLAGS/$PRESET_USEFLAG_CRYPTOPTANDCRYPTSETUP/g" /etc/portage/make.conf
+				safe_use=$(printf '%s\n' "$PRESET_USEFLAG_CRYPTOPTANDCRYPTSETUP" | sed 's/[&|]/\\&/g')
+				sed -i -e "s|PLACEHOLDER_USEFLAGS|$safe_use|" /etc/portage/make.conf
 			else
 				echo "SYSAPP_DMCRYPT=NO"
-				sed -ie "s/PLACEHOLDER_USEFLAGS/$PRESET_USEFLAG_LVMROOTNOCRYPOPT/g" /etc/portage/make.conf
+				safe_use=$(printf '%s\n' "$PRESET_USEFLAG_LVMROOTNOCRYPOPT" | sed 's/[&|]/\\&/g')
+				sed -i -e "s|PLACEHOLDER_USEFLAGS|$safe_use|" /etc/portage/make.conf
 			fi
 		NOTICE_END
 		}

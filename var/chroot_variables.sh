@@ -20,6 +20,8 @@
 		LANG_SECOND_LOWER="de"  # used here in chroot_variables in PRESET_LOCALE_A= var
 		LANG_SECOND_UPPER="DE"  # used ex in gentoo_unattented-setup/src/CHROOT/SCREENDSP/WINDOWSYS.sh
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 		## MAKE.CONF PRESET as used in gentoo_unattented-setup/src/CHROOT/BASE/MAKECONF.sh
 		PRESET_CC="gcc"  # gcc (!default); the preset compiler
 		# https://wiki.gentoo.org/wiki/ACCEPT_KEYWORDS
@@ -33,11 +35,12 @@
  		# https://wiki.gentoo.org/wiki/CHOST https://wiki.gentoo.org/wiki/GCC_optimization
 		PRESET_CPU_FLAGS_X86="$(if [[ $(lscpu | grep Flags:) =~ "ssse3" ]]; then echo "$(lscpu | grep Flags: | sed -e 's/^\w*\ *//' | sed 's/: //g' ) sse3 sse4a "; fi)"  # 1/2 # workaround to insert sse3 and sse4a -
 		# 2/2 intentianal, no idea if requ - testing…
-		PRESET_MARCH="znver1" # "znver1"  # 1/2 default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2  # probably firefox build fail if on znver1 and march set to native, need to verify - busy
+		PRESET_MARCH="native"  # 1/2 default "native"; see "safe_cflags" & may dep kern settings; proc arch specific https://wiki.gentoo.org/wiki/Ryzen znver1 = Zen 1; znver2 = Zen2  # probably firefox build fail if on znver1 and march set to native, need to verify - busy
 		# 2/2 # https://wiki.gentoo.org/wiki/Safe_CFLAGS#Finding_the_CPU (!NOTE: fetch before PRESET_CFLAGS, see MAKEFILE)
 		# just a sample from sane setup znver1 PRESET_COMMON_FLAGS="-march=$PRESET_MARCH --param l1-cache-size=32 --param l1-cache-line-size=64 --param l2-cache-size=512 -mtune=$PRESET_MARCH -fPIC" #-fstack-protector -fstack-protector-all -D_FORTIFY_SOURCE=3 -fPIC"
 		PRESET_CONFIG_PROTECT="/etc /usr/share/gnupg/qualified.txt" # /usr/lib/plexmediaserver/Resources/comskip.ini"
-		PRESET_COMMON_FLAGS="-march=$PRESET_MARCH -mtune=$PRESET_MARCH -fPIC -O2 -pipe" #-fstack-protector -fstack-protector-all -D_FORTIFY_SOURCE=3 -fPIC"
+		#PRESET_COMMON_FLAGS="-march=$PRESET_MARCH -mtune=$PRESET_MARCH -fPIC -O2 -pipe" #-fstack-protector -fstack-protector-all -D_FORTIFY_SOURCE=3 -fPIC"
+		PRESET_COMMON_FLAGS="-march=$PRESET_MARCH -mtune=$PRESET_MARCH -fPIC -O2 -pipe -mfma -mavx2" #  -mfma -mavx2 for testing (opus?)
 		PRESET_CFLAGS="${PRESET_COMMON_FLAGS}"  # https://wiki.gentoo.org/wiki/Safe_CFLAGS
 		PRESET_CXXFLAGS="${PRESET_COMMON_FLAGS}"
 		PRESET_FCFLAGS="${PRESET_COMMON_FLAGS}"
@@ -58,13 +61,13 @@
 				hardened initramfs int64 lzma lzo lvm mount opengl pulseaudio jack policykit postproc secure-delete \
 				sqlite threads udev udisks unicode zip \
 				-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
-				-systemd -mssql -postgres -ppp -telnet"
+				-systemd -mssql -postgres -ppp -telnet" #-opus"
 		PRESET_USEFLAG_CRYPTOPTANDCRYPTSETUP="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
 				cpudetection cjk crypt cryptsetup cxx dbus elogind ffmpeg git gtk gtk3 gzip \
 				hardened initramfs int64 lzma lzo lvm mount opengl pulseaudio jack policykit postproc secure-delete \
 				sqlite threads udev udisks unicode zip \
 				-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
-				-systemd -mssql -postgres -ppp -telnet"
+				-systemd -mssql -postgres -ppp -telnet" #-opus"
 		# mount sandbox missing?
 		# noman, srsly?
 		# sandbox maybe?
@@ -72,7 +75,7 @@
 		# force-mirror libsrvg build err, looked like rust problem but wasnt.
 		# compress logs removed as it corrupted the archives for unknown reason
 		# collision-protect removed as linux-firmware failed emerging cpio it did emerge but still complained. joro pointed out " app-alternatives were recently introduced and migration won't work with collision-protect unless you manually unmerge the corresponding package in advance which may break your system"
-		PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip candy cgroup binpkg-logs \
+		PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip candy binpkg-logs \
 				downgrade-backup ebuild-locks fail-clean fixlafiles ipc-sandbox merge-sync \
 				network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox "
 
@@ -96,7 +99,7 @@
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		
 		# ESELECT PROFILE  # https://wiki.gentoo.org/wiki/Profile_(Portage)
-		ESELECT_PROFILE="3"  # used in run.sh and gentoo_unattented-setup/src/CHROOT/BASE/ESELECT_PROFILE.sh
+		ESELECT_PROFILE="41"  # used in run.sh and gentoo_unattented-setup/src/CHROOT/BASE/ESELECT_PROFILE.sh
 		# AS OF 17.09.2022 | AMD64/17.1 (stable)
 
 		# LOCALES
@@ -236,7 +239,7 @@
 		USEFLAGS_NETWORKMANAGER="dhcpcd -modemmanager -ppp"  # https://packages.gentoo.org/packages/net-misc/networkmanager https://wiki.gentoo.org/wiki/NetworkManager
 		
 		# BOOTLOADER
-		USEFLAGS_GRUB2="fonts"  # https://packages.gentoo.org/packages/sys-boot/grub https://wiki.gentoo.org/wiki/GRUB2
+		USEFLAGS_GRUB2="fonts " # device-mapper  # https://packages.gentoo.org/packages/sys-boot/grub https://wiki.gentoo.org/wiki/GRUB2
 		
 		# VIRTUALBOX
 		USEFLAGS_VIRTUALBOX_GUEST_ADDITIONS="X"  # https://packages.gentoo.org/packages/app-emulation/virtualbox-guest-additions

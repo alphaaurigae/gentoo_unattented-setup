@@ -21,26 +21,22 @@
 . src/CHROOT/DEBUG.sh
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+PRE_BANNER () {
+
+printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▖ ▗▄▄▖ ▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▄▄▖ ▗▄▄▄▖     ▗▄▄▖▗▖ ▗▖▗▄▄▖  ▗▄▖  ▗▄▖▗▄▄▄▖" "${RESET}"
+printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌       ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
+printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▛▀▘ ▐▛▀▚▖▐▛▀▀▘▐▛▀▘ ▐▛▀▜▌▐▛▀▚▖▐▛▀▀▘    ▐▌   ▐▛▀▜▌▐▛▀▚▖▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
+printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▙▄▄▖▐▌   ▐▌ ▐▌▐▌ ▐▌▐▙▄▄▖    ▝▚▄▄▖▐▌ ▐▌▐▌ ▐▌▝▚▄▞▘▝▚▄▞▘ █  " "${RESET}"
+
+}
+
 PRE_NOMENU () {  # PREPARE CHROOT ALL without menu
 NOTICE_START
 
 	PRE_RUNALL () {
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "PPPPPPPPPPPPPPPPP   RRRRRRRRRRRRRRRRR   EEEEEEEEEEEEEEEEEEEEEE" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "P::::::::::::::::P  R::::::::::::::::R  E::::::::::::::::::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "P::::::PPPPPP:::::P R::::::RRRRRR:::::R E::::::::::::::::::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "PP:::::P     P:::::PRR:::::R     R:::::REE::::::EEEEEEEEE::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::P     P:::::P  R::::R     R:::::R  E:::::E       EEEEEE" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::P     P:::::P  R::::R     R:::::R  E:::::E             " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::PPPPPP:::::P   R::::RRRRRR:::::R   E::::::EEEEEEEEEE   " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P:::::::::::::PP    R:::::::::::::RR    E:::::::::::::::E   " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::PPPPPPPPP      R::::RRRRRR:::::R   E:::::::::::::::E   " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::P              R::::R     R:::::R  E::::::EEEEEEEEEE   " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::P              R::::R     R:::::R  E:::::E             " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::P              R::::R     R:::::R  E:::::E       EEEEEE" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "PP::::::PP          RR:::::R     R:::::REE::::::EEEEEEEE:::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "P::::::::P          R::::::R     R:::::RE::::::::::::::::::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "P::::::::P          R::::::R     R:::::RE::::::::::::::::::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "PPPPPPPPPP          RRRRRRRR     RRRRRRREEEEEEEEEEEEEEEEEEEEEE" "${RESET}"
+		PRE_BANNER
+
 		INIT
 		PARTITIONING
 		CRYPTSETUP
@@ -57,23 +53,8 @@ PRE_MENU () {  # PREPARE CHROOT with menu
 NOTICE_START
 
 	PRE_CHOOSE() {
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "PPPPPPPPPPPPPPPPP   RRRRRRRRRRRRRRRRR   EEEEEEEEEEEEEEEEEEEEEE" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "P::::::::::::::::P  R::::::::::::::::R  E::::::::::::::::::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "P::::::PPPPPP:::::P R::::::RRRRRR:::::R E::::::::::::::::::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "PP:::::P     P:::::PRR:::::R     R:::::REE::::::EEEEEEEEE::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::P     P:::::P  R::::R     R:::::R  E:::::E       EEEEEE" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::P     P:::::P  R::::R     R:::::R  E:::::E             " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::PPPPPP:::::P   R::::RRRRRR:::::R   E::::::EEEEEEEEEE   " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P:::::::::::::PP    R:::::::::::::RR    E:::::::::::::::E   " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::PPPPPPPPP      R::::RRRRRR:::::R   E:::::::::::::::E   " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::P              R::::R     R:::::R  E::::::EEEEEEEEEE   " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::P              R::::R     R:::::R  E:::::E             " "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "  P::::P              R::::R     R:::::R  E:::::E       EEEEEE" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "PP::::::PP          RR:::::R     R:::::REE::::::EEEEEEEE:::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "P::::::::P          R::::::R     R:::::RE::::::::::::::::::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "P::::::::P          R::::::R     R:::::RE::::::::::::::::::::E" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "PPPPPPPPPP          RRRRRRRR     RRRRRRREEEEEEEEEEEEEEEEEEEEEE" "${RESET}"
-		printf "%s%s%s\n" "${BOLD}${GREEN}" "PRE menu:" "${RESET}"
+		PRE_BANNER
+		printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
 		#printf "OPTION1 Menu:\n"
 		printf "1. INIT (src/PRE/INIT.sh)\n"
 		printf "2. PARTITIONING (src/PRE/INIT.sh)\n"
@@ -152,7 +133,7 @@ NOTICE_START
 		#!/bin/bash
 
 		# https://github.com/alphaaurigae/gentoo_unattented-setup
-		### +++ lines for quick scrolling section indication
+		### +++ lines for quick scrolling section indication.
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		. $CHROOTX/gentoo_unattented-setup/func/func_main.sh
 		. $CHROOTX/gentoo_unattented-setup/func/func_chroot_main.sh
@@ -167,29 +148,26 @@ NOTICE_START
 
 			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && echo $f; done
 
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "######     #     #####  ####### " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "#     #   # #   #     # #       " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "#     #  #   #  #       #       " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "######  #     #  #####  #####   " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "#     # #######       # #       " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "#     # #     # #     # #       " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "######  #     #  #####  ####### " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot base:" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▖  ▗▄▖  ▗▄▄▖▗▄▄▄▖" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▛▀▚▖▐▛▀▜▌ ▝▀▚▖▐▛▀▀▘" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▙▄▞▘▐▌ ▐▌▗▄▄▞▘▐▙▄▄▖" "${RESET}"
 
-			SWAPFILE  # run SWAPFILE
-			MAKECONF  # run MAKECONF
-			CONF_LOCALES  # run CONF_LOCALES
-			PORTAGE  # run PORTAGE
-			##EMERGE_SYNC  # run EMERGE_SYNC
-			ESELECT_PROFILE  # run ESELECT_PROFILE
-			##SETFLAGS1  # run SETFLAGS1 #  PLACEHOLDER
-			EMERGE_ATWORLD_A  # run EMERGE_ATWORLD_A
-			##MISC1_CHROOT  # run MISC1_CHROOT  # PLACEHOLDER
-			##RELOADING_SYS  # run RELOADING_SYS  # PLACEHOLDER
-			SYSTEMTIME  # run SYSTEMTIME
-			KEYMAP_CONSOLEFONT  # run KEYMAP_CONSOLEFONT
-			FIRMWARE  # run FIRMWARE
-			CP_BASHRC  # run CP_BASHRC
+
+			SWAPFILE  # src/CHROOT/BASE/SWAPFILE.sh
+			MAKECONF  # src/CHROOT/BASE/MAKECONF.sh
+			CONF_LOCALES  # src/CHROOT/BASE/CONF_LOCALES.sh
+			PORTAGE  # src/CHROOT/BASE/PORTAGE.sh
+			##EMERGE_SYNC  # src/CHROOT/BASE/EMERGE_SYNC.sh
+			ESELECT_PROFILE  # src/CHROOT/BASE/ESELECT_PROFILE.sh
+			##SETFLAGS1  # src/CHROOT/BASE/SETFLAGS1.sh #  PLACEHOLDER
+			EMERGE_ATWORLD_A  #
+			##MISC1_CHROOT  # src/CHROOT/BASE/MISC1_CHROOT.sh  # PLACEHOLDER
+			##RELOADING_SYS  # src/CHROOT/BASE/RELOADING_SYS.sh  # PLACEHOLDER
+			SYSTEMTIME  # src/CHROOT/BASE/SYSTEMTIME.sh
+			KEYMAP_CONSOLEFONT  # src/CHROOT/BASE/KEYMAP_CONSOLEFONT.sh
+			FIRMWARE  # src/CHROOT/BASE/FIRMWARE.sh
+			CP_BASHRC  # src/CHROOT/BASE/CP_BASHRC.sh
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		CORE () {
@@ -197,31 +175,26 @@ NOTICE_START
 
 			for f in gentoo_unattented-setup/src/CHROOT/CORE/*; do . $f && echo $f; done
 
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "  .d8888b.  .d88888b. 8888888b. 8888888888 " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " d88P  Y88bd88P* *Y88b888   Y88b888        " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " 888    888888     888888    888888        " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " 888       888     888888   d88P8888888    " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " 888       888     8888888888P* 888        " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " 888    888888     888888 T88b  888        " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " Y88b  d88PY88b. .d88P888  T88b 888        " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "  *Y8888P*  *Y88888P* 888   T88b8888888888 " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot core:" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖ ▗▄▖ ▗▄▄▖ ▗▄▄▄▖" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌   " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▛▀▚▖▐▛▀▀▘" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▝▚▄▞▘▐▌ ▐▌▐▙▄▄▖" "${RESET}"
 
 
-			SYSCONFIG_CORE  # run SYSCONFIG_CORE
-			SYSFS  # run SYSFS
-			APPADMIN  # run APPADMIN
-			SYSAPP  # run SYSAPP
-			APP  # run APP
-			SYSPROCESS  # run SYSPROCESS
-			KERNEL  # run KERNEL
-			INITRAM  # run INITRAM
-			SYSBOOT  # run SYSBOOT
-			## MODPROBE_CHROOT  # run MODPROBE_CHROOT
-			APPEMULATION  # run APPEMULATION
-			AUDIO  # run AUDIO
-			## GPU  # run GPU
-			NETWORK  # run NETWORK
+			SYSCONFIG_CORE  # src/CHROOT/CORE/SYSCONFIG_CORE.sh
+			SYSFS  # src/CHROOT/CORE/SYSFS.sh
+			APPADMIN  # src/CHROOT/CORE/APPADMIN.sh
+			SYSAPP  # src/CHROOT/CORE/SYSAPP.sh
+			APP  # src/CHROOT/CORE/APP.sh
+			SYSPROCESS  # src/CHROOT/CORE/SYSPROCESS.sh
+			KERNEL  # src/CHROOT/CORE/KERNEL.sh
+			INITRAM  # src/CHROOT/CORE/INITRAM.sh
+			SYSBOOT  # src/CHROOT/CORE/SYSBOOT.sh
+			## MODPROBE_CHROOT  # src/CHROOT/CORE/MODPROBE_CHROOT.sh
+			APPEMULATION  # src/CHROOT/CORE/APPEMULATION.sh
+			AUDIO  # src/CHROOT/CORE/AUDIO.sh
+			## GPU  # src/CHROOT/CORE/GPU.sh
+			NETWORK  # src/CHROOT/CORE/NETWORK.sh
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -230,18 +203,14 @@ NOTICE_START
 
 			for f in gentoo_unattented-setup/src/CHROOT/SCREENDSP/*; do . $f && echo $f; done
 
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "  ********   ******  *******   ******** ******** ****     ** *******    ******** ******* " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " **//////   **////**/**////** /**///// /**///// /**/**   /**/**////**  **////// /**////**" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "/**        **    // /**   /** /**      /**      /**//**  /**/**    /**/**       /**   /**" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "/*********/**       /*******  /******* /******* /** //** /**/**    /**/*********/******* " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "////////**/**       /**///**  /**////  /**////  /**  //**/**/**    /**////////**/**////  " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "       /**//**    **/**  //** /**      /**      /**   //****/**    **        /**/**      " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " ********  //****** /**   //**/********/********/**    //***/*******   ******** /**      " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "////////    //////  //     // //////// //////// //      /// ///////   ////////  //       " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖ ▗▄▄▖▗▄▄▖ ▗▄▄▄▖▗▄▄▄▖▗▖  ▗▖▗▄▄▄  ▗▄▄▖▗▄▄▖ " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌   ▐▌ ▐▌▐▌   ▐▌   ▐▛▚▖▐▌▐▌  █▐▌   ▐▌ ▐▌" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▝▀▚▖▐▌   ▐▛▀▚▖▐▛▀▀▘▐▛▀▀▘▐▌ ▝▜▌▐▌  █ ▝▀▚▖▐▛▀▘ " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▞▘▝▚▄▄▖▐▌ ▐▌▐▙▄▄▖▐▙▄▄▖▐▌  ▐▌▐▙▄▄▀▗▄▄▞▘▐▌   " "${RESET}"
 
 
-			WINDOWSYS
-			DESKTOP_ENV
+			WINDOWSYS # src/CHROOT/SCREENDSP/WINDOWSYS.sh
+			DESKTOP_ENV # src/CHROOT/SCREENDSP/DESKTOP_ENV.sh
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -250,16 +219,14 @@ NOTICE_START
 
 			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && echo $f; done
 
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "     :::    ::: :::::::: :::::::::::::::::::     :::    ::::::::: ::::::::: " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "    :+:    :+::+:    :+::+:       :+:    :+:  :+: :+:  :+:    :+::+:    :+: " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "   +:+    +:++:+       +:+       +:+    +:+ +:+   +:+ +:+    +:++:+    +:+  " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "  +#+    +:++#++:++#+++#++:++#  +#++:++#: +#++:++#++:+#++:++#+ +#++:++#+    " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " +#+    +#+       +#++#+       +#+    +#++#+     +#++#+       +#+           " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "#+#    #+##+#    #+##+#       #+#    #+##+#     #+##+#       #+#            " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "########  ######## #############    ######     ######       ###             " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▄▄▖ ▗▄▄▖ " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖▐▛▀▜▌▐▛▀▘ ▐▛▀▘ " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
 
-			# GIT
-			WEBBROWSER
+
+			# GIT # src/CHROOT/USERAPP/USERAPP_GIT.sh
+			WEBBROWSER # src/CHROOT/USERAPP/WEBBROWSER.sh
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -268,14 +235,13 @@ NOTICE_START
 
 			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && echo $f; done
 
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|    _|_|_|  _|_|_|_|  _|_|_|      _|_|_|  " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|  _|        _|        _|    _|  _|        " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|    _|_|    _|_|_|    _|_|_|      _|_|    " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|        _|  _|        _|    _|        _|  " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "  _|_|    _|_|_|    _|_|_|_|  _|    _|  _|_|_|    " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▄▖" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌   " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖ ▝▀▚▖" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▗▄▄▞▘" "${RESET}"
 
-			ROOT
-			ADMIN
+			ROOT # src/CHROOT/USERS/ROOT.sh
+			ADMIN # src/CHROOT/USERS/ADMIN.sh
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -296,18 +262,17 @@ NOTICE_START
 
 
 
-			TIDY_STAGE3
+			TIDY_STAGE3 # src/CHROOT/FINISH/TIDY_STAGE3.sh
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		## (RUN ENTIRE SCRIPT) (!changeme)
 		CHROOT_NOMENU () {
 
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " CCCCC  HH   HH RRRRRR   OOOOO   OOOOO  TTTTTTT " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "CC    C HH   HH RR   RR OO   OO OO   OO   TTT   " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "CC      HHHHHHH RRRRRR  OO   OO OO   OO   TTT   " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "CC    C HH   HH RR  RR  OO   OO OO   OO   TTT   " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " CCCCC  HH   HH RR   RR  OOOO0   OOOO0    TTT   " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖▗▖ ▗▖▗▄▄▖  ▗▄▖  ▗▄▖▗▄▄▄▖" "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▛▀▜▌▐▛▀▚▖▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
+			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▐▌ ▐▌▐▌ ▐▌▝▚▄▞▘▝▚▄▞▘ █  " "${RESET}"
 
 			BASE  # src/CHROOT/BASE/*  # as defined in var/
 			CORE  # src/CHROOT/CORE/*  # as defined in var/
@@ -372,39 +337,37 @@ NOTICE_START
 
 			CHROOT_BASE_MENU () {
 				CHROOT_BASE_CHOOSE() {
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "######     #     #####  ####### " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "#     #   # #   #     # #       " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "#     #  #   #  #       #       " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "######  #     #  #####  #####   " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "#     # #######       # #       " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "#     # #     # #     # #       " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "######  #     #  #####  ####### " "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▖  ▗▄▖  ▗▄▄▖▗▄▄▄▖" "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▛▀▚▖▐▛▀▜▌ ▝▀▚▖▐▛▀▀▘" "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▙▄▞▘▐▌ ▐▌▗▄▄▞▘▐▙▄▄▖" "${RESET}"
 
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot base:" "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
 
-					printf "1. step 1. SWAPFILE\n"
-					printf "2. step 2. MAKECONF\n"
-					printf "3. step 3. CONF_LOCALES\n"
-					printf "4. step 4. PORTAGE\n"
+
+					printf "[1] --> SWAPFILE\n"
+					printf "[2] --> MAKECONF\n"
+					printf "[3] --> CONF_LOCALES\n"
+					printf "[4] --> PORTAGE\n"
 					## PLACEHOLDER for later use (maybe) EMERGE_SYNC  # run EMERGE_SYNC
-					printf "5. step 5. ESELECT_PROFILE\n"
-					printf "6. (just a placeholder NOT REQUIRED) step 6. SETFLAGS1\n"
-					printf "7. step 7. EMERGE_ATWORLD_A\n" # temporary added rust emere as bugfix for srvg lib error as suggested by sam_ #gentoo librachat irc - see https://bugs.gentoo.org/907492
-					## PLACEHOLDER for later use (maybe) #MISC1_CHROOT  # run MISC1_CHROOT  # PLACEHOLDER
-					## PLACEHOLDER for later use (maybe) RELOADING_SYS  # run RELOADING_SYS  # PLACEHOLDER
-					printf "8. step 8. SYSTEMTIME\n"
-					printf "9. step 9. KEYMAP_CONSOLEFONT\n"
-					printf "10. step 10. FIRMWARE\n"
-					printf "11. step 11. CP_BASHRC\n"
+					printf "[5] --> ESELECT_PROFILE\n"
+					printf "[6] (just a placeholder NOT REQUIRED) --> SETFLAGS1\n"
+					printf "[7] --> EMERGE_ATWORLD_A\n" # temporary added rust emere as bugfix for srvg lib error as suggested by sam_ #gentoo librachat irc - see https://bugs.gentoo.org/907492
+					## PLACEHOLDER for later integration (maybe) #MISC1_CHROOT  # run MISC1_CHROOT  # PLACEHOLDER
+					## PLACEHOLDER for later integration (maybe) RELOADING_SYS  # run RELOADING_SYS  # PLACEHOLDER
+					printf "[8] --> SYSTEMTIME\n"
+					printf "[9] --> KEYMAP_CONSOLEFONT\n"
+					printf "[10] --> FIRMWARE\n"
+					printf "[11] --> CP_BASHRC\n"
 					printf "\n"
 					printf "run multi step\n"
-					printf "21. run steps 1.; 2. & 3. create swap for setup; copy make.conf locales to run portage in next step - prints emerge at world which is neede dfor make.conf\n"
-					printf "22. run steps 2. & 3. to run portage in next step - prints emerge at world which is neede dfor make.conf\n"
-					printf "23. run steps 4. 5, 6. 7.. eselect profile and 6. emergeatworld \n"
-					printf "24. run steps 8. & 9. .. setup system time and keymap \n"
-					printf "25. run steps 10. & 11. .. setup firmaware and copy bashrc\n"
-					printf "26. run steps 2-10\n"
-					printf "27. run steps 1-10\n"
+					printf "[21] --> [1]-[3] create swap for setup; copy make.conf locales to run portage in next step - prints emerge at world which is neede dfor make.conf\n"
+					printf "[22] --> [2] & [3] to run portage in next step - prints emerge at world which is neede dfor make.conf\n"
+					printf "[23] --> [4]-[7].. eselect profile and 6. emergeatworld \n"
+					printf "[24] --> [8] & [9] .. setup system time and keymap \n"
+					printf "[25] --> [10] & [11] .. setup firmaware and copy bashrc\n"
+					printf "[26] --> [2]-[10]\n"
+					printf "[27] --> [1]-[11]\n"
 
 					printf  "0. Exit\n"
 
@@ -413,85 +376,85 @@ NOTICE_START
 
 					case $choice in
 					1)
-						SWAPFILE  # step 1.
+						SWAPFILE  # [1] # src/CHROOT/BASE/SWAPFILE.sh
 						;;
 					2)
-						MAKECONF  # step 2.
+						MAKECONF  # [2] # src/CHROOT/BASE/MAKECONF.sh
 						;;
 					3)
-						CONF_LOCALES  # step 3.
+						CONF_LOCALES  # [3] # src/CHROOT/BASE/CONF_LOCALES.sh
 						;;
 					4)
-						PORTAGE  # step 4.
+						PORTAGE  # [4] # src/CHROOT/BASE/PORTAGE.sh
 						;;
 					5)
-						ESELECT_PROFILE  # step 5.
+						ESELECT_PROFILE  # [5] # src/CHROOT/BASE/ESELECT_PROFILE.sh
 						;;
 					6)
-						SETFLAGS1  # step 6.
+						SETFLAGS1  # [6] # src/CHROOT/BASE/SETFLAGS1.sh #  PLACEHOLDER
 						;;
 					7)
-						EMERGE_ATWORLD_A  # step 6.
+						EMERGE_ATWORLD_A  # [7]
 						;;
 					8)
-						SYSTEMTIME  # step 7.
+						SYSTEMTIME  # [8] # src/CHROOT/BASE/SYSTEMTIME.sh
 						;;
 					9)
-						KEYMAP_CONSOLEFONT  # step 8.
+						KEYMAP_CONSOLEFONT  # [9] # src/CHROOT/BASE/KEYMAP_CONSOLEFONT.sh
 						;;
 					10)
-						FIRMWARE  # step 9.
+						FIRMWARE  # [10] # src/CHROOT/BASE/FIRMWARE.sh
 						;;
 					11)
-						CP_BASHRC  # step 10.
+						CP_BASHRC  # [11] # src/CHROOT/BASE/CP_BASHRC.sh
 						;;
 					21)
-						SWAPFILE  # step 1.
-						MAKECONF  # step 2.
-						CONF_LOCALES  # step 3.
+						SWAPFILE  # [1]
+						MAKECONF  # [2]
+						CONF_LOCALES  # [3]
 						;;
 					22)
-						MAKECONF  # step 2.
-						CONF_LOCALES  # step 3.
+						MAKECONF  # [2]
+						CONF_LOCALES  # [3]
 						;;
 					23)
-						PORTAGE  # step 4.
-						ESELECT_PROFILE  # step 5.
-						SETFLAGS1  # step 6.
-						EMERGE_ATWORLD_A  # step 7.
+						PORTAGE  # [4]
+						ESELECT_PROFILE  # [5]
+						SETFLAGS1  # [6]
+						EMERGE_ATWORLD_A  # [7]
 						;;
 					24)
-						SYSTEMTIME  # step 8.
-						KEYMAP_CONSOLEFONT  # step 9.
+						SYSTEMTIME  # [8]
+						KEYMAP_CONSOLEFONT  # [9]
 						;;
 					25)
-						FIRMWARE  # step 10.
-						CP_BASHRC  # step 11.
+						FIRMWARE  # [10]
+						CP_BASHRC  # [11]
 						;;
 					26)
-						MAKECONF  # step 2.
-						CONF_LOCALES  # step 3.
-						PORTAGE  # step 4.
-						ESELECT_PROFILE  # step 5
-						SETFLAGS1  # step 6.
-						EMERGE_ATWORLD_A  # step 7.
-						SYSTEMTIME  # step 8.
-						KEYMAP_CONSOLEFONT  # step 9.
-						FIRMWARE  # step 10.
-						CP_BASHRC  # step 11.
+						MAKECONF  # [2]
+						CONF_LOCALES  # [3]
+						PORTAGE  # [4]
+						ESELECT_PROFILE  # [5]
+						SETFLAGS1  # [6]
+						EMERGE_ATWORLD_A  # [7]
+						SYSTEMTIME  # [8]
+						KEYMAP_CONSOLEFONT  # [9]
+						FIRMWARE  # [10]
+						CP_BASHRC  # [11]
 						;;
 					27)
-						SWAPFILE  # step 1.
-						MAKECONF  # step 2.
-						CONF_LOCALES  # step 3.
-						PORTAGE  # step 4.
-						ESELECT_PROFILE  # step 5.
-						SETFLAGS1  # step 6.
-						EMERGE_ATWORLD_A  # step 7.
-						SYSTEMTIME  # step 8.
-						KEYMAP_CONSOLEFONT  # step 9.
-						FIRMWARE  # step 10.
-						CP_BASHRC  # step 11.
+						SWAPFILE  # [1]
+						MAKECONF  # [2]
+						CONF_LOCALES  # [3]
+						PORTAGE  # [4]
+						ESELECT_PROFILE  # [5]
+						SETFLAGS1  # [6]
+						EMERGE_ATWORLD_A  # [7]
+						SYSTEMTIME  # [8]
+						KEYMAP_CONSOLEFONT  # [9]
+						FIRMWARE  # [10]
+						CP_BASHRC  # [11]
 						;;
 					0)
 						printf  "Returning to Main Menu...\n"
@@ -516,154 +479,151 @@ NOTICE_START
 
 			CHROOT_CORE_MENU () {
 				CHROOT_CORE_CHOOSE() {
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "  .d8888b.  .d88888b. 8888888b. 8888888888 " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" " d88P  Y88bd88P* *Y88b888   Y88b888        " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" " 888    888888     888888    888888        " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" " 888       888     888888   d88P8888888    " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" " 888       888     8888888888P* 888        " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" " 888    888888     888888 T88b  888        " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" " Y88b  d88PY88b. .d88P888  T88b 888        " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "  *Y8888P*  *Y88888P* 888   T88b8888888888 " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot core:" "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖ ▗▄▖ ▗▄▄▖ ▗▄▄▄▖" "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌   " "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▛▀▚▖▐▛▀▀▘" "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▝▚▄▞▘▐▌ ▐▌▐▙▄▄▖" "${RESET}"
 
-					printf  "1. step 1. SYSCONFIG_CORE\n"
-					printf  "2. step 2. SYSFS\n"
-					printf  "3. step 3. APPADMIN\n"
-					printf  "4. step 4. SYSAPP\n"
-					printf  "5. step 5. APP\n"
-					printf  "6. step 6. SYSPROCESS\n"
-					printf  "7. step 7. KERNEL\n"
-					printf  "8. step 8. INITRAM\n"
-					printf  "9. step 9. SYSBOOT\n"
-					# printf "10. step 10. MODPROBE_CHROOT\n"
-					printf "11. step 11. APPEMULATION\n"
-					printf "12. step 12. AUDIO\n"
-					# printf "13. step 13. GPU\n"
-					printf "14. step 14. NETWORK\n"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
+
+					printf  "[1] SYSCONFIG_CORE\n"
+					printf  "[2] SYSFS\n"
+					printf  "[3] APPADMIN\n"
+					printf  "[4] SYSAPP\n"
+					printf  "[5] APP\n"
+					printf  "[6] SYSPROCESS\n"
+					printf  "[7] KERNEL\n"
+					printf  "[8] INITRAM\n"
+					printf  "[9] SYSBOOT\n"
+					# printf "[10] MODPROBE_CHROOT\n"
+					printf "[11] APPEMULATION\n"
+					printf "[12] AUDIO\n"
+					# printf "[13] GPU\n"
+					printf "[14] NETWORK\n"
 					printf "\n"
 					printf "\e[1m run multi step\e[0m\n"
-					printf "21. steps 1. 2. 3. \n"
-					printf "22. steps 2. 3. \n"
-					printf "23. steps 4. 5. 6.\n"
-					printf "24. steps 7. 8. \n"
-					printf "25. steps 9-11 *modprobe not necessary here - skip 10* \n"
-					printf "26. steps 12-14 *gpu driver deaktivated - skip 13.* \n"
-					printf "27. steps 1-5\n"
-					printf "28. steps 6-10 \n"
-					printf "29. steps 11-14 *gpu driver deaktivated - skip 13.* \n"
-					printf "30. ALL ... steps 1-14 *modprobe not nessecary here - skip 10., gpu driver deactivated - skip 13.* \n"
+					printf "[21] --> [1]-[3] \n"
+					printf "[22] --> [2] & [3] \n"
+					printf "[23] --> [4]-[6]\n"
+					printf "[24] --> [7] & [8] \n"
+					printf "[25] --> [9]-[11] *modprobe not necessary here - skip [10]* \n"
+					printf "[26] --> [12]-[14] *gpu driver deaktivated - skip [13]* \n"
+					printf "[27] --> [1]-[5]\n"
+					printf "[28] --> [6]-[10] \n"
+					printf "[29] --> [11]-[14] *gpu driver deaktivated - skip [13]* \n"
+					printf "[30] ALL ... steps [1]-[14] *modprobe not nessecary here - skip [10], gpu driver deactivated - skip [13]* \n"
 
-					printf  "0. Exit\n"
+					printf  "[0] Exit\n"
 
 					read -p "Enter your choice: " choice
 					printf "\n"
 
 					case $choice in
 					1)
-						SYSCONFIG_CORE  # step 1.
+						SYSCONFIG_CORE  # [1] # src/CHROOT/CORE/SYSCONFIG_CORE.sh
 						;;
 					2)
-						SYSFS  # step 2.
+						SYSFS  # [2] # src/CHROOT/CORE/SYSFS.sh
 						;;
 					3)
-						APPADMIN  # step 3.
+						APPADMIN  # [3] # src/CHROOT/CORE/APPADMIN.sh
 						;;
 					4)
-						SYSAPP  # step 4.
+						SYSAPP  # [4] # src/CHROOT/CORE/SYSAPP.sh
 						;;
 					5)
-						APP  # step 5.
+						APP  # [5] # src/CHROOT/CORE/APP.sh
 						;;
 					6)
-						SYSPROCESS  # step 6.
+						SYSPROCESS  # [6] # src/CHROOT/CORE/SYSPROCESS.sh
 						;;
 					7)
-						KERNEL  # step 7.
+						KERNEL  # [7] # src/CHROOT/CORE/KERNEL.sh
 						;;
 					8)
-						INITRAM  # step 8.
+						INITRAM  # [8] # src/CHROOT/CORE/INITRAM.sh
 						;;
 					9)
-						SYSBOOT  # step 9.
+						SYSBOOT  # [9] # src/CHROOT/CORE/SYSBOOT.sh
 						;;
 					10)
-						MODPROBE_CHROOT  # step 10.
+						MODPROBE_CHROOT  # [10] # src/CHROOT/CORE/MODPROBE_CHROOT.sh
 						;;
 					11)
-						APPEMULATION  # step 11.
+						APPEMULATION  # [11] # src/CHROOT/CORE/APPEMULATION.sh
 						;;
 					12)
-						AUDIO  # step 12.
+						AUDIO  # [12] # src/CHROOT/CORE/AUDIO.sh
 						;;
 					13)
-						GPU  # step 13.
+						GPU  # [13] # src/CHROOT/CORE/GPU.sh
 						;;
 					14)
-						NETWORK  # step 10.
+						NETWORK  # [10] # src/CHROOT/CORE/NETWORK.sh
 						;;
 					21)
-						SYSCONFIG_CORE  # step 1.
-						SYSFS  # step 2.
-						APPADMIN  # step 3.
+						SYSCONFIG_CORE  # [1]
+						SYSFS  # [2]
+						APPADMIN  # [3]
 						;;
 					22)
-						SYSFS  # step 2.
-						APPADMIN  # step 3.
+						SYSFS  # [2]
+						APPADMIN  # [3]
 						;;
 					23)
-						SYSAPP  # step 4.
-						APP  # step 5.
-						SYSPROCESS  # step 6.
+						SYSAPP  # [4]
+						APP  # [5]
+						SYSPROCESS  # [6]
 						;;
 					24)
-						KERNEL  # step 7.
-						INITRAM  # step 8.
+						KERNEL  # [7]
+						INITRAM  # [8]
 						;;
 					25)
-						SYSBOOT  # step 9.
-						#MODPROBE_CHROOT  # step 10.
-						APPEMULATION  # step. 11
+						SYSBOOT  # step 9]
+						#MODPROBE_CHROOT  # [10]
+						APPEMULATION  # step. [11]
 						;;
 					26)
-						AUDIO  # step 12.
-						#GPU  # step 13.
-						NETWORK  # step. 14.
+						AUDIO  # [12]
+						#GPU  # [13]
+						NETWORK  # step. [14]
 						;;
 					27)
-						SYSCONFIG_CORE # step 1.
-						SYSFS  # step 2.
-						APPADMIN  # step 3.
-						SYSAPP  # step 4.
-						APP  # step 5
+						SYSCONFIG_CORE # [1]
+						SYSFS  # [2]
+						APPADMIN  # [3]
+						SYSAPP  # [4]
+						APP  # [5]
 						;;
 					28)
-						SYSPROCESS  # step 6.
-						KERNEL  # step 7.
-						INITRAM  # step 8.
-						SYSBOOT  # step 9.
-						# MODPROBE_CHROOT  # step 10.
+						SYSPROCESS  # [6]
+						KERNEL  # [7]
+						INITRAM  # [8]
+						SYSBOOT  # [9]
+						# MODPROBE_CHROOT  # [10]
 						;;
 					29)
-						APPEMULATION  # step 11.
-						AUDIO  # step 12.
-						# GPU  # step 13.
-						NETWORK  # step 14.
+						APPEMULATION  # [11]
+						AUDIO  # [12]
+						# GPU  # [13]
+						NETWORK  # [14]
 						;;
 					30)
-						SYSCONFIG_CORE # step 1.
-						SYSFS  # step 2.
-						APPADMIN  # step 3.
-						SYSAPP  # step 4.
-						APP  # step 5
-						SYSPROCESS  # step 6.
-						KERNEL  # step 7.
-						INITRAM  # step 8.
-						SYSBOOT  # step 9.
-						# MODPROBE_CHROOT  # step 10.
-						APPEMULATION  # step 11.
-						AUDIO  # step 12.
-						# GPU  # step 13.
-						NETWORK  # step 14.
+						SYSCONFIG_CORE # [1]
+						SYSFS  # [2]
+						APPADMIN  # [3]
+						SYSAPP  # [4]
+						APP  # [5]
+						SYSPROCESS  # [6]
+						KERNEL  # [7]
+						INITRAM  # [8]
+						SYSBOOT  # [9]
+						# MODPROBE_CHROOT  # [10]
+						APPEMULATION  # [11]
+						AUDIO  # [12]
+						# GPU  # [13]
+						NETWORK  # [14]
 						;;
 					0)
 						printf  "Returning to Main Menu...\n"
@@ -689,24 +649,19 @@ NOTICE_START
 
 			CHROOT_SCREENDSP_MENU () {
 				CHROOT_SCREENDSP_CHOOSE() {
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "  ********   ******  *******   ******** ******** ****     ** *******    ******** ******* " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" " **//////   **////**/**////** /**///// /**///// /**/**   /**/**////**  **////// /**////**" "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "/**        **    // /**   /** /**      /**      /**//**  /**/**    /**/**       /**   /**" "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "/*********/**       /*******  /******* /******* /** //** /**/**    /**/*********/******* " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "////////**/**       /**///**  /**////  /**////  /**  //**/**/**    /**////////**/**////  " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "       /**//**    **/**  //** /**      /**      /**   //****/**    **        /**/**      " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" " ********  //****** /**   //**/********/********/**    //***/*******   ******** /**      " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "////////    //////  //     // //////// //////// //      /// ///////   ////////  //       " "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖ ▗▄▄▖▗▄▄▖ ▗▄▄▄▖▗▄▄▄▖▗▖  ▗▖▗▄▄▄  ▗▄▄▖▗▄▄▖ " "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌   ▐▌ ▐▌▐▌   ▐▌   ▐▛▚▖▐▌▐▌  █▐▌   ▐▌ ▐▌" "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" " ▝▀▚▖▐▌   ▐▛▀▚▖▐▛▀▀▘▐▛▀▀▘▐▌ ▝▜▌▐▌  █ ▝▀▚▖▐▛▀▘ " "${RESET}"
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▞▘▝▚▄▄▖▐▌ ▐▌▐▙▄▄▖▐▙▄▄▖▐▌  ▐▌▐▙▄▄▀▗▄▄▞▘▐▌   " "${RESET}"
 
+					printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
 
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot screen and display" "${RESET}"
-
-					printf  "1. step 1. WINDOWSYS\n"
-					printf  "2. step 2. DESKTOP_ENV\n"
+					printf  "[1] --> WINDOWSYS\n"
+					printf  "[2] --> DESKTOP_ENV\n"
 
 					printf "\n"
 					printf "run multi step\n"
-					printf "21. run steps 1 && 2\n"
+					printf "[21] run steps [1] && [2]\n"
 
 					printf  "0. Exit\n"
 
@@ -715,14 +670,14 @@ NOTICE_START
 
 					case $choice in
 					1)
-						WINDOWSYS  # step 1.
+						WINDOWSYS  # [1] # src/CHROOT/SCREENDSP/WINDOWSYS.sh
 						;;
 					2)
-						DESKTOP_ENV  # step 2.
+						DESKTOP_ENV  # [2] # src/CHROOT/SCREENDSP/DESKTOP_ENV.sh
 						;;
 					21)
-						WINDOWSYS  # step 1.
-						DESKTOP_ENV  # step 2.
+						WINDOWSYS  # [1]
+						DESKTOP_ENV  # [2]
 						;;
 
 					0)
@@ -747,16 +702,14 @@ NOTICE_START
 		NOTICE_START
 			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && echo $f; done
 
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "     :::    ::: :::::::: :::::::::::::::::::     :::    ::::::::: ::::::::: " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "    :+:    :+::+:    :+::+:       :+:    :+:  :+: :+:  :+:    :+::+:    :+: " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "   +:+    +:++:+       +:+       +:+    +:+ +:+   +:+ +:+    +:++:+    +:+  " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "  +#+    +:++#++:++#+++#++:++#  +#++:++#: +#++:++#++:+#++:++#+ +#++:++#+    " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" " +#+    +#+       +#++#+       +#+    +#++#+     +#++#+       +#+           " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "#+#    #+##+#    #+##+#       #+#    #+##+#     #+##+#       #+#            " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "########  ######## #############    ######     ######       ###             " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot userapp" "${RESET}"
-			# GIT
-			WEBBROWSER
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▄▄▖ ▗▄▄▖ " "${RESET}"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌" "${RESET}"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖▐▛▀▜▌▐▛▀▘ ▐▛▀▘ " "${RESET}"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
+
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
+			# GIT # src/CHROOT/USERAPP/USERAPP_GIT.sh
+			WEBBROWSER # src/CHROOT/USERAPP/WEBBROWSER.sh
 
 		NOTICE_END
 		}
@@ -765,15 +718,15 @@ NOTICE_START
 		NOTICE_START
 			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && echo $f; done
 
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|    _|_|_|  _|_|_|_|  _|_|_|      _|_|_|  " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|  _|        _|        _|    _|  _|        " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|    _|_|    _|_|_|    _|_|_|      _|_|    " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "_|    _|        _|  _|        _|    _|        _|  " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "  _|_|    _|_|_|    _|_|_|_|  _|    _|  _|_|_|    " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "chroot users" "${RESET}"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▄▖" "${RESET}"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌   " "${RESET}"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖ ▝▀▚▖" "${RESET}"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▗▄▄▞▘" "${RESET}"
 
-			ROOT
-			ADMIN
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
+
+			ROOT # src/CHROOT/USERS/ROOT.sh
+			ADMIN # src/CHROOT/USERS/ADMIN.sh
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -792,26 +745,27 @@ NOTICE_START
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||     ||                  " "${RESET}"
 
 
-			TIDY_STAGE3
+			TIDY_STAGE3 # src/CHROOT/FINISH/TIDY_STAGE3.sh
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		CHROOT_MENU () {
 			CHROOT_CHOOSE() {
-				printf "%s%s%s\n" "${BOLD}${GREEN}" " CCCCC  HH   HH RRRRRR   OOOOO   OOOOO  TTTTTTT " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "CC    C HH   HH RR   RR OO   OO OO   OO   TTT   " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "CC      HHHHHHH RRRRRR  OO   OO OO   OO   TTT   " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "CC    C HH   HH RR  RR  OO   OO OO   OO   TTT   " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" " CCCCC  HH   HH RR   RR  OOOO0   OOOO0    TTT   " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "CHROOT Menu:" "${RESET}"
 
-				printf "1. BASE steps menu\n"
-				printf "2. CORE steps menu\n"
-				printf "3. SCREENDSP steps menu\n"
-				printf "4. USERAPP run as predefined in variables\n"
-				printf "5. USERS run as predefined in variables\n"
-				printf "6. FINISH run as predefined\n"
-				printf "0. Exit\n"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖▗▖ ▗▖▗▄▄▖  ▗▄▖  ▗▄▖▗▄▄▄▖" "${RESET}"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▛▀▜▌▐▛▀▚▖▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▐▌ ▐▌▐▌ ▐▌▝▚▄▞▘▝▚▄▞▘ █  " "${RESET}"
+
+				printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
+
+				printf "[1] --> BASE\n"
+				printf "[2] --> CORE\n"
+				printf "[3] --> SCREENDSP\n"
+				printf "[4] --> USERAPP as predefined in variables\n"
+				printf "[5] --> USERS as predefined in variables\n"
+				printf "[6] --> FINISH\n"
+				printf "[0] --> Exit\n"
 
 				read -p "Enter your choice: " choice
 				printf "\n"
@@ -882,19 +836,18 @@ NOTICE_END
 }
 
 MAIN_MENU() {
-	printf "%s%s%s\n" "${BOLD}${GREEN}" " / \ / \ / \ / \ / \ / \ / \ / \ / \ " "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${GREEN}" "( M | A | I | N |   | M | E | N | U )" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${GREEN}" " \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ " "${RESET}"
-
-	printf "%s%s%s\n" "${BOLD}${GREEN}" "MAIN Menu:" "${RESET}"
-
-	printf "1. PRE - no menu\n"
-	printf "2. CHROOT - no menu\n"
-	printf "3. PRE && CHROOT - no menu\n"
-	printf "4. PRE menu\n"
-	printf "5. CHROOT menu\n"
-	printf "6. PRE menu && CHROOT menu\n"
-	printf "0. Exit\n"
+	printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖▗▄▄▄▖▗▄▄▄▖▗▖ ▗▖▗▄▄▖     ▗▖  ▗▖ ▗▄▖ ▗▄▄▄▖▗▖  ▗▖" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌     █  ▐▌ ▐▌▐▌ ▐▌    ▐▛▚▞▜▌▐▌ ▐▌  █  ▐▛▚▖▐▌" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${GREEN}" " ▝▀▚▖▐▛▀▀▘  █  ▐▌ ▐▌▐▛▀▘     ▐▌  ▐▌▐▛▀▜▌  █  ▐▌ ▝▜▌" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▞▘▐▙▄▄▖  █  ▝▚▄▞▘▐▌       ▐▌  ▐▌▐▌ ▐▌▗▄█▄▖▐▌  ▐▌" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g: 1" "${RESET}"
+	printf "[1] --> PRE - NO menu\n"
+	printf "[2] --> CHROOT - NO menu\n"
+	printf "[3] --> PRE && CHROOT - NO menu\n"
+	printf "[4] --> PRE - menu\n"
+	printf "[5] --> CHROOT - menu\n"
+	printf "[6] --> PRE menu && CHROOT - menu\n"
+	printf "[0] --> Exit\n"
 
 	read -p "Enter your choice: " choice
 	printf "\n"

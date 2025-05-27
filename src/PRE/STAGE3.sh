@@ -7,8 +7,15 @@
 		NOTICE_START
 			SET_VAR_STAGE3_FETCH (){
 			NOTICE_START
-				STAGE3_FILEPATH="$(curl -s http://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE3DEFAULT.txt | sed '/^#/ d' | awk '{print $1}' | sed -r 's/\.tar\.xz//g' )"
-				#echo $STAGE3_FILEPATH
+				#STAGE3_FILEPATH="$(curl -s http://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE3DEFAULT.txt | sed '/^#/ d' | awk '{print $1}' | sed -r 's/\.tar\.xz//g' )"
+				STAGE3_FILEPATH="$(curl -s "http://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE3DEFAULT.txt" \
+				| grep -v '^#' \
+				| grep -E '^[0-9]{8}T[0-9]{6}Z/stage3.*\.tar\.xz' \
+				| cut -d' ' -f1 \
+				| sed -r 's/\.tar\.xz$//')"
+
+				echo $STAGE3_FILEPATH
+
 				LIST="$STAGE3_FILEPATH.tar.xz
 				$STAGE3_FILEPATH.tar.xz.CONTENTS.gz
 				$STAGE3_FILEPATH.tar.xz.DIGESTS
@@ -42,7 +49,7 @@
 				echo "$STAGE3_FILENAME"
 			NOTICE_END
 			}
-			RECEIVE_GPGKEYS () {  # which key is actually needed? for i in
+			RECEIVE_GPGKEYS () {  # Which key is actually needed? for i in
 			NOTICE_START
 				GENTOOKEYS="
 					$GENTOO_EBUILD_KEYFINGERPRINT1
