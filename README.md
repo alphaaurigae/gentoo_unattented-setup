@@ -3,9 +3,13 @@
 ## Status latest 27.05.25.
 
 > DEFAULT CRYPTSETUP WITH ARGON2 ON GRUB WITH BIOS BROKEN ... need fix
+
 https://man7.org/linux/man-pages/man8/cryptsetup-luksFormat.8.html
+
 https://www.cryptolux.org/index.php/Argon2
+
 https://wiki.gentoo.org/wiki/Rootfs_encryption#Create_the_LUKS_encrypted_partition
+
 https://leo3418.github.io/collections/gentoo-config-luks2-grub-systemd/packages.html
 
 1. Updated stage3 fetch regex.
