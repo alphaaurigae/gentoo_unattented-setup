@@ -23,33 +23,31 @@
 #					}
 					DRACUT_DRACUTCONF () {
 					NOTICE_START
-						if [ $CRYPTSETUP = "YES" ]; then
-							echo "dracut cryptsetup"
-							cat <<- EOF > /etc/dracut.conf
+						# <key>+=" <values> ": <values> should have surrounding white spaces! Sourced variables are sanitized, keep spaces add_e.g dracutmodules+=" ${MOD} "
+						local HOSTONLY="${DRACUT_CONF_HOSTONLY}"
+						local LVMCONF="${DRACUT_CONF_LVMCONF}"
+						local MOD
 
-							#i18n_install_all="yes"
-							i18n_vars="/etc/conf.d/keymaps:keymap-KEYMAP,extended_keymaps-EXT_KEYMAPS /etc/conf.d/consolefont:consolefont-FONT,consoletranslation-FONT_MAP /etc/rc.conf:unicode-UNICODE"
-
-							hostonly="$DRACUT_CONF_HOSTONLY"
-							lvmconf="$DRACUT_CONF_LVMCONF"
-							add_dracutmodules+="$DRACUT_CONF_MODULES_CRYPTSETUP"
-							EOF
-							cat /etc/dracut.conf
+						if [ "$CRYPTSETUP" = "YES" ]; then
+							MOD="$(echo "$DRACUT_CONF_MODULES_CRYPTSETUP" | xargs)"
 						else
-							echo "dracut lvm"
-							cat <<- EOF > /etc/dracut.conf
-
-							#i18n_install_all="yes"
-							i18n_vars="/etc/conf.d/keymaps:keymap-KEYMAP,extended_keymaps-EXT_KEYMAPS /etc/conf.d/consolefont:consolefont-FONT,consoletranslation-FONT_MAP /etc/rc.conf:unicode-UNICODE"
-
-							hostonly="$DRACUT_CONF_HOSTONLY"
-							lvmconf="$DRACUT_CONF_LVMCONF"
-							add_dracutmodules+="$DRACUT_CONF_MODULES_LVM"
-							EOF
-							cat /etc/dracut.conf
+							MOD="$(echo "$DRACUT_CONF_MODULES_LVM" | xargs)"
 						fi
+
+						cat <<-EOF > /etc/dracut.conf
+						#i18n_install_all="yes"
+						i18n_vars="/etc/conf.d/keymaps:keymap-KEYMAP,extended_keymaps-EXT_KEYMAPS /etc/conf.d/consolefont:consolefont-FONT,consoletranslation-FONT_MAP /etc/rc.conf:unicode-UNICODE"
+
+						hostonly="${HOSTONLY}"
+						lvmconf="${LVMCONF}"
+						add_dracutmodules+=" ${MOD} "
+						EOF
+
+						chmod 600 /etc/dracut.conf || echo "Failed chmod /etc/dracut.conf"
+						cat /etc/dracut.conf
 					NOTICE_END
 					}
+
 					#DRACUT_USERMOUNTCONF
 					DRACUT_DRACUTCONF
 				NOTICE_END
@@ -57,30 +55,43 @@
 				DRACUT_INIT () {
 					NOTICE_START
 
-					echo "$(readlink -f /usr/src/linux)" # test debug
-					echo "$(make -sC /usr/src/linux kernelrelease)"
-					#FETCH_KERNEL_VERSION="$(basename -- "$(readlink -f /usr/src/linux)")"
-					FETCH_KERNEL_VERSION="$(make -sC /usr/src/linux kernelrelease)"
-					[ -n "$FETCH_KERNEL_VERSION" ] || { echo "Failed to determine kernel version";  }
+					local KERNEL_BUILD_DIR="/usr/src/linux"
+					local FETCH_KERNEL_VERSION="$(make -sC "$KERNEL_BUILD_DIR" kernelrelease)"
 
-					INITRAMFS_PATH="/boot/initramfs-${FETCH_KERNEL_VERSION}.img"
-					[ -d /boot ] || { echo "/boot not mounted or missing"; }
-					[ -d "/lib/modules/${FETCH_KERNEL_VERSION}" ] || { echo "Missing modules for $FETCH_KERNEL_VERSION";  }
+					echo "$(readlink -f $KERNEL_BUILD_DIR)" # test debug
+					echo "$FETCH_KERNEL_VERSION"
 
-					dracut --force "$INITRAMFS_PATH" "$FETCH_KERNEL_VERSION" --kmoddir "/lib/modules/${FETCH_KERNEL_VERSION}"
+					[ -n "$FETCH_KERNEL_VERSION" ] || { echo "Failed to determine kernel version"; }
+					[ -d "/boot" ] || { echo "/boot not mounted or missing"; }
+					[ -d "/lib/modules/${FETCH_KERNEL_VERSION}" ] || { echo "Missing modules for $FETCH_KERNEL_VERSION"; }
 
-				# dracut --list-modules # test
+					local INITRAMFS_PATH="/boot/initramfs-${FETCH_KERNEL_VERSION}.img"
+					local INITRAMFS_LINK="/boot/initramfs.img"
+
+					dracut --force "$INITRAMFS_PATH" "$FETCH_KERNEL_VERSION" \
+						--kmoddir "/lib/modules/${FETCH_KERNEL_VERSION}" || { echo "dracut failed"; }
+
+					[ -f "$INITRAMFS_PATH" ] || { echo "Dracut did not create initramfs"; }
+
+					ln -sf "$INITRAMFS_PATH" "$INITRAMFS_LINK" || echo "symlink creation failed"
+
+					ls -lh "$INITRAMFS_PATH"
+					readlink "$INITRAMFS_LINK"
+					dracut --list-modules # test
+					echo "debug initram"
+					ls -lh /boot/vmlinuz-*
+					ls -lh /boot/initrd.img-*
+					ls -l /boot/initramfs-*
+					file /boot/initramfs-*
+					ls -l /boot
 					NOTICE_END
 				}
+
 				PACKAGE_USE
 				EMERGE_USERAPP_DEF
 				CONFIG_DRACUT
-				#DRACUT_INIT
+				DRACUT_INIT
 
-				dracut --force '' $(ls /lib/modules) # replaced by DRACUT_INIT because upstream behavioral changes on dracut.
-				# older versions of dracut accepted an empty string '' as a valid placeholder for the output path and would default to /boot/initramfs-<version>.img. 
-				# This was implicit behavior, undocumented, and not reliable going forward.
-				# In newer dracut versions (especially >=255+ on systemd-based distros), passing '' is no longer treated as "use default"
 			NOTICE_END
 			}
 			INITRFS_$GENINITRAMFS  # config / build

@@ -1,6 +1,17 @@
 # Automated modular GENTOO linux setup
 
-## Status latest 27.05.25.
+## Status latest 31.05.25
+ 
+1. Basic LVM root setup with bios, openrc, dracut, grub - booting.
+2. Fixed https://www.gentoo.org/support/news-items/2024-03-12-debianutils-installkernel.html - corrected kernel && dracut setup.
+3. Corrected dracut & grub setup.
+4. Various subtile improvements.
+
+- Full setup test not complete.
+- Cryptsetup root disk encryption test not complete
+
+
+## Status 27.05.25
 
 > DEFAULT CRYPTSETUP WITH ARGON2 ON GRUB WITH BIOS BROKEN ... need fix
 

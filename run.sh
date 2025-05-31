@@ -38,7 +38,7 @@ NOTICE_START
 		PRE_BANNER
 
 		INIT
-		PARTITIONING
+		PARTITIONING_MAIN
 		CRYPTSETUP
 		LVMSETUP
 		STAGE3
@@ -54,17 +54,25 @@ NOTICE_START
 
 	PRE_CHOOSE() {
 		PRE_BANNER
+		printf "%s\n" "----------------------------------------------------------------------------------"
 		printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
-		#printf "OPTION1 Menu:\n"
-		printf "1. INIT (src/PRE/INIT.sh)\n"
-		printf "2. PARTITIONING (src/PRE/INIT.sh)\n"
-		printf "3. CRYPTSETUP (src/PRE/INIT.sh)\n"
-		printf "4. LVMSETUP (src/PRE/INIT.sh)\n"
-		printf "5. STAGE3 (src/PRE/INIT.sh)\n"
-		printf "6. MNTFS (src/PRE/INIT.sh)\n"
-		printf "7. COPY_CONFIGS (src/PRE/INIT.sh)\n"
-		printf "8. ALL PRE functions (src/PRE/....)\n"
-		printf "0. Return to Main Menu\n"
+		printf "%s\n" "----------------------------------------------------------------------------------"
+		printf "Single:\n"
+		printf "[1] --> INIT (src/PRE/INIT.sh)\n"
+		printf "[2] --> PARTITIONING_MAIN (src/PRE/INIT.sh)\n"
+		printf "[3] --> CRYPTSETUP (src/PRE/INIT.sh)\n"
+		printf "[4] --> LVMSETUP (src/PRE/INIT.sh)\n"
+		printf "[5] --> STAGE3 (src/PRE/INIT.sh)\n"
+		printf "[6] --> MNTFS (src/PRE/INIT.sh)\n"
+		printf "[7] --> COPY_CONFIGS (src/PRE/INIT.sh)\n"
+		printf "%s\n" "----------------------------------------------------------------------------------"
+		printf "Multi:\n"
+		printf "[21] --> [1] & [2] INIT && PARTITIONING\n"
+		printf "[22] --> [3] & [4] CRYPTSETUP;LVMSETUP\n"
+		printf "[23] --> [5]-[7] STAGE3;MNTFS;COPY_CONFIGS\n"
+		printf "[24] --> [1]-[7] INIT;PARTITIONING_MAIN;CRYPTSETUP;LVMSETUP;STAGE3;MNTFS;COPY_CONFIGS\n"
+		printf "%s\n" "----------------------------------------------------------------------------------"
+		printf "[0] --> Return to Main Menu\n"
 
 		read -p "Enter your choice: " choice
 		printf "\n"
@@ -76,7 +84,7 @@ NOTICE_START
 				;;
 			2)
 				printf "PARTITIONING\n"
-				PARTITIONING
+				PARTITIONING_MAIN
 				;;
 			3)
 				printf "CRYPTSETUP\n"
@@ -98,10 +106,26 @@ NOTICE_START
 				printf "COPY_CONFIGS\n"
 				COPY_CONFIGS
 				;;
-			8)
-				printf "running INIT;PARTITIONING;CRYPTSETUP;LVMSETUP;STAGE3;MNTFS;COPY_CONFIGS\n"
+			21)
+				printf "[1] & [2] INIT && PARTITIONING\n"
 				INIT
 				PARTITIONING
+				;;
+			22)
+				printf "[3] & [4] CRYPTSETUP;LVMSETUP\n"
+				CRYPTSETUP
+				LVMSETUP
+				;;
+			23)
+				printf "[5]-[7] STAGE3;MNTFS;COPY_CONFIGS\n"
+				STAGE3
+				MNTFS
+				COPY_CONFIGS
+				;;
+			24)
+				printf "[1]-[7] INIT;PARTITIONING;CRYPTSETUP;LVMSETUP;STAGE3;MNTFS;COPY_CONFIGS\n"
+				INIT
+				PARTITIONING_MAIN
 				CRYPTSETUP
 				LVMSETUP
 				STAGE3
@@ -120,7 +144,7 @@ NOTICE_START
 		printf "\n"
 		PRE_CHOOSE
 	}
-	for f in src/PRE/*; do . $f && echo $f; done  # source src/PRE/
+	for f in src/PRE/*; do . $f ; done  # source src/PRE/
 	PRE_CHOOSE
 
 NOTICE_END
@@ -152,8 +176,7 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▛▀▚▖▐▛▀▜▌ ▝▀▚▖▐▛▀▀▘" "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▙▄▞▘▐▌ ▐▌▗▄▄▞▘▐▙▄▄▖" "${RESET}"
-
-
+			printf "%s\n" "----------------------------------------------------------------------------------"
 			SWAPFILE  # src/CHROOT/BASE/SWAPFILE.sh
 			MAKECONF  # src/CHROOT/BASE/MAKECONF.sh
 			CONF_LOCALES  # src/CHROOT/BASE/CONF_LOCALES.sh
@@ -179,8 +202,7 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌   " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▛▀▚▖▐▛▀▀▘" "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▝▚▄▞▘▐▌ ▐▌▐▙▄▄▖" "${RESET}"
-
-
+			printf "%s\n" "----------------------------------------------------------------------------------"
 			SYSCONFIG_CORE  # src/CHROOT/CORE/SYSCONFIG_CORE.sh
 			SYSFS  # src/CHROOT/CORE/SYSFS.sh
 			APPADMIN  # src/CHROOT/CORE/APPADMIN.sh
@@ -207,8 +229,7 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌   ▐▌ ▐▌▐▌   ▐▌   ▐▛▚▖▐▌▐▌  █▐▌   ▐▌ ▐▌" "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▝▀▚▖▐▌   ▐▛▀▚▖▐▛▀▀▘▐▛▀▀▘▐▌ ▝▜▌▐▌  █ ▝▀▚▖▐▛▀▘ " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▞▘▝▚▄▄▖▐▌ ▐▌▐▙▄▄▖▐▙▄▄▖▐▌  ▐▌▐▙▄▄▀▗▄▄▞▘▐▌   " "${RESET}"
-
-
+			printf "%s\n" "----------------------------------------------------------------------------------"
 			WINDOWSYS # src/CHROOT/SCREENDSP/WINDOWSYS.sh
 			DESKTOP_ENV # src/CHROOT/SCREENDSP/DESKTOP_ENV.sh
 		NOTICE_END
@@ -223,8 +244,7 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌" "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖▐▛▀▜▌▐▛▀▘ ▐▛▀▘ " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
-
-
+			printf "%s\n" "----------------------------------------------------------------------------------"
 			# GIT # src/CHROOT/USERAPP/USERAPP_GIT.sh
 			WEBBROWSER # src/CHROOT/USERAPP/WEBBROWSER.sh
 		NOTICE_END
@@ -239,7 +259,7 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌   " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖ ▝▀▚▖" "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▗▄▄▞▘" "${RESET}"
-
+			printf "%s\n" "----------------------------------------------------------------------------------"
 			ROOT # src/CHROOT/USERS/ROOT.sh
 			ADMIN # src/CHROOT/USERS/ADMIN.sh
 		NOTICE_END
@@ -259,9 +279,7 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "             (__)\       )\/\               " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||----- |                  " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||     ||                  " "${RESET}"
-
-
-
+			printf "%s\n" "----------------------------------------------------------------------------------"
 			TIDY_STAGE3 # src/CHROOT/FINISH/TIDY_STAGE3.sh
 		NOTICE_END
 		}
@@ -273,7 +291,7 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▛▀▜▌▐▛▀▚▖▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▐▌ ▐▌▐▌ ▐▌▝▚▄▞▘▝▚▄▞▘ █  " "${RESET}"
-
+			printf "%s\n" "----------------------------------------------------------------------------------"
 			BASE  # src/CHROOT/BASE/*  # as defined in var/
 			CORE  # src/CHROOT/CORE/*  # as defined in var/
 			SCREENDSP  # src/CHROOT/SCREENDSP/*  # as defined in var/
@@ -289,14 +307,13 @@ NOTICE_START
 		)
 		CP_CHROOT () {
 		NOTICE_START
-			# since the chroot script cant be run outside of chroot the script and possibly sourced functions and variables scripts need to be copied accordingly.
-			# for the onefile setup this is simply done by echoing the 'INNERSCRIPT" ... if the setup is split in multiple files for readability, every file or alt the gentoo script repo needs to be copied to make all functions and variables available.
-			# only variables outside the chroot innerscript for now 27.8.22
-			# IMPORTANT blow commands are executed BEFORE the above INNERSCRIPT! (BELOW chroot $CHROOTX /bin/bash ./chroot_run.sh). if a file needs to be made available in the INNERSCRIPT, copy it before ( chroot $CHROOTX /bin/bash ./chroot_run.sh ) below in this CHROOT function!!!
-
+			# Since the chroot script can't be run outside of chroot, the script, and possibly sourced functions as well as variable scripts, need to be copied accordingly. For simplicity, copy the whole repo.
+			# IMPORTANT: The following commands are executed BEFORE the above INNERSCRIPT (BELOW chroot $CHROOTX /bin/bash ./chroot_run.sh). If a file needs to be made available in the INNERSCRIPT, copy it before (chroot $CHROOTX /bin/bash ./chroot_run.sh) within this CHROOT function!
 			rm -rf $CHROOTX/gentoo_unattented-setup
-			cp /root/gentoo_unattented-setup $CHROOTX/gentoo_unattented-setup
-
+			ls -la /root
+			echo $CHROOTX
+			cp -R /root/gentoo_unattented-setup $CHROOTX/gentoo_unattented-setup
+			ls -la $CHROOTX
 			
 		NOTICE_END
 		}
@@ -341,10 +358,10 @@ NOTICE_START
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▛▀▚▖▐▛▀▜▌ ▝▀▚▖▐▛▀▀▘" "${RESET}"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▙▄▞▘▐▌ ▐▌▗▄▄▞▘▐▙▄▄▖" "${RESET}"
-
+					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
-
-
+					printf "%s\n" "----------------------------------------------------------------------------------"
+					printf "Single\n"
 					printf "[1] --> SWAPFILE\n"
 					printf "[2] --> MAKECONF\n"
 					printf "[3] --> CONF_LOCALES\n"
@@ -359,8 +376,8 @@ NOTICE_START
 					printf "[9] --> KEYMAP_CONSOLEFONT\n"
 					printf "[10] --> FIRMWARE\n"
 					printf "[11] --> CP_BASHRC\n"
-					printf "\n"
-					printf "run multi step\n"
+					printf "%s\n" "----------------------------------------------------------------------------------"
+					printf "Multi\n"
 					printf "[21] --> [1]-[3] create swap for setup; copy make.conf locales to run portage in next step - prints emerge at world which is neede dfor make.conf\n"
 					printf "[22] --> [2] & [3] to run portage in next step - prints emerge at world which is neede dfor make.conf\n"
 					printf "[23] --> [4]-[7].. eselect profile and 6. emergeatworld \n"
@@ -368,7 +385,7 @@ NOTICE_START
 					printf "[25] --> [10] & [11] .. setup firmaware and copy bashrc\n"
 					printf "[26] --> [2]-[10]\n"
 					printf "[27] --> [1]-[11]\n"
-
+					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf  "0. Exit\n"
 
 					read -p "Enter your choice: " choice
@@ -483,9 +500,10 @@ NOTICE_START
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌   " "${RESET}"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▛▀▚▖▐▛▀▀▘" "${RESET}"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▝▚▄▞▘▐▌ ▐▌▐▙▄▄▖" "${RESET}"
-
+					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
-
+					printf "%s\n" "----------------------------------------------------------------------------------"
+					printf "Single\n"
 					printf  "[1] SYSCONFIG_CORE\n"
 					printf  "[2] SYSFS\n"
 					printf  "[3] APPADMIN\n"
@@ -500,8 +518,8 @@ NOTICE_START
 					printf "[12] AUDIO\n"
 					# printf "[13] GPU\n"
 					printf "[14] NETWORK\n"
-					printf "\n"
-					printf "\e[1m run multi step\e[0m\n"
+					printf "%s\n" "----------------------------------------------------------------------------------"
+					printf "Multi\n"
 					printf "[21] --> [1]-[3] \n"
 					printf "[22] --> [2] & [3] \n"
 					printf "[23] --> [4]-[6]\n"
@@ -512,7 +530,7 @@ NOTICE_START
 					printf "[28] --> [6]-[10] \n"
 					printf "[29] --> [11]-[14] *gpu driver deaktivated - skip [13]* \n"
 					printf "[30] ALL ... steps [1]-[14] *modprobe not nessecary here - skip [10], gpu driver deactivated - skip [13]* \n"
-
+					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf  "[0] Exit\n"
 
 					read -p "Enter your choice: " choice
@@ -653,16 +671,16 @@ NOTICE_START
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌   ▐▌ ▐▌▐▌   ▐▌   ▐▛▚▖▐▌▐▌  █▐▌   ▐▌ ▐▌" "${RESET}"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" " ▝▀▚▖▐▌   ▐▛▀▚▖▐▛▀▀▘▐▛▀▀▘▐▌ ▝▜▌▐▌  █ ▝▀▚▖▐▛▀▘ " "${RESET}"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▞▘▝▚▄▄▖▐▌ ▐▌▐▙▄▄▖▐▙▄▄▖▐▌  ▐▌▐▙▄▄▀▗▄▄▞▘▐▌   " "${RESET}"
-
+					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
-
+					printf "%s\n" "----------------------------------------------------------------------------------"
+					printf "Single\n"
 					printf  "[1] --> WINDOWSYS\n"
 					printf  "[2] --> DESKTOP_ENV\n"
-
-					printf "\n"
-					printf "run multi step\n"
+					printf "%s\n" "----------------------------------------------------------------------------------"
+					printf "Multi\n"
 					printf "[21] run steps [1] && [2]\n"
-
+					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf  "0. Exit\n"
 
 					read -p "Enter your choice: " choice
@@ -706,8 +724,7 @@ NOTICE_START
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌" "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖▐▛▀▜▌▐▛▀▘ ▐▛▀▘ " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
-
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
+				printf "%s\n" "----------------------------------------------------------------------------------"
 			# GIT # src/CHROOT/USERAPP/USERAPP_GIT.sh
 			WEBBROWSER # src/CHROOT/USERAPP/WEBBROWSER.sh
 
@@ -722,9 +739,7 @@ NOTICE_START
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌   " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖ ▝▀▚▖" "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▗▄▄▞▘" "${RESET}"
-
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
-
+				printf "%s\n" "----------------------------------------------------------------------------------"
 			ROOT # src/CHROOT/USERS/ROOT.sh
 			ADMIN # src/CHROOT/USERS/ADMIN.sh
 		NOTICE_END
@@ -743,7 +758,7 @@ NOTICE_START
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "             (__)\       )\/\               " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||----- |                  " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||     ||                  " "${RESET}"
-
+				printf "%s\n" "----------------------------------------------------------------------------------"
 
 			TIDY_STAGE3 # src/CHROOT/FINISH/TIDY_STAGE3.sh
 		NOTICE_END
@@ -756,17 +771,17 @@ NOTICE_START
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▛▀▜▌▐▛▀▚▖▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▐▌ ▐▌▐▌ ▐▌▝▚▄▞▘▝▚▄▞▘ █  " "${RESET}"
-
+				printf "%s\n" "----------------------------------------------------------------------------------"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
-
+				printf "%s\n" "----------------------------------------------------------------------------------"
 				printf "[1] --> BASE\n"
 				printf "[2] --> CORE\n"
 				printf "[3] --> SCREENDSP\n"
 				printf "[4] --> USERAPP as predefined in variables\n"
 				printf "[5] --> USERS as predefined in variables\n"
 				printf "[6] --> FINISH\n"
+				printf "%s\n" "----------------------------------------------------------------------------------"
 				printf "[0] --> Exit\n"
-
 				read -p "Enter your choice: " choice
 				printf "\n"
 
@@ -840,6 +855,7 @@ MAIN_MENU() {
 	printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌     █  ▐▌ ▐▌▐▌ ▐▌    ▐▛▚▞▜▌▐▌ ▐▌  █  ▐▛▚▖▐▌" "${RESET}"
 	printf "%s%s%s\n" "${BOLD}${GREEN}" " ▝▀▚▖▐▛▀▀▘  █  ▐▌ ▐▌▐▛▀▘     ▐▌  ▐▌▐▛▀▜▌  █  ▐▌ ▝▜▌" "${RESET}"
 	printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▞▘▐▙▄▄▖  █  ▝▚▄▞▘▐▌       ▐▌  ▐▌▐▌ ▐▌▗▄█▄▖▐▌  ▐▌" "${RESET}"
+	printf "%s\n" "----------------------------------------------------------------------------------"
 	printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g: 1" "${RESET}"
 	printf "[1] --> PRE - NO menu\n"
 	printf "[2] --> CHROOT - NO menu\n"
@@ -897,7 +913,8 @@ MAIN_MENU() {
 }
 # Check if the script is run with the -h option
 if [[ "$1" == "-a" ]]; then
-	printf "Running the semi unattended setup as configured in 10 seconds... Exit now to see options with -h or enter the menu when running the program with -m.\n"
+	printf "Running the semi unattended setup as configured in 10 seconds... \n"
+	printf "Exit now to see options with -h or enter the menu when running the program with -m.\n"
 	printf "(Default PRE asks for crypt password and disk wipe confirmation)"
 	printf "(Default CHROOT asks for kernel config menuconfig confirmation or edit and GPG password)"
 	sleep 10

@@ -132,7 +132,8 @@
 		# DRACUT
 		## DRACUT_CONF
 		# just removed gensplash "ERR dracut: dracut module 'gensplash' cannot be found or installed."
-		DRACUT_CONF_MODULES_LVM="i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown lvm debug dm"  # for LVM on /dev/sd**  (CRYPSETUP="NO" /var/var_main )  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
+		# <key>+=" <values> ": <values> should have surrounding white spaces!
+		DRACUT_CONF_MODULES_LVM=" i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown lvm debug dm "  # for LVM on /dev/sd**  (CRYPSETUP="NO" /var/var_main )  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
 		DRACUT_CONF_MODULES_CRYPTSETUP=" i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg lvm debug dm "  # for LVM on cryptsetup /dev/sd** (CRYPSETUP="YES" /var/var_main )  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
 		DRACUT_CONF_HOSTONLY="yes"  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
 		DRACUT_CONF_LVMCONF="yes"  # use in  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
@@ -141,7 +142,9 @@
 
 		### BOOT
 		BOOTLOADER="GRUB2"  # GRUB2 (!default)  # used in /gentoo_unattented-setup/src/CHROOT/CORE/SYSBOOT.sh
-		BOOTSYSINITVAR="BIOS"  # BIOS (!default) / UEFI (!prototype)  # used in /gentoo_unattented-setup/src/CHROOT/CORE/SYSCONFIG_CORE.sh && gentoo_unattented-setup/src/CHROOT/CORE/SYSBOOT.s
+		GRUB_PRELOAD_MODULES_CRYPTSETUP="cryptodisk luks luks2 lvm ext2 part_msdos part_gpt gcry_*"
+		GRUB_PRELOAD_MODULES_DEFAULT="cryptodisk luks luks2 lvm ext2 part_msdos part_gpt gcry_*"
+		# BIOS / UEFI defined in var_main.sh as its needed for partitioning too.
 
 		## SYSAPP
 		### CRON
@@ -219,7 +222,7 @@
 		USEFLAGS_LINUX_FIRMWARE="initramfs redistributable unknown-license"  # https://packages.gentoo.org/packages/sys-kernel/linux-firmware https://wiki.gentoo.org/wiki/Linux_firmware
 
 		#CRYPTSETUP
-		USEFLAGS_CRYPTSETUP="udev"  # udev global enough? https://packages.gentoo.org/packages/sys-fs/cryptsetup
+		USEFLAGS_CRYPTSETUP="udev argon2 "  # udev global enough? https://packages.gentoo.org/packages/sys-fs/cryptsetup
 
 		# INITRAM
 		USEFLAGS_DRACUT="device-mapper"  # devicemapper dated?  https://wiki.gentoo.org/wiki/Dracut https://packages.gentoo.org/packages/sys-kernel/dracut
@@ -239,7 +242,7 @@
 		USEFLAGS_NETWORKMANAGER="dhcpcd -modemmanager -ppp"  # https://packages.gentoo.org/packages/net-misc/networkmanager https://wiki.gentoo.org/wiki/NetworkManager
 		
 		# BOOTLOADER
-		USEFLAGS_GRUB2="fonts " # device-mapper  # https://packages.gentoo.org/packages/sys-boot/grub https://wiki.gentoo.org/wiki/GRUB2
+		USEFLAGS_GRUB2="fonts device-mapper mount nls "  # https://packages.gentoo.org/packages/sys-boot/grub https://wiki.gentoo.org/wiki/GRUB2
 		
 		# VIRTUALBOX
 		USEFLAGS_VIRTUALBOX_GUEST_ADDITIONS="X"  # https://packages.gentoo.org/packages/app-emulation/virtualbox-guest-additions

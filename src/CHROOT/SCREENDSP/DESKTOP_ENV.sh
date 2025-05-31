@@ -207,7 +207,11 @@
 			DESKTENV_AUTOSTART_OPENRC () {
 			NOTICE_START
 				if [ "$DESKTOPENV" == "CINNAMON" ]; then
-					cp /etc/xdg/autostart/nm-applet.desktop /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
+					#cp /etc/xdg/autostart/nm-applet.desktop /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
+					local SRC="/etc/xdg/autostart/nm-applet.desktop"
+					local DST="/home/$SYSUSERNAME/.config/autostart/nm-applet.desktop"
+					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
+
 					echo 'X-GNOME-Autostart-enabled=false' >> /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
 					chown $SYSUSERNAME:$SYSUSERNAME /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
 				else

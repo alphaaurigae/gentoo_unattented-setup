@@ -27,3 +27,14 @@ BRIGHT_BLUE=$(tput setaf 12)
 BRIGHT_MAGENTA=$(tput setaf 13)
 BRIGHT_CYAN=$(tput setaf 14)
 BRIGHT_WHITE=$(tput setaf 15)
+
+VERIFY_COPY () {
+NOTICE_START
+	local SRC="$1"
+	local DST="$2"
+	local SRC_HASH=$(sha256sum < "$SRC") &&
+	local DST_HASH=$(sha256sum < "$DST") &&
+	[ "$SRC_HASH" = "$DST_HASH" ] &&
+	echo "Copied and verified: $SRC -> $DST" || echo "Copy failed or mismatch: $SRC -> $DST"
+NOTICE_END
+}

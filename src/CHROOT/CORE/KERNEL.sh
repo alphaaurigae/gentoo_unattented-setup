@@ -35,11 +35,14 @@
 				NOTICE_START
 					KERNCONF_PASTE () {  # paste own config here ( ~ this should go to auto)
 					NOTICE_START
-						# mv /usr/src/$(ls /usr/src) /usr/src/linux
+
 						mv /usr/src/linux/.config /usr/src/linux/.oldconfig 
 						echo "ignore mv err"
 						touch /usr/src/linux/.config
-						cp /gentoo_unattented-setup/configs/required/kern.config.sh /usr/src/linux/.config  # stripped version infos for refetch # ls function to get the dirname quick - probably not the best hack but want to get done here now.
+
+						local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
+						local DST="/usr/src/linux/.config"
+						cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
 					NOTICE_END
 					}
 					KERNCONF_DEFCONFIG () {
@@ -85,12 +88,55 @@
 				KERN_BUILD () {  # (!incomplete (works but) modules setup *smart)
 				NOTICE_START
 					cd /usr/src/linux  # enter build directory (required?)
-					make -j$(nproc) dep
+
 					make -j$(nproc) -o /usr/src/linux/.config menuconfig # build kernel based on .config file
 					make -j$(nproc) -o /usr/src/linux/.config modules # build modules based on .config file
 					make -j$(nproc) bzImage
-					sudo make install  # install the kernel
-					sudo make modules_install  # install the modules
+					make install  # install the kernel
+					make modules_install  # install the modules
+
+
+					local FETCH_KERNEL_VERSION="$(make -sC /usr/src/linux kernelrelease)"
+
+					echo "install kernel manually since installkernel script is not longer available with gentoo by default"
+					local SRC_IMAGE="/usr/src/linux/arch/x86/boot/bzImage"
+					local DEST_IMAGE="/boot/vmlinuz-${FETCH_KERNEL_VERSION}"
+					local DEST_MAP="/boot/System.map-${FETCH_KERNEL_VERSION}"
+					local DEST_CONFIG="/boot/config-${FETCH_KERNEL_VERSION}"
+
+					cp "${SRC_IMAGE}" "${DEST_IMAGE}"
+					cp /usr/src/linux/System.map "${DEST_MAP}"
+					cp /usr/src/linux/.config "${DEST_CONFIG}"
+
+					#local SRC="/usr/src/linux/arch/x86/boot/bzImage"
+					#local DST="/boot/vmlinuz-${FETCH_KERNEL_VERSION}"
+					#cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
+
+					ln -sf "vmlinuz-${FETCH_KERNEL_VERSION}" /boot/vmlinuz
+					ln -sf "System.map-${FETCH_KERNEL_VERSION}" /boot/System.map
+					ln -sf "config-${FETCH_KERNEL_VERSION}" /boot/config
+
+
+					echo "Verify module installation"
+					ls -d /lib/modules/$FETCH_KERNEL_VERSION
+					modinfo -k $FETCH_KERNEL_VERSION
+
+					echo "debug kernel installation"
+					[ -f "${BOOTDIR}/vmlinuz-${FETCH_KERNEL_VERSION}" ] || echo "Kernel image missing"
+					[ -f "${BOOTDIR}/System.map-${FETCH_KERNEL_VERSION}" ] || echo "System.map missing"
+					[ -f "${BOOTDIR}/config-${FETCH_KERNEL_VERSION}" ] || echo "Config missing"
+
+					ls -l /boot/vmlinuz-$FETCH_KERNEL_VERSION 
+					ls -l /boot/System.map-$FETCH_KERNEL_VERSION 
+					ls -l /boot/config-$FETCH_KERNEL_VERSION
+					readlink /boot/vmlinuz /boot/System.map /boot/config
+					file /boot/vmlinuz-$FETCH_KERNEL_VERSION  
+					ls -lh /boot/vmlinuz-*
+					ls -l /boot
+					echo "cd boot && ls -a log:"
+					cd boot
+					ls -a
+
 				NOTICE_END
 				}
 				lsmod  # active modules by install medium.

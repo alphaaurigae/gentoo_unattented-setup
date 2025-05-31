@@ -47,38 +47,50 @@
 		}
 		LVM_ROOT () {
 		NOTICE_START
+
+  echo "DEBUG: MAIN_PART='$MAIN_PART' VG_MAIN='$VG_MAIN' LV_MAIN='$LV_MAIN' CHROOTX='$CHROOTX' BOOT_PART='$BOOT_PART'"
+  run_cmd() {
+    echo "RUNNING: $*"
+    "$@"
+    local status=$?
+    echo "EXIT STATUS: $status"
+    [[ $status -eq 0 ]] || {
+      echo "ERROR: Command failed: $*"
+      exit $status
+    }
+  }
 			LVM_PV () {
 			NOTICE_START
-				pvcreate $MAIN_PART
-				pvdisplay
+				run_cmd pvcreate $MAIN_PART
+				run_cmd pvdisplay
 			NOTICE_END
 			}
 			LVM_VG () {
 			NOTICE_START
-				vgcreate $VG_MAIN $MAIN_PART
-				vgdisplay
+				run_cmd vgcreate $VG_MAIN $MAIN_PART
+				run_cmd vgdisplay
 			NOTICE_END
 			}
 			LVM_LV () {
 			NOTICE_START
 				# lvcreate -L $SWAP_SIZE -n $SWAP0 $VG_MAIN
-				lvcreate -l 98%FREE -n $LV_MAIN $VG_MAIN
-				lvdisplay
+				run_cmd lvcreate -l 98%FREE -n $LV_MAIN $VG_MAIN
+				run_cmd lvdisplay
 			NOTICE_END
 			}
 			MAKEFS_LVM () {
 			NOTICE_START
-				mkfs.ext4 /dev/$VG_MAIN/$LV_MAIN
+				run_cmd mkfs.ext4 /dev/$VG_MAIN/$LV_MAIN
 				# mkswap /dev/$VG_MAIN/$SWAP0 # swap ...
 			NOTICE_END
 			}
 			MOUNT_LVM_LV () {  # (!NOTE: mount the LVM for CHROOT.)
 			NOTICE_START
 				mkdir -p $CHROOTX
-				mount /dev/mapper/$VG_MAIN-$LV_MAIN $CHROOTX
+				run_cmd mount /dev/mapper/$VG_MAIN-$LV_MAIN $CHROOTX
 				# swapon /dev/$VG_MAIN/$SWAP0
 				mkdir $CHROOTX/boot
-				mount $BOOT_PART $CHROOTX/boot
+				run_cmd mount $BOOT_PART $CHROOTX/boot
 			NOTICE_END
 			}
 			modprobe -a dm-mod

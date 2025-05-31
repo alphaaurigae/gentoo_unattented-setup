@@ -10,6 +10,7 @@
 				# BOOT
 				UUID="$(blkid -o value -s UUID $BOOT_PART)"	/boot	$FILESYSTEM_BOOT	rw,relatime	0 2
 				EOF
+cat /etc/fstab
 			NOTICE_END
 			} 
 			FSTAB_LVMONLUKS_UEFI () {
@@ -22,7 +23,7 @@
 				EOF
 			NOTICE_END
 			}
-			FSTAB_LVMONLUKS_$BOOTSYSINITVAR
+			FSTAB_LVMONLUKS_$BOOTINITVAR
 		NOTICE_END
 		}
 		CRYPTTABD () {

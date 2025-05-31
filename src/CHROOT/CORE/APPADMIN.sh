@@ -5,7 +5,11 @@
 			APPAPP_EMERGE="app-admin/sudo "  # (note!: must keep trailing)
 			CONFIG_SUDO () {
 			NOTICE_START
-				cp /etc/sudoers /etc/sudoers_bak
+				#cp /etc/sudoers /etc/sudoers_bak
+				local SRC="/etc/sudoers"
+				local DST="/etc/sudoers_bak"
+				cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
+
 				sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
 				sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' /etc/sudoers
 				# uncommented bec using wheel maybe enough (for now, funny line glitch as commented anyways, verfy later) sed -i 's/# %sudo	ALL=(ALL:ALL) ALL/%sudo ALL=(ALL:ALL) ALL/g' /etc/sudoers  # funny glitch, at least in my current test .... line with sudo appears to contain a tab but only visible if copy pasted to a line with characters before target palce of paste, not if pasted in first place of a line. editor mousepad.

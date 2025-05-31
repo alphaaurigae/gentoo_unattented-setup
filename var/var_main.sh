@@ -1,11 +1,12 @@
-CRYPTSETUP="YES"  # THIS VAR DEFINES IF CRYPTSETUP IS ACTIVATED FOR ROOT,  # YES DEPENDS ON var/chroot_variables.sh SYSAPP_DMCRYPT="YES"!!!! if set to no and SYSAPP_DMCRYPT="YES" #crypset is defined in useflag as option var/chroot_variables.sh
+CRYPTSETUP="NO"  # THIS VAR DEFINES IF CRYPTSETUP IS ACTIVATED FOR ROOT,  # YES DEPENDS ON var/chroot_variables.sh SYSAPP_DMCRYPT="YES"!!!! if set to no and SYSAPP_DMCRYPT="YES" #crypset is defined in useflag as option var/chroot_variables.sh
 # OPTION AS IS NO = LVM ON ROOT ; YES = LVM ON CRYPTSETUP_ROOT
 
+BOOTINITVAR="BIOS"  # BIOS  / UEFI   # Used in /gentoo_unattented-setup/src/CHROOT/CORE/SYSCONFIG_CORE.sh && gentoo_unattented-setup/src/CHROOT/CORE/SYSBOOT.s
 
 ## DRIVES & PARTITIONS
 HDD1="/dev/sda" # GENTOO
 # GRUB_PART=/dev/sda1 # var not in use 
-BOOT_PART="/dev/sda2" # boot # unencrypted unless required changes are made
+BOOT_PART="/dev/sda2" # boot # Unencrypted unless required changes are made
 MAIN_PART="/dev/sda3" # mainfs - lukscrypt cryptsetup container with LVM env inside
 
 ## SWAP # put here since you can set a swapfile on an external device too.
