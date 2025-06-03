@@ -23,4 +23,6 @@ GENTOO_EBUILD_KEYFINGERPRINT3="534E4209AB49EEE1C19D96162C44695DB9F6043D"  # 534E
 GENTOO_EBUILD_KEYFINGERPRINT4="D99EAC7379A850BCE47DA5F29E6438C817072058"  # Gentoo Linux Release Engineering (Gentoo Linux Release Signing Key) https://www.gentoo.org/downloads/signatures/
 GENTOO_RELEASE_URL="http://distfiles.gentoo.org/releases/amd64/autobuilds"
 
-#GENTOO_RELEASE_URL="https://mirror.init7.net/gentoo/releases/amd64/autobuilds"  # CH
+#GENTOO_RELEASE_URL="https://mirror.init7.net/gentoo/releases/amd64/autobuilds"
+
+

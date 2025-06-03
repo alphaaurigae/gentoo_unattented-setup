@@ -9,7 +9,7 @@
 			}
 			ALSA () {  # https://wiki.gentoo.org/wiki/ALSA
 			NOTICE_START
-				USEFLAGS_
+				USEFLAGS_ALSA
 				APPAPP_EMERGE="media-sound/alsa-utils"
 				AUTOSTART_NAME_OPENRC="alsasound"
 				AUTOSTART_NAME_SYSTEMD="alsa-restore"

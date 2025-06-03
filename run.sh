@@ -16,7 +16,7 @@
 ## PRE
 . func/func_main.sh
 . var/var_main.sh
-. var/1_PRE_main.sh
+. var/pre_variables.sh
 ## CHROOT
 . src/CHROOT/DEBUG.sh
 
@@ -45,7 +45,7 @@ NOTICE_START
 		MNTFS
 		COPY_CONFIGS
 	}
-	for f in src/PRE/*; do . $f && echo $f; done  # source src/PRE/
+	for f in src/PRE/*; do . $f && echo $f; done  # source src/PRE/*
 	PRE_RUNALL
 }
 
@@ -59,18 +59,19 @@ NOTICE_START
 		printf "%s\n" "----------------------------------------------------------------------------------"
 		printf "Single:\n"
 		printf "[1] --> INIT (src/PRE/INIT.sh)\n"
-		printf "[2] --> PARTITIONING_MAIN (src/PRE/INIT.sh)\n"
-		printf "[3] --> CRYPTSETUP (src/PRE/INIT.sh)\n"
-		printf "[4] --> LVMSETUP (src/PRE/INIT.sh)\n"
-		printf "[5] --> STAGE3 (src/PRE/INIT.sh)\n"
-		printf "[6] --> MNTFS (src/PRE/INIT.sh)\n"
-		printf "[7] --> COPY_CONFIGS (src/PRE/INIT.sh)\n"
+		printf "[2] --> PARTITIONING_MAIN (src/PRE/PARTITIONING_MAIN.sh)\n"
+		printf "[3] --> CRYPTSETUP (src/PRE/CRYPTSETUP.sh)\n"
+		printf "[4] --> LVMSETUP (src/PRE/LVMSETUP.sh)\n"
+		printf "[5] --> STAGE3 (src/PRE/STAGE3.sh)\n"
+		printf "[6] --> MNTFS (src/PRE/MNTFS.sh)\n"
+		printf "[7] --> COPY_CONFIGS (src/PRE/COPY_CONFIGS.sh)\n"
+		printf "[8] --> MAKECONF (src/PRE/MAKECONF.sh)\n"
 		printf "%s\n" "----------------------------------------------------------------------------------"
 		printf "Multi:\n"
 		printf "[21] --> [1] & [2] INIT && PARTITIONING\n"
 		printf "[22] --> [3] & [4] CRYPTSETUP;LVMSETUP\n"
-		printf "[23] --> [5]-[7] STAGE3;MNTFS;COPY_CONFIGS\n"
-		printf "[24] --> [1]-[7] INIT;PARTITIONING_MAIN;CRYPTSETUP;LVMSETUP;STAGE3;MNTFS;COPY_CONFIGS\n"
+		printf "[23] --> [5]-[8] STAGE3;MNTFS;COPY_CONFIGS; MAKECONF\n"
+		printf "[24] --> [1]-[8] INIT;PARTITIONING_MAIN;CRYPTSETUP;LVMSETUP;STAGE3;MNTFS;COPY_CONFIGS; MAKECONF\n"
 		printf "%s\n" "----------------------------------------------------------------------------------"
 		printf "[0] --> Return to Main Menu\n"
 
@@ -106,6 +107,10 @@ NOTICE_START
 				printf "COPY_CONFIGS\n"
 				COPY_CONFIGS
 				;;
+			8)
+				printf "MAKECONF\n"
+				MAKECONF
+				;;
 			21)
 				printf "[1] & [2] INIT && PARTITIONING\n"
 				INIT
@@ -117,13 +122,14 @@ NOTICE_START
 				LVMSETUP
 				;;
 			23)
-				printf "[5]-[7] STAGE3;MNTFS;COPY_CONFIGS\n"
+				printf "[5]-[7] STAGE3;MNTFS;COPY_CONFIGS; MAKECONF\n"
 				STAGE3
 				MNTFS
 				COPY_CONFIGS
+				MAKECONF
 				;;
 			24)
-				printf "[1]-[7] INIT;PARTITIONING;CRYPTSETUP;LVMSETUP;STAGE3;MNTFS;COPY_CONFIGS\n"
+				printf "[1]-[7] INIT;PARTITIONING;CRYPTSETUP;LVMSETUP;STAGE3;MNTFS;COPY_CONFIGS; MAKECONF\n"
 				INIT
 				PARTITIONING_MAIN
 				CRYPTSETUP
@@ -131,6 +137,7 @@ NOTICE_START
 				STAGE3
 				MNTFS
 				COPY_CONFIGS
+				MAKECONF
 				;;
 			0)
 				printf  "Returning to Main Menu...\n"
@@ -163,8 +170,6 @@ NOTICE_START
 		. $CHROOTX/gentoo_unattented-setup/func/func_chroot_main.sh
 		. $CHROOTX/gentoo_unattented-setup/var/var_main.sh
 		. $CHROOTX/gentoo_unattented-setup/var/chroot_variables.sh
-		#. $CHROOTX//gentoo_unattented-setup/configs/required/kern.config.sh
-		#. $CHROOTX/gentoo_unattented-setup/func/chroot_static-functions.sh
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 		BASE () {
@@ -178,7 +183,6 @@ NOTICE_START
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▙▄▞▘▐▌ ▐▌▗▄▄▞▘▐▙▄▄▖" "${RESET}"
 			printf "%s\n" "----------------------------------------------------------------------------------"
 			SWAPFILE  # src/CHROOT/BASE/SWAPFILE.sh
-			MAKECONF  # src/CHROOT/BASE/MAKECONF.sh
 			CONF_LOCALES  # src/CHROOT/BASE/CONF_LOCALES.sh
 			PORTAGE  # src/CHROOT/BASE/PORTAGE.sh
 			##EMERGE_SYNC  # src/CHROOT/BASE/EMERGE_SYNC.sh
@@ -344,8 +348,6 @@ NOTICE_START
 		. $CHROOTX/gentoo_unattented-setup/func/func_chroot_main.sh
 		. $CHROOTX/gentoo_unattented-setup/var/var_main.sh
 		. $CHROOTX/gentoo_unattented-setup/var/chroot_variables.sh
-		#. $CHROOTX//gentoo_unattented-setup/configs/required/kern.config.sh
-		#. $CHROOTX/gentoo_unattented-setup/func/chroot_static-functions.sh
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 		BASE () {
@@ -363,7 +365,7 @@ NOTICE_START
 					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf "Single\n"
 					printf "[1] --> SWAPFILE\n"
-					printf "[2] --> MAKECONF\n"
+					printf "[2] --> EMERGE_ATWORLD_B (emerge world for the make.conf yreated during pre setup)\n"
 					printf "[3] --> CONF_LOCALES\n"
 					printf "[4] --> PORTAGE\n"
 					## PLACEHOLDER for later use (maybe) EMERGE_SYNC  # run EMERGE_SYNC
@@ -378,8 +380,8 @@ NOTICE_START
 					printf "[11] --> CP_BASHRC\n"
 					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf "Multi\n"
-					printf "[21] --> [1]-[3] create swap for setup; copy make.conf locales to run portage in next step - prints emerge at world which is neede dfor make.conf\n"
-					printf "[22] --> [2] & [3] to run portage in next step - prints emerge at world which is neede dfor make.conf\n"
+					printf "[21] --> [1]-[3] create swap for setup; conf locales to run portage in next step - prints emerge at world which is neede dfor make.conf\n"
+					printf "[22] --> [3] to run portage in next step - prints emerge at world which is neede dfor make.conf\n"
 					printf "[23] --> [4]-[7].. eselect profile and 6. emergeatworld \n"
 					printf "[24] --> [8] & [9] .. setup system time and keymap \n"
 					printf "[25] --> [10] & [11] .. setup firmaware and copy bashrc\n"
@@ -396,7 +398,7 @@ NOTICE_START
 						SWAPFILE  # [1] # src/CHROOT/BASE/SWAPFILE.sh
 						;;
 					2)
-						MAKECONF  # [2] # src/CHROOT/BASE/MAKECONF.sh
+						EMERGE_ATWORLD_B  # [2] 
 						;;
 					3)
 						CONF_LOCALES  # [3] # src/CHROOT/BASE/CONF_LOCALES.sh
@@ -427,11 +429,11 @@ NOTICE_START
 						;;
 					21)
 						SWAPFILE  # [1]
-						MAKECONF  # [2]
+						EMERGE_ATWORLD_B
 						CONF_LOCALES  # [3]
 						;;
 					22)
-						MAKECONF  # [2]
+						EMERGE_ATWORLD_B
 						CONF_LOCALES  # [3]
 						;;
 					23)
@@ -449,7 +451,7 @@ NOTICE_START
 						CP_BASHRC  # [11]
 						;;
 					26)
-						MAKECONF  # [2]
+						EMERGE_ATWORLD_B  # [2]
 						CONF_LOCALES  # [3]
 						PORTAGE  # [4]
 						ESELECT_PROFILE  # [5]
@@ -462,7 +464,7 @@ NOTICE_START
 						;;
 					27)
 						SWAPFILE  # [1]
-						MAKECONF  # [2]
+						EMERGE_ATWORLD_B  # [2]
 						CONF_LOCALES  # [3]
 						PORTAGE  # [4]
 						ESELECT_PROFILE  # [5]
@@ -857,9 +859,9 @@ MAIN_MENU() {
 	printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▞▘▐▙▄▄▖  █  ▝▚▄▞▘▐▌       ▐▌  ▐▌▐▌ ▐▌▗▄█▄▖▐▌  ▐▌" "${RESET}"
 	printf "%s\n" "----------------------------------------------------------------------------------"
 	printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g: 1" "${RESET}"
-	printf "[1] --> PRE - NO menu\n"
-	printf "[2] --> CHROOT - NO menu\n"
-	printf "[3] --> PRE && CHROOT - NO menu\n"
+	printf "[1] --> (DISABLED) PRE - NO menu\n"
+	printf "[2] --> (DISABLED) CHROOT - NO menu\n"
+	printf "[3] --> (DISABLED) PRE && CHROOT - NO menu\n"
 	printf "[4] --> PRE - menu\n"
 	printf "[5] --> CHROOT - menu\n"
 	printf "[6] --> PRE menu && CHROOT - menu\n"
@@ -872,22 +874,25 @@ MAIN_MENU() {
 		1)
 			printf "Running the semi unattended PRE setup as configured in 10 seconds... Exit now to see options with -h or enter the menu when running the program with -m.\n"
 			printf "(default PRE asks for crypt password and disk wipe confirmation)"
+			printf "RUN ./run.sh -m, AUTO DISABLED"
 			sleep 10
-			PRE_NOMENU
+			#PRE_NOMENU
 			;;
 		2)
 			printf "Running the semi unattended CHROOT setup as configured in 10 seconds... Exit now to see options with -h or enter the menu when running the program with -m.\n"
 			printf "(Default CHROOT asks for kernel config menuconfig confirmation or edit and GPG password)"
+			printf "RUN ./run.sh -m, AUTO DISABLED"
 			sleep 10
-			CHROOT_NOMENU
+			#CHROOT_NOMENU
 			;;
 		3)
 			printf "Running the semi unattended setup as configured in 10 seconds... Exit now to see options with -h or enter the menu when running the program with -m.\n"
 			printf "(Default PRE asks for crypt password and disk wipe confirmation)"
 			printf "(Default CHROOT asks for kernel config menuconfig confirmation or edit and GPG password)"
+			printf "RUN ./run.sh -m, AUTO DISABLED"
 			sleep 10
-			PRE_NOMENU
-			CHROOT_NOMENU
+			#PRE_NOMENU
+			#CHROOT_NOMENU
 			;;
 		4)
 			PRE_MENU

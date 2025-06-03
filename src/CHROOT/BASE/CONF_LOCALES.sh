@@ -7,6 +7,7 @@
 			$PRESET_LOCALE_B ISO-8859-1
 			$PRESET_LOCALE_B.UTF-8 UTF-8
 			EOF
+			cat /etc/locale.gen
 		NOTICE_END
 		}
 		GEN_LOCALE () {
@@ -23,6 +24,7 @@
 				LC_COLLATE="C" # Define alphabetical ordering of strings. This affects e.g. output of sorted directory listings.
 				# LC_CTYPE=$PRESET_LOCALE_A.UTF-8 # (!NOTE: not tested yet)
 				EOF
+				cat /etc/env.d/02locale
 			NOTICE_END
 			}
 			SYSTEMLOCALE_SYSTEMD () {  # https://wiki.gentoo.org/wiki/Localization/Guide#systemd

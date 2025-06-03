@@ -6,7 +6,11 @@
 			free -h
 			emerge --sync
 			emerge --update --deep --with-bdeps=y @world
-			emerge --clean www-client/firefox-102.11.0
+
+			emerge --unmerge =www-client/firefox-102.11.0
+			emerge --depclean www-client/firefox
+			rm -rf /var/tmp/portage/www-client/firefox-102.11.0/
+
 			APPAPP_EMERGE="www-client/firefox"
 			PACKAGE_USE
 			ACC_KEYWORDS_USERAPP

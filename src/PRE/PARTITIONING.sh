@@ -1,6 +1,53 @@
 # variables defined in: gentoo_unattented-setup/var/1_PRE_main.sh && gentoo_unattented-setup/var/var_main.sh unless noted otherwise behind the var line / func
 
 PARTITIONING_MAIN  () {
+	CLEANUP_DISK () {
+		NOTICE_START
+			run_cmd() {
+			echo "RUNNING: $*"
+			"$@"
+			local status=$?
+			echo "EXIT STATUS: $status"
+			[[ $status -eq 0 ]] || echo "ERROR: Command failed: $* (exit status: $status)"
+		}
+		swapoff -a || true
+
+		umount -f $CHROOTX/boot || true
+		umount -f $CHROOTX || true
+		umount -f $BOOT_PART || true
+		umount -f /dev/mapper/$VG_MAIN-$LV_MAIN || true
+
+		lvchange -an $VG_MAIN || true
+		vgchange -an $VG_MAIN || true
+
+		if [ -e /dev/mapper/$VG_MAIN-$LV_MAIN ]; then
+		run_cmd wipefs -a /dev/mapper/$VG_MAIN-$LV_MAIN
+		fi
+
+		vgremove -ff $VG_MAIN || true
+		pvremove -ff /dev/mapper/$PV_MAIN || true
+		pvremove -ff $MAIN_PART || true
+
+		cryptsetup luksClose $PV_MAIN || true
+
+		dmsetup remove_all || true
+		kpartx -d $HDD1 || true
+
+		run_cmd wipefs -a $BOOT_PART
+		run_cmd wipefs -a $MAIN_PART
+		run_cmd wipefs -a $HDD1
+		run_cmd sgdisk --zap-all $HDD1
+		run_cmd dd if=/dev/zero of=$HDD1 bs=1M count=100 status=progress
+		blkdiscard $HDD1 || true
+
+		udevadm settle
+		sleep 1
+		partx -d $HDD1 || true
+		partprobe -s $HDD1 || true
+		udevadm settle
+
+	NOTICE_END
+	}
 	PARTITIONING_BIOS () {
 	NOTICE_START
 		PARTED () {  # LVM on LUKS https://wiki.archlinux.org/index.php/GNU_Parted
@@ -72,5 +119,6 @@ PARTITIONING_MAIN  () {
 		MAKEFS_BOOT
 	NOTICE_END
 	}
+CLEANUP_DISK
 PARTITIONING_$BOOTINITVAR
 }
