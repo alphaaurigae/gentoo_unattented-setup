@@ -20,7 +20,7 @@
 			AUTOSTART_NAME_SYSTEMD="$APPAPP_NAME_SIMPLE-monitor"
 			CONFIG_LVM2 () {
 			NOTICE_START
-				echo just a placeholder
+				printf '%s\n' "Placeholde"
 				# sed -e 's/# issue_discards = 0/issue_discards = 1/g' /etc/lvm/lvm.conf > /tmp/lvm.conf  # new line, probably not needed bec it worked well for boot anyways, leaving commented
 				# sed -e 's/issue_discards = 0/issue_discards = 1/g' /etc/lvm/lvm.conf > /tmp/lvm.conf  # old line, didnt uncomment issue discard, probably not needed bec it worked well for boot anyways
 				mv /tmp/lvm.conf /etc/lvm/lvm.conf
@@ -64,13 +64,13 @@
 							for i in  ${!FILESYSTEM_*}
 							do
 								if [ "${!i}" == "$LDGFSE" ]; then
-									echo "system / boot FS ${!i} = $LDGFSE pattern in search string for fstools repo variables $i "
-									echo "emerging ${!APPAPP_EMERGE}"
+									printf '%s\n' "system / boot FS ${!i} = $LDGFSE pattern in search string for fstools repo variables $i "
+									printf '%s\n' "emerging ${!APPAPP_EMERGE}"
 									#EMERGE_USERAPP_RD1
 								else
 									#printf '%s\n' "${!MATCHFS}"
 									#printf '%s\n' "${!i}"
-									echo "system / boot FS ${!i} != $LDGFSE pattern in search string for fstools repo variables $i "
+									printf '%s\n' "system / boot FS ${!i} != $LDGFSE pattern in search string for fstools repo variables $i "
 								fi
 							done
 						fi
@@ -82,24 +82,24 @@
 					for i in ${!FILESYSTEM_*}
 					do
 						if [[ "${!i}" == "msdos" || "${!FILESYSTEM_*}" == "vfat" || "${!FILESYSTEM_*}" == "fat" ]]; then
-							echo "${!i} IS BINGO dos fs"
+							printf '%s\n' "${!i} IS BINGO dos fs"
 							APPAPP_EMERGE="$(printf '%s\n' "$FST_EMERGE_VFAT")"
-							echo "emerging ${!APPAPP_EMERGE}"
+							printf '%s\n' "emerging ${!APPAPP_EMERGE}"
 							EMERGE_USERAPP_DEF
 						else
 							#printf '%s\n' "${!MATCHFS}"
 							#printf '%s\n' "${!i}"
-							echo "${!i} is not dos fs"
+							printf '%s\n' "${!i} is not dos fs"
 						fi
 						if [[ "${!i}" == *"ext"* ]]; then
-							echo "${!i} IS BINGO ext fs"
+							printf '%s\n' "${!i} IS BINGO ext fs"
 							APPAPP_EMERGE="$(printf '%s\n' "$FST_EMERGE_EXT")"
-							echo "emerging $APPAPP_EMERGE "
+							printf '%s\n' "emerging $APPAPP_EMERGE "
 							EMERGE_USERAPP_DEF
 						else
 							#printf '%s\n' "${!MATCHFS}"
 							#printf '%s\n' "${!i}"
-							echo "${!i} is not ext fs"
+							printf '%s\n' "${!i} is not ext fs"
 						fi
 					done
 				NOTICE_END

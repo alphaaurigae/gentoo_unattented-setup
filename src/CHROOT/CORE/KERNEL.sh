@@ -49,7 +49,7 @@
 					NOTICE_START
 
 						mv /usr/src/linux/.config /usr/src/linux/.oldconfig 
-						echo "ignore mv err"
+						printf '%s\n' "ignore mv err"
 						touch /usr/src/linux/.config
 
 						local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
@@ -111,14 +111,14 @@
 					DEBUG_KERNELINST() {
 					NOTICE_START
 					
-						echo "Verify module installation"
+						printf '%s\n' "Verify module installation"
 						ls -d /lib/modules/$FETCH_KERNEL_VERSION
 						modinfo -k $FETCH_KERNEL_VERSION
 
-						echo "Debug kernel installation"
-						[ -f "${BOOTDIR}/vmlinuz-${FETCH_KERNEL_VERSION}" ] || echo "Kernel image missing"
-						[ -f "${BOOTDIR}/System.map-${FETCH_KERNEL_VERSION}" ] || echo "System.map missing"
-						[ -f "${BOOTDIR}/config-${FETCH_KERNEL_VERSION}" ] || echo "Config missing"
+						printf '%s\n' "Debug kernel installation"
+						[ -f "${BOOTDIR}/vmlinuz-${FETCH_KERNEL_VERSION}" ] || printf '%s\n' "Kernel image missing"
+						[ -f "${BOOTDIR}/System.map-${FETCH_KERNEL_VERSION}" ] || printf '%s\n' "System.map missing"
+						[ -f "${BOOTDIR}/config-${FETCH_KERNEL_VERSION}" ] || printf '%s\n' "Config missing"
 
 						ls -l /boot/vmlinuz-$FETCH_KERNEL_VERSION 
 						ls -l /boot/System.map-$FETCH_KERNEL_VERSION 
@@ -128,18 +128,18 @@
 						ls -lh /boot/vmlinuz-*
 						ls -l /boot
 
-						echo "cd boot && ls -a log:"
+						printf '%s\n' "cd boot && ls -a log:"
 						cd /boot
 						ls -a
 					NOTICE_END
 					}
 
 					if $INSTALLKERNEL; then
-						echo "Installkernel is set to TRUE"
+						printf '%s\n' "Installkernel is set to TRUE"
 						DEBUG_KERNELINST
 					else
 
-						echo "Install kernel manually since installkernel script is not longer available with gentoo by default"
+						printf '%s\n' "Install kernel manually since installkernel script is not longer available with gentoo by default"
 						local SRC_IMAGE="/usr/src/linux/arch/x86/boot/bzImage"
 						local DEST_IMAGE="/boot/vmlinuz-${FETCH_KERNEL_VERSION}"
 						local DEST_MAP="/boot/System.map-${FETCH_KERNEL_VERSION}"
@@ -164,7 +164,7 @@
 				lsmod  # active modules by install medium.
 				KERN_CONF  # kernel configure set
 				KERN_BUILD  # kernel build set
-				echo "ignore err grub-mkconfig if grub not installed yet"
+				printf '%s\n' "ignore err grub-mkconfig if grub not installed yet"
 				grub-mkconfig -o /boot/grub/grub.cfg  # update grub in case its already installed ....
 			NOTICE_END
 			}
@@ -184,7 +184,7 @@
 					NOTICE_START
 						# genkernel --config=/etc/genkernel.conf all
 						genkernel --luks --lvm --no-zfs all
-						echo "ignore err grub-mkconfig if grub not installed yet"
+						printf '%s\n' "ignore err grub-mkconfig if grub not installed yet"
 						grub-mkconfig -o /boot/grub/grub.cfg  # update grub in case its already installed ....
 					NOTICE_END
 					}
@@ -211,10 +211,10 @@
 		}
 		KERN_LOAD  # load kernel source (download, copy ; etc ....)
 		if $INSTALLKERNEL; then
-			echo "Installkernel is set to TRUE"
+			printf '%s\n' "Installkernel is set to TRUE"
 			INSTALLKERNEL
 		else
-			echo "Installkernel not set to TRUE"
+			printf '%s\n' "Installkernel not set to TRUE"
 		fi
 		KERN_DEPLOY  # config / build
 		KERNEL_HEADERS

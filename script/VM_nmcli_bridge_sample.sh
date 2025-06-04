@@ -22,7 +22,7 @@ MOD_BRIDGE () {
 
 REMOVE_DEFWIRE () {
 	wired1="Wired connection 1"
-	nmcli con down "$(echo $wired1)"
+	nmcli con down "$(printf '%s\n' "$wired1")"
 }
 
 START_BRIDGE () {

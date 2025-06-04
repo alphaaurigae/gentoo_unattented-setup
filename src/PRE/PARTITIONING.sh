@@ -4,11 +4,11 @@ PARTITIONING_MAIN  () {
 	CLEANUP_DISK () {
 		NOTICE_START
 			run_cmd() {
-			echo "RUNNING: $*"
+			printf '%s\n' "RUNNING: $*"
 			"$@"
 			local status=$?
-			echo "EXIT STATUS: $status"
-			[[ $status -eq 0 ]] || echo "ERROR: Command failed: $* (exit status: $status)"
+			printf '%s\n' "EXIT STATUS: $status"
+			[[ $status -eq 0 ]] || printf '%s\n' "ERROR: Command failed: $* (exit status: $status)"
 		}
 		swapoff -a || true
 

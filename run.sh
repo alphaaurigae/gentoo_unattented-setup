@@ -45,7 +45,7 @@ NOTICE_START
 		MNTFS
 		COPY_CONFIGS
 	}
-	for f in src/PRE/*; do . $f && echo $f; done  # source src/PRE/*
+	for f in src/PRE/*; do . $f && printf '%s\n' "$f"; done  # source src/PRE/*
 	PRE_RUNALL
 }
 
@@ -175,7 +175,7 @@ NOTICE_START
 		BASE () {
 		NOTICE_START
 
-			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && echo $f; done
+			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && printf '%s\n' "$f"; done
 
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▖  ▗▄▖  ▗▄▄▖▗▄▄▄▖" "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
@@ -200,7 +200,7 @@ NOTICE_START
 		CORE () {
 		NOTICE_START
 
-			for f in gentoo_unattented-setup/src/CHROOT/CORE/*; do . $f && echo $f; done
+			for f in gentoo_unattented-setup/src/CHROOT/CORE/*; do . $f && printf '%s\n' "$f"; done
 
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖ ▗▄▖ ▗▄▄▖ ▗▄▄▄▖" "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌   " "${RESET}"
@@ -227,7 +227,7 @@ NOTICE_START
 		SCREENDSP () {  # note: replace visual header with "screen and desktop"
 		NOTICE_START
 
-			for f in gentoo_unattented-setup/src/CHROOT/SCREENDSP/*; do . $f && echo $f; done
+			for f in gentoo_unattented-setup/src/CHROOT/SCREENDSP/*; do . $f && printf '%s\n' "$f"; done
 
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖ ▗▄▄▖▗▄▄▖ ▗▄▄▄▖▗▄▄▄▖▗▖  ▗▖▗▄▄▄  ▗▄▄▖▗▄▄▖ " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌   ▐▌ ▐▌▐▌   ▐▌   ▐▛▚▖▐▌▐▌  █▐▌   ▐▌ ▐▌" "${RESET}"
@@ -242,7 +242,7 @@ NOTICE_START
 		USERAPP () {  # (!todo)
 		NOTICE_START
 
-			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && echo $f; done
+			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && printf '%s\n' "$f"; done
 
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▄▄▖ ▗▄▄▖ " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌" "${RESET}"
@@ -257,7 +257,7 @@ NOTICE_START
 		USERS () {
 		NOTICE_START
 
-			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && echo $f; done
+			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && printf '%s\n' "$f"; done
 
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▄▖" "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌   " "${RESET}"
@@ -272,7 +272,7 @@ NOTICE_START
 		FINISH () {  # tidy up installation files - ok
 		NOTICE_START
 
-			for f in gentoo_unattented-setup/src/CHROOT/FINISH/*; do . $f && echo $f; done
+			for f in gentoo_unattented-setup/src/CHROOT/FINISH/*; do . $f && printf '%s\n' "$f"; done
 
 			printf "%s%s%s\n" "${BOLD}${GREEN}" "  ________________________________________  " "${RESET}"
 			printf "%s%s%s\n" "${BOLD}${GREEN}" " / CONGRATS!                              \\" "${RESET}"
@@ -315,7 +315,7 @@ NOTICE_START
 			# IMPORTANT: The following commands are executed BEFORE the above INNERSCRIPT (BELOW chroot $CHROOTX /bin/bash ./chroot_run.sh). If a file needs to be made available in the INNERSCRIPT, copy it before (chroot $CHROOTX /bin/bash ./chroot_run.sh) within this CHROOT function!
 			rm -rf $CHROOTX/gentoo_unattented-setup
 			ls -la /root
-			echo $CHROOTX
+			printf '%s\n' "$CHROOTX"
 			cp -R /root/gentoo_unattented-setup $CHROOTX/gentoo_unattented-setup
 			ls -la $CHROOTX
 			
@@ -323,7 +323,7 @@ NOTICE_START
 		}
 		CHROOT_INNER () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment
 		NOTICE_START
-			echo "$INNER_SCRIPT" > $CHROOTX/chroot_main.sh
+			printf '%s\n' "$INNER_SCRIPT" > $CHROOTX/chroot_main.sh
 			chmod +x $CHROOTX/chroot_main.sh
 			chroot $CHROOTX /bin/bash ./chroot_main.sh
 		NOTICE_END
@@ -352,7 +352,7 @@ NOTICE_START
 
 		BASE () {
 		NOTICE_START
-			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && echo $f; done
+			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && printf '%s\n' "$f"; done
 
 			CHROOT_BASE_MENU () {
 				CHROOT_BASE_CHOOSE() {
@@ -494,7 +494,7 @@ NOTICE_START
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		CORE () {
 		NOTICE_START
-			for f in gentoo_unattented-setup/src/CHROOT/CORE/*; do . $f && echo $f; done
+			for f in gentoo_unattented-setup/src/CHROOT/CORE/*; do . $f && printf '%s\n' "$f"; done
 
 			CHROOT_CORE_MENU () {
 				CHROOT_CORE_CHOOSE() {
@@ -665,7 +665,7 @@ NOTICE_START
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		SCREENDSP () {  # note: replace visual header with "screen and desktop"
 		NOTICE_START
-			for f in gentoo_unattented-setup/src/CHROOT/SCREENDSP/*; do . $f && echo $f; done
+			for f in gentoo_unattented-setup/src/CHROOT/SCREENDSP/*; do . $f && printf '%s\n' "$f"; done
 
 			CHROOT_SCREENDSP_MENU () {
 				CHROOT_SCREENDSP_CHOOSE() {
@@ -720,7 +720,7 @@ NOTICE_START
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		USERAPP () {  # (!todo)
 		NOTICE_START
-			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && echo $f; done
+			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && printf '%s\n' "$f"; done
 
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▄▄▖ ▗▄▄▖ " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌" "${RESET}"
@@ -735,7 +735,7 @@ NOTICE_START
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		USERS () {
 		NOTICE_START
-			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && echo $f; done
+			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && printf '%s\n' "$f"; done
 
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▄▖" "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌   " "${RESET}"
@@ -749,7 +749,7 @@ NOTICE_START
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		FINISH () {  # tidy up installation files - ok
 		NOTICE_START
-			for f in gentoo_unattented-setup/src/CHROOT/FINISH/*; do . $f && echo $f; done
+			for f in gentoo_unattented-setup/src/CHROOT/FINISH/*; do . $f && printf '%s\n' "$f"; done
 
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "  ________________________________________  " "${RESET}"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" " / CONGRATS!                              \\" "${RESET}"
@@ -832,7 +832,7 @@ NOTICE_START
 			# IMPORTANT: The following commands are executed BEFORE the above INNERSCRIPT (BELOW chroot $CHROOTX /bin/bash ./chroot_run.sh). If a file needs to be made available in the INNERSCRIPT, copy it before (chroot $CHROOTX /bin/bash ./chroot_run.sh) within this CHROOT function!
 			rm -rf $CHROOTX/gentoo_unattented-setup
 			ls -la /root
-			echo $CHROOTX
+			printf '%s\n' "$CHROOTX"
 			cp -R /root/gentoo_unattented-setup $CHROOTX/gentoo_unattented-setup
 			ls -la $CHROOTX
 			
@@ -840,7 +840,7 @@ NOTICE_START
 		}
 		CHROOT_INNER () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment
 		NOTICE_START
-			echo "$INNER_SCRIPT" > $CHROOTX/chroot_main.sh
+			printf '%s\n' "$INNER_SCRIPT" > $CHROOTX/chroot_main.sh
 			chmod +x $CHROOTX/chroot_main.sh
 			chroot $CHROOTX /bin/bash ./chroot_main.sh
 		NOTICE_END

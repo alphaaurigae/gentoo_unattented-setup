@@ -45,11 +45,11 @@
 			local MOD
 
 			if [ "$CRYPTSETUP" = "YES" ]; then
-				echo "CRYPTSETUP=YES"
+				printf '%s\n' "CRYPTSETUP=YES"
 				MOD=$(printf '%s\n' "$PRESET_USEFLAG_CRYPTSETUP")
 				
 			else
-				echo "CRYPTSETUP=NO"
+				printf '%s\n' "CRYPTSETUP=NO"
 				MOD=$(printf '%s\n' "$PRESET_USEFLAG_LVMROOT" )
 
 			fi
@@ -60,7 +60,7 @@
 		}
 
 		MAKECONF_VARIABLES
-		echo "/mnt/gentoo/etc/portage/make.conf"
+		printf '%s\n' "/mnt/gentoo/etc/portage/make.conf"
 		cat $CHROOTX/etc/portage/make.conf
 	NOTICE_END
 	}

@@ -3,8 +3,8 @@
 		NET_SYS () {
 		NOTICE_START
 			HOSTSFILE () {  # (! default)
-				echo "$HOSTNAME" > /etc/hostname
-				echo "127.0.0.1	localhost
+				printf '%s\n' "$HOSTNAME" > /etc/hostname
+				printf '%s\n' "127.0.0.1	localhost
 				::1		localhost
 				127.0.1.1	$HOSTNAME.$DOMAIN	$HOSTNAME" > /etc/hosts
 				cat /etc/hosts

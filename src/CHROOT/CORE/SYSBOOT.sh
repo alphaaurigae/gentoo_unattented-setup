@@ -27,14 +27,14 @@
 						PRE_GRUB2BIOS () {
 						NOTICE_START
 							sed -i '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
-							echo 'GRUB_PLATFORMS="pc"' >> /etc/portage/make.conf
+							printf '%s\n' 'GRUB_PLATFORMS="pc"' >> /etc/portage/make.conf
 							EMERGE_ATWORLD_A
 						NOTICE_END
 						}
 						PRE_GRUB2BIOS
 						grub-install --recheck --modules="${GRUB_PRELOAD_MODULES}" --target=i386-pc $HDD1
 						ls /boot/grub/i386-pc/
-						echo "grub-probe --target=fs /boot"
+						printf '%s\n' "grub-probe --target=fs /boot"
 						grub-probe --target=fs /boot
 						grub-install --version
 					NOTICE_END
@@ -45,7 +45,7 @@
 						NOTICE_START
 							sed -i '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
 							sed -i '/GRUB_PLATFORMS="efi-64/d' /etc/portage/make.conf
-							echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
+							printf '%s\n' 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
 							EMERGE_ATWORLD_A
 						NOTICE_END
 						}
@@ -70,7 +70,7 @@
 						local SRC="/gentoo_unattented-setup/configs/default/grub.sh"
 						local DST="/etc/default/grub"
 						cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
-						echo "may ignore complaining cp"
+						printf '%s\n' "may ignore complaining cp"
 					NOTICE_END
 					}
 					CONFGRUB2_OPENRC () {  # https://wiki.gentoo.org/wiki/GRUB2

@@ -48,17 +48,17 @@
 		LVM_ROOT () {
 		NOTICE_START
 
-  echo "DEBUG: MAIN_PART='$MAIN_PART' VG_MAIN='$VG_MAIN' LV_MAIN='$LV_MAIN' CHROOTX='$CHROOTX' BOOT_PART='$BOOT_PART'"
-  run_cmd() {
-    echo "RUNNING: $*"
-    "$@"
-    local status=$?
-    echo "EXIT STATUS: $status"
-    [[ $status -eq 0 ]] || {
-      echo "ERROR: Command failed: $*"
-      exit $status
-    }
-  }
+			printf '%s\n' "DEBUG: MAIN_PART='$MAIN_PART' VG_MAIN='$VG_MAIN' LV_MAIN='$LV_MAIN' CHROOTX='$CHROOTX' BOOT_PART='$BOOT_PART'"
+			run_cmd() {
+				printf '%s\n' "RUNNING: $*"
+				"$@"
+				local status=$?
+				printf '%s\n' "EXIT STATUS: $status"
+				[[ $status -eq 0 ]] || {
+				printf '%s\n' "ERROR: Command failed: $*"
+				exit $status
+				}
+			}
 			LVM_PV () {
 			NOTICE_START
 				run_cmd pvcreate $MAIN_PART
@@ -105,10 +105,10 @@
 		RUN_LVMSET () {
 		NOTICE_START
 			if [ $CRYPTSETUP = "YES" ]; then
-				echo "LVMONLUKS"
+				printf '%s\n' "LVMONLUKS"
 				LVMONLUKS
 			else
-				echo "LVM_ROOT"
+				printf '%s\n' "LVM_ROOT"
 				LVM_ROOT
 			fi
 		NOTICE_END

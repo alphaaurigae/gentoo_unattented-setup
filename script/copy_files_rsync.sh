@@ -9,7 +9,7 @@ RSYNC_REPO_TO_VBOX () {
 	printf '%q\n' "$VMIPV4"
 	SSH_KEY_CHECK=$(ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=5 root@"$VMIPV4" exit 2>&1)
 
-	if echo "$SSH_KEY_CHECK" | grep -qE 'WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED|Offending key|Host key verification failed'; then
+	if printf '%s\n' "$SSH_KEY_CHECK" | grep -qE 'WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED|Offending key|Host key verification failed'; then
 	ssh-keygen -R "$VMIPV4"
 	fi
 

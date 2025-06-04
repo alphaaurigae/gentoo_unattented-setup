@@ -1,9 +1,9 @@
 # print function names
 NOTICE_START () {
-	echo "${bold} ${FUNCNAME[1]} ... START ... ${normal}"
+	printf '%s\n' "${bold} ${FUNCNAME[1]} ... START ... ${normal}"
 }
 NOTICE_END () {
-	echo "${bold}${FUNCNAME[1]}  ... END ... ${normal}"
+	printf '%s\n' "${bold}${FUNCNAME[1]}  ... END ... ${normal}"
 }
 
 BOLD=$(tput bold)
@@ -35,7 +35,7 @@ NOTICE_START
 	local SRC_HASH=$(sha256sum < "$SRC") &&
 	local DST_HASH=$(sha256sum < "$DST") &&
 	[ "$SRC_HASH" = "$DST_HASH" ] &&
-	echo "Copied and verified: $SRC -> $DST" || echo "Copy failed or mismatch: $SRC -> $DST"
+	printf '%s\n' "Copied and verified: $SRC -> $DST" || printf '%s\n' "Copy failed or mismatch: $SRC -> $DST"
 NOTICE_END
 }
 

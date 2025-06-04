@@ -17,15 +17,15 @@
 					modprobe -a "${modules[@]}" || fail=1
 					for m in "${modules[@]}"; do
 						if ! lsmod | grep -q "^$m"; then
-							echo "Module not loaded: $m"
+							printf '%s\n' "Module not loaded: $m"
 							fail=1
 						fi
 					done
 
 					if [ "$fail" -eq 0 ]; then
-						echo "All modules loaded successfully."
+						printf '%s\n' "All modules loaded successfully."
 					else
-						echo "One or more modules failed to load."
+						printf '%s\n' "One or more modules failed to load."
 					fi
 					lsmod
 
@@ -38,7 +38,7 @@
 				}
 				LUKS_CRYPTSETUP	() {
 				NOTICE_START
-					echo "${bold}Enter the $PV_MAIN password${normal}"
+					printf '%s\n' "${bold}Enter the $PV_MAIN password${normal}"
 					# cryptsetup -v luksFormat --type luks2 --pbkdf argon2id --pbkdf-memory 4096 --pbkdf-parallel 2 --pbkdf-force-iterations 4 $MAIN_PART --debug ## did not work apparently - not sure tough
 
 					# cryptsetup -v luksFormat --type luks2 --pbkdf pbkdf2 --cipher aes-xts-plain64 --key-size 512 --hash sha512 $MAIN_PART --debug  ## not tested
@@ -67,10 +67,10 @@
 			NOTICE_END
 			}
 			if [ $CRYPTSETUP = "YES" ]; then
-				echo "Cryptsetup is set to YES in the script variables --> PRECEEDING WITH CRYPTSETUP!"
+				printf '%s\n' "Cryptsetup is set to YES in the script variables --> PRECEEDING WITH CRYPTSETUP!"
 				RUN_CRYPTSETUP
 			else
-				echo "Cryptsetup is NOT set to YES --> SKIPPING CRYPTSETUP!"
+				printf '%s\n' "Cryptsetup is NOT set to YES --> SKIPPING CRYPTSETUP!"
 			fi
 		NOTICE_END
 		}

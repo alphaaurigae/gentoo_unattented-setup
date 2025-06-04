@@ -30,9 +30,9 @@
 						local MOD
 
 						if [ "$CRYPTSETUP" = "YES" ]; then
-							MOD="$(echo "$DRACUT_CONF_MODULES_CRYPTSETUP" | xargs)"
+							MOD="$(printf '%s\n' "$DRACUT_CONF_MODULES_CRYPTSETUP" | xargs)"
 						else
-							MOD="$(echo "$DRACUT_CONF_MODULES_LVM" | xargs)"
+							MOD="$(printf '%s\n' "$DRACUT_CONF_MODULES_LVM" | xargs)"
 						fi
 
 						cat <<-EOF > /etc/dracut.conf
@@ -44,7 +44,7 @@
 						add_dracutmodules+=" ${MOD} "
 						EOF
 
-						chmod 600 /etc/dracut.conf || echo "Failed chmod /etc/dracut.conf"
+						chmod 600 /etc/dracut.conf || printf '%s\n' "Failed chmod /etc/dracut.conf"
 						cat /etc/dracut.conf
 					NOTICE_END
 					}
@@ -58,12 +58,12 @@
 
 					local KERNEL_BUILD_DIR="/usr/src/linux"
 					local FETCH_KERNEL_VERSION="$(make -sC "$KERNEL_BUILD_DIR" kernelrelease)"
-					echo "$(readlink -f $KERNEL_BUILD_DIR)"
-					echo "$FETCH_KERNEL_VERSION"
+					printf '%s\n' "$(readlink -f $KERNEL_BUILD_DIR)"
+					printf '%s\n' "$FETCH_KERNEL_VERSION"
 
-					[ -n "$FETCH_KERNEL_VERSION" ] || { echo "Failed to determine kernel version"; }
-					[ -d "/boot" ] || { echo "/boot not mounted or missing"; }
-					[ -d "/lib/modules/${FETCH_KERNEL_VERSION}" ] || { echo "Missing modules for $FETCH_KERNEL_VERSION"; }
+					[ -n "$FETCH_KERNEL_VERSION" ] || { printf '%s\n' "Failed to determine kernel version"; }
+					[ -d "/boot" ] || { printf '%s\n' "/boot not mounted or missing"; }
+					[ -d "/lib/modules/${FETCH_KERNEL_VERSION}" ] || { printf '%s\n' "Missing modules for $FETCH_KERNEL_VERSION"; }
 
 
 					DEBUG_DRACUT () {
@@ -83,7 +83,7 @@
 					}
 
 					if $INSTALLKERNEL; then
-						echo "installkernel set to TRUE"
+						printf '%s\n' "installkernel set to TRUE"
 						#dracut --force '' $(ls /lib/modules)
 						#dracut --force --kver "${FETCH_KERNEL_VERSION}"
 						dracut --force "/boot/initramfs-${FETCH_KERNEL_VERSION}.img" "$FETCH_KERNEL_VERSION"
@@ -95,11 +95,11 @@
 					local INITRAMFS_LINK="/boot/initramfs.img"
 
 					dracut --force "$INITRAMFS_PATH" "$FETCH_KERNEL_VERSION" \
-						--kmoddir "/lib/modules/${FETCH_KERNEL_VERSION}" || { echo "dracut failed"; }
+						--kmoddir "/lib/modules/${FETCH_KERNEL_VERSION}" || { printf '%s\n' "dracut failed"; }
 
-					[ -f "$INITRAMFS_PATH" ] || { echo "Dracut did not create initramfs"; }
+					[ -f "$INITRAMFS_PATH" ] || { printf '%s\n' "Dracut did not create initramfs"; }
 
-					ln -sf "$INITRAMFS_PATH" "$INITRAMFS_LINK" || echo "symlink creation failed"
+					ln -sf "$INITRAMFS_PATH" "$INITRAMFS_LINK" || printf '%s\n' "symlink creation failed"
 
 					DEBUG_DRACUT
 					fi
@@ -121,7 +121,7 @@
 		if [ "$CONFIGBUILDKERN" != "AUTO" ]; then
 			INITRAMFS
 		else
-			echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
+			printf '%s\n' 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
 		fi
 	NOTICE_END
 	}

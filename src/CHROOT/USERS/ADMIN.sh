@@ -12,18 +12,18 @@ NOTICE_START
 	NOTICE_START
 		ASK_PASSWD () {
 		NOTICE_START
-			echo "${bold}Enter new $SYSUSERNAME password${normal}"
+			printf '%s\n' "${bold}Enter new $SYSUSERNAME password${normal}"
 			until passwd $SYSUSERNAME
 			do
-			  echo "${bold}Enter new $SYSUSERNAME password${normal}"
+				printf '%s\n' "${bold}Enter new $SYSUSERNAME password${normal}"
 			done
 		NOTICE_END
 		}
 		local USERGROUPS_CSV="${USERGROUPS// /,}"
 		if id "$SYSUSERNAME" &>/dev/null; then
-			usermod -a -G "$USERGROUPS_CSV" "$SYSUSERNAME" || echo "Failed to modify user groups" >&2
+			usermod -a -G "$USERGROUPS_CSV" "$SYSUSERNAME" || printf '%s\n' "Failed to modify user groups" >&2
 		else
-			useradd -m -g users -G "$USERGROUPS_CSV" -s /bin/bash "$SYSUSERNAME" || { echo "Failed to add user" >&2; }
+			useradd -m -g users -G "$USERGROUPS_CSV" -s /bin/bash "$SYSUSERNAME" || { printf '%s\n' "Failed to add user" >&2; }
 		fi
 		ASK_PASSWD
 	NOTICE_END

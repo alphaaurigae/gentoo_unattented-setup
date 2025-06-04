@@ -106,7 +106,7 @@
 					NOTICE_START
 					mkdir -pv /etc/portage/package.use
 					sed -ie '#dde-base/dde-meta multimedia#d' /etc/portage/package.use/deepin
-					echo "dde-base/dde-meta multimedia" >> /etc/portage/package.use/deepin
+					printf '%s\n' "dde-base/dde-meta multimedia" >> /etc/portage/package.use/deepin
 					APPAPP_EMERGE="dde-base/dde-meta "
 					EMERGE_USERAPP_DEF
 					NOTICE_END
@@ -212,7 +212,7 @@
 					local DST="/home/$SYSUSERNAME/.config/autostart/nm-applet.desktop"
 					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
 
-					echo 'X-GNOME-Autostart-enabled=false' >> /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
+					printf '%s\n' 'X-GNOME-Autostart-enabled=false' >> /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
 					chown $SYSUSERNAME:$SYSUSERNAME /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
 				else
 					NOTICE_PLACEHOLDER

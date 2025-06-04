@@ -2,10 +2,10 @@
 	NOTICE_START
 		SET_TIMEZONE () {
 		NOTICE_START
-			echo $SYSTIMEZONE_SET > /etc/timezone
+			printf '%s\n' "$SYSTIMEZONE_SET" > /etc/timezone
 			TIMEZONE_OPENRC () {
 			NOTICE_START
-				echo "$SYSTIMEZONE_SET" > /etc/timezone
+				printf '%s\n' "$SYSTIMEZONE_SET" > /etc/timezone
 				APPAPP_EMERGE=" --config sys-libs/timezone-data "
 				EMERGE_USERAPP_DEF
 			NOTICE_END
@@ -77,8 +77,8 @@
 			hwclock --systohc
 		NOTICE_END
 		}
-		SET_TIMEZONE  # echos err for systemd if install medium isnt systemd
-		SET_SYSTEMCLOCK  # echos err for systemd, if install medium isnt systemd
+		SET_TIMEZONE  # err for systemd if install medium isnt systemd
+		SET_SYSTEMCLOCK  # err for systemd, if install medium isnt systemd
 		SET_HWCLOCK
 	NOTICE_END
 	}

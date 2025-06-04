@@ -24,7 +24,7 @@
 		}
 		PERMANENT_SWAP () {
 		NOTICE_START
-			echo "$SWAPFD/${SWAPFILE}_${SWAPSIZE} none swap sw 0 0" >> /etc/fstab
+			printf '%s\n' "$SWAPFD/${SWAPFILE}_${SWAPSIZE} none swap sw 0 0" >> /etc/fstab
 			cat /etc/fstab
 		NOTICE_END
 		}

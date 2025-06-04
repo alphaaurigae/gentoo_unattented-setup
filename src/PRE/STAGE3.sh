@@ -14,7 +14,7 @@
 				| cut -d' ' -f1 \
 				| sed -r 's/\.tar\.xz$//')"
 
-				echo $STAGE3_FILEPATH
+				printf '%s\n' "$STAGE3_FILEPATH"
 
 				LIST="$STAGE3_FILEPATH.tar.xz
 				$STAGE3_FILEPATH.tar.xz.CONTENTS.gz
@@ -25,14 +25,13 @@
 			FETCH_STAGE3_FETCH () {
 			NOTICE_START
 				for i in $LIST; do
-					#echo "${bold}FETCH $i ....${normal}"
-					echo $GENTOO_RELEASE_URL/$i
+					printf '%s\n' "$GENTOO_RELEASE_URL/$i"
 					wget -P $CHROOTX/ $GENTOO_RELEASE_URL/"$i"  # stage3.tar.xz (!NOTE: main stage3 archive) # OLD single: wget -P $CHROOTX/ http://distfiles.gentoo.org/releases/amd64/autobuilds/"$STAGE3_FILENAME"  # stage3.tar.xz (!NOTE: main stage3 archive)
 
-					if [ -f "$CHROOTX/$( echo $i| rev | cut -d'/' -f-1 | rev)" ]; then
-						echo "$CHROOTX/$(echo "$i" | rev | cut -d'/' -f-1 | rev) found - OK"
+					if [ -f "$CHROOTX/$(printf '%s' "$i" | rev | cut -d'/' -f-1 | rev)" ]; then
+						printf '%s\n' "$CHROOTX/$(printf '%s\n' "$i" | rev | cut -d'/' -f-1 | rev) found - OK"
 					else
-						echo "ERROR: $CHROOTX/$(echo "$i" | rev | cut -d'/' -f-1 | rev) not found!"
+						printf '%s\n' "ERROR: $CHROOTX/$(printf '%s\n' "$i" | rev | cut -d'/' -f-1 | rev) not found!"
 					fi
 				done
 			NOTICE_END
@@ -46,7 +45,7 @@
 			SET_VAR_STAGE3_VERIFY (){
 			NOTICE_START
 				STAGE3_FILENAME="$(cd $CHROOTX/ && ls stage3-* | awk '{ print $1 }' | awk 'FNR == 1 {print}' | sed -r 's/\.tar\.xz//g' )"  # | rev | cut -d'/' -f-1 | rev
-				echo "$STAGE3_FILENAME"
+				printf '%s\n' "$STAGE3_FILENAME"
 			NOTICE_END
 			}
 			RECEIVE_GPGKEYS () {  # Which key is actually needed? for i in
@@ -58,8 +57,8 @@
 					$GENTOO_EBUILD_KEYFINGERPRINT4
 				"
 				for i in $GENTOOKEYS ; do
-					echo "${bold}$i=$i ....${normal}"
-					echo "${bold}gpg --keyserver $KEYSERVER --recv-keys $i ....${normal}"
+					printf '%s\n' "${bold}$i=$i ....${normal}"
+					printf '%s\n' "${bold}gpg --keyserver $KEYSERVER --recv-keys $i ....${normal}"
 					gpg --keyserver $GPG_KEYSERV --recv-keys "$i"  # Fetch the key https://www.gentoo.org/downloads/signatures/
 				done
 				# gpg --list-keys
@@ -68,14 +67,14 @@
 			VERIFY_UNPACK () {
 			NOTICE_START
 				if gpg  --verify "$CHROOTX/$STAGE3_FILENAME.tar.xz.asc" ; then 
-					echo "gpg  --verify $CHROOTX/$STAGE3_FILENAME.tar.xz.asc - OK"
+					printf '%s\n' "gpg  --verify $CHROOTX/$STAGE3_FILENAME.tar.xz.asc - OK"
 					# unfinished https://forums.gentoo.org/viewtopic-t-1044026-start-0.html			
 					grep -A 1 -i sha512 $CHROOTX/$STAGE3_FILENAME.tar.xz.asc  # With the cryptographic signature validated, next verify the checksum to make sure the downloaded ISO file is not corrupted. The .DIGESTS.asc file contains multiple hashing algorithms, so one of the methods to validate the right one is to first look at the checksum registered in the .DIGESTS.asc file. For instance, to get the SHA512 checksum:  In the above output, two SHA512 checksums are shown - one for the install-amd64-minimal-20141204.iso file and one for its accompanying .CONTENTS file. Only the first checksum is of interest, as it needs to be compared with the calculated SHA512 checksum which can be generated as follows: 
-						#echo "grep -A 1 -i sha512 $CHROOTX/$STAGE3_FILENAME.tar.xz.asc - OK"
-						echo 'STAGE3_UNPACK ....'
+						#printf '%s\n' "grep -A 1 -i sha512 $CHROOTX/$STAGE3_FILENAME.tar.xz.asc - OK"
+						printf '%s\n' "STAGE3_UNPACK ...."
 						tar xvJpf $CHROOTX/$STAGE3_FILENAME.tar.xz --xattrs-include='*.*' --numeric-owner -C $CHROOTX
 				else 
-					echo "SIGNATURE ALERT!"
+					printf '%s\n' "SIGNATURE ALERT!"
 				fi
 			NOTICE_END
 			}

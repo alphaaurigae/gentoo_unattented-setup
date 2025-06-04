@@ -43,7 +43,7 @@
 					AUTOSTART_NAME_OPENRC=$SYSKLOGD_SYSLOG_OPENRC
 					SYSLOG_EMERGE=$SYSLOGNG_SYSLOG_EMERGE
 				else
-					echo "${bold}ERROR: Could not detect '$SYSLOG' - debug syslog $SYSLOG ${normal}"
+					printf '%s\n' "${bold}ERROR: Could not detect '$SYSLOG' - debug syslog $SYSLOG ${normal}"
 				fi
 			NOTICE_END
 			}

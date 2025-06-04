@@ -8,20 +8,20 @@
                 #}
         CHRONYD() {
                 if chronyd -q 'server pool.ntp.org iburst' >/dev/null 2>&1; then
-                        echo "chronyd: ok"
+                        printf '%s\n' "chronyd: ok"
                         return 0
                 else
-                        echo "chronyd: fail"
+                        printf '%s\n' "chronyd: fail"
                         return 1
                 fi
                 }
 
         SNTP() {
                 if sntp -s pool.ntp.org >/dev/null 2>&1; then
-                        echo "sntp: ok"
+                        printf '%s\n' "sntp: ok"
                         return 0
                 else
-                        echo "sntp: fail"
+                        printf '%s\n' "sntp: fail"
                         return 1
                 fi
                 }
