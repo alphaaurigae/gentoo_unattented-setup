@@ -30,6 +30,7 @@
 
 		# CORE
 		### KERNEL
+		INSTALLKERNEL="true" # true/false to use installkernel https://wiki.gentoo.org/wiki/Installkernel
 		KERNDEPLOY="MANUAL"  # (!default); AUTO (genkernel)  # use in gentoo_unattented-setup/src/CHROOT/CORE/KERNEL.sh
 		KERNVERS="5.3-rc4"  # for MANUAL setup  # use in gentoo_unattented-setup/src/CHROOT/CORE/KERNEL.sh
 		KERNSOURCES="EMERGE"  # EMERGE (!default) ; TORVALDS (git repository)  # use in gentoo_unattented-setup/src/CHROOT/CORE/KERNEL.sh
@@ -131,6 +132,7 @@
 		
 
 		# SET USEFLAGS (!NOTE: names follow a pattern which must be kept for functions to read it ... "USERFLADS_"emerge_ name"  : "-" is replaced with "_" and lower converted to uppercase letters)
+		USEFLAGS_INSTALLKERNEL="dracut grub"  # https://wiki.gentoo.org/wiki/Installkernel
 
 		USEFLAGS_LINUX_FIRMWARE="initramfs redistributable unknown-license"  # https://packages.gentoo.org/packages/sys-kernel/linux-firmware https://wiki.gentoo.org/wiki/Linux_firmware
 

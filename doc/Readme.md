@@ -24,21 +24,21 @@
 
 ### PRE
 Variables for pre setup:
-(Sourced in run.sh)
+(Sourced in https://github.com/alphaaurigae/gentoo_unattented-setup/run.sh)
 ```
 var/var_main.sh
 var/pre_variables.sh
 ```
 
 General functions for PRE setup:
-(Sourced in run.sh below the PRE menu))
+(Sourced in https://github.com/alphaaurigae/gentoo_unattented-setup/run.sh below the PRE menu))
 ```
 func/func_main.sh
 src/PRE/*
 ```
 
 #### PARTITIONING
-> https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/src/PRE/PARTITIONING.sh
+> https://github.com/alphaaurigae/gentoo_unattented-setup/src/PRE/PARTITIONING.sh
 > Testing on ~95GB VM.
 - sda single drive setup
 - sda1 bios boot
@@ -46,46 +46,46 @@ src/PRE/*
 - sda3 main part - fs ext4 - lvm on cryptsetup or alt lvm on root
 
 #### STAGE3
-> https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/src/PRE/STAGE3.sh
+> https://github.com/alphaaurigae/gentoo_unattented-setup/src/PRE/STAGE3.sh
 - Curl off http://distfiles.gentoo.org/releases/amd64/autobuilds/
 - GPG verify and print err if. 
 - Unpack to chroot
 
 #### PREP CHROOT
-> Bottom --> https://github.com/alphaaurigae/gentoo_unattented-setup/blob/master/run.sh
+> Bottom --> https://github.com/alphaaurigae/gentoo_unattented-setup/run.sh
 - copy files for chroot
 - MAKECONF 
 
 ### CHROOT
 
 Variables for chroot setup:
-(Sourced in run.sh)
+(Sourced in https://github.com/alphaaurigae/gentoo_unattented-setup/run.sh)
 ```
-var/var_main.sh
-var/chroot_variables.sh
+https://github.com/alphaaurigae/gentoo_unattented-setup/var/var_main.sh
+https://github.com/alphaaurigae/gentoo_unattented-setup/var/chroot_variables.sh
 ```
 
 General functions for chroot setup:
-(Sourced in run.sh)
+(Sourced in https://github.com/alphaaurigae/gentoo_unattented-setup/run.sh)
 ```
-func/func_main.sh
-func/func_chroot_main.sh
+https://github.com/alphaaurigae/gentoo_unattented-setup/func/func_main.sh
+https://github.com/alphaaurigae/gentoo_unattented-setup/func/func_chroot_main.sh
 ```
 
 #### BASE
-> https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/src/CHROOT/BASE
+> https://github.com/alphaaurigae/gentoo_unattented-setup/src/CHROOT/BASE
 - SWAPFILE
 - CONF_LOCALES
 - PORTAGE
-- ESELECT_PROFILE - profile 41 openrc hardened stable.
+- ESELECT_PROFILE
 - EMERGE_ATWORLD
 - SYSTEMTIME - openntpd
-- KEYMAP_CONSOLEFONT - def /etc/conf.d/keymaps, /etc/conf.d/consolefont, x11 X11/xorg.conf.d/10-keyboard.conf - dracut load for cryptset.
-- FIRMWARE - linux firware default gentoo
+- KEYMAP_CONSOLEFONT - def /etc/conf.d/keymaps, /etc/conf.d/consolefont, x11 X11/xorg.conf.d/10-keyboard.conf
+- FIRMWARE
 - CP_BASHRC
 
 #### CORE
-> https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/src/CHROOT/CORE
+> https://github.com/alphaaurigae/gentoo_unattented-setup/src/CHROOT/CORE
 - FSTAB
 - SYSFS = DMCRYPT, LVM, MULTIPATH
 - FSTOOLS = ext2
@@ -93,8 +93,8 @@ func/func_chroot_main.sh
 - SYSLOG - syslogng
 - SYSAPP - pciutils, mlocate
 - APP - gnupg
-- SYSPROCESS, CRON cronie (unfinished set, TOP
-- KERNEL - gentoo-sources , premade config for vm cryptsetup
+- SYSPROCESS, CRON cronie
+- KERNEL
 - INITRAM - dracut
 - BOOTLOADER grub2 - osprober
 - EMULATION - virtualbox guest add (test on virtualbox kvm setting)
@@ -106,18 +106,17 @@ func/func_chroot_main.sh
 - NET_FIREWALL - iptables
 
 #### SCREENDSP
-> https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/src/CHROOT/SCREENDSP
+> https://github.com/alphaaurigae/gentoo_unattented-setup/src/CHROOT/SCREENDSP
 - WINDOWSYS - x11
 - DESKTOP_ENV - xfce4
 - MGR - LXDM
 
 #### USERAPP - firefox
-> https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/src/CHROOT/USERAPP
-- Firefox and dep libwebp take DECENT CPU TIME!!!! and require space +15gb - more time than updateworld portage & kernel... but you get the full source compiled ^^...
-- Chromium and oher alternatives not tested yet.
+> https://github.com/alphaaurigae/gentoo_unattented-setup/src/CHROOT/USERAPP
+- Firefox
 
 #### USERS
-> https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/src/CHROOT/USERS
+> https://github.com/alphaaurigae/gentoo_unattented-setup/src/CHROOT/USERS
 - Root pw
 - Add groups
 - Add admin, add admin to groups

@@ -27,6 +27,18 @@
 			KERN_$KERNSOURCES
 		NOTICE_END
 		}
+		INSTALLKERNEL () { # https://wiki.gentoo.org/wiki/Installkernel
+		NOTICE_START
+			APPAPP_EMERGE="sys-kernel/installkernel"
+			ACC_KEYWORDS_USERAPP
+			EMERGE_ATWORLD_A
+			EMERGE_USERAPP_DEF
+
+			# KERNEL_INSTALL_HOOKS="storage bootloader initramfs"
+			# INITRAMFS_GENERATOR="dracut"
+			# BOOTLOADER="grub"
+		NOTICE_END
+		}
 		KERN_DEPLOY () {
 		NOTICE_START
 			KERN_MANUAL () {
@@ -87,55 +99,65 @@
 				}
 				KERN_BUILD () {  # (!incomplete (works but) modules setup *smart)
 				NOTICE_START
-					cd /usr/src/linux  # enter build directory (required?)
-
-					make -j$(nproc) -o /usr/src/linux/.config menuconfig # build kernel based on .config file
-					make -j$(nproc) -o /usr/src/linux/.config modules # build modules based on .config file
+					cd /usr/src/linux
+					make -j$(nproc) -o /usr/src/linux/.config menuconfig
+					make -j$(nproc) -o /usr/src/linux/.config modules
 					make -j$(nproc) bzImage
-					make install  # install the kernel
-					make modules_install  # install the modules
-
+					make install
+					make modules_install
 
 					local FETCH_KERNEL_VERSION="$(make -sC /usr/src/linux kernelrelease)"
 
-					echo "install kernel manually since installkernel script is not longer available with gentoo by default"
-					local SRC_IMAGE="/usr/src/linux/arch/x86/boot/bzImage"
-					local DEST_IMAGE="/boot/vmlinuz-${FETCH_KERNEL_VERSION}"
-					local DEST_MAP="/boot/System.map-${FETCH_KERNEL_VERSION}"
-					local DEST_CONFIG="/boot/config-${FETCH_KERNEL_VERSION}"
+					DEBUG_KERNELINST() {
+					NOTICE_START
+					
+						echo "Verify module installation"
+						ls -d /lib/modules/$FETCH_KERNEL_VERSION
+						modinfo -k $FETCH_KERNEL_VERSION
 
-					cp "${SRC_IMAGE}" "${DEST_IMAGE}"
-					cp /usr/src/linux/System.map "${DEST_MAP}"
-					cp /usr/src/linux/.config "${DEST_CONFIG}"
+						echo "Debug kernel installation"
+						[ -f "${BOOTDIR}/vmlinuz-${FETCH_KERNEL_VERSION}" ] || echo "Kernel image missing"
+						[ -f "${BOOTDIR}/System.map-${FETCH_KERNEL_VERSION}" ] || echo "System.map missing"
+						[ -f "${BOOTDIR}/config-${FETCH_KERNEL_VERSION}" ] || echo "Config missing"
 
-					#local SRC="/usr/src/linux/arch/x86/boot/bzImage"
-					#local DST="/boot/vmlinuz-${FETCH_KERNEL_VERSION}"
-					#cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
+						ls -l /boot/vmlinuz-$FETCH_KERNEL_VERSION 
+						ls -l /boot/System.map-$FETCH_KERNEL_VERSION 
+						ls -l /boot/config-$FETCH_KERNEL_VERSION
+						readlink /boot/vmlinuz /boot/System.map /boot/config
+						file /boot/vmlinuz-$FETCH_KERNEL_VERSION  
+						ls -lh /boot/vmlinuz-*
+						ls -l /boot
 
-					ln -sf "vmlinuz-${FETCH_KERNEL_VERSION}" /boot/vmlinuz
-					ln -sf "System.map-${FETCH_KERNEL_VERSION}" /boot/System.map
-					ln -sf "config-${FETCH_KERNEL_VERSION}" /boot/config
+						echo "cd boot && ls -a log:"
+						cd /boot
+						ls -a
+					NOTICE_END
+					}
 
+					if $INSTALLKERNEL; then
+						echo "Installkernel is set to TRUE"
+						DEBUG_KERNELINST
+					else
 
-					echo "Verify module installation"
-					ls -d /lib/modules/$FETCH_KERNEL_VERSION
-					modinfo -k $FETCH_KERNEL_VERSION
+						echo "Install kernel manually since installkernel script is not longer available with gentoo by default"
+						local SRC_IMAGE="/usr/src/linux/arch/x86/boot/bzImage"
+						local DEST_IMAGE="/boot/vmlinuz-${FETCH_KERNEL_VERSION}"
+						local DEST_MAP="/boot/System.map-${FETCH_KERNEL_VERSION}"
+						local DEST_CONFIG="/boot/config-${FETCH_KERNEL_VERSION}"
 
-					echo "debug kernel installation"
-					[ -f "${BOOTDIR}/vmlinuz-${FETCH_KERNEL_VERSION}" ] || echo "Kernel image missing"
-					[ -f "${BOOTDIR}/System.map-${FETCH_KERNEL_VERSION}" ] || echo "System.map missing"
-					[ -f "${BOOTDIR}/config-${FETCH_KERNEL_VERSION}" ] || echo "Config missing"
+						cp "${SRC_IMAGE}" "${DEST_IMAGE}"
+						cp /usr/src/linux/System.map "${DEST_MAP}"
+						cp /usr/src/linux/.config "${DEST_CONFIG}"
 
-					ls -l /boot/vmlinuz-$FETCH_KERNEL_VERSION 
-					ls -l /boot/System.map-$FETCH_KERNEL_VERSION 
-					ls -l /boot/config-$FETCH_KERNEL_VERSION
-					readlink /boot/vmlinuz /boot/System.map /boot/config
-					file /boot/vmlinuz-$FETCH_KERNEL_VERSION  
-					ls -lh /boot/vmlinuz-*
-					ls -l /boot
-					echo "cd boot && ls -a log:"
-					cd boot
-					ls -a
+						#local SRC="/usr/src/linux/arch/x86/boot/bzImage"
+						#local DST="/boot/vmlinuz-${FETCH_KERNEL_VERSION}"
+						#cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
+
+						ln -sf "vmlinuz-${FETCH_KERNEL_VERSION}" /boot/vmlinuz
+						ln -sf "System.map-${FETCH_KERNEL_VERSION}" /boot/System.map
+						ln -sf "config-${FETCH_KERNEL_VERSION}" /boot/config
+						DEBUG_KERNELINST
+					fi
 
 				NOTICE_END
 				}
@@ -153,9 +175,9 @@
 					CONF_GENKERNEL () {  # (!incomplete)
 					NOTICE_START
 						touch /etc/genkernel.conf
-						cat << 'EOF' > /etc/genkernel.conf
+						cat <<- 'EOF' > /etc/genkernel.conf
 						# [!PASTE_OPTIONAL_CONFIG: config/other_optional/genkernel.conf - not yet intgreated in variables and fully tested, ]
-EOF
+						EOF
 					NOTICE_END
 					}
 					RUN_GENKERNEL () {
@@ -188,6 +210,12 @@ EOF
 		NOTICE_END
 		}
 		KERN_LOAD  # load kernel source (download, copy ; etc ....)
+		if $INSTALLKERNEL; then
+			echo "Installkernel is set to TRUE"
+			INSTALLKERNEL
+		else
+			echo "Installkernel not set to TRUE"
+		fi
 		KERN_DEPLOY  # config / build
 		KERNEL_HEADERS
 	NOTICE_END

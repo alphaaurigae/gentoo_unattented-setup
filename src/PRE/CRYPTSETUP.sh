@@ -54,8 +54,16 @@
 					cryptsetup open $MAIN_PART $PV_MAIN
 				NOTICE_END
 				}
+				DEBUG_LUKS () {
+				NOTICE_START
+					cryptsetup luksDump $MAIN_PART | grep PBKDF
+					cryptsetup luksUUID $MAIN_PART
+
+				NOTICE_END
+				}
 				MODPROBE_CRYPT
 				LUKS_CRYPTSETUP
+				DEBUG_LUKS
 			NOTICE_END
 			}
 			if [ $CRYPTSETUP = "YES" ]; then

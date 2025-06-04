@@ -8,7 +8,7 @@
 		}
 		BOOTLOAD () {  # BOOTINITVAR=BIOS/UEFI (UEFI NOT FULLY IMPLEMENTED SCRIPTWIDE)
 		NOTICE_START
-			SETUP_GRUB2 () {  # (!NOTE:  https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt)
+			SETUP_GRUB2 () {  # https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt
 			NOTICE_START
 				LOAD_GRUB2 () {
 				NOTICE_START
@@ -37,16 +37,6 @@
 						echo "grub-probe --target=fs /boot"
 						grub-probe --target=fs /boot
 						grub-install --version
-
-
-						echo "debug luks"
-						cryptsetup luksDump $MAIN_PART | grep PBKDF
-						cryptsetup luksUUID $MAIN_PART
-						grep -A3 'menuentry' /boot/grub/grub.cfg
-						#lsinitrd /boot/initramfs-<version> | grep -E 'cryptsetup|luks|dm-crypt'
-						grep linux /boot/grub/grub.cfg | grep cryptdevice
-						zcat /proc/config.gz | grep -E 'CRYPT|DM_CRYPT|LUKS2'
-
 					NOTICE_END
 					}
 					GRUB2_UEFI () {
@@ -77,7 +67,6 @@
 					CONFGRUB2_MAIN () {
 					NOTICE_START
 						etc-update --automode -3
-						#cp /gentoo_unattented-setup/configs/default/grub.sh /etc/default/grub
 						local SRC="/gentoo_unattented-setup/configs/default/grub.sh"
 						local DST="/etc/default/grub"
 						cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
@@ -135,7 +124,7 @@
 					NOTICE_END
 					}
 					CONFGRUB2_MAIN
-					CONFGRUB2_$SYSINITVAR  # (somehow this was named CONFGRUB_$SYSINITVAR and the script complained cmd not found, but it did work prev, anyways, renamed 06.06.23 note just in case something dowsent work as intended)
+					CONFGRUB2_$SYSINITVAR
 				NOTICE_END
 				}
 				UPDATE_GRUB2 () {
@@ -143,9 +132,16 @@
 					grub-mkconfig -o /boot/grub/grub.cfg
 				NOTICE_END
 				}
+				DEBUG_GRUB2() {
+				NOTICE_START
+					grep -A3 'menuentry' /boot/grub/grub.cfg
+					grep linux /boot/grub/grub.cfg
+				NOTICE_END
+				}
 				LOAD_GRUB2
 				CONFIG_GRUB2
 				UPDATE_GRUB2
+				DEBUG_GRUB2
 			NOTICE_END
 			}
 			SETUP_LILO () {

@@ -13,11 +13,12 @@
 				APPAPP_EMERGE="sys-kernel/dracut"
 				CONFIG_DRACUT () {
 				NOTICE_START
-#					DRACUT_USERMOUNTCONF () {
+#					DRACUT_USERMOUNTCONF () { # separate /usr
 #					NOTICE_START
-#						cat << EOF > /etc/dracut.conf.d/usrmount.conf
-#						add_dracutmodules+="$DRACUT_CONFD_ADD_DRACUT_MODULES"  # Dracut modules to add to the default
-#EOF
+#						cat <<-EOF > /etc/dracut.conf.d/usrmount.conf
+#						add_dracutmodules+=" usrmount "
+#						EOF
+#
 #						cat /etc/dracut.conf.d/usrmount.conf
 #					NOTICE_END
 #					}
@@ -57,13 +58,38 @@
 
 					local KERNEL_BUILD_DIR="/usr/src/linux"
 					local FETCH_KERNEL_VERSION="$(make -sC "$KERNEL_BUILD_DIR" kernelrelease)"
-
-					echo "$(readlink -f $KERNEL_BUILD_DIR)" # test debug
+					echo "$(readlink -f $KERNEL_BUILD_DIR)"
 					echo "$FETCH_KERNEL_VERSION"
 
 					[ -n "$FETCH_KERNEL_VERSION" ] || { echo "Failed to determine kernel version"; }
 					[ -d "/boot" ] || { echo "/boot not mounted or missing"; }
 					[ -d "/lib/modules/${FETCH_KERNEL_VERSION}" ] || { echo "Missing modules for $FETCH_KERNEL_VERSION"; }
+
+
+					DEBUG_DRACUT () {
+					NOTICE_START
+						local INITRAMFS_PATH="/boot/initramfs-${FETCH_KERNEL_VERSION}.img"
+						local INITRAMFS_LINK="/boot/initramfs.img"
+						ls -lh "$INITRAMFS_PATH"
+						readlink "$INITRAMFS_LINK"
+						dracut --list-modules
+						ls -lh /boot/vmlinuz-*
+						ls -lh /boot/initrd.img-*
+						ls -l /boot/initramfs-*
+						file /boot/initramfs-*
+						ls -l /boot
+						#lsinitrd /boot/initramfs-<version> | grep -E 'cryptsetup|luks|dm-crypt'
+					NOTICE_END
+					}
+
+					if $INSTALLKERNEL; then
+						echo "installkernel set to TRUE"
+						#dracut --force '' $(ls /lib/modules)
+						#dracut --force --kver "${FETCH_KERNEL_VERSION}"
+						dracut --force "/boot/initramfs-${FETCH_KERNEL_VERSION}.img" "$FETCH_KERNEL_VERSION"
+						DEBUG_DRACUT
+					else
+
 
 					local INITRAMFS_PATH="/boot/initramfs-${FETCH_KERNEL_VERSION}.img"
 					local INITRAMFS_LINK="/boot/initramfs.img"
@@ -75,17 +101,11 @@
 
 					ln -sf "$INITRAMFS_PATH" "$INITRAMFS_LINK" || echo "symlink creation failed"
 
-					ls -lh "$INITRAMFS_PATH"
-					readlink "$INITRAMFS_LINK"
-					dracut --list-modules # test
-					echo "debug initram"
-					ls -lh /boot/vmlinuz-*
-					ls -lh /boot/initrd.img-*
-					ls -l /boot/initramfs-*
-					file /boot/initramfs-*
-					ls -l /boot
+					DEBUG_DRACUT
+					fi
 					NOTICE_END
 				}
+
 
 				PACKAGE_USE
 				EMERGE_USERAPP_DEF
@@ -98,7 +118,7 @@
 			etc-update --automode -3
 		NOTICE_END
 		}
-		if [ "$CONFIGBUILDKERN" != "AUTO" ]; then # pass 07.09.22 no err
+		if [ "$CONFIGBUILDKERN" != "AUTO" ]; then
 			INITRAMFS
 		else
 			echo 'CONFIGBUILDKERN AUTO DETECTED, skipping initramfs'
