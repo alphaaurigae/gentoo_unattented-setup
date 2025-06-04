@@ -2,12 +2,10 @@
 
 Unattended setup of a gentoo system ( Password prompts for cryptsetup, users and GPG setup)
 
-## Status 03.06.25
 
+## Status 04.06.25
 
-1. Setup runs from start to end with default settings LVM root and cryptsetup root - both (CRYPTSETUP=YES/NO in var_main.sh)
-2. Installkernel setup todo. https://wiki.gentoo.org/wiki/Installkernel ; no longer installed by default https://www.gentoo.org/support/news-items/2024-03-12-debianutils-installkernel.html
-3. run with ./run.sh -m 4 & 5 pre && chroot menu ... auto not tested here.
+> Setup runs from start to end with default settings LVM root and cryptsetup root - both (CRYPTSETUP=YES/NO in var_main.sh)
 
 
 ### Doc
