@@ -3,11 +3,11 @@
 #		SET_NONE () {
 #		NOTICE_START
 #			NOTICE_PLACEHOLDER
-#		
+#
 #		}
 #		SET_NVIDIA () {  # (!todo)
 #			NOTICE_PLACEHOLDER
-#		} 
+#		}
 #		SET_AMD () {  # (!todo)
 #			RADEON () {  # (!todo)
 #				APPAPP_EMERGE=" "

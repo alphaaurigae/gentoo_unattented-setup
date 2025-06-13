@@ -2,6 +2,10 @@
 
 Unattended setup of a gentoo system ( Password prompts for cryptsetup, users and GPG setup)
 
+## Status 13.06.25
+
+- Temp update ... yet to test the full setup!
+- New setup file newrun.sh, dynmic menu, bugfixes, tidy .... 
 
 ## Status 04.06.25
 

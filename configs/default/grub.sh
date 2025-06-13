@@ -20,7 +20,7 @@ GRUB_CMDLINE_LINUX=""
 # you can see them in real GRUB with the command vbeinfo
 #GRUB_GFXMODE=640x480
 
-# ############################################################################################################################################################################ 
+# ############################################################################################################################################################################
 # https://www.gnu.org/software/grub/manual/grub/html_node/Root-Identifcation-Heuristics.html              #
 #													  #
 # Initrd-detected| GRUB_DISABLE_LINUX_PARTUUID |GRUB_DISABLE_LINUX_UUID	| Linux Root ID Method  	  #
@@ -35,7 +35,7 @@ GRUB_CMDLINE_LINUX=""
 #														  #
 # Remember, ‘GRUB_DISABLE_LINUX_PARTUUID’ and ‘GRUB_DISABLE_LINUX_UUID’ are also considered to be set to  #
 # ... ‘false’ when they are unset. 									  #
-# ############################################################################################################################################################################ 
+# ############################################################################################################################################################################
 # Uncomment if you don't want GRUB to pass "root=UUID=xxx" parameter to Linux
 GRUB_DISABLE_LINUX_UUID=false
 

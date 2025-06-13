@@ -1,23 +1,22 @@
-ADMIN () {
-NOTICE_START 
-	ADD_GROUPS () {
+ADMIN() {
 	NOTICE_START
-	 	for GRP in $USERGROUPS; do
+	ADD_GROUPS() {
+		NOTICE_START
+		for GRP in $USERGROUPS; do
 			getent group "$GRP" >/dev/null || groupadd "$GRP"
 		done
 
-	NOTICE_END
+		NOTICE_END
 	}
-	ADD_USER () {
-	NOTICE_START
-		ASK_PASSWD () {
+	ADD_USER() {
 		NOTICE_START
+		ASK_PASSWD() {
+			NOTICE_START
 			printf '%s\n' "${bold}Enter new $SYSUSERNAME password${normal}"
-			until passwd $SYSUSERNAME
-			do
+			until passwd $SYSUSERNAME; do
 				printf '%s\n' "${bold}Enter new $SYSUSERNAME password${normal}"
 			done
-		NOTICE_END
+			NOTICE_END
 		}
 		local USERGROUPS_CSV="${USERGROUPS// /,}"
 		if id "$SYSUSERNAME" &>/dev/null; then
@@ -26,16 +25,16 @@ NOTICE_START
 			useradd -m -g users -G "$USERGROUPS_CSV" -s /bin/bash "$SYSUSERNAME" || { printf '%s\n' "Failed to add user" >&2; }
 		fi
 		ASK_PASSWD
-	NOTICE_END
+		NOTICE_END
 	}
-	VIRTADMIN_GROUPS () {
-	NOTICE_START
+	VIRTADMIN_GROUPS() {
+		NOTICE_START
 		getent group vboxguest >/dev/null || groupadd vboxguest
 		gpasswd -a "$SYSUSERNAME" vboxguest
-	NOTICE_END
+		NOTICE_END
 	}
 	ADD_GROUPS
 	ADD_USER
 	VIRTADMIN_GROUPS
-NOTICE_END
+	NOTICE_END
 }

@@ -1,0 +1,6 @@
+# Ignore log files
+*.log
+*.tmp
+
+# Ignore all directories starting with "backup_"
+backup_*/

@@ -8,7 +8,7 @@
 #  Y888P  Y88888P VP   V8P    YP     `Y88P'   `Y88P'  C88888D ~Y8888P' VP   V8P YP   YP    YP       YP    Y88888P VP   V8P    YP    Y88888P Y8888D'        `8888Y' Y88888P    YP    ~Y8888P' 88     
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # STATUS Readme.md
-# github.com/alphaaurigae/gentoo_unattended_modular-setup.sh
+# https://github.com/alphaaurigae/gentoo_unattended_modular-setup
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -17,43 +17,33 @@
 . func/func_main.sh
 . var/var_main.sh
 . var/pre_variables.sh
+for f in src/PRE/*; do . $f && printf '%s\n' "$f"; done
 ## CHROOT
 . src/CHROOT/DEBUG.sh
-
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-PRE_BANNER () {
 
-printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▖ ▗▄▄▖ ▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▄▄▖ ▗▄▄▄▖     ▗▄▄▖▗▖ ▗▖▗▄▄▖  ▗▄▖  ▗▄▖▗▄▄▄▖" "${RESET}"
-printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌       ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
-printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▛▀▘ ▐▛▀▚▖▐▛▀▀▘▐▛▀▘ ▐▛▀▜▌▐▛▀▚▖▐▛▀▀▘    ▐▌   ▐▛▀▜▌▐▛▀▚▖▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
-printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▙▄▄▖▐▌   ▐▌ ▐▌▐▌ ▐▌▐▙▄▄▖    ▝▚▄▄▖▐▌ ▐▌▐▌ ▐▌▝▚▄▞▘▝▚▄▞▘ █  " "${RESET}"
-
-}
-
-PRE_NOMENU () {  # PREPARE CHROOT ALL without menu
+PRE_NOMENU () {
 NOTICE_START
-
 	PRE_RUNALL () {
-		PRE_BANNER
-
-		INIT
-		PARTITIONING_MAIN
-		CRYPTSETUP
-		LVMSETUP
-		STAGE3
-		MNTFS
-		COPY_CONFIGS
+		PRE_BANNER_MAIN
+		INIT # [1]
+		PARTITIONING_MAIN # [2]
+		CRYPTSETUP # [3]
+		LVMSETUP # [4]
+		STAGE3 # [5]
+		MNTFS # [6]
+		COPY_CONFIGS # [7]
+		MAKECONF # [8]
 	}
-	for f in src/PRE/*; do . $f && printf '%s\n' "$f"; done  # source src/PRE/*
 	PRE_RUNALL
 }
 
-PRE_MENU () {  # PREPARE CHROOT with menu
+PRE_MENU () {
 NOTICE_START
 
 	PRE_CHOOSE() {
-		PRE_BANNER
+		PRE_BANNER_MAIN
 		printf "%s\n" "----------------------------------------------------------------------------------"
 		printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
 		printf "%s\n" "----------------------------------------------------------------------------------"
@@ -151,183 +141,127 @@ NOTICE_START
 		printf "\n"
 		PRE_CHOOSE
 	}
-	for f in src/PRE/*; do . $f ; done  # source src/PRE/
 	PRE_CHOOSE
 
 NOTICE_END
 }
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-CHROOT_NOMENU () {	# 4.0 CHROOT # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment
+CHROOT_NOMENU () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment
 NOTICE_START
 	CHROOT_RUNALL () {
 		INNER_SCRIPT=$(cat <<- 'INNERSCRIPT'
 		#!/bin/bash
 
-		# https://github.com/alphaaurigae/gentoo_unattented-setup
-		### +++ lines for quick scrolling section indication.
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		# Source basic func
 		. $CHROOTX/gentoo_unattented-setup/func/func_main.sh
 		. $CHROOTX/gentoo_unattented-setup/func/func_chroot_main.sh
+		# Source chroot variables
 		. $CHROOTX/gentoo_unattented-setup/var/var_main.sh
 		. $CHROOTX/gentoo_unattented-setup/var/chroot_variables.sh
+		# Source setups from src
+		# Source setup from src
+		for f in "$CHROOTX"/gentoo_unattented-setup/src/CHROOT/*/*; do
+		  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
+		done
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-		BASE () {
+		BASE () {  # src/CHROOT/BASE/*
 		NOTICE_START
 
-			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && printf '%s\n' "$f"; done
-
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▖  ▗▄▖  ▗▄▄▖▗▄▄▄▖" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▛▀▚▖▐▛▀▜▌ ▝▀▚▖▐▛▀▀▘" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▙▄▞▘▐▌ ▐▌▗▄▄▞▘▐▙▄▄▖" "${RESET}"
+			BANNER_CHROOT_BASE_MAIN
 			printf "%s\n" "----------------------------------------------------------------------------------"
-			SWAPFILE  # src/CHROOT/BASE/SWAPFILE.sh
-			CONF_LOCALES  # src/CHROOT/BASE/CONF_LOCALES.sh
-			PORTAGE  # src/CHROOT/BASE/PORTAGE.sh
-			##EMERGE_SYNC  # src/CHROOT/BASE/EMERGE_SYNC.sh
-			ESELECT_PROFILE  # src/CHROOT/BASE/ESELECT_PROFILE.sh
-			##SETFLAGS1  # src/CHROOT/BASE/SETFLAGS1.sh #  PLACEHOLDER
-			EMERGE_ATWORLD_A  #
-			##MISC1_CHROOT  # src/CHROOT/BASE/MISC1_CHROOT.sh  # PLACEHOLDER
-			##RELOADING_SYS  # src/CHROOT/BASE/RELOADING_SYS.sh  # PLACEHOLDER
-			SYSTEMTIME  # src/CHROOT/BASE/SYSTEMTIME.sh
-			KEYMAP_CONSOLEFONT  # src/CHROOT/BASE/KEYMAP_CONSOLEFONT.sh
-			FIRMWARE  # src/CHROOT/BASE/FIRMWARE.sh
-			CP_BASHRC  # src/CHROOT/BASE/CP_BASHRC.sh
+			SWAPFILE  # [1]
+			EMERGE_ATWORLD  # [2]
+			CONF_LOCALES  # [3]
+			PORTAGE  # [4]
+			## PLACEHOLDER for later use (maybe) ##EMERGE_SYNC
+			ESELECT_PROFILE  # [5]
+			## PLACEHOLDER for later use (maybe) ##SETFLAGS1
+			EMERGE_ATWORLD  # [7]
+			## PLACEHOLDER for later use (maybe) ##MISC1_CHROOT
+			## PLACEHOLDER for later use (maybe) ##RELOADING_SYS
+			SYSTEMTIME  # [8]
+			KEYMAP_CONSOLEFONT  # [9]
+			FIRMWARE  # [10]
+			CP_BASHRC  # [11]
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		CORE () {
+		CORE () {  # src/CHROOT/CORE/*
 		NOTICE_START
 
-			for f in gentoo_unattented-setup/src/CHROOT/CORE/*; do . $f && printf '%s\n' "$f"; done
-
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖ ▗▄▖ ▗▄▄▖ ▗▄▄▄▖" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌   " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▛▀▚▖▐▛▀▀▘" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▝▚▄▞▘▐▌ ▐▌▐▙▄▄▖" "${RESET}"
+			BANNER_CHROOT_CORE_MAIN
 			printf "%s\n" "----------------------------------------------------------------------------------"
-			SYSCONFIG_CORE  # src/CHROOT/CORE/SYSCONFIG_CORE.sh
-			SYSFS  # src/CHROOT/CORE/SYSFS.sh
-			APPADMIN  # src/CHROOT/CORE/APPADMIN.sh
-			SYSAPP  # src/CHROOT/CORE/SYSAPP.sh
-			APP  # src/CHROOT/CORE/APP.sh
-			SYSPROCESS  # src/CHROOT/CORE/SYSPROCESS.sh
-			KERNEL  # src/CHROOT/CORE/KERNEL.sh
-			INITRAM  # src/CHROOT/CORE/INITRAM.sh
-			SYSBOOT  # src/CHROOT/CORE/SYSBOOT.sh
-			## MODPROBE_CHROOT  # src/CHROOT/CORE/MODPROBE_CHROOT.sh
-			APPEMULATION  # src/CHROOT/CORE/APPEMULATION.sh
-			AUDIO  # src/CHROOT/CORE/AUDIO.sh
-			## GPU  # src/CHROOT/CORE/GPU.sh
-			NETWORK  # src/CHROOT/CORE/NETWORK.sh
+			SYSCONFIG_CORE  # [1]
+			SYSFS  # [2]
+			APPADMIN  # [3]
+			SYSAPP  # [4]
+			APP  # [5]
+			SYSPROCESS  # [6]
+			KERNEL  # [7]
+			INITRAM  # [8]
+			SYSBOOT  # [9]
+			## MODPROBE_CHROOT  # [10]
+			APPEMULATION  # [11]
+			AUDIO  # [12]
+			## GPU  # [13]
+			NETWORK  # [14]
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		SCREENDSP () {  # note: replace visual header with "screen and desktop"
+		SCREENDSP () {  # src/CHROOT/SCREENDSP
 		NOTICE_START
-
-			for f in gentoo_unattented-setup/src/CHROOT/SCREENDSP/*; do . $f && printf '%s\n' "$f"; done
-
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖ ▗▄▄▖▗▄▄▖ ▗▄▄▄▖▗▄▄▄▖▗▖  ▗▖▗▄▄▄  ▗▄▄▖▗▄▄▖ " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌   ▐▌ ▐▌▐▌   ▐▌   ▐▛▚▖▐▌▐▌  █▐▌   ▐▌ ▐▌" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▝▀▚▖▐▌   ▐▛▀▚▖▐▛▀▀▘▐▛▀▀▘▐▌ ▝▜▌▐▌  █ ▝▀▚▖▐▛▀▘ " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▞▘▝▚▄▄▖▐▌ ▐▌▐▙▄▄▖▐▙▄▄▖▐▌  ▐▌▐▙▄▄▀▗▄▄▞▘▐▌   " "${RESET}"
+			BANNER_CHROOT_SCREENDSP_MAIN
 			printf "%s\n" "----------------------------------------------------------------------------------"
-			WINDOWSYS # src/CHROOT/SCREENDSP/WINDOWSYS.sh
-			DESKTOP_ENV # src/CHROOT/SCREENDSP/DESKTOP_ENV.sh
+			WINDOWSYS # [1]
+			DESKTOP_ENV # [2]
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		USERAPP () {  # (!todo)
+		USERAPP () { # src/CHROOT/USERAPP/*
 		NOTICE_START
-
-			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && printf '%s\n' "$f"; done
-
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▄▄▖ ▗▄▄▖ " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖▐▛▀▜▌▐▛▀▘ ▐▛▀▘ " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
+			BANNER_CHROOT_USERAPP_MAIN
 			printf "%s\n" "----------------------------------------------------------------------------------"
-			# GIT # src/CHROOT/USERAPP/USERAPP_GIT.sh
-			WEBBROWSER # src/CHROOT/USERAPP/WEBBROWSER.sh
+			# GIT
+			WEBBROWSER
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		USERS () {
+		USERS () {  # src/CHROOT/USERS/*
 		NOTICE_START
-
-			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && printf '%s\n' "$f"; done
-
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▄▖" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌   " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖ ▝▀▚▖" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▗▄▄▞▘" "${RESET}"
+			BANNER_CHROOT_USERS_MAIN
 			printf "%s\n" "----------------------------------------------------------------------------------"
-			ROOT # src/CHROOT/USERS/ROOT.sh
-			ADMIN # src/CHROOT/USERS/ADMIN.sh
+			ROOT  # [1]
+			ADMIN  # [2]
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		FINISH () {  # tidy up installation files - ok
+		FINISH () {  # src/CHROOT/FINISH/*
 		NOTICE_START
-
-			for f in gentoo_unattented-setup/src/CHROOT/FINISH/*; do . $f && printf '%s\n' "$f"; done
-
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "  ________________________________________  " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " / CONGRATS!                              \\" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " \\ Setup done, you did it!                /" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "  ----------------------------------------  " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "         \   ^__^                           " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "          \  (xx)\_______                   " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "             (__)\       )\/\               " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||----- |                  " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||     ||                  " "${RESET}"
+			BANNER_CHROOT_FINISH_MAIN
 			printf "%s\n" "----------------------------------------------------------------------------------"
-			TIDY_STAGE3 # src/CHROOT/FINISH/TIDY_STAGE3.sh
+			TIDY_STAGE3  # [1]
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		## (RUN ENTIRE SCRIPT) (!changeme)
-		CHROOT_NOMENU () {
-
-			printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖▗▖ ▗▖▗▄▄▖  ▗▄▖  ▗▄▖▗▄▄▄▖" "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▛▀▜▌▐▛▀▚▖▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▐▌ ▐▌▐▌ ▐▌▝▚▄▞▘▝▚▄▞▘ █  " "${RESET}"
+		CHROOT_NOMENU () {  # src/CHROOT/*
+			BANNER_CHROOT_MAIN
 			printf "%s\n" "----------------------------------------------------------------------------------"
-			BASE  # src/CHROOT/BASE/*  # as defined in var/
-			CORE  # src/CHROOT/CORE/*  # as defined in var/
-			SCREENDSP  # src/CHROOT/SCREENDSP/*  # as defined in var/
-			USERAPP  # src/CHROOT/USERAPP/*  # as defined in var/
-			USERS  # src/CHROOT/USERS/*  # as defined in var/
-			FINISH  # src/CHROOT/FINISH/*  # as defined in var/
+			BASE  # [1]
+			CORE  # [2]
+			SCREENDSP  # [3]
+			USERAPP  # [4]
+			USERS  # [5]
+			FINISH  # [6]
 		}
 		CHROOT_NOMENU
 		NOTICE_END
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		########## CHROOT ENDS HERE ##########
+		########## CHROOT END ##########
 		INNERSCRIPT
 		)
-		CP_CHROOT () {
-		NOTICE_START
-			# Since the chroot script can't be run outside of chroot, the script, and possibly sourced functions as well as variable scripts, need to be copied accordingly. For simplicity, copy the whole repo.
-			# IMPORTANT: The following commands are executed BEFORE the above INNERSCRIPT (BELOW chroot $CHROOTX /bin/bash ./chroot_run.sh). If a file needs to be made available in the INNERSCRIPT, copy it before (chroot $CHROOTX /bin/bash ./chroot_run.sh) within this CHROOT function!
-			rm -rf $CHROOTX/gentoo_unattented-setup
-			ls -la /root
-			printf '%s\n' "$CHROOTX"
-			cp -R /root/gentoo_unattented-setup $CHROOTX/gentoo_unattented-setup
-			ls -la $CHROOTX
-			
-		NOTICE_END
-		}
-		CHROOT_INNER () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment
-		NOTICE_START
-			printf '%s\n' "$INNER_SCRIPT" > $CHROOTX/chroot_main.sh
-			chmod +x $CHROOTX/chroot_main.sh
-			chroot $CHROOTX /bin/bash ./chroot_main.sh
-		NOTICE_END
-		}
+		# func/func_main.sh
 		CP_CHROOT
 		CHROOT_INNER
 	}
@@ -335,43 +269,42 @@ NOTICE_START
 NOTICE_END
 }
 
-CHROOT_MENU () {	# 4.0 CHROOT # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment
+CHROOT_MENU () {  # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment
 NOTICE_START
 	CHROOT_CHOOSE () {
 		INNER_SCRIPT=$(cat <<- 'INNERSCRIPT'
 		#!/bin/bash
 
-		# https://github.com/alphaaurigae/gentoo_unattented-setup
-		### +++ lines for quick scrolling section indication
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		# Source basic func
 		. $CHROOTX/gentoo_unattented-setup/func/func_main.sh
 		. $CHROOTX/gentoo_unattented-setup/func/func_chroot_main.sh
+		# Source chroot variables
 		. $CHROOTX/gentoo_unattented-setup/var/var_main.sh
 		. $CHROOTX/gentoo_unattented-setup/var/chroot_variables.sh
+		# Source setups from src
+		SOURCE_CHROOT
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-		BASE () {
+		BASE () {  # src/CHROOT/BASE/*
 		NOTICE_START
-			for f in $CHROOTX/gentoo_unattented-setup/src/CHROOT/BASE/*; do . $f && printf '%s\n' "$f"; done
 
 			CHROOT_BASE_MENU () {
 				CHROOT_BASE_CHOOSE() {
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▖  ▗▄▖  ▗▄▄▖▗▄▄▄▖" "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▛▀▚▖▐▛▀▜▌ ▝▀▚▖▐▛▀▀▘" "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▙▄▞▘▐▌ ▐▌▗▄▄▞▘▐▙▄▄▖" "${RESET}"
+					
+					BANNER_CHROOT_BASE_MAIN
 					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
 					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf "Single\n"
 					printf "[1] --> SWAPFILE\n"
-					printf "[2] --> EMERGE_ATWORLD_B (emerge world for the make.conf yreated during pre setup)\n"
+					printf "[2] --> EMERGE_ATWORLD (emerge world for the make.conf created during pre setup)\n"
 					printf "[3] --> CONF_LOCALES\n"
 					printf "[4] --> PORTAGE\n"
 					## PLACEHOLDER for later use (maybe) EMERGE_SYNC  # run EMERGE_SYNC
 					printf "[5] --> ESELECT_PROFILE\n"
 					printf "[6] (just a placeholder NOT REQUIRED) --> SETFLAGS1\n"
-					printf "[7] --> EMERGE_ATWORLD_A\n" # temporary added rust emere as bugfix for srvg lib error as suggested by sam_ #gentoo librachat irc - see https://bugs.gentoo.org/907492
+					printf "[7] --> EMERGE_ATWORLD\n" # temporary added rust emere as bugfix for srvg lib error as suggested by sam_ #gentoo librachat irc - see https://bugs.gentoo.org/907492
 					## PLACEHOLDER for later integration (maybe) #MISC1_CHROOT  # run MISC1_CHROOT  # PLACEHOLDER
 					## PLACEHOLDER for later integration (maybe) RELOADING_SYS  # run RELOADING_SYS  # PLACEHOLDER
 					printf "[8] --> SYSTEMTIME\n"
@@ -395,52 +328,52 @@ NOTICE_START
 
 					case $choice in
 					1)
-						SWAPFILE  # [1] # src/CHROOT/BASE/SWAPFILE.sh
+						SWAPFILE  # [1] #
 						;;
 					2)
-						EMERGE_ATWORLD_B  # [2] 
+						EMERGE_ATWORLD  # [2] 
 						;;
 					3)
-						CONF_LOCALES  # [3] # src/CHROOT/BASE/CONF_LOCALES.sh
+						CONF_LOCALES  # [3] #
 						;;
 					4)
-						PORTAGE  # [4] # src/CHROOT/BASE/PORTAGE.sh
+						PORTAGE  # [4]
 						;;
 					5)
-						ESELECT_PROFILE  # [5] # src/CHROOT/BASE/ESELECT_PROFILE.sh
+						ESELECT_PROFILE  # [5]
 						;;
 					6)
-						SETFLAGS1  # [6] # src/CHROOT/BASE/SETFLAGS1.sh #  PLACEHOLDER
+						SETFLAGS1  # [6] PLACEHOLDER
 						;;
 					7)
-						EMERGE_ATWORLD_A  # [7]
+						EMERGE_ATWORLD  # [7]
 						;;
 					8)
-						SYSTEMTIME  # [8] # src/CHROOT/BASE/SYSTEMTIME.sh
+						SYSTEMTIME  # [8]
 						;;
 					9)
-						KEYMAP_CONSOLEFONT  # [9] # src/CHROOT/BASE/KEYMAP_CONSOLEFONT.sh
+						KEYMAP_CONSOLEFONT  # [9]
 						;;
 					10)
-						FIRMWARE  # [10] # src/CHROOT/BASE/FIRMWARE.sh
+						FIRMWARE  # [10]
 						;;
 					11)
-						CP_BASHRC  # [11] # src/CHROOT/BASE/CP_BASHRC.sh
+						CP_BASHRC  # [11]
 						;;
 					21)
 						SWAPFILE  # [1]
-						EMERGE_ATWORLD_B
+						EMERGE_ATWORLD
 						CONF_LOCALES  # [3]
 						;;
 					22)
-						EMERGE_ATWORLD_B
+						EMERGE_ATWORLD
 						CONF_LOCALES  # [3]
 						;;
 					23)
 						PORTAGE  # [4]
 						ESELECT_PROFILE  # [5]
 						SETFLAGS1  # [6]
-						EMERGE_ATWORLD_A  # [7]
+						EMERGE_ATWORLD  # [7]
 						;;
 					24)
 						SYSTEMTIME  # [8]
@@ -451,12 +384,12 @@ NOTICE_START
 						CP_BASHRC  # [11]
 						;;
 					26)
-						EMERGE_ATWORLD_B  # [2]
+						EMERGE_ATWORLD  # [2]
 						CONF_LOCALES  # [3]
 						PORTAGE  # [4]
 						ESELECT_PROFILE  # [5]
 						SETFLAGS1  # [6]
-						EMERGE_ATWORLD_A  # [7]
+						EMERGE_ATWORLD  # [7]
 						SYSTEMTIME  # [8]
 						KEYMAP_CONSOLEFONT  # [9]
 						FIRMWARE  # [10]
@@ -464,12 +397,12 @@ NOTICE_START
 						;;
 					27)
 						SWAPFILE  # [1]
-						EMERGE_ATWORLD_B  # [2]
+						EMERGE_ATWORLD  # [2]
 						CONF_LOCALES  # [3]
 						PORTAGE  # [4]
 						ESELECT_PROFILE  # [5]
 						SETFLAGS1  # [6]
-						EMERGE_ATWORLD_A  # [7]
+						EMERGE_ATWORLD  # [7]
 						SYSTEMTIME  # [8]
 						KEYMAP_CONSOLEFONT  # [9]
 						FIRMWARE  # [10]
@@ -492,16 +425,13 @@ NOTICE_START
 			CHROOT_BASE_MENU
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		CORE () {
+		CORE () {  # src/CHROOT/CORE/*
 		NOTICE_START
-			for f in gentoo_unattented-setup/src/CHROOT/CORE/*; do . $f && printf '%s\n' "$f"; done
 
 			CHROOT_CORE_MENU () {
 				CHROOT_CORE_CHOOSE() {
-					printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖ ▗▄▖ ▗▄▄▖ ▗▄▄▄▖" "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌   " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▛▀▚▖▐▛▀▀▘" "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▝▚▄▞▘▐▌ ▐▌▐▙▄▄▖" "${RESET}"
+
+					BANNER_CHROOT_CORE_MAIN
 					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
 					printf "%s\n" "----------------------------------------------------------------------------------"
@@ -540,46 +470,46 @@ NOTICE_START
 
 					case $choice in
 					1)
-						SYSCONFIG_CORE  # [1] # src/CHROOT/CORE/SYSCONFIG_CORE.sh
+						SYSCONFIG_CORE  # [1]
 						;;
 					2)
-						SYSFS  # [2] # src/CHROOT/CORE/SYSFS.sh
+						SYSFS  # [2]
 						;;
 					3)
-						APPADMIN  # [3] # src/CHROOT/CORE/APPADMIN.sh
+						APPADMIN  # [3]
 						;;
 					4)
-						SYSAPP  # [4] # src/CHROOT/CORE/SYSAPP.sh
+						SYSAPP  # [4]
 						;;
 					5)
-						APP  # [5] # src/CHROOT/CORE/APP.sh
+						APP  # [5]
 						;;
 					6)
-						SYSPROCESS  # [6] # src/CHROOT/CORE/SYSPROCESS.sh
+						SYSPROCESS  # [6]
 						;;
 					7)
-						KERNEL  # [7] # src/CHROOT/CORE/KERNEL.sh
+						KERNEL  # [7]
 						;;
 					8)
-						INITRAM  # [8] # src/CHROOT/CORE/INITRAM.sh
+						INITRAM  # [8]
 						;;
 					9)
-						SYSBOOT  # [9] # src/CHROOT/CORE/SYSBOOT.sh
+						SYSBOOT  # [9]
 						;;
 					10)
-						MODPROBE_CHROOT  # [10] # src/CHROOT/CORE/MODPROBE_CHROOT.sh
+						MODPROBE_CHROOT  # [10]
 						;;
 					11)
-						APPEMULATION  # [11] # src/CHROOT/CORE/APPEMULATION.sh
+						APPEMULATION  # [11]
 						;;
 					12)
-						AUDIO  # [12] # src/CHROOT/CORE/AUDIO.sh
+						AUDIO  # [12]
 						;;
 					13)
-						GPU  # [13] # src/CHROOT/CORE/GPU.sh
+						GPU  # [13]
 						;;
 					14)
-						NETWORK  # [10] # src/CHROOT/CORE/NETWORK.sh
+						NETWORK  # [14]
 						;;
 					21)
 						SYSCONFIG_CORE  # [1]
@@ -663,16 +593,11 @@ NOTICE_START
 			NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		SCREENDSP () {  # note: replace visual header with "screen and desktop"
+		SCREENDSP () {  # src/CHROOT/SCREENDSP/*
 		NOTICE_START
-			for f in gentoo_unattented-setup/src/CHROOT/SCREENDSP/*; do . $f && printf '%s\n' "$f"; done
-
 			CHROOT_SCREENDSP_MENU () {
 				CHROOT_SCREENDSP_CHOOSE() {
-					printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖ ▗▄▄▖▗▄▄▖ ▗▄▄▄▖▗▄▄▄▖▗▖  ▗▖▗▄▄▄  ▗▄▄▖▗▄▄▖ " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌   ▐▌ ▐▌▐▌   ▐▌   ▐▛▚▖▐▌▐▌  █▐▌   ▐▌ ▐▌" "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" " ▝▀▚▖▐▌   ▐▛▀▚▖▐▛▀▀▘▐▛▀▀▘▐▌ ▝▜▌▐▌  █ ▝▀▚▖▐▛▀▘ " "${RESET}"
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▞▘▝▚▄▄▖▐▌ ▐▌▐▙▄▄▖▐▙▄▄▖▐▌  ▐▌▐▙▄▄▀▗▄▄▞▘▐▌   " "${RESET}"
+					BANNER_CHROOT_SCREENDSP_MAIN
 					printf "%s\n" "----------------------------------------------------------------------------------"
 					printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
 					printf "%s\n" "----------------------------------------------------------------------------------"
@@ -690,10 +615,10 @@ NOTICE_START
 
 					case $choice in
 					1)
-						WINDOWSYS  # [1] # src/CHROOT/SCREENDSP/WINDOWSYS.sh
+						WINDOWSYS  # [1]
 						;;
 					2)
-						DESKTOP_ENV  # [2] # src/CHROOT/SCREENDSP/DESKTOP_ENV.sh
+						DESKTOP_ENV  # [2]
 						;;
 					21)
 						WINDOWSYS  # [1]
@@ -718,61 +643,35 @@ NOTICE_START
 			NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		USERAPP () {  # (!todo)
+		USERAPP () {  # src/CHROOT/USERAPP/*
 		NOTICE_START
-			for f in gentoo_unattented-setup/src/CHROOT/USERAPP/*; do . $f && printf '%s\n' "$f"; done
-
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▄▄▖ ▗▄▄▖ " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌" "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖▐▛▀▜▌▐▛▀▘ ▐▛▀▘ " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   " "${RESET}"
-				printf "%s\n" "----------------------------------------------------------------------------------"
-			# GIT # src/CHROOT/USERAPP/USERAPP_GIT.sh
-			WEBBROWSER # src/CHROOT/USERAPP/WEBBROWSER.sh
-
+			BANNER_CHROOT_USERAPP_MAIN
+			printf "%s\n" "----------------------------------------------------------------------------------"
+			# GIT
+			WEBBROWSER
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		USERS () {
+		USERS () {  # src/CHROOT/USERS/*
 		NOTICE_START
-			for f in gentoo_unattented-setup/src/CHROOT/USERS/*; do . $f && printf '%s\n' "$f"; done
-
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▖ ▗▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▄▖" "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌   ▐▌   ▐▌ ▐▌▐▌   " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌ ▝▀▚▖▐▛▀▀▘▐▛▀▚▖ ▝▀▚▖" "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌▗▄▄▞▘" "${RESET}"
-				printf "%s\n" "----------------------------------------------------------------------------------"
-			ROOT # src/CHROOT/USERS/ROOT.sh
-			ADMIN # src/CHROOT/USERS/ADMIN.sh
+			BANNER_CHROOT_USERS_MAIN
+			printf "%s\n" "----------------------------------------------------------------------------------"
+			ROOT
+			ADMIN
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		FINISH () {  # tidy up installation files - ok
+		FINISH () {  # src/CHROOT/FINISH/*
 		NOTICE_START
-			for f in gentoo_unattented-setup/src/CHROOT/FINISH/*; do . $f && printf '%s\n' "$f"; done
-
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "  ________________________________________  " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" " / CONGRATS!                              \\" "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" " \\ Setup done, you did it!                /" "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "  ----------------------------------------  " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "         \   ^__^                           " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "          \  (xx)\_______                   " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "             (__)\       )\/\               " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||----- |                  " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "                 ||     ||                  " "${RESET}"
-				printf "%s\n" "----------------------------------------------------------------------------------"
-
-			TIDY_STAGE3 # src/CHROOT/FINISH/TIDY_STAGE3.sh
+			BANNER_CHROOT_FINISH_MAIN
+			printf "%s\n" "----------------------------------------------------------------------------------"
+			TIDY_STAGE3
 		NOTICE_END
 		}
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		CHROOT_MENU () {
 			CHROOT_CHOOSE() {
-
-				printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖▗▖ ▗▖▗▄▄▖  ▗▄▖  ▗▄▖▗▄▄▄▖" "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▛▀▜▌▐▛▀▚▖▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"
-				printf "%s%s%s\n" "${BOLD}${GREEN}" "▝▚▄▄▖▐▌ ▐▌▐▌ ▐▌▝▚▄▞▘▝▚▄▞▘ █  " "${RESET}"
+				BANNER_CHROOT_MAIN
 				printf "%s\n" "----------------------------------------------------------------------------------"
 				printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g 1:" "${RESET}"
 				printf "%s\n" "----------------------------------------------------------------------------------"
@@ -823,28 +722,10 @@ NOTICE_START
 		CHROOT_MENU
 		NOTICE_END
 		# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		########## CHROOT ENDS HERE ##########
+		########## CHROOT END ##########
 		INNERSCRIPT
 		)
-		CP_CHROOT () {
-		NOTICE_START
-			# Since the chroot script can't be run outside of chroot, the script, and possibly sourced functions as well as variable scripts, need to be copied accordingly. For simplicity, copy the whole repo.
-			# IMPORTANT: The following commands are executed BEFORE the above INNERSCRIPT (BELOW chroot $CHROOTX /bin/bash ./chroot_run.sh). If a file needs to be made available in the INNERSCRIPT, copy it before (chroot $CHROOTX /bin/bash ./chroot_run.sh) within this CHROOT function!
-			rm -rf $CHROOTX/gentoo_unattented-setup
-			ls -la /root
-			printf '%s\n' "$CHROOTX"
-			cp -R /root/gentoo_unattented-setup $CHROOTX/gentoo_unattented-setup
-			ls -la $CHROOTX
-			
-		NOTICE_END
-		}
-		CHROOT_INNER () { # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Entering_the_new_environment
-		NOTICE_START
-			printf '%s\n' "$INNER_SCRIPT" > $CHROOTX/chroot_main.sh
-			chmod +x $CHROOTX/chroot_main.sh
-			chroot $CHROOTX /bin/bash ./chroot_main.sh
-		NOTICE_END
-		}
+		# func/func_main.sh
 		CP_CHROOT
 		CHROOT_INNER
 	}
@@ -853,10 +734,7 @@ NOTICE_END
 }
 
 MAIN_MENU() {
-	printf "%s%s%s\n" "${BOLD}${GREEN}" " ▗▄▄▖▗▄▄▄▖▗▄▄▄▖▗▖ ▗▖▗▄▄▖     ▗▖  ▗▖ ▗▄▖ ▗▄▄▄▖▗▖  ▗▖" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌   ▐▌     █  ▐▌ ▐▌▐▌ ▐▌    ▐▛▚▞▜▌▐▌ ▐▌  █  ▐▛▚▖▐▌" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${GREEN}" " ▝▀▚▖▐▛▀▀▘  █  ▐▌ ▐▌▐▛▀▘     ▐▌  ▐▌▐▛▀▜▌  █  ▐▌ ▝▜▌" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▞▘▐▙▄▄▖  █  ▝▚▄▞▘▐▌       ▐▌  ▐▌▐▌ ▐▌▗▄█▄▖▐▌  ▐▌" "${RESET}"
+	BANNER_SETUP_MAIN
 	printf "%s\n" "----------------------------------------------------------------------------------"
 	printf "%s%s%s\n" "${BOLD}${GREEN}" "Select e.g: 1" "${RESET}"
 	printf "[1] --> (DISABLED) PRE - NO menu\n"
@@ -864,7 +742,6 @@ MAIN_MENU() {
 	printf "[3] --> (DISABLED) PRE && CHROOT - NO menu\n"
 	printf "[4] --> PRE - menu\n"
 	printf "[5] --> CHROOT - menu\n"
-	printf "[6] --> PRE menu && CHROOT - menu\n"
 	printf "[0] --> Exit\n"
 
 	read -p "Enter your choice: " choice
@@ -886,26 +763,13 @@ MAIN_MENU() {
 			#CHROOT_NOMENU
 			;;
 		3)
-			printf "Running the semi unattended setup as configured in 10 seconds... Exit now to see options with -h or enter the menu when running the program with -m.\n"
-			printf "(Default PRE asks for crypt password and disk wipe confirmation)"
-			printf "(Default CHROOT asks for kernel config menuconfig confirmation or edit and GPG password)"
-			printf "RUN ./run.sh -m, AUTO DISABLED"
-			sleep 10
-			#PRE_NOMENU
-			#CHROOT_NOMENU
+			PRE_MENU
 			;;
 		4)
-			PRE_MENU
-			;;
-		5)
-			CHROOT_MENU
-			;;
-		6)
-			PRE_MENU
 			CHROOT_MENU
 			;;
 		0)
-			printf "Exiting...\n"
+			printf "Exit...\n"
 			exit
 			;;
 		*)
@@ -916,31 +780,40 @@ MAIN_MENU() {
 	printf "\n"
 	MAIN_MENU
 }
-# Check if the script is run with the -h option
+
 if [[ "$1" == "-a" ]]; then
+	BANNER_GENTOOUNATTENDED_TOPLEVEL
+	printf "%s\n" "----------------------------------------------------------------------------------"
 	printf "Running the semi unattended setup as configured in 10 seconds... \n"
 	printf "Exit now to see options with -h or enter the menu when running the program with -m.\n"
-	printf "(Default PRE asks for crypt password and disk wipe confirmation)"
-	printf "(Default CHROOT asks for kernel config menuconfig confirmation or edit and GPG password)"
-	sleep 10
-
-	PRE_NOMENU
-	CHROOT_NOMENU
-elif [[ "$1" == "-m" ]]; then
-	MAIN_MENU  # Run the program with the menu
-else
-
-	#printf "WELCOME TO THE GENTOO SETUP (unattended by default testing in virtualbox) .... \n"
+	printf "(Default PRE will ask for crypt password and disk wipe confirmation)"
+	printf "[1] --> (DISABLED) PRE && CHROOT - NO menu\n"
+	printf "[0] --> Exit\n"
+	read -p "Enter your choice: " choice
 	printf "\n"
-	printf "%s%s%s\n" "${BOLD}${BRIGHT_GREEN}" "WELCOME :)" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${MAGENTA}" "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${MAGENTA}" "|g|e|n|t|o|o|_|u|n|a|t|t|e|n|t|e|d|-|s|e|t|u|p|" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${MAGENTA}" "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${BRIGHT_GREEN}" "https://github.com/alphaaurigae/gentoo_unattented-setup" "${RESET}"$'\n'
 
+	case $choice in
+	1)
+		#PRE_NOMENU
+		#CHROOT_NOMENU
+		echo "test"
+		;;
+	0)
+		printf "Exit...\n"
+		exit
+		;;
+	*)
+		printf "Invalid choice. Please try again.\n"
+		;;
+
+elif [[ "$1" == "-m" ]]; then
+	MAIN_MENU
+else
+	BANNER_GENTOOUNATTENDED_TOPLEVEL
+	printf "%s\n" "----------------------------------------------------------------------------------"
 	printf "%s%s%s\n" "${BOLD}${YELLOW}" "Usage: ./run.sh ARG" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -a run entire setup ... CHECK gentoo_unattented-setup/var/*" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -m enters menu mode (useful fe to save state in vm's" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -a run the entire setup [PRE_NOMENU] & [CHROOT_NOMENU]... CHECK var/*" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -m enters menu" "${RESET}"
 	printf "\n"
 	printf "Refer to the readme.md file for more information. Check the readme.md file for the latest status message at the top. \n"
 	printf "Check the variables if its not a VM!!!\n"
@@ -954,3 +827,8 @@ fi
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+

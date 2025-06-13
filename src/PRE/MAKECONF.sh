@@ -1,13 +1,13 @@
-	MAKECONF () {  # /etc/portage/make.conf # https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/USE
+MAKECONF() { # /etc/portage/make.conf # https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/USE
 	NOTICE_START
 
-		MAKECONF_VARIABLES () {
+	MAKECONF_VARIABLES() {
 		NOTICE_START
-			cat <<- EOF > /mnt/gentoo/etc/portage/make.conf
+		cat <<-EOF >/mnt/gentoo/etc/portage/make.conf
 			CC="$PRESET_CC"
 			ACCEPT_KEYWORDS="$PRESET_ACCEPT_KEYWORDS"
 			CHOST="$PRESET_CHOST_ARCH-$PRESET_CHOST_VENDOR-$PRESET_CHOST_OS-$PRESET_CHOST_LIBC"
-			
+
 			CPU_FLAGS_X86="$(cpuid2cpuflags | cut -d: -f2 | xargs | cat -A)"
 			# CPU_FLAGS_X86="$PRESET_CPU_FLAGS_X86"
 			COMMON_FLAGS="$PRESET_COMMON_FLAGS"
@@ -40,27 +40,28 @@
 			# CURL_SSL="$PRESET_CURL_SSL"
 			NOCOLOR="true"
 
-			EOF
-			
-			local MOD
+		EOF
 
-			if [ "$CRYPTSETUP" = "YES" ]; then
-				printf '%s\n' "CRYPTSETUP=YES"
-				MOD=$(printf '%s\n' "$PRESET_USEFLAG_CRYPTSETUP")
-				
-			else
-				printf '%s\n' "CRYPTSETUP=NO"
-				MOD=$(printf '%s\n' "$PRESET_USEFLAG_LVMROOT" )
+		local MOD
 
-			fi
+		if [ "$CRYPTSETUP" = "YES" ]; then
+			printf '%s\n' "CRYPTSETUP=YES"
+			MOD=$(printf '%s\n' "$PRESET_USEFLAG_CRYPTSETUP")
 
-			sed -i -e "s|PLACEHOLDER_USEFLAGS|$MOD|" $CHROOTX/etc/portage/make.conf
+		else
+			printf '%s\n' "CRYPTSETUP=NO"
+			MOD=$(printf '%s\n' "$PRESET_USEFLAG_LVMROOT")
+
+		fi
+
+		verify_or_exit "Update make.conf USE flags" \
+			sed -i -e "s|PLACEHOLDER_USEFLAGS|$MOD|" "$CHROOTX/etc/portage/make.conf"
 
 		NOTICE_END
-		}
-
-		MAKECONF_VARIABLES
-		printf '%s\n' "/mnt/gentoo/etc/portage/make.conf"
-		cat $CHROOTX/etc/portage/make.conf
-	NOTICE_END
 	}
+
+	MAKECONF_VARIABLES
+	printf '%s\n' "/mnt/gentoo/etc/portage/make.conf"
+	cat $CHROOTX/etc/portage/make.conf
+	NOTICE_END
+}

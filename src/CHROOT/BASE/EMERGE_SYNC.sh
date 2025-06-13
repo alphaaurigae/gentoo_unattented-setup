@@ -1,5 +1,5 @@
-	EMERGE_SYNC () {
+EMERGE_SYNC() {
 	NOTICE_START
-		emerge --sync
+	emerge --sync
 	NOTICE_END
-	}
+}
