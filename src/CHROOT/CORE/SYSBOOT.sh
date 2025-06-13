@@ -18,7 +18,7 @@ SYSBOOT() {
 					APPAPP_EMERGE="sys-boot/grub:2 "
 					ACC_KEYWORDS_USERAPP
 					PACKAGE_USE
-					EMERGE_ATWORLD_A
+					EMERGE_ATWORLD
 					EMERGE_USERAPP_DEF
 					NOTICE_END
 				}
@@ -28,7 +28,7 @@ SYSBOOT() {
 						NOTICE_START
 						sed -i '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
 						printf '%s\n' 'GRUB_PLATFORMS="pc"' >>/etc/portage/make.conf
-						EMERGE_ATWORLD_A
+						EMERGE_ATWORLD
 						NOTICE_END
 					}
 					PRE_GRUB2BIOS
@@ -46,7 +46,7 @@ SYSBOOT() {
 						sed -i '/GRUB_PLATFORMS=/d' /etc/portage/make.conf
 						sed -i '/GRUB_PLATFORMS="efi-64/d' /etc/portage/make.conf
 						printf '%s\n' 'GRUB_PLATFORMS="efi-64"' >>/etc/portage/make.conf
-						EMERGE_ATWORLD_A
+						EMERGE_ATWORLD
 						NOTICE_END
 					}
 					PRE_GRUB2UEFI

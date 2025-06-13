@@ -15,7 +15,7 @@ APPEMULATION() {
 				APPAPP_EMERGE="app-emulation/virtualbox-guest-additions"
 				AUTOSTART_NAME_OPENRC="virtualbox-guest-additions"
 				PACKAGE_USE
-				EMERGE_ATWORLD_B
+				EMERGE_ATWORLD
 				EMERGE_USERAPP_DEF
 				AUTOSTART_DEFAULT_OPENRC
 				VBoxClient-all

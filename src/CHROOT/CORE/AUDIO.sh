@@ -13,7 +13,7 @@ AUDIO() { # (!todo)
 			APPAPP_EMERGE="media-sound/alsa-utils"
 			AUTOSTART_NAME_OPENRC="alsasound"
 			AUTOSTART_NAME_SYSTEMD="alsa-restore"
-			EMERGE_ATWORLD_B
+			EMERGE_ATWORLD
 			EMERGE_USERAPP_DEF
 			APPAPP_EMERGE="media-plugins/alsa-plugins "
 			# USE="ffmpeg" emerge -q media-plugins/alsa-plugins

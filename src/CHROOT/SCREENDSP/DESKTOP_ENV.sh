@@ -156,7 +156,7 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 				}
 				APPAPP_EMERGE="xfce-base/xfce4-meta "
 				PACKAGE_USE
-				EMERGE_ATWORLD_B
+				EMERGE_ATWORLD
 				EMERGE_USERAPP_DEF
 				XFCEADDON
 				NOTICE_END
