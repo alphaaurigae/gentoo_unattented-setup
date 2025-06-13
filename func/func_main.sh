@@ -3,7 +3,7 @@ NOTICE_START() {
 	printf '%s\n' "${BOLD} ${FUNCNAME[1]} ... START ... ${RESET}"
 }
 NOTICE_END() {
-	printf '%s\n' "${BOLD}${FUNCNAME[1]}  ... END ... ${RESET}"
+	printf '\n%s\n' "${BOLD}${FUNCNAME[1]}  ... END ... ${RESET}"
 }
 
 BOLD=$(tput bold)
