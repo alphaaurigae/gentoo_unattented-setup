@@ -32,7 +32,7 @@ SYSBOOT() {
 						NOTICE_END
 					}
 					PRE_GRUB2BIOS
-					grub-install --recheck --modules="${GRUB_PRELOAD_MODULES}" --target=i386-pc $HDD1
+					grub-install --recheck --modules="${GRUB_PRELOAD_MODULES}" --target=i386-pc "$HDD1"
 					ls /boot/grub/i386-pc/
 					printf '%s\n' "grub-probe --target=fs /boot"
 					grub-probe --target=fs /boot
@@ -59,7 +59,16 @@ SYSBOOT() {
 					NOTICE_END
 				}
 				PRE_GRUB2
-				GRUB2_$BOOTINITVAR
+				case "$BOOTINITVAR" in
+					BIOS|UEFI)
+					func="GRUB2_$BOOTINITVAR"
+					"$func"
+					;;
+				*)
+					echo "Invalid BOOTINITVAR e.g BIOS or UEFI defined in var/var_main.sh! - $BOOTINITVAR is defined!" >&2
+					return 1
+					;;
+				esac
 				NOTICE_END
 			}
 			CONFIG_GRUB2() { # ( !note: config is edited partially after pasting, to be fully integrated in variables. )
@@ -85,6 +94,16 @@ SYSBOOT() {
 					# only those devices specified on the kernel command line will be activated and you will see Not creating device 'devicename' because it was not specified on the kernel command line..
 					# To activate all devices in /etc/crypttab do not specify any luks.* parameters and use rd.luks.*.
 					# To activate all devices in /etc/crypttab.initramfs do not specify any luks.* or rd.luks.* parameters.
+
+					# Note: prevent globbing / wordsplit
+					#LUKS_UUID=$(blkid -o value -s UUID "$MAIN_PART")
+					#ROOT_UUID=$(blkid -s UUID -o value "/dev/$VG_MAIN/$LV_MAIN")
+					#
+					#cat <<-EOF >>/etc/default/grub
+					#
+					#  GRUB_CMDLINE_LINUX="rd.luks.name=${LUKS_UUID}=$PV_MAIN root=UUID=${ROOT_UUID} rootfstype=ext4 dolvm "
+					#
+					#EOF
 
 					local GRUB_CMDLINE
 					local GRUB_PRELOAD

@@ -63,8 +63,7 @@ INITRAM() {
 
 				[ -n "$FETCH_KERNEL_VERSION" ] || { printf '%s\n' "Failed to determine kernel version"; }
 				[ -d "/boot" ] || { printf '%s\n' "/boot not mounted or missing"; }
-				[ -d "/lib/modules/${FETCH_KERNEL_VERSION}" ] || { printf '%s\n' "Missing modules for $FETCH_KERNEL_VERSION"; }
-
+				[ -d "/lib/modules/${FETCH_KERNEL_VERSION}" ] || { printf '%s\n' "Missing modules for ${FETCH_KERNEL_VERSION}"; }
 				DEBUG_DRACUT() {
 					NOTICE_START
 					local INITRAMFS_PATH="/boot/initramfs-${FETCH_KERNEL_VERSION}.img"
