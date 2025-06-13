@@ -6,7 +6,7 @@ FIRMWARE() {
 		APPAPP_EMERGE="sys-kernel/linux-firmware "
 		PACKAGE_USE
 		LICENSE_SET
-		EMERGE_ATWORLD_A
+		EMERGE_ATWORLD
 		EMERGE_USERAPP_DEF
 		etc-update --automode -3 # (automode -3 = merge all)
 		NOTICE_END

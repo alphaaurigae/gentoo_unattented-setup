@@ -99,8 +99,6 @@ EMERGE_ATWORLD() {
 	emerge --update --deep --newuse --with-bdeps=y @world
 	printf "%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --depclean"
 	emerge --depclean
-	printf "%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " revdep-rebuild -i"
-	revdep-rebuild -i
 	printf "%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge @preserved-rebuild"
 	emerge @preserved-rebuild
 	NOTICE_END
