@@ -16,12 +16,17 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 		}
 		KERN_TORVALDS() {
 			NOTICE_START
-			rm -rf /usr/src/linux
-			git clone https://github.com/torvalds/linux /usr/src/linux
+			# Needs testing and possibly further integration - PLACEHOLDER
+			# rm -rf /usr/src/linux
+			[ -L /usr/src/linux ] && unlink /usr/src/linux
+			[ -d /usr/src/linux ] && rm -rf /usr/src/linux
+			# git clone https://github.com/torvalds/linux /usr/src/linux
+			git clone https://github.com/torvalds/linux "/usr/src/linux-torvalds-${KERNVERS}"
+			ln -sfn "/usr/src/linux-torvalds-${KERNVERS}" /usr/src/linux
 			cd /usr/src/linux
 			git fetch
 			git fetch --tags
-			git checkout v$KERNVERS # get desired branch / tag
+			git checkout v"${KERNVERS}" # get desired branch / tag
 			NOTICE_END
 		}
 		KERN_$KERNSOURCES
