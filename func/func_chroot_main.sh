@@ -4,13 +4,13 @@
 
 EMERGE_USERAPP_DEF() {
 	NOTICE_START
-	printf "%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerging $APPAPP_EMERGE "
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerging $APPAPP_EMERGE "
 	emerge $APPAPP_EMERGE
 	NOTICE_END
 }
 EMERGE_USERAPP_RD1() {
 	NOTICE_START
-	printf "%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerging ${!APPAPP_EMERGE}"
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerging ${!APPAPP_EMERGE}"
 	emerge ${!APPAPP_EMERGE} # Note!: For redirected var.)
 	NOTICE_END
 }
@@ -91,16 +91,16 @@ LICENSE_SET() {
 	printf '%s\n' "$APPAPP_EMERGE @BINARY-REDISTRIBUTABLE" >/etc/portage/package.license/$(printf '%s\n' "$APPAPP_EMERGE" | sed -e "s#/# #g" | awk '{print $2}')
 	NOTICE_END
 }
+
 EMERGE_ATWORLD() {
 	NOTICE_START
-	printf "%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --sync"
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --sync"
 	emerge --sync
-	printf "%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --update --deep --newuse --with-bdeps=y @world"
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --update --deep --newuse --with-bdeps=y @world"
 	emerge --update --deep --newuse --with-bdeps=y @world
-	printf "%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --depclean"
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --depclean"
 	emerge --depclean
-	printf "%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge @preserved-rebuild"
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge @preserved-rebuild"
 	emerge @preserved-rebuild
 	NOTICE_END
 }
-

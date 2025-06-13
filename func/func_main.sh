@@ -1,4 +1,4 @@
-# print function names
+# Print function names
 NOTICE_START() {
 	printf '%s\n' "${BOLD} ${FUNCNAME[1]} ... START ... ${RESET}"
 }

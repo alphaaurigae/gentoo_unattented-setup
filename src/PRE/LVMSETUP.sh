@@ -50,7 +50,7 @@ LVMSETUP() {
 
 		printf '%s\n' "DEBUG: MAIN_PART='$MAIN_PART' VG_MAIN='$VG_MAIN' LV_MAIN='$LV_MAIN' CHROOTX='$CHROOTX' BOOT_PART='$BOOT_PART'"
 		run_cmd() {
-			printf "%s%s%s\n" "${BOLD}${WHITE}" "RUNNING:" "${RESET}" " $*"
+			printf "%s%s%s%s\n" "${BOLD}${WHITE}" "RUNNING:" "${RESET}" " $*"
 			printf '%s\n' "RUNNING: $*"
 			"$@"
 			local status=$?
@@ -106,10 +106,10 @@ LVMSETUP() {
 	RUN_LVMSET() {
 		NOTICE_START
 		if [ $CRYPTSETUP = "YES" ]; then
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "Cryptsetup is set to YES:" "${RESET}" " in the script variables --> LVM ON LUKS!"
+			printf "%s%s%s%s\n" "${BOLD}${GREEN}" "Cryptsetup is set to YES:" "${RESET}" " in the script variables --> LVM ON LUKS!"
 			LVMONLUKS
 		else
-			printf "%s%s%s\n" "${BOLD}${WHITE}" "Cryptsetup is NOT set to YES:" "${RESET}" " in the script variables --> LVM ON ROOT!"
+			printf "%s%s%s%s\n" "${BOLD}${WHITE}" "Cryptsetup is NOT set to YES:" "${RESET}" " in the script variables --> LVM ON ROOT!"
 			LVM_ROOT
 		fi
 		NOTICE_END

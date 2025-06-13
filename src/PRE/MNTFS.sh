@@ -24,9 +24,9 @@ MNTFS() {
 			mounted_target=$(findmnt -n -o TARGET --target "$CHROOTX/$mnt")
 			expected_src=${mount_src[$mnt]}
 			if [ -n "$mounted_src" ] && [ "$mounted_target" = "$CHROOTX/$mnt" ]; then
-				printf "%s%s%s%s%s%s%s\n" "${BOLD}${GREEN}" "MOUNT OK:" "${RESET}" " [$mnt] $expected_src → $mounted_target (mounted fs: $mounted_src)"
+				printf "%s%s%s%s\n" "${BOLD}${GREEN}" "MOUNT OK:" "${RESET}" " [$mnt] $expected_src → $mounted_target (mounted fs: $mounted_src)"
 			else
-				printf "%s%s%s%s%s\n" "${BOLD}${RED}" "FATAL ERROR:" "${RESET}" " mount $mnt missing or incorrect!"
+				printf "%s%s%s%s\n" "${BOLD}${RED}" "FATAL ERROR:" "${RESET}" " mount $mnt missing or incorrect!"
 				exit 1
 			fi
 		done

@@ -69,6 +69,8 @@ done
 
 unset use_color sh
 
+
+# Make git push fun 
 GITCOMMIT() {
 	git add .
 	git commit -a -m "$1"
@@ -76,3 +78,6 @@ GITCOMMIT() {
 }
 alias santa=GITCOMMIT
 alias hohoho='git push'
+
+# Set desktop as default workdir for seamless work integration.
+export WORKPATH_MAIN="/home/$USER/Desktop"

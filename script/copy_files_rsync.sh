@@ -4,6 +4,11 @@ GENTOO_UNATTENDED_SETUP_GITREPODIR="$WORKPATH_MAIN/gentoo_unattented-setup"
 
 VMIPV4="192.168.178.52"
 
+VMIPV4_LIST=(
+	192.168.178.51
+	192.168.178.52
+)
+
 BOLD=$(tput bold)
 RESET=$(tput sgr0)
 # Regular colors
@@ -27,15 +32,21 @@ BRIGHT_CYAN=$(tput setaf 14)
 BRIGHT_WHITE=$(tput setaf 15)
 
 RSYNC_REPO_TO_VBOX() {
-	printf "%s%s%s\n" "${BOLD}${GREEN}" "$VMIPV4" "${RESET}"
+	local ip="$1"
 
-	SSH_KEY_CHECK=$(ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=5 root@"$VMIPV4" exit 2>&1)
+	printf "%s%s%s\n" "${BOLD}${GREEN}" "$ip" "${RESET}"
+
+	SSH_KEY_CHECK=$(ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=5 root@"$ip" exit 2>&1)
 
 	if printf '%s\n' "$SSH_KEY_CHECK" | grep -qE 'WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED|Offending key|Host key verification failed'; then
-		ssh-keygen -R "$VMIPV4"
+		ssh-keygen -R "$ip"
 	fi
 
-	rsync -av --recursive "$GENTOO_UNATTENDED_SETUP_GITREPODIR" root@"$VMIPV4":/root/
+	# Remove ssh connectivity test to allow password prompt during rsync
+	rsync -av --recursive "$GENTOO_UNATTENDED_SETUP_GITREPODIR" root@"$ip":/root/ || \
+		printf "%srsync to %s failed.%s\n" "${BOLD}${YELLOW}" "$ip" "${RESET}"
 }
 
-RSYNC_REPO_TO_VBOX
+for ip in "${VMIPV4_LIST[@]}"; do
+	RSYNC_REPO_TO_VBOX "$ip"
+done

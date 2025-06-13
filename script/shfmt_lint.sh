@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# USE WITH CARE - MAY UNINTENTIONALLY DELETE FILES. BACKUP WORK DIR AND TEST E.G MELD
+
 BOLD=$(tput bold)
 RESET=$(tput sgr0)
 # Regular colors
@@ -27,11 +29,11 @@ repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
 
 # Check if the script is running inside a Git repository and in the root directory
 if [ -z "$repo_root" ]; then
-	printf "%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " This script must be run inside a Git repository."
+	printf "%s%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " This script must be run inside a Git repository."
 
 	exit 1
 elif [ "$(pwd)" != "$repo_root" ]; then
-	printf "%s%s%s\n" "${BOLD}${YELLOW}" "FATAL ERROR:" "${RESET}" " This script must be run from the root of the Git repository."
+	printf "%s%s%s%s\n" "${BOLD}${YELLOW}" "FATAL ERROR:" "${RESET}" " This script must be run from the root of the Git repository."
 	exit 1
 fi
 
@@ -53,7 +55,7 @@ find . \
 	! -path "./**/LICENSE" |
 	while read -r file; do
 		if [ ! -r "$file" ]; then
-			printf "%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " Skipping unreadable file: $file" >>"$LOG"
+			printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " Skipping unreadable file: $file" >>"$LOG"
 			continue
 		fi
 
@@ -63,14 +65,14 @@ find . \
 		mkdir -p "$(dirname "$backup_path")"
 		cp "$file" "$backup_path"
 		if [ $? -ne 0 ]; then
-			printf "%s%s%s\n" "${BOLD}${RED}" "FATAL ERROR:" "${RESET}" " Failed to backup $file" >>"$LOG"
+			printf "%s%s%s%s\n" "${BOLD}${RED}" "FATAL ERROR:" "${RESET}" " Failed to backup $file" >>"$LOG"
 			exit 1
 		fi
 
 		# Apply shfmt to the file in place
 		shfmt -i 0 -ci -ln bash -w "$file"
 		if [ $? -ne 0 ]; then
-			printf "%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " Failed to format $file with shfmt" >>"$LOG"
+			printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " Failed to format $file with shfmt" >>"$LOG"
 			# Restore from backup if shfmt fails
 			cp "$backup_path" "$file"
 			continue
@@ -78,14 +80,14 @@ find . \
 
 		# Compare original and modified file
 		if ! diff "$file" "$backup_path" >/dev/null; then
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "SUCCESS:" "${RESET}" " File $file was modified. Backed up copy saved in $BACKUP_DIR"
+			printf "%s%s%s%s\n" "${BOLD}${GREEN}" "SUCCESS:" "${RESET}" " File $file was modified. Backed up copy saved in $BACKUP_DIR"
 		else
-			printf "%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " No changes made to $file"
+			printf "%s%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " No changes made to $file"
 		fi
 	done
 
 if [ -s "$LOG" ]; then
-	printf "%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " Some errors or warnings were encountered during formatting. Check the error log at $LOG"
+	printf "%s%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " Some errors or warnings were encountered during formatting. Check the error log at $LOG"
 else
-	printf "%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " All Bash files have been formatted using shfmt and backups are saved!"
+	printf "%s%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " All Bash files have been formatted using shfmt and backups are saved!"
 fi

@@ -16,15 +16,15 @@ CRYPTSETUP() { # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_ent
 				modprobe -a "${modules[@]}" || fail=1
 				for m in "${modules[@]}"; do
 					if ! lsmod | grep -q "^$m"; then
-						printf "%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " modprobe - Module not loaded: $m"
+						printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " modprobe - Module not loaded: $m"
 						fail=1
 					fi
 				done
 
 				if [ "$fail" -eq 0 ]; then
-					printf "%s%s%s\n" "${BOLD}${GREEN}" "SUCCESS:" "${RESET}" " modprobe - All modules loaded successfully."
+					printf "%s%s%s%s\n" "${BOLD}${GREEN}" "SUCCESS:" "${RESET}" " modprobe - All modules loaded successfully."
 				else
-					printf "%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " modprobe - One or more modules failed to load."
+					printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " modprobe - One or more modules failed to load."
 				fi
 				lsmod
 
@@ -82,10 +82,10 @@ CRYPTSETUP() { # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_ent
 			NOTICE_END
 		}
 		if [ $CRYPTSETUP = "YES" ]; then
-			printf "%s%s%s\n" "${BOLD}${GREEN}" "Cryptsetup is set to YES:" "${RESET}" " in the script variables --> CRYPTSETUP"
+			printf "%s%s%s%s\n" "${BOLD}${GREEN}" "Cryptsetup is set to YES:" "${RESET}" " in the script variables --> CRYPTSETUP"
 			RUN_CRYPTSETUP
 		else
-			printf "%s%s%s\n" "${BOLD}${WHITE}" "Cryptsetup is NOT set to YES:" "${RESET}" " in the script variables --> SKIPPING CRYPTSETUP!"
+			printf "%s%s%s%s\n" "${BOLD}${WHITE}" "Cryptsetup is NOT set to YES:" "${RESET}" " in the script variables --> SKIPPING CRYPTSETUP!"
 		fi
 		NOTICE_END
 	}
