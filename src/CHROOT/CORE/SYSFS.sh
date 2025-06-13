@@ -75,32 +75,31 @@ SYSFS() {
 				done
 				NOTICE_END
 			}
+
+
 			FILTER_YES() {
 				NOTICE_START
 				for i in ${!FILESYSTEM_*}; do
-					if [[ "${!i}" == "msdos" || "${!FILESYSTEM_*}" == "vfat" || "${!FILESYSTEM_*}" == "fat" ]]; then
+					if [[ "${!i}" == "msdos" || "${!i}" == "vfat" || "${!i}" == "fat" ]]; then
 						printf '%s\n' "${!i} IS BINGO dos fs"
-						APPAPP_EMERGE="$(printf '%s\n' "$FST_EMERGE_VFAT")"
-						printf '%s\n' "emerging ${!APPAPP_EMERGE}"
+						APPAPP_EMERGE="$FST_EMERGE_VFAT"
+						printf '%s\n' "emerging $APPAPP_EMERGE"
 						EMERGE_USERAPP_DEF
 					else
-						#printf '%s\n' "${!MATCHFS}"
-						#printf '%s\n' "${!i}"
 						printf '%s\n' "${!i} is not dos fs"
 					fi
 					if [[ "${!i}" == *"ext"* ]]; then
 						printf '%s\n' "${!i} IS BINGO ext fs"
-						APPAPP_EMERGE="$(printf '%s\n' "$FST_EMERGE_EXT")"
-						printf '%s\n' "emerging $APPAPP_EMERGE "
+						APPAPP_EMERGE="$FST_EMERGE_EXT"
+						printf '%s\n' "emerging $APPAPP_EMERGE"
 						EMERGE_USERAPP_DEF
 					else
-						#printf '%s\n' "${!MATCHFS}"
-						#printf '%s\n' "${!i}"
 						printf '%s\n' "${!i} is not ext fs"
 					fi
 				done
 				NOTICE_END
 			}
+
 			ALL_YES_FSTOOLS
 			FILTER_YES
 			NOTICE_END
