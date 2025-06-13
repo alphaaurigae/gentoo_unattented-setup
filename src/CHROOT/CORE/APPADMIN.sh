@@ -43,7 +43,7 @@ APPADMIN() {
 				AUTOSTART_NAME_OPENRC=$SYSKLOGD_SYSLOG_OPENRC
 				SYSLOG_EMERGE=$SYSKLOGD_SYSLOG_EMERGE
 			else
-				printf '%s\n' "${bold}ERROR: Could not detect '$SYSLOG' - debug syslog $SYSLOG ${normal}"
+				printf '%s\n' "${BOLD}ERROR: Could not detect '$SYSLOG' - debug syslog ${SYSLOG} ${RESET}"
 			fi
 			NOTICE_END
 		}
