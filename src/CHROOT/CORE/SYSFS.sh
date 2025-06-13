@@ -7,7 +7,7 @@ SYSFS() {
 		AUTOSTART_NAME_SYSTEMD="systemd-cryptsetup"
 		PACKAGE_USE
 		ACC_KEYWORDS_USERAPP
-		EMERGE_ATWORLD_A
+		EMERGE_ATWORLD
 		EMERGE_USERAPP_DEF
 		etc-update --automode -3 # (automode -3 = merge all)
 		AUTOSTART_BOOT_$SYSINITVAR
@@ -59,7 +59,7 @@ SYSFS() {
 						APPAPP_EMERGE=$(printf '%s\n' "$i" | sed -e s'/FSTOOLS_/FST_EMERGE_/g')
 						MATCHFS="$(printf '%s\n' "$i" | sed -e s'/FSTOOLS_/FST_EMERGE_/g')"
 						LDGFSE="$(printf '%s\n' "${!MATCHFS}" | sed -e 's/-progs//g' | sed -e 's/progs//g' | sed -e 's#sys-fs/##g')"
-						printf '%s\n' "$APPAPP_EMERGE  is set to NO, test for boot fs ..."
+						printf '%s\n' "$APPAPP_EMERGE is set to NO, test for boot fs ..."
 						for i in ${!FILESYSTEM_*}; do
 							if [ "${!i}" == "$LDGFSE" ]; then
 								printf '%s\n' "system / boot FS ${!i} = $LDGFSE pattern in search string for fstools repo variables $i "
