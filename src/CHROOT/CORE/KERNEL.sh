@@ -8,25 +8,20 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			ACC_KEYWORDS_USERAPP
 			EMERGE_ATWORLD
 			EMERGE_USERAPP_DEF
-			# emerge =sys-kernel/gentoo-sources-4.19.250
-			# emerge --search "%@^sys-kernel/.*sources"
-			#eselect kernel list
 			eselect kernel set 1
 			NOTICE_END
 		}
 		KERN_TORVALDS() {
 			NOTICE_START
 			# Needs testing and possibly further integration - PLACEHOLDER
-			# rm -rf /usr/src/linux
 			[ -L /usr/src/linux ] && unlink /usr/src/linux
 			[ -d /usr/src/linux ] && rm -rf /usr/src/linux
-			# git clone https://github.com/torvalds/linux /usr/src/linux
 			git clone https://github.com/torvalds/linux "/usr/src/linux-torvalds-${KERNVERS}"
 			ln -sfn "/usr/src/linux-torvalds-${KERNVERS}" /usr/src/linux
 			cd /usr/src/linux
 			git fetch
 			git fetch --tags
-			git checkout v"${KERNVERS}" # get desired branch / tag
+			git checkout v"${KERNVERS}"
 			NOTICE_END
 		}
 		KERN_$KERNSOURCES
@@ -38,10 +33,6 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 		ACC_KEYWORDS_USERAPP
 		EMERGE_ATWORLD
 		EMERGE_USERAPP_DEF
-
-		# KERNEL_INSTALL_HOOKS="storage bootloader initramfs"
-		# INITRAMFS_GENERATOR="dracut"
-		# BOOTLOADER="grub"
 		NOTICE_END
 	}
 	KERN_DEPLOY() {
@@ -50,52 +41,50 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			NOTICE_START
 			KERN_CONF() {
 				NOTICE_START
-				KERNCONF_PASTE() { # paste own config here ( ~ this should go to auto)
+				KERNCONF_PASTE() {
 					NOTICE_START
+					cd /usr/src/linux
+					make mrproper
 
 					mv /usr/src/linux/.config /usr/src/linux/.oldconfig
-					printf '%s\n' "ignore mv err"
+					printf "%s%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " Ignore the mv error"
 					touch /usr/src/linux/.config
 
 					local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
 					local DST="/usr/src/linux/.config"
+
 					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
 					NOTICE_END
 				}
 				KERNCONF_DEFCONFIG() {
 					NOTICE_START
 					cd /usr/src/linux
-					make clean
-					make proper
+					make mrproper
 					make -j $(nproc) defconfig
 					NOTICE_END
 				}
 				KERNCONF_MENUCONFIG_NEW() {
 					NOTICE_START
 					cd /usr/src/linux
-					make clean
-					make proper
+					make mrproper
 					make -j $(nproc) menuconfig
 					NOTICE_END
 				}
 				KERNCONF_ALLYESCONFIG() { # New config where all options are accepted with yes
 					NOTICE_START
 					cd /usr/src/linux
-					make clean
-					make proper
+					make mrproper
 					make -j $(nproc) allyesconfig
 					NOTICE_END
 				}
 				KERNCONF_OLDCONFIG() { # (!testing) (!todo)
 					NOTICE_START
 					cd /usr/src/linux
-					make clean
-					make proper
+					make mrproper
 					make -j $(nproc) oldconfig
 					NOTICE_END
 				}
 				if [ "$KERNCONFD" != "DEFCONFIG" ]; then
-					# KERNCONF_PASTE
 					KERNCONF_$KERNCONFD
 				else
 					KERNCONF_DEFCONFIG
@@ -105,7 +94,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			KERN_BUILD() { # (!incomplete (works but) modules setup *smart)
 				NOTICE_START
 				cd /usr/src/linux
-				# -o good practice in the context??? Works but ...)
+				# -o good practice in this context??? Works but ...)
 				make -j$(nproc) -o /usr/src/linux/.config menuconfig
 				make -j$(nproc) -o /usr/src/linux/.config modules
 				make -j$(nproc) bzImage
@@ -122,9 +111,9 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					modinfo -k $FETCH_KERNEL_VERSION
 
 					printf '%s\n' "Debug kernel installation"
-					[ -f "${BOOTDIR}/vmlinuz-${FETCH_KERNEL_VERSION}" ] || printf '%s\n' "Kernel image missing"
-					[ -f "${BOOTDIR}/System.map-${FETCH_KERNEL_VERSION}" ] || printf '%s\n' "System.map missing"
-					[ -f "${BOOTDIR}/config-${FETCH_KERNEL_VERSION}" ] || printf '%s\n' "Config missing"
+					[ -f "${BOOTDIR}/vmlinuz-${FETCH_KERNEL_VERSION}" ] || printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " Kernel image missing!"
+					[ -f "${BOOTDIR}/System.map-${FETCH_KERNEL_VERSION}" ] || printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " System.map missing!"
+					[ -f "${BOOTDIR}/config-${FETCH_KERNEL_VERSION}" ] || printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " Config missing!"
 
 					ls -l /boot/vmlinuz-$FETCH_KERNEL_VERSION
 					ls -l /boot/System.map-$FETCH_KERNEL_VERSION
@@ -145,7 +134,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					DEBUG_KERNELINST
 				else
 
-					printf '%s\n' "Install kernel manually since installkernel script is not longer available with gentoo by default"
+					printf '%s\n' "Install kernel manually instead of installkernel set to FALSE --> Installing the kernel manually!"
 					local SRC_IMAGE="/usr/src/linux/arch/x86/boot/bzImage"
 					local DEST_IMAGE="/boot/vmlinuz-${FETCH_KERNEL_VERSION}"
 					local DEST_MAP="/boot/System.map-${FETCH_KERNEL_VERSION}"
@@ -170,11 +159,11 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			lsmod      # active modules by install medium.
 			KERN_CONF  # kernel configure set
 			KERN_BUILD # kernel build set
-			printf '%s\n' "ignore err grub-mkconfig if grub not installed yet"
-			grub-mkconfig -o /boot/grub/grub.cfg # update grub in case its already installed ....
+			printf "%s%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " Ignore err grub-mkconfig if grub is not installed yet!"
+			grub-mkconfig -o /boot/grub/grub.cfg # ... Not sure why i left this here. Remove? Test ...
 			NOTICE_END
 		}
-		KERN_AUTO() { # (!changeme) switch to auto (option variables top) # switch to auto configuration (option variables top)
+		KERN_AUTO() {
 			NOTICE_START
 			GENKERNEL_NEXT() { # # (!incomplete)
 				NOTICE_START
@@ -190,8 +179,8 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					NOTICE_START
 					# genkernel --config=/etc/genkernel.conf all
 					genkernel --luks --lvm --no-zfs all
-					printf '%s\n' "ignore err grub-mkconfig if grub not installed yet"
-					grub-mkconfig -o /boot/grub/grub.cfg # update grub in case its already installed ....
+					printf "%s%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " Ignore err grub-mkconfig if grub is not installed yet!"
+					grub-mkconfig -o /boot/grub/grub.cfg
 					NOTICE_END
 				}
 				APPAPP_EMERGE="sys-kernel/genkernel-next"
@@ -207,7 +196,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			NOTICE_END
 		}
 		KERN_$KERNDEPLOY
-		cd /
+		cd /  # ... Not sure why i left this here. Remove? Test ...
 		NOTICE_END
 	}
 	KERNEL_HEADERS() {
@@ -220,9 +209,9 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 		printf '%s\n' "Installkernel is set to TRUE"
 		INSTALLKERNEL
 	else
-		printf '%s\n' "Installkernel not set to TRUE"
+		printf '%s\n' "Installkernel is set to FALSE"
 	fi
-	KERN_DEPLOY # config / build
+	KERN_DEPLOY
 	KERNEL_HEADERS
 	NOTICE_END
 }
