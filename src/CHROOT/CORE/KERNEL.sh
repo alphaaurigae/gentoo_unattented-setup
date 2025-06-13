@@ -6,7 +6,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			NOTICE_START
 			APPAPP_EMERGE="sys-kernel/gentoo-sources"
 			ACC_KEYWORDS_USERAPP
-			EMERGE_ATWORLD_A
+			EMERGE_ATWORLD
 			EMERGE_USERAPP_DEF
 			# emerge =sys-kernel/gentoo-sources-4.19.250
 			# emerge --search "%@^sys-kernel/.*sources"
@@ -36,7 +36,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 		NOTICE_START
 		APPAPP_EMERGE="sys-kernel/installkernel"
 		ACC_KEYWORDS_USERAPP
-		EMERGE_ATWORLD_A
+		EMERGE_ATWORLD
 		EMERGE_USERAPP_DEF
 
 		# KERNEL_INSTALL_HOOKS="storage bootloader initramfs"
@@ -197,7 +197,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 				APPAPP_EMERGE="sys-kernel/genkernel-next"
 				PACKAGE_USE
 				ACC_KEYWORDS_USERAPP
-				EMERGE_ATWORLD_A
+				EMERGE_ATWORLD
 				EMERGE_USERAPP_DEF
 				# CONF_GENKERNEL
 				RUN_GENKERNEL
