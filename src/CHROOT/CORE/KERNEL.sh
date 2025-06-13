@@ -100,6 +100,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			KERN_BUILD() { # (!incomplete (works but) modules setup *smart)
 				NOTICE_START
 				cd /usr/src/linux
+				# -o good practice in the context??? Works but ...)
 				make -j$(nproc) -o /usr/src/linux/.config menuconfig
 				make -j$(nproc) -o /usr/src/linux/.config modules
 				make -j$(nproc) bzImage
