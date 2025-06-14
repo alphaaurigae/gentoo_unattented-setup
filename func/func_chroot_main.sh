@@ -96,10 +96,25 @@ EMERGE_ATWORLD() {
 	NOTICE_START
 	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --sync"
 	emerge --sync
+
 	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --update --deep --newuse --with-bdeps=y @world"
-	emerge --update --deep --newuse --with-bdeps=y @world
+	#emerge --update --deep --newuse --with-bdeps=y @world
+	if output=$(emerge --update --deep --newuse --with-bdeps=y @world -q 2>&1 1>/dev/null); then
+		printf '%s\n' "emerge world OK"
+	else
+		printf '%s\n' "$output" >&2
+	return 1
+	fi
+
 	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --depclean"
-	emerge --depclean
+	#emerge --depclean
+	if output=$(emerge --depclean -q 2>&1 1>/dev/null); then
+		printf '%s\n' "depclean OK"
+	else
+		printf '%s\n' "$output" >&2
+	return 1
+	fi
+
 	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge @preserved-rebuild"
 	emerge @preserved-rebuild
 	NOTICE_END
