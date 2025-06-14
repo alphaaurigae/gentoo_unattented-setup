@@ -58,7 +58,7 @@ INITRAM() {
 
 				local KERNEL_BUILD_DIR="/usr/src/linux"
 				local FETCH_KERNEL_VERSION="$(make -sC "$KERNEL_BUILD_DIR" kernelrelease)"
-				printf '%s\n' "$(readlink -f $KERNEL_BUILD_DIR)"
+				printf '%s\n' "$(readlink -f "$KERNEL_BUILD_DIR")"
 				printf '%s\n' "$FETCH_KERNEL_VERSION"
 
 				[ -n "$FETCH_KERNEL_VERSION" ] || { printf '%s\n' "Failed to determine kernel version"; }

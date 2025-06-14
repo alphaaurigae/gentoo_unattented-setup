@@ -321,7 +321,7 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 		CONFIGURE_DSPMGR
 		NOTICE_END
 	}
-	SETVAR_DSKTENV # set the variables
+	SETVAR_DSKTENV
 	ADDREPO_DSTENV
 	EMERGE_DSTENV
 	MAIN_DESKTPENV_$SYSINITVAR
