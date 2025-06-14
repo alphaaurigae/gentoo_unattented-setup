@@ -12,9 +12,9 @@ ADMIN() {
 		NOTICE_START
 		ASK_PASSWD() {
 			NOTICE_START
-			printf '%s\n' "${bold}Enter new $SYSUSERNAME password${normal}"
+			printf '%s\n' "${BOLD}Enter new $SYSUSERNAME password${RESET}"
 			until passwd $SYSUSERNAME; do
-				printf '%s\n' "${bold}Enter new $SYSUSERNAME password${normal}"
+				printf '%s\n' "${BOLD}Enter new $SYSUSERNAME password${RESET}"
 			done
 			NOTICE_END
 		}

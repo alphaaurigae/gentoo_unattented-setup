@@ -34,30 +34,30 @@ KERNSOURCES="EMERGE" # (!default) EMERGE # TORVALDS (git repository) # src/CHROO
 KERNCONFD="PASTE"    # (!default) PASTE  # DEFCONFIG  # src/CHROOT/CORE/KERNEL.sh
 
 ### INITRAMFS
-GENINITRAMFS="DRACUT" # DRACUT (!default); GENKERNEL  # src/CHROOT/CORE/INITRAM.sh
+GENINITRAMFS="DRACUT" # DRACUT (!default); GENKERNEL # src/CHROOT/CORE/INITRAM.sh
 
 # GENKERNEL
 GENKERNEL_CMD="--luks --lvm --no-zfs all" # src/CHROOT/CORE/INITRAM.sh
 # DRACUT
 ## DRACUT_CONF
-# just removed gensplash "ERR dracut: dracut module 'gensplash' cannot be found or installed."
+
 # <key>+=" <values> ": <values> should have surrounding white spaces!
-DRACUT_CONF_MODULES_LVM=" i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown lvm debug dm "                        # for LVM on /dev/sd**  (CRYPSETUP="NO" /var/var_main )  # src/CHROOT/CORE/INITRAM.sh
-DRACUT_CONF_MODULES_CRYPTSETUP=" i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg lvm debug dm " # for LVM on cryptsetup /dev/sd** (CRYPSETUP="YES" /var/var_main ) # src/CHROOT/CORE/INITRAM.sh
-DRACUT_CONF_HOSTONLY="yes"                                                                                                                #  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
-DRACUT_CONF_LVMCONF="yes"                                                                                                                 #  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
-#DRACUT_CONFD_ADD_DRACUT_MODULES="usrmount"  #  gentoo_unattented-setup/src/CHROOT/CORE/INITRAM.sh
+DRACUT_CONF_MODULES_LVM=" i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown lvm debug dm "                        # For LVM on /dev/sd**  (CRYPSETUP="NO" /var/var_main )  # src/CHROOT/CORE/INITRAM.sh
+DRACUT_CONF_MODULES_CRYPTSETUP=" i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown crypt crypt-gpg lvm debug dm " # For LVM on cryptsetup /dev/sd** (CRYPSETUP="YES" /var/var_main ) # src/CHROOT/CORE/INITRAM.sh
+DRACUT_CONF_HOSTONLY="yes"                                                                                                                # src/CHROOT/CORE/INITRAM.sh
+DRACUT_CONF_LVMCONF="yes"                                                                                                                 # src/CHROOT/CORE/INITRAM.sh
+#DRACUT_CONFD_ADD_DRACUT_MODULES="usrmount"  # src/CHROOT/CORE/INITRAM.sh
 ##INITRAMFSVAR="--lvm --mdadm"  # was used in src/CHROOT/CORE/INITRAM.sh, not defined atm
 
 ### BOOT
-BOOTLOADER="GRUB2" # GRUB2 (!default)  # used in src/CHROOT/CORE/SYSBOOT.sh
+BOOTLOADER="GRUB2" # GRUB2 (!default) ..... src/CHROOT/CORE/SYSBOOT.sh
 GRUB_PRELOAD_MODULES_CRYPTSETUP="cryptodisk luks luks2 lvm ext2 part_msdos part_gpt gcry_*"
 GRUB_PRELOAD_MODULES_DEFAULT="cryptodisk luks luks2 lvm ext2 part_msdos part_gpt gcry_*"
-# BIOS / UEFI defined in var_main.sh as its needed for partitioning too.
+# BIOS / UEFI  var_main.sh
 
 ## SYSAPP
 ### CRON
-CRON="CRONIE" # CRONIE (!default), DCRON, ANACRON ..... see on your own  # used in src/CHROOT/CORE/SYSPROCESS.sh
+CRON="CRONIE" # CRONIE (!default), DCRON, ANACRON # src/CHROOT/CORE/SYSPROCESS.sh
 
 # FSTOOLS -- (note!: this is not activating kernel settings yet - solely for FSTOOLS)
 # placeholder? check later
@@ -69,7 +69,7 @@ FSTOOLS_VFAT="NO"
 FSTOOLS_BTRFS="NO"
 
 ## LOG
-SYSLOG="SYSLOGNG" # used in gentoo_unattented-setup/src/CHROOT/CORE/APPADMIN.sh
+SYSLOG="SYSLOGNG" # src/CHROOT/CORE/APPADMIN.sh
 
 # SYSAPP_ YES / NO
 SYSAPP_DMCRYPT="YES" # var/chroot_variables.sh && src/CHROOT/BASE/MAKECONF.sh
@@ -84,8 +84,8 @@ SYSAPP_CRON="NO"
 SYSAPP_FILEINDEXING="NO"
 
 ## NETWORK - https://en.wikipedia.org/wiki/Public_recursive_name_server  # src/CHROOT/CORE/NETWORK.sh
-HOSTNAME="gentoo"        # (!changeme) define hostname
-DOMAIN="gentoo"          # (!changeme) define domain
+HOSTNAME="gentoo"        # (!changeme)
+DOMAIN="gentoo"          # (!changeme)
 NETWORK_NET="DHCPD"      # DHCPD or STATIC, config static on your own in the network section.
 NETIFACE_MAIN="enp0s3"   # eth0
 NETWMGR="NETWORKMANAGER" # NETIFRC; DHCPD; NETWORKMANAGER
@@ -97,13 +97,13 @@ NETWMGR="NETWORKMANAGER" # NETIFRC; DHCPD; NETWORKMANAGER
 # NAMESERVER2_IPV6=2606:4700:4700::1001  # (!changeme) ipv6 ns2 2606:4700:4700::1001 cloudflare ipv6
 
 # VIRTUALIZATION
-SYSVARD="GUEST" # host is GUEST & HOST ... for virtualbization setup  # used in src/CHROOT/CORE/APPEMULATION.sh
+SYSVARD="GUEST" # host is GUEST & HOST ... for virtualbization setup  # src/CHROOT/CORE/APPEMULATION.sh
 
 # DISPLAY / SCREEN  # src/CHROOT/SCREENDSP/WINDOWSYS.sh
-DISPLAYSERV="X11"          # see options
+DISPLAYSERV="X11"
 DISPLAYMGR_YESNO="W_D_MGR" # W_D_MGR (WITH display manager) / SOLO (without display manager)
-DISPLAYMGR="LXDM"          # CDM; GDM; LIGHTDM; LXDM (!default - other env untested / todo); QINGY; SSDM; SLIM; WDM; XDM  # sample, check the section for valid setups,
-DESKTOPENV="XFCE"          # XFCE (!default - other env untested / todo); BUDGIE; CINNAMON; FVWM; GNOME; KDE; LXDE; LXQT; LUMINA; MATE; PANTHEON; RAZORQT; TDE; # sample, check the section for valid setups,
+DISPLAYMGR="LXDM"          # CDM; GDM; LIGHTDM; LXDM (!default - other env untested / todo); QINGY; SSDM; SLIM; WDM; XDM
+DESKTOPENV="XFCE"          # XFCE (!default - other env untested / todo); BUDGIE; CINNAMON; FVWM; GNOME; KDE; LXDE; LXQT; LUMINA; MATE; PANTHEON; RAZORQT; TDE;
 
 # X11
 ## X11 KEYBOARD  # src/CHROOT/SCREENDSP/WINDOWSYS.sh

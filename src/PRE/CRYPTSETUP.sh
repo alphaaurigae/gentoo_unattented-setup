@@ -1,4 +1,4 @@
-# variables defined in: var/1_PRE_main.sh && var/var_main.sh unless noted otherwise behind the var line / func
+# Variables defined in: var/1_PRE_main.sh && var/var_main.sh unless noted otherwise behind the var line / func
 
 # (!NOTE: LVM on luks "CRYPT --> BOOT/LVM2 --> OS" ...
 CRYPTSETUP() { # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS && https://blog.stigok.com/2018/05/03/lvm-in-luks-with-encrypted-boot-partition-and-suspend-to-disk.html
@@ -30,26 +30,12 @@ CRYPTSETUP() { # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_ent
 
 				return $fail
 
-				# lsmod
-				# modprobe -a dm-mod dm-crypt sha256 aes aes_generic xts  # Load kernel modules for the chroot install process
-				# lsmod
 				NOTICE_END
 			}
 			LUKS_CRYPTSETUP() {
 				NOTICE_START
 
 				printf '%s\n' "${BOLD}Enter the $PV_MAIN password${RESET}"
-
-				# For test
-				# cryptsetup -v luksFormat --type luks2 --pbkdf argon2id --pbkdf-memory 4096 --pbkdf-parallel 2 --pbkdf-force-iterations 4 $MAIN_PART --debug
-				# cryptsetup -v luksFormat --type luks2 --pbkdf pbkdf2 --cipher aes-xts-plain64 --key-size 512 --hash sha512 $MAIN_PART --debug
-				# cryptsetup -v luksFormat --type luks2 --pbkdf pbkdf2 --pbkdf-force-iterations 1000000 --pbkdf-hash sha512 $MAIN_PART --debug
-				# cryptsetup -v luksFormat --type luks2 --pbkdf pbkdf2 --pbkdf-force-iterations 1000000 --hash sha512 --cipher aes-xts-plain64 --key-size 512 $MAIN_PART --debug
-				# cryptsetup -v luksFormat --type luks2 --pbkdf pbkdf2 --pbkdf-force-iterations 1000000 --hash sha512 --cipher aes-xts-plain64 --key-size 512 --align-payload=8192 --sector-size=512 $MAIN_PART --debug
-				# cryptsetup -v luksFormat --type luks2 --pbkdf pbkdf2 --pbkdf-force-iterations 500000 --hash sha512 --cipher aes-xts-plain64 --key-size 256 --align-payload=8192 --sector-size=512 $MAIN_PART --debug
-				# cryptsetup -v luksFormat --type luks2 --pbkdf pbkdf2 --hash sha256 $MAIN_PART --debug # simulate legacy 2023
-				# cryptsetup -v luksFormat --type luks2 --pbkdf pbkdf2 --pbkdf-force-iterations 500000 --hash sha256 --cipher aes-xts-plain64 --key-size 512 --align-payload=8192 --sector-size=512 $MAIN_PART --debug
-				# cryptsetup -v luksFormat --type luks2 $MAIN_PART --debug
 
 				CRYPTSETUP_ARGS=(
 					-v luksFormat

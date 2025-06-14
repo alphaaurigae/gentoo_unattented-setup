@@ -11,9 +11,8 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			eselect kernel set 1
 			NOTICE_END
 		}
-		KERN_TORVALDS() {
+		KERN_TORVALDS() {  # Needs testing and possibly further integration - PLACEHOLDER
 			NOTICE_START
-			# Needs testing and possibly further integration - PLACEHOLDER
 			[ -L /usr/src/linux ] && unlink /usr/src/linux
 			[ -d /usr/src/linux ] && rm -rf /usr/src/linux
 			git clone https://github.com/torvalds/linux "/usr/src/linux-torvalds-${KERNVERS}"
@@ -165,9 +164,9 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 		}
 		KERN_AUTO() {
 			NOTICE_START
-			GENKERNEL_NEXT() { # # (!incomplete)
+			GENKERNEL_NEXT() { # (!incomplete)
 				NOTICE_START
-				CONF_GENKERNEL() { # (!incomplete)
+				CONF_GENKERNEL() {
 					NOTICE_START
 					touch /etc/genkernel.conf
 					cat <<-'EOF' >/etc/genkernel.conf
@@ -204,7 +203,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 		emerge --ask sys-kernel/linux-headers
 		NOTICE_END
 	}
-	KERN_LOAD # load kernel source (download, copy ; etc ....)
+	KERN_LOAD
 	if $INSTALLKERNEL; then
 		printf '%s\n' "Installkernel is set to TRUE"
 		INSTALLKERNEL

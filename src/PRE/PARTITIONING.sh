@@ -1,4 +1,4 @@
-# Variables defined in: g1_PRE_main.sh && gentoo_unattented-setup/var/var_main.sh unless noted otherwise behind the var line / func
+# Variables defined in: g1_PRE_main.sh && var/var_main.sh unless noted otherwise behind the var line / func
 
 PARTITIONING_MAIN() {
 	CLEANUP_DISK() {
