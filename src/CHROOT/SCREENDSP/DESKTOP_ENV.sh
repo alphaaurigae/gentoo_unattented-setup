@@ -1,18 +1,35 @@
 DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 	NOTICE_START
-	. /gentoo_unattented-setup/var/app/desktop_env.sh 
+
+
+#	sanitize_varname() {
+#	  echo "$1" | tr '/-' '__'
+#	}
+#
+#	SETVAR_DSKTENV() {
+#		NOTICE_START
+#		. /gentoo_unattented-setup/var/app/desktop_env.sh
+#		local sanitized
+#		sanitized=$(sanitize_varname "$DESKTOPENV")
+#
+#		local DSTENV_XEC_VAR="${sanitized}_DSTENV_XEC"
+#		DSTENV_XEC="${!DSTENV_XEC_VAR}"
+#
+#		local DSTENV_STARTX_VAR="${sanitized}_DSTENV_STARTX"
+#		DSTENV_STARTX="${!DSTENV_STARTX_VAR}"
+#
+#		local DSTENV_EMERGE_VAR="${sanitized}_DSTENV_EMERGE"
+#		DSTENV_EMERGE="${!DSTENV_EMERGE_VAR}"
+#
+#		NOTICE_END
+#	}
 	SETVAR_DSKTENV() {
 		NOTICE_START
-
-		DSTENV_XEC_VAR="${DESKTOPENV}_DSTENV_XEC"
-		DSTENV_XEC="${!DSTENV_XEC_VAR}"
-
-		DSTENV_STARTX_VAR="${DESKTOPENV}_DSTENV_STARTX"
-		DSTENV_STARTX="${!DSTENV_STARTX_VAR}"
-
-		DSTENV_EMERGE_VAR="${DESKTOPENV}_DSTENV_EMERGE"
-		DSTENV_EMERGE="${!DSTENV_EMERGE_VAR}"
-
+		for i in $DESKTOPENV; do
+			DSTENV_XEC=$DESKTOPENV\_DSTENV_XEC
+			DSTENV_STARTX=$DESKTOPENV\_DSTENV_STARTX
+			DSTENV_EMERGE=$DESKTOPENV\_DSTENV_EMERGE
+		done
 		NOTICE_END
 	}
 	ADDREPO_DSTENV() {
@@ -182,27 +199,41 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 		NOTICE_START
 		. gentoo_unattented-setup/var/app/display_mgr.sh  
 
+#		SETVAR_DSPMGR() {
+#			NOTICE_START
+#			local sanitized
+#			sanitized=$(sanitize_varname "$DISPLAYMGR")
+#
+#			local DSTENV_XEC_VAR="${sanitized}_DSTENV_XEC"
+#			DSTENV_XEC="${!DSTENV_XEC_VAR}"
+#
+#			local DSTENV_STARTX_VAR="${sanitized}_DSTENV_STARTX"
+#			DSTENV_STARTX="${!DSTENV_STARTX_VAR}"
+#
+#			local DSPMGR_AS_VAR="${sanitized}_DSPMGR_${SYSINITVAR}"
+#			DSPMGR_AS="${!DSPMGR_AS_VAR}"
+#
+#			local DSPMGR_XEC_VAR="${sanitized}_DSPMGR_XEC"
+#			DSPMGR_XEC="${!DSPMGR_XEC_VAR}"
+#
+#			local DSPMGR_STARTX_VAR="${sanitized}_DSPMGR_STARTX"
+#			DSPMGR_STARTX="${!DSPMGR_STARTX_VAR}"
+#
+#			local APPAPP_EMERGE_VAR="${sanitized}_APPAPP_EMERGE"
+#			APPAPP_EMERGE="${!APPAPP_EMERGE_VAR}"
+#
+#			NOTICE_END
+#		}
 		SETVAR_DSPMGR() {
 			NOTICE_START
-
-			DSTENV_XEC_VAR="${DESKTOPENV}_DSTENV_XEC"
-			DSTENV_XEC="${!DSTENV_XEC_VAR}"
-
-			DSTENV_STARTX_VAR="${DESKTOPENV}_DSTENV_STARTX"
-			DSTENV_STARTX="${!DSTENV_STARTX_VAR}"
-
-			DSPMGR_AS_VAR="${DISPLAYMGR}_DSPMGR_${SYSINITVAR}"
-			DSPMGR_AS="${!DSPMGR_AS_VAR}"
-
-			DSPMGR_XEC_VAR="${DISPLAYMGR}_DSPMGR_XEC"
-			DSPMGR_XEC="${!DSPMGR_XEC_VAR}"
-
-			DSPMGR_STARTX_VAR="${DISPLAYMGR}_DSPMGR_STARTX"
-			DSPMGR_STARTX="${!DSPMGR_STARTX_VAR}"
-
-			APPAPP_EMERGE_VAR="${DISPLAYMGR}_APPAPP_EMERGE"
-			APPAPP_EMERGE="${!APPAPP_EMERGE_VAR}"
-
+			for i in $DISPLAYMGR; do
+				DSTENV_XEC="${DESKTOPENV}_DSTENV_XEC"
+				DSTENV_STARTX="${DESKTOPENV}_DSTENV_STARTX"
+				DSPMGR_AS="${i}_DSPMGR_${SYSINITVAR}"
+				DSPMGR_XEC="${i}_DSPMGR_XEC"
+				DSPMGR_STARTX="${i}_DSPMGR_STARTX"
+				APPAPP_EMERGE="${i}_APPAPP_EMERGE"
+			done
 			NOTICE_END
 		}
 		DSPMGR_OPENRC() {
