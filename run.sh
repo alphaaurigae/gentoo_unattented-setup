@@ -64,14 +64,14 @@ CHROOT_MENU() {
 
 			# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			# Source basic func
-			. $CHROOTX/gentoo_unattented-setup/func/func_main.sh
-			. $CHROOTX/gentoo_unattented-setup/func/func_menu.sh
-			. $CHROOTX/gentoo_unattented-setup/func/func_chroot_main.sh
+			. /gentoo_unattented-setup/func/func_main.sh
+			. /gentoo_unattented-setup/func/func_menu.sh
+			. /gentoo_unattented-setup/func/func_chroot_main.sh
 			# Source chroot variables
-			. $CHROOTX/gentoo_unattented-setup/var/var_main.sh
-			. $CHROOTX/gentoo_unattented-setup/var/chroot_variables.sh
+			. /gentoo_unattented-setup/var/var_main.sh
+			. /gentoo_unattented-setup/var/chroot_variables.sh
 			# Source setups from src
-			for f in "$CHROOTX"/gentoo_unattented-setup/src/CHROOT/*/*; do
+			for f in /gentoo_unattented-setup/src/CHROOT/*/*; do
 			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
 			done
 			# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -206,17 +206,17 @@ CHROOT_ALL() { # DUMMY FUNCTIONS - SOURCING COMMENTED
 
 			# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			# Source basic func
-			. $CHROOTX/gentoo_unattented-setup/func/func_main.sh
-			. $CHROOTX/gentoo_unattented-setup/func/func_menu.sh
-			. $CHROOTX/gentoo_unattented-setup/func/func_chroot_main.sh
+			. /gentoo_unattented-setup/func/func_main.sh
+			. /gentoo_unattented-setup/func/func_menu.sh
+			. /gentoo_unattented-setup/func/func_chroot_main.sh
 			# Source chroot variables
-			. $CHROOTX/gentoo_unattented-setup/var/var_main.sh
-			. $CHROOTX/gentoo_unattented-setup/var/chroot_variables.sh
+			. /gentoo_unattented-setup/var/var_main.sh
+			. /gentoo_unattented-setup/var/chroot_variables.sh
 			# Source setups from src
 
 			# DUMMY FUNCTIONS FOR TESTING
 			# Commented for the dummy test functions below
-			#for f in "$CHROOTX"/gentoo_unattented-setup/src/CHROOT/*/*; do
+			#for f in /gentoo_unattented-setup/src/CHROOT/*/*; do
 			#  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
 			#done
 			# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

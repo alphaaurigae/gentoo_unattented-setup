@@ -1,7 +1,6 @@
 DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 	NOTICE_START
-	. var/app/desktop_env.sh
-
+	. /gentoo_unattented-setup/var/app/desktop_env.sh 
 	SETVAR_DSKTENV() {
 		NOTICE_START
 
@@ -181,7 +180,7 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 	}
 	W_D_MGR() { # Display_manager https://wiki.gentoo.org/wiki/Display_manager
 		NOTICE_START
-		. var/app/display_mgr.sh
+		. gentoo_unattented-setup/var/app/display_mgr.sh  
 
 		SETVAR_DSPMGR() {
 			NOTICE_START
