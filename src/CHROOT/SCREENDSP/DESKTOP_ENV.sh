@@ -1,7 +1,7 @@
 DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 	NOTICE_START
 
-
+# reverse changes for display manager / desktopenv variable quoting! / and - dont work with quoted variable content
 #	sanitize_varname() {
 #	  echo "$1" | tr '/-' '__'
 #	}
