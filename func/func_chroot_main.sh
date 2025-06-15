@@ -126,10 +126,10 @@ EMERGE_ATWORLD() {
 	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --sync"
 	emerge --sync
 
-	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " preserved rebuild"
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge @preserved-rebuild"
 	emerge @preserved-rebuild
 
-	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " depclean"
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --depclean -q"
 	if output=$(emerge --depclean -q 2>&1 1>/dev/null); then
 		printf '%s\n' "maintain depclean OK"
 	else

@@ -1,7 +1,6 @@
 DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 	NOTICE_START
 
-
 	SETVAR_DSKTENV() {
 		NOTICE_START
 		for i in $DESKTOPENV; do
@@ -11,7 +10,6 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 		done
 		NOTICE_END
 	}
-
 	ADDREPO_DSTENV() {
 		NOTICE_START
 		if [ "$DESKTOPENV" == "PANTHEON" ]; then
