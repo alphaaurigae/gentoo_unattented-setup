@@ -133,7 +133,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					DEBUG_KERNELINST
 				else
 
-					printf '%s\n' "Install kernel manually instead of installkernel set to FALSE --> Installing the kernel manually!"
+					printf '%s\n' "Installkernel set to FALSE --> Installing the kernel manually!"
 					local SRC_IMAGE="/usr/src/linux/arch/x86/boot/bzImage"
 					local DEST_IMAGE="/boot/vmlinuz-${FETCH_KERNEL_VERSION}"
 					local DEST_MAP="/boot/System.map-${FETCH_KERNEL_VERSION}"

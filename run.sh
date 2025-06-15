@@ -62,7 +62,7 @@ CHROOT_MENU() {
 
 			#!/bin/bash
 
-			# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			# +++++++++++++++++++++++++++++++++++++++++++++++++++
 			# Source basic func
 			. /gentoo_unattented-setup/func/func_main.sh
 			. /gentoo_unattented-setup/func/func_menu.sh
@@ -74,7 +74,7 @@ CHROOT_MENU() {
 			for f in /gentoo_unattented-setup/src/CHROOT/*/*; do
 			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
 			done
-			# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			# +++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 			#set -euo pipefail
@@ -176,7 +176,6 @@ CHROOT_MENU() {
 			#---------------------
 
 
-
 			run_all_chroot() {
 			    for k in $(printf '%s\n' "${!CHROOT_STEPS[@]}" | sort -n); do
 				run_step CHROOT "$k" "${CHROOT_STEPS[$k]}"
@@ -204,7 +203,7 @@ CHROOT_ALL() { # DUMMY FUNCTIONS - SOURCING COMMENTED
 
 			# DUMMY FUNCTIONS FOR TESTING
 
-			# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			# +++++++++++++++++++++++++++++++++++++++++++++++++++
 			# Source basic func
 			. /gentoo_unattented-setup/func/func_main.sh
 			. /gentoo_unattented-setup/func/func_menu.sh
@@ -219,7 +218,7 @@ CHROOT_ALL() { # DUMMY FUNCTIONS - SOURCING COMMENTED
 			#for f in /gentoo_unattented-setup/src/CHROOT/*/*; do
 			#  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
 			#done
-			# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			# +++++++++++++++++++++++++++++++++++++++++++++++++++
 
 			#set -euo pipefail
 			#DEBUG=1
@@ -359,13 +358,11 @@ else
 	printf "%s\n" "----------------------------------------------------------------------------------"
 	printf "%s%s%s\n" "${BOLD}${YELLOW}" "Usage: ./run.sh ARG" "${RESET}"
 	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -a run the entire setup [PRE_NOMENU] & [CHROOT_NOMENU]... CHECK var/*" "${RESET}"
-	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -m enters menu" "${RESET}"
+	printf "%s%s%s\n" "${BOLD}${YELLOW}" "ARG -m enter menu" "${RESET}"
 	printf "\n"
-	printf "Refer to the readme.md file for more information. Check the readme.md file for the latest status message at the top. \n"
-	printf "Check the variables if its not a VM!!!\n"
-	printf "PRE setup wipes and encrypts the defined main disk but issues warning.  \n"
-	printf "Works by default in virtualbox. \n"
-	printf "Cloning the VM for testing works fine if its a full clone ... \n"
+	printf "Doc in doc/ & /README.md \n"
+	printf "Variables var/*\n"
+	printf "Works by default on virtualbox KVM. \n"
 	printf "\n"
 
 	exit

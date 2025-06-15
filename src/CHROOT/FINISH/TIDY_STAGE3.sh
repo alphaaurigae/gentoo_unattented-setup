@@ -9,4 +9,6 @@ FINISH_CHROOT () {
 		EMERGE_WORLDINIT
 		printf '%s\n' "${BOLD}Script finished all operations - END${RESET}"
 	}
+	TIDY
+	FINALIZE
 }
