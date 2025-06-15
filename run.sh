@@ -74,9 +74,8 @@ CHROOT_MENU() {
 			for f in /gentoo_unattented-setup/src/CHROOT/*/*; do
 			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
 			done
-			. /gentoo_unattented-setup/banner/CHROOT/BANNER_CHROOT_STEPS.sh
-			for f in /gentoo_unattented-setup/banner/CHROOT/*/*; do
-			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
+			for f in banner/* banner/*/* banner/*/*/*; do
+				[ -f "$f" ] && . "$f" #&& printf '%s\n' "$f"
 			done
 			# +++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -219,49 +218,18 @@ CHROOT_ALL() { # DUMMY FUNCTIONS - SOURCING COMMENTED
 
 			# DUMMY FUNCTIONS FOR TESTING
 			# Commented for the dummy test functions below
-			#for f in /gentoo_unattented-setup/src/CHROOT/*/*; do
-			#  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
-			#done
+			for f in /gentoo_unattented-setup/src/CHROOT/*/*; do
+			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
+			done
+			for f in banner/* banner/*/* banner/*/*/*; do
+				[ -f "$f" ] && . "$f" #&& printf '%s\n' "$f"
+			done
 			# +++++++++++++++++++++++++++++++++++++++++++++++++++
 
 			#set -euo pipefail
 			#DEBUG=1
 			#  log() { ((DEBUG)) && echo "CHROOT DEBUG: $*"; }
 
-			# DUMMY FUNCTIONS FOR TESTING
-			SWAPFILE() { echo "Executing DUMMY FUNCTION FOR TESTING ... SWAPFILE"; }
-			EMERGE_ATWORLD() { echo "Executing DUMMY FUNCTION FOR TESTING ... EMERGE_ATWORLD"; }
-			CONF_LOCALES() { echo "Executing DUMMY FUNCTION FOR TESTING ... CONF_LOCALES"; }
-			PORTAGE() { echo "Executing DUMMY FUNCTION FOR TESTING ... PORTAGE"; }
-			ESELECT_PROFILE() { echo "Executing DUMMY FUNCTION FOR TESTING ... ESELECT_PROFILE"; }
-			SETFLAGS1() { echo "Executing DUMMY FUNCTION FOR TESTING ... SETFLAGS1"; }
-			SYSTEMTIME() { echo "Executing DUMMY FUNCTION FOR TESTING ... SYSTEMTIME"; }
-			KEYMAP_CONSOLEFONT() { echo "Executing DUMMY FUNCTION FOR TESTING ... KEYMAP_CONSOLEFONT"; }
-			FIRMWARE() { echo "Executing DUMMY FUNCTION FOR TESTING ... FIRMWARE"; }
-			CP_BASHRC() { echo "Executing DUMMY FUNCTION FOR TESTING ... CP_BASHRC"; }
-
-			SYSCONFIG_CORE() { echo "Executing DUMMY FUNCTION FOR TESTING ... SYSCONFIG_CORE"; }
-			SYSFS() { echo "Executing DUMMY FUNCTION FOR TESTING ... SYSFS"; }
-			APPADMIN() { echo "Executing DUMMY FUNCTION FOR TESTING ... APPADMIN"; }
-			SYSAPP() { echo "Executing DUMMY FUNCTION FOR TESTING ... SYSAPP"; }
-			APP() { echo "Executing DUMMY FUNCTION FOR TESTING ... APP"; }
-			SYSPROCESS() { echo "Executing DUMMY FUNCTION FOR TESTING ... SYSPROCESS"; }
-			KERNEL() { echo "Executing DUMMY FUNCTION FOR TESTING ... KERNEL"; }
-			INITRAM() { echo "Executing DUMMY FUNCTION FOR TESTING ... INITRAM"; }
-			SYSBOOT() { echo "Executing DUMMY FUNCTION FOR TESTING ... SYSBOOT"; }
-			APPEMULATION() { echo "Executing DUMMY FUNCTION FOR TESTING ... APPEMULATION"; }
-			AUDIO() { echo "Executing DUMMY FUNCTION FOR TESTING ... AUDIO"; }
-			NETWORK() { echo "Executing DUMMY FUNCTION FOR TESTING ... NETWORK"; }
-
-			WINDOWSYS() { echo "Executing DUMMY FUNCTION FOR TESTING ... WINDOWSYS"; }
-			DESKTOP_ENV() { echo "Executing DUMMY FUNCTION FOR TESTING ... DESKTOP_ENV"; }
-
-			WEBBROWSER() { echo "Executing DUMMY FUNCTION FOR TESTING ... WEBBROWSER"; }
-
-			ROOT() { echo "Executing DUMMY FUNCTION FOR TESTING ... ROOT"; }
-			ADMIN() { echo "Executing DUMMY FUNCTION FOR TESTING ... ADMIN"; }
-
-			TIDY_STAGE3() { echo "Executing DUMMY FUNCTION FOR TESTING ... TIDY_STAGE3"; }
 
 			declare -A CHROOT_STEPS=(
 			    [1]="CHROOT_BASE"
