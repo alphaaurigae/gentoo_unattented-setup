@@ -74,6 +74,10 @@ CHROOT_MENU() {
 			for f in /gentoo_unattented-setup/src/CHROOT/*/*; do
 			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
 			done
+			. /gentoo_unattented-setup/banner/CHROOT/BANNER_CHROOT_STEPS.sh
+			for f in /gentoo_unattented-setup/banner/CHROOT/*/*; do
+			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
+			done
 			# +++++++++++++++++++++++++++++++++++++++++++++++++++
 
 

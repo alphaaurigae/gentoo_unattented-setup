@@ -1,4 +1,4 @@
-PRE_BANNER_MAIN() {
+BANNER_PRE_STEPS() {
 
 	printf "%s%s%s\n" "${BOLD}${GREEN}" "▗▄▄▖ ▗▄▄▖ ▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▄▄▖ ▗▄▄▄▖     ▗▄▄▖▗▖ ▗▖▗▄▄▖  ▗▄▖  ▗▄▖▗▄▄▄▖" "${RESET}"
 	printf "%s%s%s\n" "${BOLD}${GREEN}" "▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌       ▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌ █  " "${RESET}"

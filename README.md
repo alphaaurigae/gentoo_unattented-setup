@@ -16,6 +16,12 @@ Unattended setup of a gentoo system ( Password prompts for cryptsetup, users and
 doc/VM_default_set.md
 doc/Readme.md
 
+### Menu [15.06.2025]
+> <p>PREPARE CHROOT STEP MENU</p>
+![<p>booted...</p> ](img/screenshots/console_menu/Screenshot_2025-06-15_05-15-14.png)
+> <p>RUN CHROOT STEP MENU</p>
+![<p>booted...</p> ](img/screenshots/console_menu/Screenshot_2025-06-15_05-16-08.png)
+
 
 ### How it looks 
 - asciinema recording of PRE setup (Dated vid - update todo):

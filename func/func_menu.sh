@@ -83,8 +83,13 @@ __shared_menu_select_steps() {
 	declare -n steps="$step_map_name"
 	declare -n groups="${stage_id}_GROUPS"
 
+	local banner_func="BANNER_${step_map_name}"
+	if declare -f "$banner_func" > /dev/null; then
+		"$banner_func"
+	fi
+
 	while :; do
-		printf "%s%s%s\n" "${BOLD}${WHITE}" "Stage:" "${RESET}" "  $stage_id — Choose steps (e.g. 1,2-4), 'all', 'groups', 'menu', 'back':"
+		printf "%s%s%s\n" "${BOLD}${WHITE}" "Stage:" "${RESET}" "  $step_map_name — Choose steps (e.g. 1,2-4), 'all', 'groups', 'menu', 'back':"
 		printf '%s%s%s\n' "${BOLD}${WHITE}" "Individual Steps:" "${RESET}"
 		for k in $(printf '%s\n' "${!steps[@]}" | sort -n); do
 			printf ' [%s] --> %s\n' "$k" "${steps[$k]}"

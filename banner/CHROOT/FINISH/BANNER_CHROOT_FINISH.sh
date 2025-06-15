@@ -1,4 +1,4 @@
-BANNER_CHROOT_FINISH_MAIN() {
+BANNER_CHROOT_FINISH() {
 	printf "%s%s%s\n" "${BOLD}${GREEN}" "  ________________________________________  " "${RESET}"
 	printf "%s%s%s\n" "${BOLD}${GREEN}" " / CONGRATS!                              \\" "${RESET}"
 	printf "%s%s%s\n" "${BOLD}${GREEN}" " \\ Setup done, you did it!                /" "${RESET}"
