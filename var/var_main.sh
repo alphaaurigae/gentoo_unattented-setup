@@ -46,7 +46,7 @@ PRESET_LOCALE_B=$LANG_SECOND_LOWER\_$LANG_SECOND_UPPER # lang set 2 # "   # src/
 KEYMAP="de"               # set common (!channgeme)  # src/CHROOT/BASE/KEYMAP_CONSOLEFONT.sh && src/CHROOT/SCREENDSP/WINDOWSYS.sh
 CONSOLEFONT="default8x16" # https://wiki.gentoo.org/wiki/Fonts  # src/CHROOT/BASE/KEYMAP_CONSOLEFONT.sh
 
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++
 # MAKE.CONF START
 
 ## MAKE.CONF PRESET src/CHROOT/BASE/MAKECONF.sh
@@ -72,14 +72,17 @@ PRESET_CPU_FLAGS_X86="$(cpuid2cpuflags | cut -d: -f2 | xargs | cat -A)"
 PRESET_MARCH="znver1" # 1/2 default "native"; see "safe_cflags" & may dep kern settings; proc arch specific
 # https://wiki.gentoo.org/wiki/Safe_CFLAGS#Finding_the_CPU
 
-PRESET_CONFIG_PROTECT="/etc /usr/share/gnupg/qualified.txt" # /usr/lib/plexmediaserver/Resources/comskip.ini"
+PRESET_CONFIG_PROTECT="/etc /usr/share/config /usr/share/gnupg/qualified.txt"
+PRESET_CONFIG_PROTECT_MASK=""
 
-PRESET_COMMON_FLAGS="-march=$PRESET_MARCH -mtune=$PRESET_MARCH -fPIC -O2 -pipe" # -mfma -mavx2" #  -mfma -mavx2 for testing (opus?)
+PRESET_COMMON_FLAGS="-march=$PRESET_MARCH -mtune=$PRESET_MARCH -fPIC -O2 -pipe -fstack-protector-strong -D_FORTIFY_SOURCE=2"
+#PRESET_COMMON_FLAGS="-march=$PRESET_MARCH -mtune=$PRESET_MARCH -fPIC -O2 -pipe"
 PRESET_CFLAGS="${PRESET_COMMON_FLAGS}"                                          # https://wiki.gentoo.org/wiki/Safe_CFLAGS
 PRESET_CXXFLAGS="${PRESET_COMMON_FLAGS}"
 PRESET_FCFLAGS="${PRESET_COMMON_FLAGS}"
 PRESET_FFLAGS="${PRESET_COMMON_FLAGS}"
-PRESET_LDFLAGS="-Wl,-O1 -Wl,--sort-common -Wl,-z,now -Wl,-z,relro"
+#PRESET_LDFLAGS="-Wl,-O1 -Wl,--sort-common -Wl,-z,now -Wl,-z,relro"
+PRESET_LDFLAGS="-Wl,-O1 -Wl,--as-needed -Wl,--sort-common -Wl,-z,now -Wl,-z,relro"
 PRESET_RUSTFLAGS="-C target-cpu=$PRESET_MARCH"
 
 # https://wiki.gentoo.org/wiki/User:GYakovlev/Rust#Configuration_for_use_with_portage
@@ -88,7 +91,7 @@ PRESET_RUSTFLAGS="-C target-cpu=$PRESET_MARCH"
 
 PRESET_INPUTEVICE="libinput keyboard"
 PRESET_VIDEODRIVER="virtualbox" # amdgpu, radeonsi, radeon, virtualbox ; (!NOTE: virtualbox and intend to build firefox - run KVM and set to your hardware, native arch with virtualbox display driver fails - set arch ... "avx2 error firefox")
-PRESET_LICENCES="*"             # Default is: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software) (!todo)
+PRESET_LICENCES="* -@BINARY"           # Default is: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software) (!todo)
 
 # https://www.gentoo.org/support/use-flags/
 
