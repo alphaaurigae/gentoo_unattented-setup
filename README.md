@@ -23,12 +23,12 @@ doc/Readme.md
 ![<p>booted...</p> ](img/screenshots/console_menu/Screenshot_2025-06-15_05-16-08.png)
 
 
-### How it looks 
-- asciinema recording of PRE setup (Dated vid - update todo):
-[![asciicast](https://asciinema.org/a/7eTtVfn7QJHLsYqGEV1iyfz1j.svg)](https://asciinema.org/a/7eTtVfn7QJHLsYqGEV1iyfz1j)
-- asciinema CHROOT sample (just the start as sample, else its wayy to long obv) (Dated vid - update todo)
-[![asciicast](https://asciinema.org/a/18Y74Ya26UMi1SjLO3OeXRUT6.svg)](https://asciinema.org/a/18Y74Ya26UMi1SjLO3OeXRUT6)
-> Boots to desktop xfce -> firefox, network, audio ...
+### Sample [15.06.2025]
+- asciinema MEMU guided setup example:
+[![asciicast](https://asciinema.org/a/WBev3RCx6eeCV8hl1RjPp3JEr.svg)](https://asciinema.org/a/WBev3RCx6eeCV8hl1RjPp3JEr)
+- asciinema NO MENU "semi automated" (needs prompts for optional: cryptsetup, GPG, kernel menuconfig
+[![asciicast](https://asciinema.org/a/GPtccrnJy1a8vpCL7ULNqLlMm.svg)](https://asciinema.org/a/GPtccrnJy1a8vpCL7ULNqLlMm)
+
 
 
 ( Dated - this page is updated first): https://github.com/alphaaurigae/gentoo_unattented-setup/tree/master/doc
