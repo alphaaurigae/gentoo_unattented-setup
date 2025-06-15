@@ -1,4 +1,4 @@
-CRYPTSETUP="NO" # THIS VAR DEFINES IF CRYPTSETUP IS ACTIVATED FOR ROOT,  # YES DEPENDS ON var/chroot_variables.sh SYSAPP_DMCRYPT="YES"!!!! if set to no and SYSAPP_DMCRYPT="YES" #crypset is defined in useflag as option var/chroot_variables.sh
+CRYPTSETUP="YES" # THIS VAR DEFINES IF CRYPTSETUP IS ACTIVATED FOR ROOT,  # YES DEPENDS ON var/chroot_variables.sh SYSAPP_DMCRYPT="YES"!!!! if set to no and SYSAPP_DMCRYPT="YES" #crypset is defined in useflag as option var/chroot_variables.sh
 # OPTION AS IS NO = LVM ON ROOT ; YES = LVM ON CRYPTSETUP_ROOT
 
 BOOTINITVAR="BIOS" # BIOS  / UEFI   # Used in src/CHROOT/CORE/SYSCONFIG_CORE.sh && src/CHROOT/CORE/SYSBOOT.s

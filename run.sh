@@ -74,8 +74,9 @@ CHROOT_MENU() {
 			for f in /gentoo_unattented-setup/src/CHROOT/*/*; do
 			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
 			done
-			for f in banner/* banner/*/* banner/*/*/*; do
-				[ -f "$f" ] && . "$f" #&& printf '%s\n' "$f"
+			. /gentoo_unattented-setup/banner/CHROOT/BANNER_CHROOT_STEPS.sh
+			for f in /gentoo_unattented-setup/banner/CHROOT/*/*; do
+			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
 			done
 			# +++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -221,14 +222,16 @@ CHROOT_ALL() { # DUMMY FUNCTIONS - SOURCING COMMENTED
 			for f in /gentoo_unattented-setup/src/CHROOT/*/*; do
 			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
 			done
-			for f in banner/* banner/*/* banner/*/*/*; do
-				[ -f "$f" ] && . "$f" #&& printf '%s\n' "$f"
+			. /gentoo_unattented-setup/banner/CHROOT/BANNER_CHROOT_STEPS.sh
+			for f in /gentoo_unattented-setup/banner/CHROOT/*/*; do
+			  [ -f "$f" ] && . "$f" && printf '%s\n' "$f"
 			done
 			# +++++++++++++++++++++++++++++++++++++++++++++++++++
 
 			#set -euo pipefail
 			#DEBUG=1
 			#  log() { ((DEBUG)) && echo "CHROOT DEBUG: $*"; }
+
 
 
 			declare -A CHROOT_STEPS=(
