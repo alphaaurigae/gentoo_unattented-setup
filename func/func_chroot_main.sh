@@ -92,7 +92,7 @@ LICENSE_SET() {
 	NOTICE_END
 }
 
-EMERGE_ATWORLD() {
+EMERGE_WORLDINIT() {
 	NOTICE_START
 	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --sync"
 	emerge --sync
@@ -119,3 +119,24 @@ EMERGE_ATWORLD() {
 	emerge @preserved-rebuild
 	NOTICE_END
 }
+
+EMERGE_ATWORLD() {
+	NOTICE_START
+
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " emerge --sync"
+	emerge --sync
+
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " preserved rebuild"
+	emerge @preserved-rebuild
+
+	printf "%s%s%s%s\n" "${BOLD}${CYAN}" "START:" "${RESET}" " depclean"
+	if output=$(emerge --depclean -q 2>&1 1>/dev/null); then
+		printf '%s\n' "maintain depclean OK"
+	else
+		printf '%s\n' "$output" >&2
+		return 1
+	fi
+
+	NOTICE_END
+}
+

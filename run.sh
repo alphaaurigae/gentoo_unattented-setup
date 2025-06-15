@@ -92,12 +92,12 @@ CHROOT_MENU() {
 
 			declare -A CHROOT_BASE=(
 				[1]="SWAPFILE"
-				[2]="EMERGE_ATWORLD"
+				[2]="EMERGE_WORLDINIT"
 				[3]="CONF_LOCALES"
 				[4]="PORTAGE"
 				[5]="ESELECT_PROFILE"
 				[6]="SETFLAGS1"
-				[7]="EMERGE_ATWORLD"
+				[7]="EMERGE_WORLDINIT"
 				[8]="SYSTEMTIME"
 				[9]="KEYMAP_CONSOLEFONT"
 				[10]="FIRMWARE"
@@ -164,7 +164,7 @@ CHROOT_MENU() {
 
 
 			declare -A CHROOT_FINISH=(
-				[1]="TIDY_STAGE3"
+				[1]="FINISH_CHROOT"
 			)
 
 			# run_step func/func_menu.sh

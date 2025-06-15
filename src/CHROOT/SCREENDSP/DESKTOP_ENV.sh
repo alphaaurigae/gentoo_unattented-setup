@@ -23,6 +23,20 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 #
 #		NOTICE_END
 #	}
+#	SETVAR_DSKTENV() {
+#		NOTICE_START
+#
+#		DSTENV_XEC_VAR="${DESKTOPENV}_DSTENV_XEC"
+#		DSTENV_XEC="${!DSTENV_XEC_VAR}"
+#
+#		DSTENV_STARTX_VAR="${DESKTOPENV}_DSTENV_STARTX"
+#		DSTENV_STARTX="${!DSTENV_STARTX_VAR}"
+#
+#		DSTENV_EMERGE_VAR="${DESKTOPENV}_DSTENV_EMERGE"
+#		DSTENV_EMERGE="${!DSTENV_EMERGE_VAR}"
+#
+#		NOTICE_END
+#	}
 	SETVAR_DSKTENV() {
 		NOTICE_START
 		for i in $DESKTOPENV; do
@@ -32,6 +46,7 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 		done
 		NOTICE_END
 	}
+
 	ADDREPO_DSTENV() {
 		NOTICE_START
 		if [ "$DESKTOPENV" == "PANTHEON" ]; then
@@ -45,7 +60,6 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 	}
 	EMERGE_DSTENV() {
 		NOTICE_START
-		# emerge --ask gnome-extra/nm-applet
 		if [ "$DESKTOPENV" == "DDM" ]; then
 			GIT() {
 				NOTICE_START
