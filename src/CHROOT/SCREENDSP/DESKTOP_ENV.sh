@@ -1,13 +1,18 @@
 DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 	NOTICE_START
-
+		. gentoo_unattented-setup/var/app/desktop_env.sh
 	SETVAR_DSKTENV() {
 		NOTICE_START
-		for i in $DESKTOPENV; do
-			DSTENV_XEC=$DESKTOPENV\_DSTENV_XEC
-			DSTENV_STARTX=$DESKTOPENV\_DSTENV_STARTX
-			DSTENV_EMERGE=$DESKTOPENV\_DSTENV_EMERGE
-		done
+		DSTENV_XEC_VAR="${DESKTOPENV}_DSTENV_XEC"
+		DSTENV_STARTX_VAR="${DESKTOPENV}_DSTENV_STARTX"
+		DSTENV_EMERGE_VAR="${DESKTOPENV}_DSTENV_EMERGE"
+
+		DSTENV_XEC=${!DSTENV_XEC_VAR}
+		DSTENV_STARTX=${!DSTENV_STARTX_VAR}
+		DSTENV_EMERGE=${!DSTENV_EMERGE_VAR}
+		printf '%s\n' "DSTENV_XEC: $DSTENV_XEC"
+		printf '%s\n' "Startx command: $DSTENV_STARTX"
+		printf '%s\n' "DSTENV_EMERGE: $DSTENV_EMERGE"
 		NOTICE_END
 	}
 	ADDREPO_DSTENV() {
@@ -145,6 +150,7 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 					exec $DSTENV_STARTX
 				EOF
 			fi
+			cat ~/.xinitrc
 			NOTICE_END
 		}
 		DESKTENV_AUTOSTART_OPENRC() {
@@ -157,6 +163,7 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 				cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
 
 				printf '%s\n' 'X-GNOME-Autostart-enabled=false' >>/home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
+				cat /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
 				chown $SYSUSERNAME:$SYSUSERNAME /home/$SYSUSERNAME/.config/autostart/nm-applet.desktop
 			else
 				NOTICE_PLACEHOLDER
@@ -179,13 +186,26 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 		SETVAR_DSPMGR() {
 			NOTICE_START
 			for i in $DISPLAYMGR; do
-				DSTENV_XEC="${DESKTOPENV}_DSTENV_XEC"
-				DSTENV_STARTX="${DESKTOPENV}_DSTENV_STARTX"
-				DSPMGR_AS="${i}_DSPMGR_${SYSINITVAR}"
-				DSPMGR_XEC="${i}_DSPMGR_XEC"
-				DSPMGR_STARTX="${i}_DSPMGR_STARTX"
-				APPAPP_EMERGE="${i}_APPAPP_EMERGE"
+			DSTENV_XEC_VAR="${DESKTOPENV}_DSTENV_XEC"
+			DSTENV_STARTX_VAR="${DESKTOPENV}_DSTENV_STARTX"
+			DSPMGR_AS_VAR="${i}_DSPMGR_${SYSINITVAR}"
+			DSPMGR_XEC_VAR="${i}_DSPMGR_XEC"
+			DSPMGR_STARTX_VAR="${i}_DSPMGR_STARTX"
+			APPAPP_EMERGE_VAR="${i}_APPAPP_EMERGE"
+
+			DSTENV_XEC=${!DSTENV_XEC_VAR}
+			DSTENV_STARTX=${!DSTENV_STARTX_VAR}
+			DSPMGR_AS=${!DSPMGR_AS_VAR}
+			DSPMGR_XEC=${!DSPMGR_XEC_VAR}
+			DSPMGR_STARTX=${!DSPMGR_STARTX_VAR}
+			APPAPP_EMERGE=${!APPAPP_EMERGE_VAR}
 			done
+			printf '%s\n'  "DSTENV_XEC: $DSTENV_XEC"
+			printf '%s\n'  "DSTENV_STARTX: $DSTENV_STARTX"
+			printf '%s\n'  "DSPMGR_AS: $DSPMGR_AS"
+			printf '%s\n'  "DSPMGR_XEC: $DSPMGR_XEC"
+			printf '%s\n'  "DSPMGR_STARTX: $DSPMGR_STARTX"
+			printf '%s\n'  "APPAPP_EMERGE: $APPAPP_EMERGE"
 			NOTICE_END
 		}
 		DSPMGR_OPENRC() {
@@ -212,12 +232,14 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 			if [ "$DISPLAYMGR" == "LXDM" ]; then
 				printf '%s\n' " ${!DSPMGR_AS}"
 				sed -ie "s;^# session=/usr/bin/startlxde;session=/usr/bin/${!DSTENV_STARTX};g" /etc/lxdm/lxdm.conf
+				cat /etc/lxdm/lxdm.conf
 			elif [ "$DISPLAYMGR" == "LIGHTDM" ]; then
 				cat <<-'EOF' >/usr/share/lightdm/lightdm.conf.d/50-xfce-greeter.conf
 					[SeatDefaults]
 					greeter-session=unity-greeter
 					user-session=xfce
 				EOF
+				cat /usr/share/lightdm/lightdm.conf.d/50-xfce-greeter.conf
 			else
 				NOTICE_PLACEHOLDER
 			fi
