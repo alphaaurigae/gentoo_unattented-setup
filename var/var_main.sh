@@ -1,4 +1,4 @@
-CRYPTSETUP="YES" # THIS VAR DEFINES IF CRYPTSETUP IS ACTIVATED FOR ROOT,  # YES DEPENDS ON var/chroot_variables.sh SYSAPP_DMCRYPT="YES"!!!! if set to no and SYSAPP_DMCRYPT="YES" #crypset is defined in useflag as option var/chroot_variables.sh
+CRYPTSETUP="NO" # THIS VAR DEFINES IF CRYPTSETUP IS ACTIVATED FOR ROOT,  # YES DEPENDS ON var/chroot_variables.sh SYSAPP_DMCRYPT="YES"!!!! if set to no and SYSAPP_DMCRYPT="YES" #crypset is defined in useflag as option var/chroot_variables.sh
 # OPTION AS IS NO = LVM ON ROOT ; YES = LVM ON CRYPTSETUP_ROOT
 
 BOOTINITVAR="BIOS" # BIOS  / UEFI   # Used in src/CHROOT/CORE/SYSCONFIG_CORE.sh && src/CHROOT/CORE/SYSBOOT.s
@@ -75,7 +75,7 @@ PRESET_MARCH="znver1" # 1/2 default "native"; see "safe_cflags" & may dep kern s
 PRESET_CONFIG_PROTECT="/etc /usr/share/config /usr/share/gnupg/qualified.txt"
 PRESET_CONFIG_PROTECT_MASK=""
 
-PRESET_COMMON_FLAGS="-march=$PRESET_MARCH -mtune=$PRESET_MARCH -fPIC -O2 -pipe -fstack-protector-strong -D_FORTIFY_SOURCE=2"
+PRESET_COMMON_FLAGS="-march=$PRESET_MARCH -mtune=$PRESET_MARCH -fPIC -O2 -pipe -fstack-protector-strong "
 #PRESET_COMMON_FLAGS="-march=$PRESET_MARCH -mtune=$PRESET_MARCH -fPIC -O2 -pipe"
 PRESET_CFLAGS="${PRESET_COMMON_FLAGS}"                                          # https://wiki.gentoo.org/wiki/Safe_CFLAGS
 PRESET_CXXFLAGS="${PRESET_COMMON_FLAGS}"
@@ -91,7 +91,7 @@ PRESET_RUSTFLAGS="-C target-cpu=$PRESET_MARCH"
 
 PRESET_INPUTEVICE="libinput keyboard"
 PRESET_VIDEODRIVER="virtualbox" # amdgpu, radeonsi, radeon, virtualbox ; (!NOTE: virtualbox and intend to build firefox - run KVM and set to your hardware, native arch with virtualbox display driver fails - set arch ... "avx2 error firefox")
-PRESET_LICENCES="* -@BINARY"           # Default is: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software) (!todo)
+PRESET_LICENCES="*"           # Default is: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software) (!todo)
 
 # https://www.gentoo.org/support/use-flags/
 
