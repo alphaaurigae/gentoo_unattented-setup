@@ -40,49 +40,134 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			NOTICE_START
 			KERN_CONF() {
 				NOTICE_START
-				KERNCONF_PASTE() {
+
+				KERNCONF_MENUCONFIG_NEW () {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-
-					mv /usr/src/linux/.config /usr/src/linux/.oldconfig
-					printf "%s%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " Ignore the mv error"
-					touch /usr/src/linux/.config
-
+					make menuconfig
+					NOTICE_END
+				}
+				KERNCONF_OLDCONFIG_NOMENU() { # Update current config utilising a provided .config as base
+					NOTICE_START
+					cd /usr/src/linux
+					make mrproper
 					local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
 					local DST="/usr/src/linux/.config"
 
 					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
+					make oldconfig
 					NOTICE_END
 				}
-				KERNCONF_DEFCONFIG() {
+				KERNCONF_OLDCONFIG_MENU() { # "
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					make -j $(nproc) defconfig
+					local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
+					local DST="/usr/src/linux/.config"
+
+					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
+					make oldconfig
+					make menuconfig
 					NOTICE_END
 				}
-				KERNCONF_MENUCONFIG_NEW() {
+
+				KERNCONF_OLDDEFCONFIG_NOMENU() { # Same as oldconfig but sets new symbols to their default value without prompting
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					make -j $(nproc) menuconfig
+					local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
+					local DST="/usr/src/linux/.config"
+
+					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
+					make olddefconfig
 					NOTICE_END
 				}
-				KERNCONF_ALLYESCONFIG() { # New config where all options are accepted with yes
+				KERNCONF_OLDDEFCONFIG_MENU() { # "
+					NOTICE_START
+					cd /usr/src/linux
+					make mrproper
+					local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
+					local DST="/usr/src/linux/.config"
+
+					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
+					make olddefconfig
+					make menuconfig
+					NOTICE_END
+				}
+				KERNCONF_ALLYESCONFIG_NOMENU () { # New config where all options are accepted with yes
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
 					make -j $(nproc) allyesconfig
 					NOTICE_END
 				}
-				KERNCONF_OLDCONFIG() { # (!testing) (!todo)
+				KERNCONF_ALLYESCONFIG_MENU () { # "
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					make -j $(nproc) oldconfig
+					make -j $(nproc) allyesconfig
+					make -j $(nproc) menuconfig
 					NOTICE_END
 				}
+				KERNCONF_DEFCONFIG_NOMENU () { # New config with default from ARCH supplied defconfig
+					NOTICE_START
+					cd /usr/src/linux
+					make mrproper
+					make -j $(nproc) defconfig
+					NOTICE_END
+				}
+				KERNCONF_DEFCONFIG_MENU () { # "
+					NOTICE_START
+					cd /usr/src/linux
+					make mrproper
+					make -j $(nproc) defconfig
+					make -j $(nproc) menuconfig
+					NOTICE_END
+				}
+				KERNCONF_TINY_NOMENU () { # Configure the tiniest possible kernel
+					NOTICE_START
+					cd /usr/src/linux
+					make mrproper
+					make -j $(nproc) tinyconfig
+					NOTICE_END
+				}
+				KERNCONF_TINY_MENU () { # "
+					NOTICE_START
+					cd /usr/src/linux
+					make mrproper
+					make -j $(nproc) tinyconfig
+					make -j $(nproc) menuconfig
+					NOTICE_END
+				}
+
+
+				# For testing
+				#cd /usr/src/linux
+				#make mrproper
+				#
+				#local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
+				#local DST="/usr/src/linux/.config"
+				#
+				#cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
+				#
+				#./scripts/kconfig/merge_config.sh -m "$DST" hardening.config rust.config kvm_guest.config
+				#make olddefconfig
+				#
+				#make -j$(nproc)
+				#make modules_install
+				#make install
+				#
+				#"Configuration topic targets:
+				#  debug.config              - Debugging for CI systems and finding regressions
+				#  hardening.config          - Basic kernel hardening options
+				#  kvm_guest.config          - Bootable as a KVM guest
+				#  nopm.config               - Disable Power Management
+				#  rust.config               - Enable Rust
+				#  x86_debug.config          - Debugging options for tip tree testing
+				#  xen.config                - Bootable as a Xen guest
+				#"
+
 				if [ "$KERNCONFD" != "DEFCONFIG" ]; then
 					KERNCONF_$KERNCONFD
 				else
@@ -93,12 +178,11 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			KERN_BUILD() { # (!incomplete (works but) modules setup *smart)
 				NOTICE_START
 				cd /usr/src/linux
-				# -o good practice in this context??? Works but ...)
-				make -j$(nproc) -o /usr/src/linux/.config menuconfig
-				make -j$(nproc) -o /usr/src/linux/.config modules
-				make -j$(nproc) bzImage
-				make install
+
+				make -j$(nproc)
 				make modules_install
+				make install
+
 
 				local FETCH_KERNEL_VERSION="$(make -sC /usr/src/linux kernelrelease)"
 

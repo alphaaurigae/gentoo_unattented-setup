@@ -31,7 +31,27 @@ INSTALLKERNEL="true" # (!default) true # false to use installkernel https://wiki
 KERNDEPLOY="MANUAL"  # (!default) MANUAL # AUTO (genkernel)  # src/CHROOT/CORE/KERNEL.sh
 KERNVERS="5.3-rc4"   # for MANUAL setup  # src/CHROOT/CORE/KERNEL.sh
 KERNSOURCES="EMERGE" # (!default) EMERGE # TORVALDS (git repository) # src/CHROOT/CORE/KERNEL.sh
-KERNCONFD="PASTE"    # (!default) PASTE  # DEFCONFIG  # src/CHROOT/CORE/KERNEL.sh
+
+# ----------------------------------------------------------------------------------------------
+# MENUCONFIG_NEW = (menuconfig - ONLY)
+
+# OLDCONFIG_NOMENU = (defconfig - ONLY)
+# OLDCONFIG_MENU = (oldconfig + menuconfig)
+
+# OLDDEFCONFIG_NOMENU = (olddefconfig - ONLY)
+# OLDDEFCONFIG_MENU = (olddefconfig + menuconfig)
+
+# ALLYESCONFIG_NOMENU = (allyesconfig - ONLY)
+# ALLYESCONFIG_MENU = (allyesconfig + menuconfig)
+
+# DEFCONFIG_NOMENU = (defconfig - ONLY)
+# DEFCONFIG_MENU = (defconfig + menuconfig)
+
+# TINY_NOMENU = (defconfig - ONLY)
+# TINY_MENU = (defconfig + menuconfig)
+
+KERNCONFD="OLDCONFIG_MENU"    # (!default) OLDCONFIG_MENU  # src/CHROOT/CORE/KERNEL.sh ; Preconfigured kernel updated with Y / N prompt and additional menuconfig.
+# ----------------------------------------------------------------------------------------------
 
 ### INITRAMFS
 GENINITRAMFS="DRACUT" # DRACUT (!default); GENKERNEL # src/CHROOT/CORE/INITRAM.sh

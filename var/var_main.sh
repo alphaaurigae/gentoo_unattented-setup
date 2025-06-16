@@ -4,8 +4,8 @@ CRYPTSETUP="NO" # THIS VAR DEFINES IF CRYPTSETUP IS ACTIVATED FOR ROOT,  # YES D
 BOOTINITVAR="BIOS" # BIOS  / UEFI   # Used in src/CHROOT/CORE/SYSCONFIG_CORE.sh && src/CHROOT/CORE/SYSBOOT.s
 
 ## DRIVES & PARTITIONS
-HDD1="/dev/sda" # GENTOO
-# GRUB_PART=/dev/sda1 # var not in use
+HDD1="/dev/sda"
+# GRUB_PART=/dev/sda1
 BOOT_PART="/dev/sda2"
 MAIN_PART="/dev/sda3"
 
@@ -19,7 +19,7 @@ SWAPSIZE="50G"    # swap file size with unit APPEND | G = gigabytes
 # SWAP_SIZE="1GB"  # (inside LVM MAIN_PART)
 # SWAP_FS=linux-swap # swapfs
 
-## FILESYSTEMS  # (note!: FSTOOLS ; FSTAB) (note!: nopt a duplicate - match these above)
+## FILESYSTEMS  # (Note!: FSTOOLS ; FSTAB) (note!: nopt a duplicate - match these above)
 FILESYSTEM_BOOT="ext2" # BOOT
 FILESYSTEM_MAIN="ext4" # GENTOO
 
@@ -52,7 +52,7 @@ CONSOLEFONT="default8x16" # https://wiki.gentoo.org/wiki/Fonts  # src/CHROOT/BAS
 ## MAKE.CONF PRESET src/CHROOT/BASE/MAKECONF.sh
 # https://github.com/gentoo/portage/blob/master/cnf/make.conf.example
 
-PRESET_CC="gcc" # gcc (!default); the preset compiler
+PRESET_CC="gcc" # gcc (!default);
 
 # https://wiki.gentoo.org/wiki/ACCEPT_KEYWORDS
 PRESET_ACCEPT_KEYWORDS="amd64" # "amd64" = stable
@@ -90,8 +90,8 @@ PRESET_RUSTFLAGS="-C target-cpu=$PRESET_MARCH"
 # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#CFLAGS_and_CXXFLAGS
 
 PRESET_INPUTEVICE="libinput keyboard"
-PRESET_VIDEODRIVER="virtualbox" # amdgpu, radeonsi, radeon, virtualbox ; (!NOTE: virtualbox and intend to build firefox - run KVM and set to your hardware, native arch with virtualbox display driver fails - set arch ... "avx2 error firefox")
-PRESET_LICENCES="*"           # Default is: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software) (!todo)
+PRESET_VIDEODRIVER="virtualbox" # amdgpu, radeonsi, radeon, virtualbox ; (!NOTE: Virtualbox and intend to build firefox - run KVM and set to your hardware, native arch with virtualbox display driver fails - set arch ... "avx2 error firefox")
+PRESET_LICENCES="*"           # Default: "-* @FREE" Only accept licenses in the FREE license group (i.e. Free Software) (!todo)
 
 # https://www.gentoo.org/support/use-flags/
 
@@ -110,13 +110,29 @@ sqlite threads udev udisks unicode zip \
 -consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
 -systemd -mssql -postgres -ppp -telnet"
 
-# mount sandbox missing?
-# noman?
-# sandbox?
-# userpriv?
-# force-mirror libsrvg build err, looked like rust problem but wasnt.
-# compress logs removed as it corrupted the archives for unknown reason
-# collision-protect removed as linux-firmware failed emerging cpio it did emerge but still complained. (cpio removed meanwhile, add collision protect?)
+# test
+#PRESET_USEFLAG_LVMROOT="X a52 aac aalib acl acpi apng apparmor alsa bash-completion boost branding bzip2 \
+#cpudetection cjk cxx dbus elogind ffmpeg git gtk gtk3 gzip \
+#hardened initramfs int64 lzma lzo lvm mount opengl pulseaudio jack policykit postproc \
+#sqlite threads udev udisks unicode zip \
+#-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
+#-systemd -mssql -postgres -ppp -telnet"
+# test
+#PRESET_USEFLAG_CRYPTSETUP="-X a52 aac aalib acl acpi apng apparmor audit -alsa bash-completion boost branding bzip2 \
+#cpudetection cjk cxx dbus elogind ffmpeg -git -gtk -gtk3 gzip \
+#hardened initramfs int64 lzma lzo lvm mount opengl -pulseaudio -jack policykit postproc secure-delete \
+#sqlite threads udev udisks unicode zip \
+#-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
+#-systemd -mssql -postgres -ppp -telnet"
+# test
+# Copied from cryptsetup, adjust ...
+#PRESET_USEFLAG_LVMROOT="-X a52 aac aalib acl acpi apng apparmor audit -alsa bash-completion boost branding bzip2 \
+#cpudetection cjk cxx dbus elogind ffmpeg -git -gtk -gtk3 gzip \
+#hardened initramfs int64 lzma lzo lvm mount opengl -pulseaudio -jack policykit postproc secure-delete \
+#sqlite threads udev udisks unicode zip \
+#-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
+#-systemd -mssql -postgres -ppp -telnet"
+
 PRESET_FEATURES="sandbox binpkg-docompress binpkg-dostrip candy binpkg-logs \
 downgrade-backup ebuild-locks fail-clean fixlafiles ipc-sandbox merge-sync \
 network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox "
