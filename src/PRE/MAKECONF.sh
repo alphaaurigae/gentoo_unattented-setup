@@ -55,7 +55,7 @@ MAKECONF() { # /etc/portage/make.conf # https://wiki.gentoo.org/wiki/Handbook:AM
 		#fi
 
 		# conditional setup for cryptsetup or lvm on roo with desktop or server setup.
-		case "${CRYPTSETUP}_${PROFILE}" in
+		case "${CRYPTSETUP}_${DSK_SRV}" in
 			YES_DESKTOP)
 				printf '%s\n' "CRYPTSETUP=YES PROFILE=DESKTOP"
 				MOD="${PRESET_USEFLAG_CRYPTSETUP_DESKTOP}"
@@ -73,7 +73,7 @@ MAKECONF() { # /etc/portage/make.conf # https://wiki.gentoo.org/wiki/Handbook:AM
 				MOD="${PRESET_USEFLAG_LVMROOT_SERVER}"
 				;;
 			*)
-				printf '%s\n' "Invalid combination: CRYPTSETUP=${CRYPTSETUP}, PROFILE=${PROFILE}"
+				printf '%s\n' "Invalid combination: CRYPTSETUP=${CRYPTSETUP}, PROFILE=${DSK_SRV}"
 				exit 1
 				;;
 		esac
