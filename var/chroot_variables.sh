@@ -29,24 +29,29 @@ NTP_PROVIDER="openntpd" # "openntpd", "crony", "ntpd" for both openrc and system
 ### KERNEL
 INSTALLKERNEL="true" # (!default) true # false to use installkernel https://wiki.gentoo.org/wiki/Installkernel
 KERNDEPLOY="MANUAL"  # (!default) MANUAL # AUTO (genkernel)  # src/CHROOT/CORE/KERNEL.sh
-KERNVERS="5.3-rc4"   # for MANUAL setup  # src/CHROOT/CORE/KERNEL.sh
+KERNVERS="5.3-rc4"   # For MANUAL setup  # src/CHROOT/CORE/KERNEL.sh
 KERNSOURCES="EMERGE" # (!default) EMERGE # TORVALDS (git repository) # src/CHROOT/CORE/KERNEL.sh
 
 # ----------------------------------------------------------------------------------------------
 # MENUCONFIG_NEW = (menuconfig - ONLY)
 
+# Update current config utilising a provided .config as base
 # OLDCONFIG_NOMENU = (defconfig - ONLY)
 # OLDCONFIG_MENU = (oldconfig + menuconfig)
 
+# Same as oldconfig but sets new symbols to their default value without prompting
 # OLDDEFCONFIG_NOMENU = (olddefconfig - ONLY)
 # OLDDEFCONFIG_MENU = (olddefconfig + menuconfig)
 
+# New config where all options are accepted with yes
 # ALLYESCONFIG_NOMENU = (allyesconfig - ONLY)
 # ALLYESCONFIG_MENU = (allyesconfig + menuconfig)
 
+# New config with default from ARCH supplied defconfig
 # DEFCONFIG_NOMENU = (defconfig - ONLY)
 # DEFCONFIG_MENU = (defconfig + menuconfig)
 
+# Configure the tiniest possible kernel
 # TINY_NOMENU = (defconfig - ONLY)
 # TINY_MENU = (defconfig + menuconfig)
 

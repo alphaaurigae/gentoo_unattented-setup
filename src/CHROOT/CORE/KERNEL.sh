@@ -48,7 +48,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					make menuconfig
 					NOTICE_END
 				}
-				KERNCONF_OLDCONFIG_NOMENU() { # Update current config utilising a provided .config as base
+				KERNCONF_OLDCONFIG_NOMENU() {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
@@ -59,7 +59,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					make oldconfig
 					NOTICE_END
 				}
-				KERNCONF_OLDCONFIG_MENU() { # "
+				KERNCONF_OLDCONFIG_MENU() {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
@@ -72,7 +72,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					NOTICE_END
 				}
 
-				KERNCONF_OLDDEFCONFIG_NOMENU() { # Same as oldconfig but sets new symbols to their default value without prompting
+				KERNCONF_OLDDEFCONFIG_NOMENU() {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
@@ -83,7 +83,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					make olddefconfig
 					NOTICE_END
 				}
-				KERNCONF_OLDDEFCONFIG_MENU() { # "
+				KERNCONF_OLDDEFCONFIG_MENU() {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
@@ -95,49 +95,49 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					make menuconfig
 					NOTICE_END
 				}
-				KERNCONF_ALLYESCONFIG_NOMENU () { # New config where all options are accepted with yes
+				KERNCONF_ALLYESCONFIG_NOMENU () {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					make -j $(nproc) allyesconfig
+					make allyesconfig
 					NOTICE_END
 				}
-				KERNCONF_ALLYESCONFIG_MENU () { # "
+				KERNCONF_ALLYESCONFIG_MENU () {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					make -j $(nproc) allyesconfig
-					make -j $(nproc) menuconfig
+					make allyesconfig
+					make menuconfig
 					NOTICE_END
 				}
-				KERNCONF_DEFCONFIG_NOMENU () { # New config with default from ARCH supplied defconfig
+				KERNCONF_DEFCONFIG_NOMENU () {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					make -j $(nproc) defconfig
+					make defconfig
 					NOTICE_END
 				}
-				KERNCONF_DEFCONFIG_MENU () { # "
+				KERNCONF_DEFCONFIG_MENU () {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					make -j $(nproc) defconfig
-					make -j $(nproc) menuconfig
+					make defconfig
+					make menuconfig
 					NOTICE_END
 				}
-				KERNCONF_TINY_NOMENU () { # Configure the tiniest possible kernel
+				KERNCONF_TINY_NOMENU () {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					make -j $(nproc) tinyconfig
+					make tinyconfig
 					NOTICE_END
 				}
-				KERNCONF_TINY_MENU () { # "
+				KERNCONF_TINY_MENU () {
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					make -j $(nproc) tinyconfig
-					make -j $(nproc) menuconfig
+					make tinyconfig
+					make menuconfig
 					NOTICE_END
 				}
 
@@ -177,11 +177,16 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 			}
 			KERN_BUILD() { # (!incomplete (works but) modules setup *smart)
 				NOTICE_START
+
 				cd /usr/src/linux
 
-				make -j$(nproc)
-				make modules_install
-				make install
+				# make -j $(nproc)
+				# make -j$(nproc) modules_prepare
+				make -j $(nproc) bzImage
+				make -j $(nproc) modules
+				make -j $(nproc) install
+				make -j $(nproc) modules_install
+
 
 
 				local FETCH_KERNEL_VERSION="$(make -sC /usr/src/linux kernelrelease)"
