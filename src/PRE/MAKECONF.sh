@@ -54,6 +54,30 @@ MAKECONF() { # /etc/portage/make.conf # https://wiki.gentoo.org/wiki/Handbook:AM
 
 		fi
 
+		# conditional setup for cryptsetup or lvm on roo with desktop or server setup.
+		case "${CRYPTSETUP}_${PROFILE}" in
+			YES_DESKTOP)
+				printf '%s\n' "CRYPTSETUP=YES PROFILE=DESKTOP"
+				MOD="${PRESET_USEFLAG_CRYPTSETUP_DESKTOP}"
+				;;
+			YES_SERVER)
+				printf '%s\n' "CRYPTSETUP=YES PROFILE=SERVER"
+				MOD="${PRESET_USEFLAG_CRYPTSETUP_SERVER}"
+				;;
+			NO_DESKTOP)
+				printf '%s\n' "CRYPTSETUP=NO PROFILE=DESKTOP"
+				MOD="${PRESET_USEFLAG_LVMROOT_DESKTOP}"
+				;;
+			NO_SERVER)
+				printf '%s\n' "CRYPTSETUP=NO PROFILE=SERVER"
+				MOD="${PRESET_USEFLAG_LVMROOT_SERVER}"
+				;;
+			*)
+				printf '%s\n' "Invalid combination: CRYPTSETUP=${CRYPTSETUP}, PROFILE=${PROFILE}"
+				exit 1
+				;;
+		esac
+
 		verify_or_exit "Update make.conf USE flags" \
 			sed -i -e "s|PLACEHOLDER_USEFLAGS|$MOD|" "$CHROOTX/etc/portage/make.conf"
 
