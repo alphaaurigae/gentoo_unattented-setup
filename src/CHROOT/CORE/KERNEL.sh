@@ -52,7 +52,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
+					local SRC="/gentoo_unattented-setup/configs/required/.config"
 					local DST="/usr/src/linux/.config"
 
 					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
@@ -63,7 +63,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
+					local SRC="/gentoo_unattented-setup/configs/required/.config"
 					local DST="/usr/src/linux/.config"
 
 					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
@@ -76,7 +76,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
+					local SRC="/gentoo_unattented-setup/configs/required/.config"
 					local DST="/usr/src/linux/.config"
 
 					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
@@ -87,7 +87,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 					NOTICE_START
 					cd /usr/src/linux
 					make mrproper
-					local SRC="/gentoo_unattented-setup/configs/required/kern.config.sh"
+					local SRC="/gentoo_unattented-setup/configs/required/.config"
 					local DST="/usr/src/linux/.config"
 
 					cp "$SRC" "$DST" && VERIFY_COPY "$SRC" "$DST"
@@ -288,6 +288,7 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 		NOTICE_END
 	}
 	KERNEL_HEADERS() {
+		# Add YES confirmation.
 		NOTICE_START
 		emerge --ask sys-kernel/linux-headers
 		NOTICE_END
