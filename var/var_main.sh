@@ -95,7 +95,14 @@ PRESET_LICENCES="*"           # Default: "-* @FREE" Only accept licenses in the 
 
 # https://www.gentoo.org/support/use-flags/
 
-PRESET_USEFLAG_CRYPTSETUP="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
+PRESET_USEFLAG_CRYPTSETUP_DESKTOP="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
+cpudetection cjk cxx dbus elogind ffmpeg git gtk gtk3 gzip \
+hardened initramfs int64 lzma lzo lvm mount opengl pulseaudio jack policykit postproc secure-delete \
+sqlite threads udev udisks unicode zip \
+-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
+-systemd -mssql -postgres -ppp -telnet"
+
+PRESET_USEFLAG_CRYPTSETUP_SERVER="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
 cpudetection cjk cxx dbus elogind ffmpeg git gtk gtk3 gzip \
 hardened initramfs int64 lzma lzo lvm mount opengl pulseaudio jack policykit postproc secure-delete \
 sqlite threads udev udisks unicode zip \
@@ -103,7 +110,14 @@ sqlite threads udev udisks unicode zip \
 -systemd -mssql -postgres -ppp -telnet"
 
 # Copied from cryptsetup, adjust ...
-PRESET_USEFLAG_LVMROOT="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
+PRESET_USEFLAG_LVMROOT_DESKTOP="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
+cpudetection cjk cxx dbus elogind ffmpeg git gtk gtk3 gzip \
+hardened initramfs int64 lzma lzo lvm mount opengl pulseaudio jack policykit postproc secure-delete \
+sqlite threads udev udisks unicode zip \
+-consolekit -cups -bluetooth -libnotify -modemmanager -mysql -apache -apache2 -dropbear -redis \
+-systemd -mssql -postgres -ppp -telnet"
+
+PRESET_USEFLAG_LVMROOT_SERVER="X a52 aac aalib acl acpi apng apparmor audit alsa bash-completion boost branding bzip2 \
 cpudetection cjk cxx dbus elogind ffmpeg git gtk gtk3 gzip \
 hardened initramfs int64 lzma lzo lvm mount opengl pulseaudio jack policykit postproc secure-delete \
 sqlite threads udev udisks unicode zip \
