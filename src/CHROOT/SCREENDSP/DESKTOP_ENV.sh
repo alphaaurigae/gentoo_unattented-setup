@@ -1,18 +1,71 @@
 DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 	NOTICE_START
-		. gentoo_unattented-setup/var/app/desktop_env.sh
-	SETVAR_DSKTENV() {
+	SETVAR_DSKTENV () {
 		NOTICE_START
-		DSTENV_XEC_VAR="${DESKTOPENV}_DSTENV_XEC"
-		DSTENV_STARTX_VAR="${DESKTOPENV}_DSTENV_STARTX"
-		DSTENV_EMERGE_VAR="${DESKTOPENV}_DSTENV_EMERGE"
-
-		DSTENV_XEC=${!DSTENV_XEC_VAR}
-		DSTENV_STARTX=${!DSTENV_STARTX_VAR}
-		DSTENV_EMERGE=${!DSTENV_EMERGE_VAR}
-		printf '%s\n' "DSTENV_XEC: $DSTENV_XEC"
-		printf '%s\n' "Startx command: $DSTENV_STARTX"
-		printf '%s\n' "DSTENV_EMERGE: $DSTENV_EMERGE"
+		BUDGIE_DSTENV_XEC=budgie_dpmexec
+		BUDGIE_DSTENV_STARTX=budgie
+		BUDGIE_DSTENV_EMERGE=budgie
+		#  CINNAMON - https://wiki.gentoo.org/wiki/Cinnamon
+		CINNAMON_DSTENV_XEC=gnome-session-cinnamon
+		CINNAMON_DSTENV_STARTX=cinnamon-session
+		CINNAMON_DSTENV_EMERGE=gnome-extra/cinnamon
+		#  DDE "Deepin Desktop Environment" - https://wiki.gentoo.org/wiki/DDE
+		DDE_DSTENV_XEC=DDE
+		DDE_DSTENV_STARTX=DDE
+		DDE_DSTENV_EMERGE=DDE
+		#  FVWM-Crystal - FVWM-Crystal
+		FVWMCRYSTAL_DSTENV_XEC=fvwm-crystal
+		FVWMCRYSTAL_DSTENV_STARTX=fvwm-crystal
+		FVWMCRYSTAL_DSTENV_EMERGE=x11-themes/fvwm-crystal
+		#  GNOME - https://wiki.gentoo.org/wiki/GNOME
+		GNOME_DSTENV_XEC=gnome-session
+		GNOME_DSTENV_STARTX=GNOME
+		GNOME_DSTENV_EMERGE=gnome-base/gnome
+		#  KDE - FVWM-Crystal
+		KDE_DSTENV_XEC=kde-plasma/startkde
+		KDE_DSTENV_STARTX=startkde
+		KDE_DSTENV_EMERGE=kde-plasma/plasma-meta
+		#  LXDE - https://wiki.gentoo.org/wiki/LXDE
+		LXDE_DSTENV_XEC=startlxde
+		LXDE_DSTENV_STARTX=startlxde
+		LXDE_DSTENV_EMERGE=lxde-base/lxde-meta
+		#  LXQT - FVWM-Crystal
+		LXQT_DSTENV_XEC=startlxqt
+		LXQT_DSTENV_STARTX=startlxqt
+		LXQT_DSTENV_EMERGE=lxqt-base/lxqt-meta
+		#  LUMINA - https://wiki.gentoo.org/wiki/Lumina
+		LUMINA_DSTENV_XEC=start-lumina-desktop
+		LUMINA_DSTENV_STARTX=start-lumina-desktop
+		LUMINA_DSTENV_EMERGE=x11-wm/lumina
+		#  MATE - https://wiki.gentoo.org/wiki/MATE
+		MATE_DSTENV_XEC=mate-session
+		MATE_DSTENV_STARTX=mate-session
+		MATE_DSTENV_EMERGE=mate-base/mate
+		#  PANTHEON - https://wiki.gentoo.org/wiki/Pantheon
+		PANTHEON_DSTENV_XEC=PANTHEON
+		PANTHEON_DSTENV_STARTX=PANTHEON
+		PANTHEON_DSTENV_EMERGE=PANTHEON
+		#  RAZORQT - FVWM-Crystal
+		RAZORQT_DSTENV_XEC=razor-session
+		RAZORQT_DSTENV_STARTX=razor-session
+		RAZORQT_DSTENV_EMERGE=RAZORQT
+		#  TDE - https://wiki.gentoo.org/wiki/Trinity_Desktop_Environment
+		TDE_DSTENV_XEC=tde-session
+		TDE_DSTENV_STARTX=tde-session
+		TDE_DSTENV_EMERGE=trinity-base/tdebase-meta
+		#  XFCE - https://wiki.gentoo.org/wiki/Xfce
+		XFCE_DSTENV_XEC=xfce4-session
+		XFCE_DSTENV_STARTX=startxfce4
+		XFCE_DSTENV_EMERGE=xfce-base/xfce4-meta
+		for i in $DESKTOPENV ; do
+			DSTENV_XEC=$DESKTOPENV\_DSTENV_XEC
+			DSTENV_STARTX=$DESKTOPENV\_DSTENV_STARTX
+			DSTENV_EMERGE=$DESKTOPENV\_DSTENV_EMERGE
+			printf '%s\n' "DSTENV_XEC: $DSTENV_XEC"
+			printf '%s\n' "DSTENV_STARTX: $DSTENV_STARTX"
+			printf '%s\n' "DSTENV_EMERGE: $DSTENV_EMERGE"
+			
+		done
 		NOTICE_END
 	}
 	ADDREPO_DSTENV() {
@@ -181,31 +234,65 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 	}
 	W_D_MGR() { # Display_manager https://wiki.gentoo.org/wiki/Display_manager
 		NOTICE_START
-		. gentoo_unattented-setup/var/app/display_mgr.sh  
 
 		SETVAR_DSPMGR() {
-			NOTICE_START
-			for i in $DISPLAYMGR; do
-			DSTENV_XEC_VAR="${DESKTOPENV}_DSTENV_XEC"
-			DSTENV_STARTX_VAR="${DESKTOPENV}_DSTENV_STARTX"
-			DSPMGR_AS_VAR="${i}_DSPMGR_${SYSINITVAR}"
-			DSPMGR_XEC_VAR="${i}_DSPMGR_XEC"
-			DSPMGR_STARTX_VAR="${i}_DSPMGR_STARTX"
-			APPAPP_EMERGE_VAR="${i}_APPAPP_EMERGE"
 
-			DSTENV_XEC=${!DSTENV_XEC_VAR}
-			DSTENV_STARTX=${!DSTENV_STARTX_VAR}
-			DSPMGR_AS=${!DSPMGR_AS_VAR}
-			DSPMGR_XEC=${!DSPMGR_XEC_VAR}
-			DSPMGR_STARTX=${!DSPMGR_STARTX_VAR}
-			APPAPP_EMERGE=${!APPAPP_EMERGE_VAR}
-			done
-			printf '%s\n'  "DSTENV_XEC: $DSTENV_XEC"
-			printf '%s\n'  "DSTENV_STARTX: $DSTENV_STARTX"
-			printf '%s\n'  "DSPMGR_AS: $DSPMGR_AS"
-			printf '%s\n'  "DSPMGR_XEC: $DSPMGR_XEC"
-			printf '%s\n'  "DSPMGR_STARTX: $DSPMGR_STARTX"
-			printf '%s\n'  "APPAPP_EMERGE: $APPAPP_EMERGE"
+			# CDM
+			
+			CDM_DSPMGR_SYSTEMD=cdm.service
+			CDM_DSPMGR_OPENRC=cdm
+			CDM_APPAPP_EMERGE=x11-misc/cdm
+			#  GDM - https://wiki.gentoo.org/wiki/GNOME/gdm
+			GDM_DSPMGR_SYSTEMD=gdm.service
+			GDM_DSPMGR_OPENRC=gdm
+			GDM_APPAPP_EMERGE=gnome-base/gdm                                     
+			#  LIGHTDM - https://wiki.gentoo.org/wiki/LightDM
+			LIGHTDM_DSPMGR_SYSTEMD=lightdm.service
+			LIGHTDM_DSPMGR_OPENRC=lightdm
+			LIGHTDM_APPAPP_EMERGE=x11-misc/lightdm                       
+			#  LXDM - https://wiki.gentoo.org/wiki/LXDE
+			LXDM_DSPMGR_SYSTEMD=lxdm.service
+			LXDM_DSPMGR_OPENRC=lxdm # (startlxde ?)
+			LXDM_APPAPP_EMERGE=lxde-base/lxdm
+			#  QINGY - https://wiki.gentoo.org/wiki/QINGY
+			QINGY_DSPMGR_SYSTEMD=qingy.service
+			QINGY_DSPMGR_OPENRC=qingy
+			QINGY_APPAPP_EMERGE=placeholder
+			#  SSDM - https://wiki.gentoo.org/wiki/SSDM
+			SSDM_DSPMGR_SYSTEMD=sddm.service
+			SSDM_DSPMGR_OPENRC=sddm
+			SSDM_APPAPP_EMERGE=x11-misc/sddm                      
+			#  SLIM - https://wiki.gentoo.org/wiki/SLiM
+			SLIM_DSPMGR_SYSTEMD=slim.service
+			SLIM_DSPMGR_OPENRC=slim
+			SLIM_APPAPP_EMERGE=x11-misc/slim                                            
+			#  WDM - https://wiki.gentoo.org/wiki/WDM
+			WDM_DSPMGR_SYSTEMD=wdm.service
+			WDM_DSPMGR_OPENRC=wdm
+			WDM_APPAPP_EMERGE=x11-misc/wdm                 
+			#  XDM - https://packages.gentoo.org/packages/x11-apps/xdm
+			XDM_DSPMGR_SYSTEMD=xdm.service
+			XDM_DSPMGR_OPENRC=xdm
+			XDM_APPAPP_EMERGE=x11-apps/xdm
+
+
+
+				for i in $DISPLAYMGR
+				do
+					DSTENV_XEC=$DESKTOPENV\_DSTENV_XEC
+					DSTENV_STARTX=$DESKTOPENV\_DSTENV_STARTX
+					DSPMGR_AS=$i\_DSPMGR_$SYSINITVAR
+					DSPMGR_XEC=$i\_DSPMGR_XEC
+					DSPMGR_STARTX=$i\_DSPMGR_STARTX
+					APPAPP_EMERGE=$i\_APPAPP_EMERGE
+					printf '%s\n' "DSTENV_XEC: $DSTENV_XEC"
+					printf '%s\n' "DSTENV_STARTX: $DSTENV_STARTX"
+					printf '%s\n' "DSPMGR_AS: $DSPMGR_AS"
+					printf '%s\n' "DSPMGR_XEC: $DSPMGR_XEC"
+					printf '%s\n' "DSPMGR_STARTX: $DSPMGR_STARTX"
+					printf '%s\n' "APPAPP_EMERGE: $APPAPP_EMERGE"
+				
+				done
 			NOTICE_END
 		}
 		DSPMGR_OPENRC() {
@@ -230,9 +317,11 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 		CONFIGURE_DSPMGR() {
 			NOTICE_START
 			if [ "$DISPLAYMGR" == "LXDM" ]; then
-				printf '%s\n' " ${!DSPMGR_AS}"
+				printf '%s%s\n' 'Debug lxdm.conf' " ${!DSPMGR_AS}"
+				printf '%s%s\n' '${!DSPMGR_AS}"' " ${!DSPMGR_AS}"
+				printf '%s\n' '/etc/lxdm/lxdm.conf before edit:' && cat /etc/lxdm/lxdm.conf
 				sed -ie "s;^# session=/usr/bin/startlxde;session=/usr/bin/${!DSTENV_STARTX};g" /etc/lxdm/lxdm.conf
-				cat /etc/lxdm/lxdm.conf
+				printf '%s\n' '/etc/lxdm/lxdm.conf after edit:' && cat /etc/lxdm/lxdm.conf
 			elif [ "$DISPLAYMGR" == "LIGHTDM" ]; then
 				cat <<-'EOF' >/usr/share/lightdm/lightdm.conf.d/50-xfce-greeter.conf
 					[SeatDefaults]

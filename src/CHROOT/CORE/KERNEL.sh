@@ -288,9 +288,9 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 		NOTICE_END
 	}
 	KERNEL_HEADERS() {
-		# Add YES confirmation.
 		NOTICE_START
 		emerge --ask sys-kernel/linux-headers
+		# emerge sys-kernel/linux-headers
 		NOTICE_END
 	}
 	KERN_LOAD

@@ -16,8 +16,15 @@ WINDOWSYS() {
 			NOTICE_START
 			CONF_X11_KEYBOARD() {
 				NOTICE_START
-				# changed from Option "XkbLayout" "LANG_MAIN_LOWER,$LANG_SECOND_LOWER" - to have the corect keyboard layout after boot in the desktop environment (testing) 04.09.2022
 				touch /usr/share/X11/xorg.conf.d/10-keyboard.conf
+				
+				# Use  the X11 variables from the livecd environment for now, except for $KEYMAP as defined in var/var_main.sh .
+				printf "%s%s%s%s\n" "${BOLD}${YELLOW}" "NOTICE:" "${RESET}" " Debug VAR for /usr/share/X11/xorg.conf.d/10-keyboard.conf"
+				printf '%s%s\n' 'Option "XkbLayout"' "$KEYMAP"
+				printf '%s%s\n' 'Option "XkbVariant"' "$X11_XKBVARIANT"
+				printf '%s%s\n' 'Option "XkbOptions"' "$X11_KEYBOARD_XKB_OPTIONS"
+				printf '%s%s\n' 'Option "MatchIsKeyboard"' "$X11_KEYBOARD_MATCHISKEYBOARD"
+
 				cat <<-EOF >/usr/share/X11/xorg.conf.d/10-keyboard.conf
 					Section "InputClass"
 					    Identifier "keyboard-all"

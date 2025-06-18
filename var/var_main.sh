@@ -47,6 +47,7 @@ PRESET_LOCALE_B=$LANG_SECOND_LOWER\_$LANG_SECOND_UPPER # lang set 2 # "   # src/
 KEYMAP="de"               # set common (!channgeme)  # src/CHROOT/BASE/KEYMAP_CONSOLEFONT.sh && src/CHROOT/SCREENDSP/WINDOWSYS.sh
 CONSOLEFONT="default8x16" # https://wiki.gentoo.org/wiki/Fonts  # src/CHROOT/BASE/KEYMAP_CONSOLEFONT.sh
 
+#XkbVariant="neo" # de: neu # en:dvorak
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++
 # MAKE.CONF START
 
