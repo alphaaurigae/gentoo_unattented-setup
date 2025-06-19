@@ -156,8 +156,13 @@ network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv users
 # https://www.gentoo.org/downloads/mirrors/
 PRESET_GENTOMIRRORS="http://gentoo-mirror.flux.utah.edu"
 
-PRESET_MAKE="-j$(expr $(nproc) "*" 1) --quiet "
-PRESET_EMERGE_LOAD="30"
+#PRESET_MAKE="-j$(expr $(nproc) "*" 1) --quiet "
+physical_cores=$(lscpu | awk '/^Core\(s\) per socket:/ {cores=$4} /^Socket\(s\):/ {sockets=$2} END {print cores * sockets}')
+PRESET_MAKE="-j${physical_cores} --quiet"
+emerge_jobs=$(( physical_cores / 2 ))
+[ $emerge_jobs -lt 1 ] && emerge_jobs=1
+PRESET_EMERGE_JOBS="$emerge_jobs"
+PRESET_EMERGE_LOAD="$physical_cores"
 PRESET_EMERGE_DEFAULT_OPTS="--quiet --complete-graph --verbose --update --deep --newuse --jobs $PRESET_EMERGE_JOBS --load-average $PRESET_EMERGE_LOAD"
 PRESET_PORTDIR="/var/db/repos/gentoo"
 PRESET_DISTDIR="/var/cache/distfiles"
