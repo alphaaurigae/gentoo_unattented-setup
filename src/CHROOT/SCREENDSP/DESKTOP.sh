@@ -1,62 +1,62 @@
-DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
+DESKTOP() { # https://wiki.gentoo.org/wiki/Desktop_environment
 	NOTICE_START
 	SETVAR_DSKTENV () {
 		NOTICE_START
-		BUDGIE_DSTENV_XEC=budgie_dpmexec
-		BUDGIE_DSTENV_STARTX=budgie
-		BUDGIE_DSTENV_EMERGE=budgie
+		BUDGIE_DSTENV_XEC="budgie_dpmexec"
+		BUDGIE_DSTENV_STARTX="budgie"
+		BUDGIE_DSTENV_EMERGE="budgie"
 		#  CINNAMON - https://wiki.gentoo.org/wiki/Cinnamon
-		CINNAMON_DSTENV_XEC=gnome-session-cinnamon
-		CINNAMON_DSTENV_STARTX=cinnamon-session
-		CINNAMON_DSTENV_EMERGE=gnome-extra/cinnamon
+		CINNAMON_DSTENV_XEC="gnome-session-cinnamon"
+		CINNAMON_DSTENV_STARTX="cinnamon-session"
+		CINNAMON_DSTENV_EMERGE="gnome-extra/cinnamon"
 		#  DDE "Deepin Desktop Environment" - https://wiki.gentoo.org/wiki/DDE
-		DDE_DSTENV_XEC=DDE
-		DDE_DSTENV_STARTX=DDE
-		DDE_DSTENV_EMERGE=DDE
+		DDE_DSTENV_XEC="DDE"
+		DDE_DSTENV_STARTX="DDE"
+		DDE_DSTENV_EMERGE="DDE"
 		#  FVWM-Crystal - FVWM-Crystal
-		FVWMCRYSTAL_DSTENV_XEC=fvwm-crystal
-		FVWMCRYSTAL_DSTENV_STARTX=fvwm-crystal
-		FVWMCRYSTAL_DSTENV_EMERGE=x11-themes/fvwm-crystal
+		FVWMCRYSTAL_DSTENV_XEC="fvwm-crystal"
+		FVWMCRYSTAL_DSTENV_STARTX="fvwm-crystal"
+		FVWMCRYSTAL_DSTENV_EMERGE="x11-themes/fvwm-crystal"
 		#  GNOME - https://wiki.gentoo.org/wiki/GNOME
-		GNOME_DSTENV_XEC=gnome-session
-		GNOME_DSTENV_STARTX=GNOME
-		GNOME_DSTENV_EMERGE=gnome-base/gnome
+		GNOME_DSTENV_XEC="gnome-session"
+		GNOME_DSTENV_STARTX="GNOME"
+		GNOME_DSTENV_EMERGE="gnome-base/gnome"
 		#  KDE - FVWM-Crystal
-		KDE_DSTENV_XEC=kde-plasma/startkde
-		KDE_DSTENV_STARTX=startkde
-		KDE_DSTENV_EMERGE=kde-plasma/plasma-meta
+		KDE_DSTENV_XEC="kde-plasma/startkde"
+		KDE_DSTENV_STARTX="startkde"
+		KDE_DSTENV_EMERGE="kde-plasma/plasma-meta"
 		#  LXDE - https://wiki.gentoo.org/wiki/LXDE
-		LXDE_DSTENV_XEC=startlxde
-		LXDE_DSTENV_STARTX=startlxde
-		LXDE_DSTENV_EMERGE=lxde-base/lxde-meta
+		LXDE_DSTENV_XEC="startlxde"
+		LXDE_DSTENV_STARTX="startlxde"
+		LXDE_DSTENV_EMERGE="lxde-base/lxde-meta"
 		#  LXQT - FVWM-Crystal
-		LXQT_DSTENV_XEC=startlxqt
-		LXQT_DSTENV_STARTX=startlxqt
-		LXQT_DSTENV_EMERGE=lxqt-base/lxqt-meta
+		LXQT_DSTENV_XEC="startlxqt"
+		LXQT_DSTENV_STARTX="startlxqt"
+		LXQT_DSTENV_EMERGE="lxqt-base/lxqt-meta"
 		#  LUMINA - https://wiki.gentoo.org/wiki/Lumina
-		LUMINA_DSTENV_XEC=start-lumina-desktop
-		LUMINA_DSTENV_STARTX=start-lumina-desktop
-		LUMINA_DSTENV_EMERGE=x11-wm/lumina
+		LUMINA_DSTENV_XEC="start-lumina-desktop"
+		LUMINA_DSTENV_STARTX="start-lumina-desktop"
+		LUMINA_DSTENV_EMERGE="x11-wm/lumina"
 		#  MATE - https://wiki.gentoo.org/wiki/MATE
-		MATE_DSTENV_XEC=mate-session
-		MATE_DSTENV_STARTX=mate-session
-		MATE_DSTENV_EMERGE=mate-base/mate
+		MATE_DSTENV_XEC="mate-session"
+		MATE_DSTENV_STARTX="mate-session"
+		MATE_DSTENV_EMERGE="mate-base/mate"
 		#  PANTHEON - https://wiki.gentoo.org/wiki/Pantheon
-		PANTHEON_DSTENV_XEC=PANTHEON
-		PANTHEON_DSTENV_STARTX=PANTHEON
-		PANTHEON_DSTENV_EMERGE=PANTHEON
+		PANTHEON_DSTENV_XEC="PANTHEON"
+		PANTHEON_DSTENV_STARTX="PANTHEON"
+		PANTHEON_DSTENV_EMERGE="PANTHEON"
 		#  RAZORQT - FVWM-Crystal
-		RAZORQT_DSTENV_XEC=razor-session
-		RAZORQT_DSTENV_STARTX=razor-session
-		RAZORQT_DSTENV_EMERGE=RAZORQT
+		RAZORQT_DSTENV_XEC="razor-session"
+		RAZORQT_DSTENV_STARTX="razor-session"
+		RAZORQT_DSTENV_EMERGE="RAZORQT"
 		#  TDE - https://wiki.gentoo.org/wiki/Trinity_Desktop_Environment
-		TDE_DSTENV_XEC=tde-session
-		TDE_DSTENV_STARTX=tde-session
-		TDE_DSTENV_EMERGE=trinity-base/tdebase-meta
+		TDE_DSTENV_XEC="tde-session"
+		TDE_DSTENV_STARTX="tde-session"
+		TDE_DSTENV_EMERGE="trinity-base/tdebase-meta"
 		#  XFCE - https://wiki.gentoo.org/wiki/Xfce
-		XFCE_DSTENV_XEC=xfce4-session
-		XFCE_DSTENV_STARTX=startxfce4
-		XFCE_DSTENV_EMERGE=xfce-base/xfce4-meta
+		XFCE_DSTENV_XEC="xfce4-session"
+		XFCE_DSTENV_STARTX="startxfce4"
+		XFCE_DSTENV_EMERGE="xfce-base/xfce4-meta"
 		for i in $DESKTOPENV ; do
 			DSTENV_XEC=$DESKTOPENV\_DSTENV_XEC
 			DSTENV_STARTX=$DESKTOPENV\_DSTENV_STARTX
@@ -239,41 +239,41 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 
 			# CDM
 			
-			CDM_DSPMGR_SYSTEMD=cdm.service
-			CDM_DSPMGR_OPENRC=cdm
-			CDM_APPAPP_EMERGE=x11-misc/cdm
+			CDM_DSPMGR_SYSTEMD="cdm.service"
+			CDM_DSPMGR_OPENRC="cdm"
+			CDM_APPAPP_EMERGE="x11-misc/cdm"
 			#  GDM - https://wiki.gentoo.org/wiki/GNOME/gdm
-			GDM_DSPMGR_SYSTEMD=gdm.service
-			GDM_DSPMGR_OPENRC=gdm
-			GDM_APPAPP_EMERGE=gnome-base/gdm                                     
+			GDM_DSPMGR_SYSTEMD="gdm.service"
+			GDM_DSPMGR_OPENRC="gdm"
+			GDM_APPAPP_EMERGE="gnome-base/gdm"                                     
 			#  LIGHTDM - https://wiki.gentoo.org/wiki/LightDM
-			LIGHTDM_DSPMGR_SYSTEMD=lightdm.service
-			LIGHTDM_DSPMGR_OPENRC=lightdm
-			LIGHTDM_APPAPP_EMERGE=x11-misc/lightdm                       
+			LIGHTDM_DSPMGR_SYSTEMD="lightdm.service"
+			LIGHTDM_DSPMGR_OPENRC="lightdm"
+			LIGHTDM_APPAPP_EMERGE="x11-misc/lightdm"                       
 			#  LXDM - https://wiki.gentoo.org/wiki/LXDE
-			LXDM_DSPMGR_SYSTEMD=lxdm.service
-			LXDM_DSPMGR_OPENRC=lxdm # (startlxde ?)
-			LXDM_APPAPP_EMERGE=lxde-base/lxdm
+			LXDM_DSPMGR_SYSTEMD="lxdm.service"
+			LXDM_DSPMGR_OPENRC="lxdm" # (startlxde ?)
+			LXDM_APPAPP_EMERGE="lxde-base/lxdm"
 			#  QINGY - https://wiki.gentoo.org/wiki/QINGY
-			QINGY_DSPMGR_SYSTEMD=qingy.service
-			QINGY_DSPMGR_OPENRC=qingy
-			QINGY_APPAPP_EMERGE=placeholder
+			QINGY_DSPMGR_SYSTEMD="qingy.service"
+			QINGY_DSPMGR_OPENRC="qingy"
+			QINGY_APPAPP_EMERGE="placeholder"
 			#  SSDM - https://wiki.gentoo.org/wiki/SSDM
-			SSDM_DSPMGR_SYSTEMD=sddm.service
-			SSDM_DSPMGR_OPENRC=sddm
-			SSDM_APPAPP_EMERGE=x11-misc/sddm                      
+			SSDM_DSPMGR_SYSTEMD="sddm.service"
+			SSDM_DSPMGR_OPENRC="sddm"
+			SSDM_APPAPP_EMERGE="x11-misc/sddm"                      
 			#  SLIM - https://wiki.gentoo.org/wiki/SLiM
-			SLIM_DSPMGR_SYSTEMD=slim.service
-			SLIM_DSPMGR_OPENRC=slim
-			SLIM_APPAPP_EMERGE=x11-misc/slim                                            
+			SLIM_DSPMGR_SYSTEMD="slim.service"
+			SLIM_DSPMGR_OPENRC="slim"
+			SLIM_APPAPP_EMERGE="x11-misc/slim"                                            
 			#  WDM - https://wiki.gentoo.org/wiki/WDM
-			WDM_DSPMGR_SYSTEMD=wdm.service
-			WDM_DSPMGR_OPENRC=wdm
-			WDM_APPAPP_EMERGE=x11-misc/wdm                 
+			WDM_DSPMGR_SYSTEMD="wdm.service"
+			WDM_DSPMGR_OPENRC="wdm"
+			WDM_APPAPP_EMERGE="x11-misc/wdm"                 
 			#  XDM - https://packages.gentoo.org/packages/x11-apps/xdm
-			XDM_DSPMGR_SYSTEMD=xdm.service
-			XDM_DSPMGR_OPENRC=xdm
-			XDM_APPAPP_EMERGE=x11-apps/xdm
+			XDM_DSPMGR_SYSTEMD="xdm.service"
+			XDM_DSPMGR_OPENRC="xdm"
+			XDM_APPAPP_EMERGE="x11-apps/xdm"
 
 
 
@@ -316,22 +316,25 @@ DESKTOP_ENV() { # https://wiki.gentoo.org/wiki/Desktop_environment
 		}
 		CONFIGURE_DSPMGR() {
 			NOTICE_START
-			if [ "$DISPLAYMGR" == "LXDM" ]; then
-				printf '%s%s\n' 'Debug lxdm.conf' " ${!DSPMGR_AS}"
-				printf '%s%s\n' '${!DSPMGR_AS}"' " ${!DSPMGR_AS}"
-				printf '%s\n' '/etc/lxdm/lxdm.conf before edit:' && cat /etc/lxdm/lxdm.conf
-				sed -ie "s;^# session=/usr/bin/startlxde;session=/usr/bin/${!DSTENV_STARTX};g" /etc/lxdm/lxdm.conf
-				printf '%s\n' '/etc/lxdm/lxdm.conf after edit:' && cat /etc/lxdm/lxdm.conf
-			elif [ "$DISPLAYMGR" == "LIGHTDM" ]; then
-				cat <<-'EOF' >/usr/share/lightdm/lightdm.conf.d/50-xfce-greeter.conf
-					[SeatDefaults]
-					greeter-session=unity-greeter
-					user-session=xfce
-				EOF
-				cat /usr/share/lightdm/lightdm.conf.d/50-xfce-greeter.conf
-			else
-				NOTICE_PLACEHOLDER
-			fi
+			CONFIG_DSPMGR_SESSION() {
+				if [ "$DISPLAYMGR" == "LXDM" ]; then
+					printf '%s%s\n' 'Debug lxdm.conf' " ${!DSPMGR_AS}"
+					printf '%s%s\n' '${!DSPMGR_AS}"' " ${!DSPMGR_AS}"
+					printf '%s\n' '/etc/lxdm/lxdm.conf before edit:' && cat /etc/lxdm/lxdm.conf
+					sed -ie "s;^# session=/usr/bin/startlxde;session=/usr/bin/${!DSTENV_STARTX};g" /etc/lxdm/lxdm.conf
+					printf '%s\n' '/etc/lxdm/lxdm.conf after edit:' && cat /etc/lxdm/lxdm.conf
+				elif [ "$DISPLAYMGR" == "LIGHTDM" ]; then
+					cat <<-'EOF' >/usr/share/lightdm/lightdm.conf.d/50-xfce-greeter.conf
+						[SeatDefaults]
+						greeter-session=unity-greeter
+						user-session=xfce
+					EOF
+					cat /usr/share/lightdm/lightdm.conf.d/50-xfce-greeter.conf
+				else
+					NOTICE_PLACEHOLDER
+				fi
+			}
+			CONFIG_DSPMGR_SESSION
 			NOTICE_END
 		}
 		SETVAR_DSPMGR

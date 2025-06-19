@@ -145,7 +145,7 @@ CHROOT_MENU() {
 
 			declare -A CHROOT_SCREENDSP=(
 				[1]="WINDOWSYS"
-				[2]="DESKTOP_ENV"
+				[2]="DESKTOP"
 			)
 
 			declare -A CHROOT_SCREENDSP_GROUPS=(
@@ -274,7 +274,7 @@ CHROOT_ALL() { # DUMMY FUNCTIONS - SOURCING COMMENTED
 
 			declare -A CHROOT_SCREENDSP=(
 			    [1]="WINDOWSYS"
-			    [2]="DESKTOP_ENV"
+			    [2]="DESKTOP"
 			)
 
 			declare -A CHROOT_USERAPP=(
