@@ -187,33 +187,55 @@ KERNEL() { # https://wiki.gentoo.org/wiki/Kernel
 				make -j $(nproc) install
 				make -j $(nproc) modules_install
 
-
-
-				local FETCH_KERNEL_VERSION="$(make -sC /usr/src/linux kernelrelease)"
-
 				DEBUG_KERNELINST() {
 					NOTICE_START
+					local FETCH_KERNEL_VERSION="$(make -sC /usr/src/linux kernelrelease)"
 
-					printf '%s\n' "Verify module installation"
-					ls -d /lib/modules/$FETCH_KERNEL_VERSION
-					modinfo -k $FETCH_KERNEL_VERSION
+					printf '%s%s%s\n' "${BOLD}${WHITE}" "Verify module installation" "${RESET}"
+					ls -d --color=always "/lib/modules/${FETCH_KERNEL_VERSION}"
+					modinfo -k "${FETCH_KERNEL_VERSION}"
 
-					printf '%s\n' "Debug kernel installation"
-					[ -f "${BOOTDIR}/vmlinuz-${FETCH_KERNEL_VERSION}" ] || printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " Kernel image missing!"
-					[ -f "${BOOTDIR}/System.map-${FETCH_KERNEL_VERSION}" ] || printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " System.map missing!"
-					[ -f "${BOOTDIR}/config-${FETCH_KERNEL_VERSION}" ] || printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " Config missing!"
+					printf '%s%s%s\n' "${BOLD}${WHITE}" "Debug kernel installation" "${RESET}"
+					printf 'CHECK: FETCH_KERNEL_VERSION="%s"\n' "${FETCH_KERNEL_VERSION}"
 
-					ls -l /boot/vmlinuz-$FETCH_KERNEL_VERSION
-					ls -l /boot/System.map-$FETCH_KERNEL_VERSION
-					ls -l /boot/config-$FETCH_KERNEL_VERSION
-					readlink /boot/vmlinuz /boot/System.map /boot/config
-					file /boot/vmlinuz-$FETCH_KERNEL_VERSION
-					ls -lh /boot/vmlinuz-*
-					ls -l /boot
+					kernel_img="${BOOTDIR}/vmlinuz-${FETCH_KERNEL_VERSION}-gentoo"
+					system_map="${BOOTDIR}/System.map-${FETCH_KERNEL_VERSION}-gentoo"
+					kernel_cfg="${BOOTDIR}/config-${FETCH_KERNEL_VERSION}-gentoo"
 
-					printf '%s\n' "cd boot && ls -a log:"
-					cd /boot
-					ls -a
+					printf 'CHECK: Testing file: %s\n' "${kernel_img}"
+					[ -f "${kernel_img}" ] || {
+						ls -l --color=always "${kernel_img}"
+						file "${kernel_img}"
+						printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " Kernel image missing!"
+					}
+
+					printf 'CHECK: Testing file: %s\n' "${system_map}"
+					[ -f "${system_map}" ] || {
+						ls -l --color=always "${system_map}"
+						file "${system_map}"
+						printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " System.map missing!"
+					}
+
+					printf 'CHECK: Testing file: %s\n' "${kernel_cfg}"
+					[ -f "${kernel_cfg}" ] || {
+						ls -l --color=always "${kernel_cfg}"
+						file "${kernel_cfg}"
+						printf "%s%s%s%s\n" "${BOLD}${MAGENTA}" "WARNING:" "${RESET}" " Config missing!"
+					}
+
+					printf "${CYAN}Checking symlinks:${RESET}\n"
+					readlink --canonicalize /boot/vmlinuz /boot/System.map /boot/config 2>/dev/null | while read -r line; do
+						printf "${BOLD}${GREEN}%s${RESET}\n" "${line}"
+					done
+
+					printf "${CYAN}Listing: /boot/vmlinuz-*${RESET}\n"
+					ls --color=always -lh /boot/vmlinuz-* 2>/dev/null
+
+					printf "${CYAN}Listing: /boot${RESET}\n"
+					ls --color=always -l /boot
+
+					printf "${CYAN}cd /boot && ls -a log:${RESET}\n"
+					cd /boot && ls --color=always -a
 					NOTICE_END
 				}
 
