@@ -1,6 +1,6 @@
-# Automated modular GENTOO linux setup
-
-Unattended setup of a gentoo system ( Password prompts for cryptsetup, users and GPG setup)
+# "Modular Gentoo Linux Setup
+Automated/semi-automated chroot to simplify customization, scaling, cloning, and testing."
+- ( Password prompts for cryptsetup, users and GPG setup)
 
 ## Status 13.06.25
 
@@ -13,7 +13,6 @@ Unattended setup of a gentoo system ( Password prompts for cryptsetup, users and
 
 
 ### Doc
-doc/VM_default_set.md
 doc/Readme.md
 
 ### Menu [15.06.2025]
