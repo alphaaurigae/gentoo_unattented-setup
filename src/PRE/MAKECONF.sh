@@ -44,17 +44,6 @@ MAKECONF() { # /etc/portage/make.conf # https://wiki.gentoo.org/wiki/Handbook:AM
 
 		local MOD
 
-		#if [ "$CRYPTSETUP" = "YES" ]; then
-		#	printf '%s\n' "CRYPTSETUP=YES"
-		#	MOD=$(printf '%s\n' "$PRESET_USEFLAG_CRYPTSETUP")
-
-		#else
-		#	printf '%s\n' "CRYPTSETUP=NO"
-		#	MOD=$(printf '%s\n' "$PRESET_USEFLAG_LVMROOT")
-
-		#fi
-
-		# conditional setup for cryptsetup or lvm on roo with desktop or server setup.
 		case "${CRYPTSETUP}_${DSK_SRV}" in
 			YES_DESKTOP)
 				printf '%s\n' "CRYPTSETUP=YES PROFILE=DESKTOP"

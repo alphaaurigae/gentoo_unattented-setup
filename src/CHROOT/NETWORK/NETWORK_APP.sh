@@ -1,0 +1,28 @@
+	#NET_FTP () {
+	#NOTICE_START
+	#	CLIENT () {
+	#	NOTICE_START
+	#		FTP () {
+	#		NOTICE_START
+	#			APPAPP_EMERGE="net-ftp/ftp"
+	#			# PACKAGE_USE
+	#			ACC_KEYWORDS_USERAPP
+	#			EMERGE_USERAPP_DEF
+	#			AUTOSTART_DEFAULT_$SYSINITVAR
+	#		NOTICE_END
+	#		}
+	#		#FILEZILLA () {  (# build fail # dep x11?)
+	#		#	APPAPP_EMERGE="net-ftp/filezilla"
+	#		#	# PACKAGE_USE
+	#		#	ACC_KEYWORDS_USERAPP
+	#		#	EMERGE_USERAPP_DEF
+	#		#	AUTOSTART_DEFAULT_$SYSINITVAR
+	#		#NOTICE_END
+	#		#}
+	#		FTP
+	#		#FILEZILLA
+	#	NOTICE_END
+	#	}
+	#	CLIENT
+	#NOTICE_END
+	#}

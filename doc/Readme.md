@@ -1,6 +1,6 @@
 # Usage
 
-## IMPORTANT NOTE
+## Note:
 > If run on virtualbox KVM ```march="native"``` does not work - at least with ```VIDEODRIVER="virtualbox"``` on ```etc/portage/make.conf```. CPU specific ```march=``` (PRESET_MARCH=) setting for ```etc/portage/make.conf``` (```var/var_main.sh``` variables) e.g ```march="znver1"``` required.
 
 > Script with default setting both ```LVM root``` and ```LVM on cryptsetup root``` work to boot as well as build chroot without error for the complete set of the script.
@@ -57,7 +57,7 @@ https://github.com/alphaaurigae/gentoo_unattented-setup/func/
 ## Tree ... 19.06.2025
 
 ### run.sh is the "main" script as parent for all functions. Run ./run.sh reporoot on the target chroot machine.
-✔ ~/Desktop/gentoo_unattented-setup [master|✚ 6…1] 
+```
 07:06 $ tree
 .
 ├── banner
@@ -157,7 +157,6 @@ https://github.com/alphaaurigae/gentoo_unattented-setup/func/
 │   │   │   └── TIDY_STAGE3.sh
 │   │   ├── Readme.md
 │   │   ├── SCREENDSP
-│   │   │   ├── DESKTOP_ENV.sh
 │   │   │   ├── DESKTOP.sh
 │   │   │   └── WINDOWSYS.sh
 │   │   ├── USERAPP
@@ -184,4 +183,5 @@ https://github.com/alphaaurigae/gentoo_unattented-setup/func/
     ├── pre_variables.sh
     └── var_main.sh
 
-34 directories, 90 files
+34 directories, 89 files
+```s

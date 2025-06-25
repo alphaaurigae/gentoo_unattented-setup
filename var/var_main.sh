@@ -154,7 +154,7 @@ downgrade-backup ebuild-locks fail-clean fixlafiles ipc-sandbox merge-sync \
 network-sandbox noman parallel-fetch parallel-install pid-sandbox userpriv usersandbox "
 
 # https://www.gentoo.org/downloads/mirrors/
-PRESET_GENTOMIRRORS="http://gentoo-mirror.flux.utah.edu"
+PRESET_GENTOMIRRORS="https://mirror.init7.net/gentoo"
 
 #PRESET_MAKE="-j$(expr $(nproc) "*" 1) --quiet "
 physical_cores=$(lscpu | awk '/^Core\(s\) per socket:/ {cores=$4} /^Socket\(s\):/ {sockets=$2} END {print cores * sockets}')

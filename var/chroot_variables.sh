@@ -109,17 +109,43 @@ SYSAPP_CRON="NO"
 SYSAPP_FILEINDEXING="NO"
 
 ## NETWORK - https://en.wikipedia.org/wiki/Public_recursive_name_server  # src/CHROOT/CORE/NETWORK.sh
-HOSTNAME="gentoo"        # (!changeme)
-DOMAIN="gentoo"          # (!changeme)
-NETWORK_NET="DHCPD"      # DHCPD or STATIC, config static on your own in the network section.
-NETIFACE_MAIN="enp0s3"   # eth0
-NETWMGR="NETWORKMANAGER" # NETIFRC; DHCPD; NETWORKMANAGER
+HOSTNAME="gentoo_host"  # (!changeme)
+DOMAIN="gentoo_domain"  # (!changeme)
+NETWORK_NET="STATIC"  # DHCP or STATIC (static blueprint only)
+NETWORK_CHOICE="NETWORKMANAGER" # NETWORKMANAGER or IFRC (ifrc not completed yet, blueprint only) (choose between networkmanager or ifrc setup.
+NETWMGR="NETWORKMANAGER" # NETWORKMANAGER  (for later integration w possible different networkmanagers)
+# NIC1="enp0s3" # not in use , defined by functino below in network setup based on pci slot (not relevant for dhcp setup)
+get_all_nics() {
+	local i=1
+	for dev in $(ls -1d /sys/class/net/*/device 2>/dev/null | sort); do
+		local nic
+		nic="$(basename "$(dirname "$dev")")"
+		[[ "$nic" == "lo" ]] && continue
+		export NIC$i="$nic"
+		((i++))
+	done
+	return $((i - 1))
+}
+
+MTU_NIC1="1500"  # resolv.conf # (! default) Do not change unless absolutely required by networking stack
+NETMASK_NIC1_STATIC="255.255.255.0"  # for static (static blueprint only)
+IPV4_NIC1_STATIC="192.168.178.7"  # for static (static blueprint only)
+IPV6_NIC1_STATIC=""  # for static (static blueprint only)
+IPV6_PREFIX_NIC1_STATIC="64"  # for static (static blueprint only)
+IPV4_GATEWAY_STATIC="192.168.178.1"  # for static (static blueprint only)
+GATEWAY_IPV6_STATIC=""  # for static (static blueprint only)
+
+FIREWALL="UFW" # UFW, IPTABLES (iptables blueprint only)
+# DEFAULT RULES  # space deparated list of port/protocol e.g 1337/udp - default is deny in and out.
+ALLOW_OUT="80/tcp 443/tcp 53/udp 22/tcp"  # (!changeme)
+ALLOW_IN=""  # (!changeme)
 
 # DNS
-# NAMESERVER1_IPV4=1.1.1.1  # (!changeme) 1.1.1.1 ns1 cloudflare ipv4
-# NAMESERVER1_IPV6=2606:4700:4700::1111  # (!changeme) ipv6 ns1 2606:4700:4700::1111 cloudflare ipv6
-# NAMESERVER2_IPV4=1.0.0.1  # (!changeme) 1.0.0.1 ns2 cloudflare ipv4
-# NAMESERVER2_IPV6=2606:4700:4700::1001  # (!changeme) ipv6 ns2 2606:4700:4700::1001 cloudflare ipv6
+DNS_PROVIDER="CUSTOM" # CUSTOM (As defined in variables below; DEFAULT (No custom DNS servers added)
+NAMESERVER1_IPV4="1.1.1.1"  # (!changeme) 1.1.1.1 ns1 cloudflare ipv4
+NAMESERVER1_IPV6="2606:4700:4700::1111"  # (!changeme) ipv6 ns1 2606:4700:4700::1111 cloudflare ipv6
+NAMESERVER2_IPV4="1.0.0.1"  # (!changeme) 1.0.0.1 ns2 cloudflare ipv4
+NAMESERVER2_IPV6="2606:4700:4700::1001"  # (!changeme) ipv6 ns2 2606:4700:4700::1001 cloudflare ipv6
 
 # VIRTUALIZATION
 SYSVARD="GUEST" # host is GUEST & HOST ... for virtualbization setup  # src/CHROOT/CORE/APPEMULATION.sh
@@ -146,7 +172,7 @@ USERAPP_CHROMIUM="NO" # (!NOTE !todo !bug ..)
 USERAPP_MIDORI="NO"   # (!NOTE: some unmask thing .. ruby?)  # https://astian.org/en/midori-browser/
 
 ## USER
-SYSUSERNAME="admini"                   # (!changeme) wheel group member - name of the login sysadmin user  # src/CHROOT/USERS/ADMIN.sh && src/CHROOT/SCREENDSP/DESKTOP_ENV.sh
+SYSUSERNAME="admini"  # (!changeme) wheel group member - name of the login sysadmin user  # src/CHROOT/USERS/ADMIN.sh && src/CHROOT/SCREENDSP/DESKTOP_ENV.sh
 USERGROUPS="wheel plugdev power video" # (!NOTE: virtualbox groups set if guest / host system is set)  # src/CHROOT/USERS/ADMIN.sh
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

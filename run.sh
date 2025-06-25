@@ -88,10 +88,11 @@ CHROOT_MENU() {
 			declare -A CHROOT_STEPS=(
 				[1]="CHROOT_BASE"
 				[2]="CHROOT_CORE"
-				[3]="CHROOT_SCREENDSP"
-				[4]="CHROOT_USERAPP"
-				[5]="CHROOT_USERS"
-				[6]="CHROOT_FINISH"
+				[3]="CHROOT_NETWORK"
+				[4]="CHROOT_SCREENDSP"
+				[5]="CHROOT_USERAPP"
+				[6]="CHROOT_USERS"
+				[7]="CHROOT_FINISH"
 			)
 
 			declare -A CHROOT_BASE=(
@@ -105,7 +106,7 @@ CHROOT_MENU() {
 				[8]="SYSTEMTIME"
 				[9]="KEYMAP_CONSOLEFONT"
 				[10]="FIRMWARE"
-				[11]="CP_BASHRC"
+				#[11]="CP_BASHRC"
 			)
 
 			declare -A CHROOT_BASE_GROUPS=(
@@ -141,6 +142,15 @@ CHROOT_MENU() {
 				[25]="11,12,14"
 				[26]="2,3,4,5,6,7,8,9,11,12,14"
 				[27]="1,2,3,4,5,6,7,8,9,11,12,14"
+			)
+
+			declare -A CHROOT_NETWORK=(
+				[1]="NETWORK_MAIN"
+				[2]="NETWORK_FIREWALL"
+			)
+
+			declare -A CHROOT_NETWORK_GROUPS=(
+				[21]="1,2"
 			)
 
 			declare -A CHROOT_SCREENDSP=(
@@ -254,7 +264,7 @@ CHROOT_ALL() { # DUMMY FUNCTIONS - SOURCING COMMENTED
 			    [8]="SYSTEMTIME"
 			    [9]="KEYMAP_CONSOLEFONT"
 			    [10]="FIRMWARE"
-			    [11]="CP_BASHRC"
+			    #[11]="CP_BASHRC"
 			)
 
 			declare -A CHROOT_CORE=(
