@@ -1,3 +1,6 @@
+# USEFLAGS # func/func_chroot_main.sh to set the useflags with emerged packages in src/CHROOT/*
+# SET USEFLAGS (!NOTE: names follow a pattern which must be kept for functions to read it ... "USERFLADS_"emerge_ name"  : "-" is replaced with "_" and lower converted to uppercase letters)
+
 . /gentoo_unattented-setup/var/var_main.sh
 
 # CHROOT ENV
@@ -25,46 +28,61 @@ SYSTIMEZONE_SET="UTC"   # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installati
 SET_RTC="UTC"           # local / UTC hwclock
 NTP_PROVIDER="openntpd" # "openntpd", "crony", "ntpd" for both openrc and systemd. For systemd additoinal "systemd-timesyncd"
 
-# CORE
-### KERNEL
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++
+# CORE - START
+# ++++++++++++++++++++++++++++++++++++++++++++++++
+
+USEFLAGS_LINUX_FIRMWARE="initramfs redistributable unknown-license" # https://packages.gentoo.org/packages/sys-kernel/linux-firmware https://wiki.gentoo.org/wiki/Linux_firmware
+
+# CRYPTSETUP
+USEFLAGS_CRYPTSETUP="udev argon2 " # global https://packages.gentoo.org/packages/sys-fs/cryptsetup
+
+## KERNEL VAR START ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 INSTALLKERNEL="true" # (!default) true # false to use installkernel https://wiki.gentoo.org/wiki/Installkernel
 KERNDEPLOY="MANUAL"  # (!default) MANUAL # AUTO (genkernel)  # src/CHROOT/CORE/KERNEL.sh
 KERNVERS="5.3-rc4"   # For MANUAL setup  # src/CHROOT/CORE/KERNEL.sh
 KERNSOURCES="EMERGE" # (!default) EMERGE # TORVALDS (git repository) # src/CHROOT/CORE/KERNEL.sh
 
 # ----------------------------------------------------------------------------------------------
-# MENUCONFIG_NEW = (menuconfig - ONLY)
+## SAMPLE FOR "KERNCONFD=" on the bottom of this section.
 
-# Update current config utilising a provided .config as base
-# OLDCONFIG_NOMENU = (defconfig - ONLY)
-# OLDCONFIG_MENU = (oldconfig + menuconfig)
+## MENUCONFIG_NEW = (menuconfig - ONLY)
 
-# Same as oldconfig but sets new symbols to their default value without prompting
-# OLDDEFCONFIG_NOMENU = (olddefconfig - ONLY)
-# OLDDEFCONFIG_MENU = (olddefconfig + menuconfig)
+## Update current config utilising a provided .config as base
+## OLDCONFIG_NOMENU = (defconfig - ONLY)
+## OLDCONFIG_MENU = (oldconfig + menuconfig)
 
-# New config where all options are accepted with yes
-# ALLYESCONFIG_NOMENU = (allyesconfig - ONLY)
-# ALLYESCONFIG_MENU = (allyesconfig + menuconfig)
+## Same as oldconfig but sets new symbols to their default value without prompting
+## OLDDEFCONFIG_NOMENU = (olddefconfig - ONLY)
+## OLDDEFCONFIG_MENU = (olddefconfig + menuconfig)
 
-# New config with default from ARCH supplied defconfig
-# DEFCONFIG_NOMENU = (defconfig - ONLY)
-# DEFCONFIG_MENU = (defconfig + menuconfig)
+## New config where all options are accepted with yes
+## ALLYESCONFIG_NOMENU = (allyesconfig - ONLY)
+## ALLYESCONFIG_MENU = (allyesconfig + menuconfig)
 
-# Configure the tiniest possible kernel
-# TINY_NOMENU = (defconfig - ONLY)
-# TINY_MENU = (defconfig + menuconfig)
+## New config with default from ARCH supplied defconfig
+## DEFCONFIG_NOMENU = (defconfig - ONLY)
+## DEFCONFIG_MENU = (defconfig + menuconfig)
+
+## Configure the tiniest possible kernel
+## TINY_NOMENU = (defconfig - ONLY)
+## TINY_MENU = (defconfig + menuconfig)
 
 KERNCONFD="OLDCONFIG_MENU"    # (!default) OLDCONFIG_MENU  # src/CHROOT/CORE/KERNEL.sh ; Preconfigured kernel updated with Y / N prompt and additional menuconfig.
+USEFLAGS_INSTALLKERNEL="dracut grub" # https://wiki.gentoo.org/wiki/Installkernel
+
 # ----------------------------------------------------------------------------------------------
 
 ### INITRAMFS
 GENINITRAMFS="DRACUT" # DRACUT (!default); GENKERNEL # src/CHROOT/CORE/INITRAM.sh
 
-# GENKERNEL
+## GENKERNEL
 GENKERNEL_CMD="--luks --lvm --no-zfs all" # src/CHROOT/CORE/INITRAM.sh
-# DRACUT
-## DRACUT_CONF
+USEFLAGS_GENKERNEL="cryptsetup"
+
+## INITRAM VAR START ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+## DRACUT
 
 # <key>+=" <values> ": <values> should have surrounding white spaces!
 DRACUT_CONF_MODULES_LVM=" i18n kernel-modules rootfs-block udev-rules usrmount base fs-lib shutdown lvm debug dm "                        # For LVM on /dev/sd**  (CRYPSETUP="NO" /var/var_main )  # src/CHROOT/CORE/INITRAM.sh
@@ -73,14 +91,17 @@ DRACUT_CONF_HOSTONLY="yes"                                                      
 DRACUT_CONF_LVMCONF="yes"                                                                                                                 # src/CHROOT/CORE/INITRAM.sh
 #DRACUT_CONFD_ADD_DRACUT_MODULES="usrmount"  # src/CHROOT/CORE/INITRAM.sh
 ##INITRAMFSVAR="--lvm --mdadm"  # was used in src/CHROOT/CORE/INITRAM.sh, not defined atm
+USEFLAGS_DRACUT="device-mapper" #  https://wiki.gentoo.org/wiki/Dracut https://packages.gentoo.org/packages/sys-kernel/dracut
 
-### BOOT
+
+## BOOT VAR START ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 BOOTLOADER="GRUB2" # GRUB2 (!default) ..... src/CHROOT/CORE/SYSBOOT.sh
 GRUB_PRELOAD_MODULES_CRYPTSETUP="cryptodisk luks luks2 lvm ext2 part_msdos part_gpt gcry_*"
 GRUB_PRELOAD_MODULES_DEFAULT="cryptodisk luks luks2 lvm ext2 part_msdos part_gpt gcry_*"
-# BIOS / UEFI  var_main.sh
+USEFLAGS_GRUB2="fonts device-mapper mount nls " # https://packages.gentoo.org/packages/sys-boot/grub https://wiki.gentoo.org/wiki/GRUB2
 
-## SYSAPP
+
+## SYSAPP VAR START ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ### CRON
 CRON="CRONIE" # CRONIE (!default), DCRON, ANACRON # src/CHROOT/CORE/SYSPROCESS.sh
 
@@ -147,69 +168,51 @@ NAMESERVER1_IPV6="2606:4700:4700::1111"  # (!changeme) ipv6 ns1 2606:4700:4700::
 NAMESERVER2_IPV4="1.0.0.1"  # (!changeme) 1.0.0.1 ns2 cloudflare ipv4
 NAMESERVER2_IPV6="2606:4700:4700::1001"  # (!changeme) ipv6 ns2 2606:4700:4700::1001 cloudflare ipv6
 
+USEFLAGS_NETWORKMANAGER="dhcpcd -modemmanager -ppp" # https://packages.gentoo.org/packages/net-misc/networkmanager https://wiki.gentoo.org/wiki/NetworkManager
+
 # VIRTUALIZATION
 SYSVARD="GUEST" # host is GUEST & HOST ... for virtualbization setup  # src/CHROOT/CORE/APPEMULATION.sh
+USEFLAGS_VIRTUALBOX_GUEST_ADDITIONS="X" # https://packages.gentoo.org/packages/app-emulation/virtualbox-guest-additions
 
 # DISPLAY / SCREEN  # src/CHROOT/SCREENDSP/WINDOWSYS.sh
 DISPLAYSERV="X11"
 DISPLAYMGR_YESNO="W_D_MGR" # W_D_MGR (WITH display manager) / SOLO (without display manager)
 DISPLAYMGR="LXDM"          # CDM; GDM; LIGHTDM; LXDM (!default - other env untested / todo); QINGY; SSDM; SLIM; WDM; XDM
 DESKTOPENV="XFCE"          # XFCE (!default - other env untested / todo); BUDGIE; CINNAMON; FVWM; GNOME; KDE; LXDE; LXQT; LUMINA; MATE; PANTHEON; RAZORQT; TDE;
+USEFLAGS_XFCE4_META="gtk3 gcr" # https://packages.gentoo.org/packages/xfce-base/xfce4-meta https://wiki.gentoo.org/wiki/Xfce
 
 # X11
 ## X11 KEYBOARD  # src/CHROOT/SCREENDSP/WINDOWSYS.sh
 X11_KEYBOARD_XKB_VARIANT="altgr-intl,abnt2"
 X11_KEYBOARD_XKB_OPTIONS="grp:shift_toggle,grp_led:scroll"
 X11_KEYBOARD_MATCHISKEYBOARD="on"
+USEFLAGS_XORG_SERVER="xvfb"    # https://packages.gentoo.org/packages/x11-base/xorg-server https://wiki.gentoo.org/wiki/Xorg
 
 # GRAPHIC UNIT  # src/CHROOT/CORE/GPU.sh
 #GPU_SET="amdgpu"  # (!changeme) amdgpu, radeon # (!todo)
-
-# USERAPP
-USERAPP_GIT="NO" # (!todo)
-USERAPP_FIREFOX="YES"
-USERAPP_CHROMIUM="NO" # (!NOTE !todo !bug ..)
-USERAPP_MIDORI="NO"   # (!NOTE: some unmask thing .. ruby?)  # https://astian.org/en/midori-browser/
-
-## USER
-SYSUSERNAME="admini"  # (!changeme) wheel group member - name of the login sysadmin user  # src/CHROOT/USERS/ADMIN.sh && src/CHROOT/SCREENDSP/DESKTOP_ENV.sh
-USERGROUPS="wheel plugdev power video" # (!NOTE: virtualbox groups set if guest / host system is set)  # src/CHROOT/USERS/ADMIN.sh
-
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# USEFLAGS # func/func_chroot_main.sh to set the useflags with emerged packages in src/CHROOT/*
-
-# SET USEFLAGS (!NOTE: names follow a pattern which must be kept for functions to read it ... "USERFLADS_"emerge_ name"  : "-" is replaced with "_" and lower converted to uppercase letters)
-USEFLAGS_INSTALLKERNEL="dracut grub" # https://wiki.gentoo.org/wiki/Installkernel
-
-USEFLAGS_LINUX_FIRMWARE="initramfs redistributable unknown-license" # https://packages.gentoo.org/packages/sys-kernel/linux-firmware https://wiki.gentoo.org/wiki/Linux_firmware
-
-# CRYPTSETUP
-USEFLAGS_CRYPTSETUP="udev argon2 " # global https://packages.gentoo.org/packages/sys-fs/cryptsetup
-
-# INITRAM
-USEFLAGS_DRACUT="device-mapper" #  https://wiki.gentoo.org/wiki/Dracut https://packages.gentoo.org/packages/sys-kernel/dracut
-
-# KERNEL
-USEFLAGS_GENKERNEL="cryptsetup"
 
 #AUDIO
 # USEFLAGS_ALSA=""  # https://packages.gentoo.org/packages/media-sound/alsa-utils  https://wiki.gentoo.org/wiki/ALSA
 USEFLAGS_PULSEAUDIO="" # https://packages.gentoo.org/packages/media-sound/pulseaudio https://wiki.gentoo.org/wiki/PulseAudio
 
-# SCREENDSP
-USEFLAGS_XORG_SERVER="xvfb"    # https://packages.gentoo.org/packages/x11-base/xorg-server https://wiki.gentoo.org/wiki/Xorg
-USEFLAGS_XFCE4_META="gtk3 gcr" # https://packages.gentoo.org/packages/xfce-base/xfce4-meta https://wiki.gentoo.org/wiki/Xfce
-
-# NETWORK
-USEFLAGS_NETWORKMANAGER="dhcpcd -modemmanager -ppp" # https://packages.gentoo.org/packages/net-misc/networkmanager https://wiki.gentoo.org/wiki/NetworkManager
-
-# BOOTLOADER
-USEFLAGS_GRUB2="fonts device-mapper mount nls " # https://packages.gentoo.org/packages/sys-boot/grub https://wiki.gentoo.org/wiki/GRUB2
-
-# VIRTUALBOX
-USEFLAGS_VIRTUALBOX_GUEST_ADDITIONS="X" # https://packages.gentoo.org/packages/app-emulation/virtualbox-guest-additions
+# USERAPP
+USERAPP_GIT="NO" # (!todo)
 
 # WEBBROWSER
+USERAPP_FIREFOX="YES"
 USEFLAGS_FIREFOX="bindist eme-free geckodriver hwaccel jack -system-libvpx -system-icu" # https://packages.gentoo.org/packages/www-client/firefox
-USEFLAGS_CHROMIUM="official -cups -hangouts -kerberos -screencast -pic"                 # https://packages.gentoo.org/packages/www-client/chromium # https://wiki.gentoo.org/wiki/Chromium
+
+USERAPP_CHROMIUM="NO" # (!NOTE !todo !bug ..)
+USEFLAGS_CHROMIUM="official -cups -hangouts -kerberos -screencast -pic"  # https://packages.gentoo.org/packages/www-client/chromium # https://wiki.gentoo.org/wiki/Chromium
+
+USERAPP_MIDORI="NO"   # (!NOTE: some unmask thing .. ruby?)  # https://astian.org/en/midori-browser/
 USEFLAGS_MIDORI=""
+
+## USER
+SYSUSERNAME="admini"  # (!changeme) wheel group member - name of the login sysadmin user  # src/CHROOT/USERS/ADMIN.sh && src/CHROOT/SCREENDSP/DESKTOP_ENV.sh
+USERGROUPS="wheel plugdev power video" # (!NOTE: virtualbox groups set if guest / host system is set)  # src/CHROOT/USERS/ADMIN.sh
+
+
+
+
+
