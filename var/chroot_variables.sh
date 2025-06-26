@@ -147,7 +147,7 @@ IPV6_GATEWAY_STATIC="fe80::f2b0:14ff:fee9:f625"
 NETIFRC_IPV6_ENABLE="no" # Enables IPv6 stack for interface.
 NETIFRC_IPV6_DHCP_ENABLE="no" # Enables the DHCPv6 client requesting IPv6 addresses or options from a DHCPv6 server.
 
-FIREWALL="UFW" # UFW, IPTABLES (iptables blueprint only)
+FIREWALL="IPTABLES" # UFW, IPTABLES (iptables blueprint only)
 # DEFAULT RULES  # Space deparated list of port/protocol e.g 1337/udp - default is deny in and out.
 ALLOW_OUT="80/tcp 443/tcp 53/udp 22/tcp"
 ALLOW_IN=""
