@@ -149,8 +149,32 @@ NETIFRC_IPV6_DHCP_ENABLE="no" # Enables the DHCPv6 client requesting IPv6 addres
 
 FIREWALL="IPTABLES" # UFW, IPTABLES (iptables blueprint only)
 # DEFAULT RULES  # Space deparated list of port/protocol e.g 1337/udp - default is deny in and out.
-ALLOW_OUT="80/tcp 443/tcp 53/udp 22/tcp"
-ALLOW_IN=""
+
+# ------------------
+# Basic Workstation OUT
+# 80/tcp - HTTP
+# 443/tcp - HTTPS
+# 53/udp - DNS
+# 22/tcp - SSH
+# 873/tcp - Rsync
+# 123/udp - NTP
+# ------------------
+# Default reject / deny all OUT
+# DNS already set to specific destination. Thus 53/udp not enabled here. See src/CORE/NETWORK/NETWORK_FIREWALL.sh
+ALLOW_PORT_OUT="80/tcp 443/tcp 22/tcp 873/tcp 123/udp"
+
+# Define ips / subnets that are allowed to connect to ALLOW_IN ports IN.
+DNS_ALLOW_OUT="YES" # Unless you do not want DNS allowed for either DEFAULT (ISP) ; CUSTOM (custom DNS on $NAMESERVER* or dnsmsaq with $NAMESERVER* - leave this YES ... See src/CORE/NETWORK/NETWORK_FIREWALL.sh
+USE_DNSMASQ="NO"  # not integrated yet, this variable only tells IPTABLES that its not a dnsmasq setup as of now.
+
+SSH_IN="YES"
+# SSH_PORT="22"
+ALLOW_SSH_LOCAL_IN="192.168.178.0/24"
+ALLOW_SSH_REMOTE_IN="" # none by default
+
+# Default reject / deny all IN - may allow port/protocol in 
+ALLOW_PORT_IN=""
+
 
 # DNS
 DNS_PROVIDER="CUSTOM" # CUSTOM (As defined in variables below; DEFAULT (No custom DNS servers added)

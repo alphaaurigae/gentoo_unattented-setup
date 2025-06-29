@@ -1,7 +1,7 @@
 NETWORK_FIREWALL() {
 	NOTICE_START
 
-	INSTALL_FIREWALL () {
+	INSTALL_FIREWALL() {
 		UFW_APPAPP_EMERGE="net-firewall/ufw"
 		UFW_AUTOSTART_NAME_OPENRC="ufw"
 		UFW_AUTOSTART_NAME_SYSTEMD="ufw"
@@ -26,199 +26,261 @@ NETWORK_FIREWALL() {
 	CONFIG_FIREWALL() {
 		NOTICE_START
 
+		validate_rule_format() {
+			[[ "$1" =~ ^[0-9]+/(tcp|udp)$ ]] || {
+				echo "Invalid rule format: $1" >&2
+				exit 1
+			}
+		}
+
 		case "${FIREWALL}" in
 			UFW)
-			UFW_CONFIG () {  # https://wiki.gentoo.org/wiki/Ufw
-				NOTICE_START
-				ufw status | grep -q inactive && ufw --force enable
-				ufw --force reset
-				ufw default deny incoming
-				ufw default deny outgoing
+				UFW_CONFIG() { # https://wiki.gentoo.org/wiki/Ufw
+					NOTICE_START
 
-				for rule in ${ALLOW_OUT}; do
-					port="${rule%/*}"
-					proto="${rule#*/}"
-					ufw allow out on "$NIC1" to any port "${port}" proto "${proto}" comment "ALLOW_OUT ${proto}/${port}"
-				done
+					ufw status | grep -q inactive && ufw --force enable
+					ufw --force reset
+					ufw default deny incoming
+					ufw default deny outgoing
 
-				for rule in ${ALLOW_IN}; do
-					port="${rule%/*}"
-					proto="${rule#*/}"
-					ufw allow in on "$NIC1" from any to any port "${port}" proto "${proto}" comment "ALLOW_IN ${proto}/${port}"
-				done
+					if [ -n "${ALLOW_PORT_OUT}" ]; then
+						for rule in ${ALLOW_PORT_OUT}; do
+							validate_rule_format "$rule"
+							port="${rule%/*}"
+							proto="${rule#*/}"
+							ufw allow out on "$NIC1" to any port "${port}" proto "${proto}" comment "ALLOW_PORT_OUT ${proto}/${port}"
+						done
+					fi
 
-				ufw reload
-				NOTICE_END
-			}
-			UFW_CONFIG
-			;;
+					if [ -n "${ALLOW_PORT_IN}" ]; then
+						for rule in ${ALLOW_PORT_IN}; do
+							validate_rule_format "$rule"
+							port="${rule%/*}"
+							proto="${rule#*/}"
+							ufw allow in on "$NIC1" from any to any port "${port}" proto "${proto}" comment "ALLOW_PORT_IN ${proto}/${port}"
+						done
+					fi
+
+					ufw reload
+
+					NOTICE_END
+				}
+				UFW_CONFIG
+				;;
 
 			IPTABLES)
-			IPTABLES_CONFIG () {  # https://wiki.gentoo.org/wiki/Iptables
+				IPTABLES_CONFIG() { # https://wiki.gentoo.org/wiki/Iptables
 
-			NOTICE_START
-			setup_ALL(){
-				mkdir -p /etc/iptables
-
-				cat <<-EOF > /etc/iptables/rules.v4
-				*filter
-				:INPUT DROP [0:0]
-				:FORWARD DROP [0:0]
-				:OUTPUT DROP [0:0]
-
-				-A INPUT -i lo -j ACCEPT
-				-A OUTPUT -o lo -j ACCEPT
-
-				-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-				-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-
-				-A INPUT -p icmp --icmp-type echo-request -m limit --limit 1/second --limit-burst 3 -j ACCEPT
-				-A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
-				-A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT
-				-A OUTPUT -p icmp -j ACCEPT
-				-A INPUT -s 127.0.0.0/8 ! -i lo -j DROP
-				-A INPUT -s 169.254.0.0/16 -j DROP
-				-A INPUT -s 10.0.0.0/8 -j DROP
-				-A INPUT -s 172.16.0.0/12 -j DROP
-				-A INPUT -s 192.168.0.0/16 -j DROP
-				-A INPUT -s 224.0.0.0/4 -j DROP
-				-A INPUT -s 240.0.0.0/5 -j DROP
-				-A INPUT -s 0.0.0.0/8 -j DROP
-
-				-A INPUT -p tcp --syn -m limit --limit 15/minute --limit-burst 20 -j ACCEPT
-				-A INPUT -p tcp --syn -j DROP
-				EOF
-
-				for rule in ${ALLOW_OUT}; do
-					port="${rule%/*}"
-					proto="${rule#*/}"
-					echo "-A OUTPUT -o ${NIC1} -p ${proto} --dport ${port} -m conntrack --ctstate NEW -j ACCEPT" >> /etc/iptables/rules.v4
-				done
-
-				for rule in ${ALLOW_IN}; do
-					port="${rule%/*}"
-					proto="${rule#*/}"
-					echo "-A INPUT -i ${NIC1} -p ${proto} --dport ${port} -m conntrack --ctstate NEW -j ACCEPT" >> /etc/iptables/rules.v4
-				done
-
-				echo "COMMIT" >> /etc/iptables/rules.v4
-
-				if [ "$(sysctl -n net.ipv6.conf.all.disable_ipv6 2>/dev/null)" = "0" ]; then
-					cat <<-EOF > /etc/iptables/rules.v6
-					*filter
-					:INPUT DROP [0:0]
-					:FORWARD DROP [0:0]
-					:OUTPUT DROP [0:0]
-
-					-A INPUT -i lo -j ACCEPT
-					-A OUTPUT -o lo -j ACCEPT
-
-					-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-					-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-
-					-A INPUT -p ipv6-icmp --icmpv6-type echo-request -m limit --limit 1/second --limit-burst 3 -j ACCEPT
-					-A INPUT -p ipv6-icmp --icmpv6-type destination-unreachable -j ACCEPT
-					-A INPUT -p ipv6-icmp --icmpv6-type packet-too-big -j ACCEPT
-					-A INPUT -p ipv6-icmp --icmpv6-type time-exceeded -j ACCEPT
-					-A INPUT -p ipv6-icmp --icmpv6-type neighbor-solicitation -j ACCEPT
-					-A INPUT -p ipv6-icmp --icmpv6-type neighbor-advertisement -j ACCEPT
-					-A INPUT -p ipv6-icmp --icmpv6-type router-advertisement -j ACCEPT
-					-A INPUT -p ipv6-icmp --icmpv6-type router-solicitation -j ACCEPT
-					-A OUTPUT -p ipv6-icmp -j ACCEPT
-					-A INPUT -s ::1/128 ! -i lo -j DROP
-					-A INPUT -s fc00::/7 -j DROP
-					-A INPUT -s ff00::/8 -j DROP
-
-					-A INPUT -p tcp --syn -m limit --limit 15/minute --limit-burst 20 -j ACCEPT
-					-A INPUT -p tcp --syn -j DROP
-					EOF
-
-					for rule in ${ALLOW_OUT}; do
-						port="${rule%/*}"
-						proto="${rule#*/}"
-						echo "-A OUTPUT -o ${NIC1} -p ${proto} --dport ${port} -m conntrack --ctstate NEW -j ACCEPT" >> /etc/iptables/rules.v6
-					done
-
-					for rule in ${ALLOW_IN}; do
-						port="${rule%/*}"
-						proto="${rule#*/}"
-						echo "-A INPUT -i ${NIC1} -p ${proto} --dport ${port} -m conntrack --ctstate NEW -j ACCEPT" >> /etc/iptables/rules.v6
-					done
-
-					echo "COMMIT" >> /etc/iptables/rules.v6
-				fi
-				NOTICE_END
-			}
-		}
-
-				install_once_runner_SYSTEMD () {
 					NOTICE_START
-					cat <<-'EOF' > /usr/local/sbin/iptables-once.sh
-					#!/bin/bash
-modprobe ip_tables
-modprobe iptable_filter
-modprobe nf_conntrack
-					[ -f /etc/iptables/.once_applied ] && exit 0
-					[ -x /usr/sbin/iptables-restore ] && /usr/sbin/iptables-restore < /etc/iptables/rules.v4
-					if [ -x /usr/sbin/ip6tables-restore ] && [ "$(sysctl -n net.ipv6.conf.all.disable_ipv6)" -eq 0 ]; then
-						/usr/sbin/ip6tables-restore < /etc/iptables/rules.v6
-					fi
-					touch /etc/iptables/.once_applied
-					EOF
-					chmod +x /usr/local/sbin/iptables-once.sh
 
-					cat <<-'EOF' > /etc/systemd/system/iptables-once.service
-					[Unit]
-					Description=One-time IPTables Rule Setup
-					After=network.target
+					mkdir -p /etc/iptables
 
-					[Service]
-					Type=oneshot
-					ExecStart=/usr/local/sbin/iptables-once.sh
-					RemainAfterExit=true
+					rules_NIC1() {
+						NOTICE_START
 
-					[Install]
-					WantedBy=multi-user.target
-					EOF
+						for proto in v4 v6; do
+							rules_file="/etc/iptables/rules.${proto}"
 
-					systemctl enable iptables-once.service
+							if [ "$proto" = "v6" ] && [ "$(sysctl -n net.ipv6.conf.all.disable_ipv6 2>/dev/null)" != "0" ]; then
+								continue
+							fi
+
+							cat <<-EOF >"${rules_file}"
+								*filter
+								:INPUT DROP [0:0]
+								:FORWARD DROP [0:0]
+								:OUTPUT DROP [0:0]
+
+								-A INPUT -i lo -j ACCEPT
+								-A OUTPUT -o lo -j ACCEPT
+
+								-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+								-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+							EOF
+
+							if [ "$proto" = "v4" ]; then
+								echo "-A INPUT -p icmp --icmp-type echo-request -m limit --limit 1/second --limit-burst 3 -j ACCEPT" >>"${rules_file}"
+								echo "-A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT" >>"${rules_file}"
+								echo "-A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT" >>"${rules_file}"
+								echo "-A OUTPUT -p icmp --icmp-type echo-request -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+							else
+								echo "-A INPUT -p ipv6-icmp --icmpv6-type echo-request -m limit --limit 1/second --limit-burst 3 -j ACCEPT" >>"${rules_file}"
+								echo "-A INPUT -p ipv6-icmp --icmpv6-type destination-unreachable -j ACCEPT" >>"${rules_file}"
+								echo "-A INPUT -p ipv6-icmp --icmpv6-type packet-too-big -j ACCEPT" >>"${rules_file}"
+								echo "-A INPUT -p ipv6-icmp --icmpv6-type time-exceeded -j ACCEPT" >>"${rules_file}"
+								echo "-A INPUT -p ipv6-icmp --icmpv6-type neighbor-solicitation -j ACCEPT" >>"${rules_file}"
+								echo "-A INPUT -p ipv6-icmp --icmpv6-type neighbor-advertisement -j ACCEPT" >>"${rules_file}"
+								echo "-A INPUT -p ipv6-icmp --icmpv6-type router-advertisement -j ACCEPT" >>"${rules_file}"
+								echo "-A INPUT -p ipv6-icmp --icmpv6-type router-solicitation -j ACCEPT" >>"${rules_file}"
+								echo "-A OUTPUT -p ipv6-icmp --icmpv6-type echo-request -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+							fi
+
+							echo "-A INPUT -p tcp --syn -m limit --limit 15/minute --limit-burst 20 -j ACCEPT" >>"${rules_file}"
+
+
+
+
+							# PORT RULES OUT #########################################
+
+							# GENERIC PORT RULES OUT
+
+							if [ -n "${ALLOW_PORT_OUT}" ]; then
+								for rule in ${ALLOW_PORT_OUT}; do
+									validate_rule_format "$rule"
+									port="${rule%/*}"
+									proto_rule="${rule#*/}"
+									echo "-A OUTPUT -o ${NIC1} -p ${proto_rule} --dport ${port} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+								done
+							fi
+
+
+							# SPECIFIC PORT RULES OUT
+
+							# DNS
+							if [ "${DNS_ALLOW_OUT}" = "YES" ]; then
+								if [ "${USE_DNSMASQ}" = "YES" ]; then
+									[ -n "${NAMESERVER1_IPV4}" ] && echo "-A OUTPUT -o ${NIC1} -p udp --dport 53 -d ${NAMESERVER1_IPV4} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+									[ -n "${NAMESERVER2_IPV4}" ] && echo "-A OUTPUT -o ${NIC1} -p udp --dport 53 -d ${NAMESERVER2_IPV4} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+									[ -n "${NAMESERVER1_IPV6}" ] && echo "-A OUTPUT -o ${NIC1} -p udp --dport 53 -d ${NAMESERVER1_IPV6} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+									[ -n "${NAMESERVER2_IPV6}" ] && echo "-A OUTPUT -o ${NIC1} -p udp --dport 53 -d ${NAMESERVER2_IPV6} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+									echo "-A OUTPUT -o lo -p udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+									echo "-A OUTPUT -o ${NIC1} -p udp --dport 53 -j DROP" >>"${rules_file}"
+								else
+									[ -n "${NAMESERVER1_IPV4}" ] && echo "-A OUTPUT -o ${NIC1} -p udp --dport 53 -d ${NAMESERVER1_IPV4} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+									[ -n "${NAMESERVER2_IPV4}" ] && echo "-A OUTPUT -o ${NIC1} -p udp --dport 53 -d ${NAMESERVER2_IPV4} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+									[ -n "${NAMESERVER1_IPV6}" ] && echo "-A OUTPUT -o ${NIC1} -p udp --dport 53 -d ${NAMESERVER1_IPV6} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+									[ -n "${NAMESERVER2_IPV6}" ] && echo "-A OUTPUT -o ${NIC1} -p udp --dport 53 -d ${NAMESERVER2_IPV6} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+								fi
+							fi
+							# DNS END
+
+
+
+
+							# PORT RULES IN #########################################
+
+							# GENERIC PORT RULES IN
+
+							if [ -n "${ALLOW_PORT_IN}" ]; then
+								for rule in ${ALLOW_PORT_IN}; do
+									validate_rule_format "$rule"
+									port="${rule%/*}"
+									proto_rule="${rule#*/}"
+									echo "-A INPUT -i ${NIC1} -p ${proto_rule} --dport ${port} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+								done
+							fi
+
+
+							# SPECIFIC PORT RULES IN
+
+							# SSH START
+							echo "-N SSH_IN" >>"${rules_file}"
+							echo "-A INPUT -j SSH_IN" >>"${rules_file}"
+
+							if [ "${SSH_IN}" = "YES" ]; then
+								ssh_rule="22/tcp"
+								validate_rule_format "$ssh_rule"
+								port="${ssh_rule%/*}"
+								proto_rule="${ssh_rule#*/}"
+
+								if [ -n "${ALLOW_SSH_LOCAL_IN}" ]; then
+									for src in ${ALLOW_SSH_LOCAL_IN}; do
+										echo "-A SSH_IN -i ${NIC1} -p ${proto_rule} --dport ${port} -s ${src} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+									done
+								fi
+
+								if [ -n "${ALLOW_SSH_REMOTE_IN}" ]; then
+									for src in ${ALLOW_SSH_REMOTE_IN}; do
+										echo "-A SSH_IN -i ${NIC1} -p ${proto_rule} --dport ${port} -s ${src} -m conntrack --ctstate NEW -j ACCEPT" >>"${rules_file}"
+									done
+								fi
+							fi
+
+							echo "-A SSH_IN -j RETURN" >>"${rules_file}"
+
+							# SSH END
+
+							echo "-A INPUT -j LOG --log-prefix \"DROP_INPUT: \" --log-level 4" >>"${rules_file}"
+							echo "-A OUTPUT -j LOG --log-prefix \"DROP_OUTPUT: \" --log-level 4" >>"${rules_file}"
+							echo "COMMIT" >>"${rules_file}"
+						done
+
+						NOTICE_END
+					}
+
+					install_once_runner_SYSTEMD() {
+						NOTICE_START
+
+						cat <<-'EOF' >/usr/local/sbin/iptables-once.sh
+							#!/bin/bash
+
+							modprobe ip_tables
+							modprobe iptable_filter
+							modprobe nf_conntrack
+
+							[ -f /etc/iptables/.once_applied ] && exit 0
+							[ -x /usr/sbin/iptables-restore ] && /usr/sbin/iptables-restore < /etc/iptables/rules.v4
+							if [ -x /usr/sbin/ip6tables-restore ] && [ "$(sysctl -n net.ipv6.conf.all.disable_ipv6)" -eq 0 ]; then
+								/usr/sbin/ip6tables-restore < /etc/iptables/rules.v6
+							fi
+							touch /etc/iptables/.once_applied
+						EOF
+						chmod +x /usr/local/sbin/iptables-once.sh
+
+						cat <<-'EOF' >/etc/systemd/system/iptables-once.service
+							[Unit]
+							Description=One-time IPTables Rule Setup
+							After=network.target
+
+							[Service]
+							Type=oneshot
+							ExecStart=/usr/local/sbin/iptables-once.sh
+							RemainAfterExit=true
+
+							[Install]
+							WantedBy=multi-user.target
+						EOF
+
+						systemctl enable iptables-once.service
+
+						NOTICE_END
+					}
+
+					install_once_runner_OPENRC() {
+						NOTICE_START
+
+						cat <<-'EOF' >/etc/local.d/10-iptables-once.start
+							#!/bin/bash
+
+							modprobe ip_tables
+							modprobe iptable_filter
+							modprobe nf_conntrack
+							[ -f /etc/iptables/.once_applied ] && exit 0
+							[ -x /sbin/iptables-restore ] && /sbin/iptables-restore < /etc/iptables/rules.v4
+							if [ -x /sbin/ip6tables-restore ] && [ "$(sysctl -n net.ipv6.conf.all.disable_ipv6)" -eq 0 ]; then
+								/sbin/ip6tables-restore < /etc/iptables/rules.v6
+							fi
+							touch /etc/iptables/.once_applied
+						EOF
+						chmod +x /etc/local.d/10-iptables-once.start
+						rc-update add local default
+
+						NOTICE_END
+					}
+
+					rules_NIC1
+					install_once_runner_$SYSINITVAR
+
 					NOTICE_END
 				}
+				IPTABLES_CONFIG
+				;;
+		esac
 
-				install_once_runner_OPENRC () {
-					NOTICE_START
-					cat <<-'EOF' > /etc/local.d/10-iptables-once.start
-					#!/bin/bash
-modprobe ip_tables
-modprobe iptable_filter
-modprobe nf_conntrack
-					[ -f /etc/iptables/.once_applied ] && exit 0
-					[ -x /sbin/iptables-restore ] && /sbin/iptables-restore < /etc/iptables/rules.v4
-					if [ -x /sbin/ip6tables-restore ] && [ "$(sysctl -n net.ipv6.conf.all.disable_ipv6)" -eq 0 ]; then
-						/sbin/ip6tables-restore < /etc/iptables/rules.v6
-					fi
-					touch /etc/iptables/.once_applied
-					EOF
-					chmod +x /etc/local.d/10-iptables-once.start
-					rc-update add local default
-					NOTICE_END
-				}
-
-			setup_ALL
-			install_once_runner_$SYSINITVAR
-			NOTICE_END
-	
-		}
-	IPTABLES_CONFIG
-	;;
-	esac
-	
+		NOTICE_END
 	}
-	
 
-
-
-	DEBUG_FIREWALL () {
+	DEBUG_FIREWALL() {
 		NOTICE_START
 
 		case "${FIREWALL}" in
