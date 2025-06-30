@@ -2,18 +2,14 @@ INIT() {
 	NOTICE_START
 
 	CHRONYD() {
-		
-		chronyd -q 'server time.cloudflare.com iburst'
+		chronyd -q "server $NTP_SERVER_PRE iburst" || { printf "%s\n" "${BOLD}${RED}ERROR:${RESET} Chronyd SYNC failed" >&2; exit 1; }
+
 	}
 
-	SNTP() {
-		sntp -s time.cloudflare.com
-	}
-
-	verify_or_exit "time sync (chronyd || sntp)" bash -c '
-		chronyd -q "server time.cloudflare.com iburst" ||
-		sntp -s time.cloudflare.com
-	'
+	#SNTP() {
+	#	sntp -s $NTP_SERVER_PRE || { printf "%s\n" "${BOLD}${RED}ERROR:${RESET} sntp SYNC failed" >&2; exit 1; }
+	#}
+	CHRONYD
 
 	NOTICE_END
 }

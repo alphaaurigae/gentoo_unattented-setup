@@ -21,3 +21,6 @@ GENTOO_EBUILD_KEYFINGERPRINT4="D99EAC7379A850BCE47DA5F29E6438C817072058" # Gento
 # Dl
 GENTOO_RELEASE_URL="https://distfiles.gentoo.org/releases/amd64/autobuilds"
 
+# NTP
+NTP_SERVER_PRE="time-a-g.nist.gov"  # NTP server to be used during PRE chroot preparation, src/PRE/INIT.sh
+

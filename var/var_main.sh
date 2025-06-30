@@ -245,4 +245,7 @@ NAMESERVER2_IPV6="2606:4700:4700::1001"
 
 USEFLAGS_NETWORKMANAGER="dhcpcd -modemmanager -ppp" # https://packages.gentoo.org/packages/net-misc/networkmanager https://wiki.gentoo.org/wiki/NetworkManager
 
+############
+
+
 
