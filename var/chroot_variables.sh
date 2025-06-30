@@ -126,66 +126,6 @@ SYSAPP_SYSLOG="NO"
 SYSAPP_CRON="NO"
 SYSAPP_FILEINDEXING="NO"
 
-## NETWORK  # src/CHROOT/CORE/NETWORK.sh
-HOSTNAME="gentoohost"
-DOMAIN="gentoodomain"
-IPV4_CONF="YES" # YES ; NO # IF set to YES for DHCP setup no further settings need to be customized - for STATIC check the configs...
-IPV6_CONF="YES"  # "
-NETWORK_NET="DHCP"  # DHCP or STATIC (static blueprint only)
-NETWORK_CHOICE="NETIFRC" # NETWORKMANAGER or NETIFRC (ifrc not completed yet, blueprint only) (choose between networkmanager or ifrc setup.
-NETWMGR="NETWORKMANAGER" # NETWORKMANAGER  (for later integration w possible different networkmanagers)
-# NIC1="enp0s3" # not in use , defined by functinon in src/CORE/NETWORK_MAIN.sh - based on pci slot (not relevant for dhcp setup)
-
-MTU_NIC1="1500"
-NETMASK_NIC1_STATIC="255.255.255.0"
-IPV4_NIC1_STATIC="192.168.178.7"
-IPV6_NIC1_STATIC="2003:d1:b74e:b300:abcd:ef12:3456:789a"
-IPV6_PREFIX_NIC1_STATIC="64"
-IPV4_GATEWAY_STATIC="192.168.178.1"
-IPV6_GATEWAY_STATIC="fe80::f2b0:14ff:fee9:f625"
-
-NETIFRC_IPV6_ENABLE="no" # Enables IPv6 stack for interface.
-NETIFRC_IPV6_DHCP_ENABLE="no" # Enables the DHCPv6 client requesting IPv6 addresses or options from a DHCPv6 server.
-
-FIREWALL="IPTABLES" # UFW, IPTABLES (iptables blueprint only)
-# DEFAULT RULES  # Space deparated list of port/protocol e.g 1337/udp - default is deny in and out.
-
-# ------------------
-# Basic Workstation OUT
-# 80/tcp - HTTP
-# 443/tcp - HTTPS
-# 53/udp - DNS
-# 22/tcp - SSH
-# 873/tcp - Rsync
-# 123/udp - NTP
-# ------------------
-# Default reject / deny all OUT
-# DNS already set to specific destination. Thus 53/udp not enabled here. See src/CORE/NETWORK/NETWORK_FIREWALL.sh
-ALLOW_PORT_OUT="80/tcp 443/tcp 22/tcp 873/tcp 123/udp"
-
-# Define ips / subnets that are allowed to connect to ALLOW_IN ports IN.
-DNS_ALLOW_OUT="YES" # Unless you do not want DNS allowed for either DEFAULT (ISP) ; CUSTOM (custom DNS on $NAMESERVER* or dnsmsaq with $NAMESERVER* - leave this YES ... See src/CORE/NETWORK/NETWORK_FIREWALL.sh
-USE_DNSMASQ="NO"  # not integrated yet, this variable only tells IPTABLES that its not a dnsmasq setup as of now.
-
-SSH_IN="YES"
-# SSH_PORT="22"
-ALLOW_SSH_LOCAL_IN="192.168.178.0/24"
-ALLOW_SSH_REMOTE_IN="" # none by default
-
-# Default reject / deny all IN - may allow port/protocol in 
-ALLOW_PORT_IN=""
-
-
-# DNS
-DNS_PROVIDER="CUSTOM" # CUSTOM (As defined in variables below; DEFAULT (No custom DNS servers added)
-# https://en.wikipedia.org/wiki/Public_recursive_name_server
-# Cloudflare set default!
-NAMESERVER1_IPV4="1.1.1.1"
-NAMESERVER1_IPV6="2606:4700:4700::1111"
-NAMESERVER2_IPV4="1.0.0.1"
-NAMESERVER2_IPV6="2606:4700:4700::1001"
-
-USEFLAGS_NETWORKMANAGER="dhcpcd -modemmanager -ppp" # https://packages.gentoo.org/packages/net-misc/networkmanager https://wiki.gentoo.org/wiki/NetworkManager
 
 # VIRTUALIZATION
 SYSVARD="GUEST" # host is GUEST & HOST ... for virtualbization setup  # src/CHROOT/CORE/APPEMULATION.sh

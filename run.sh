@@ -26,23 +26,24 @@ for f in banner/* banner/*/* banner/*/*/*; do
 done
 
 declare -A PRE_STEPS=(
-	[1]="INIT"
-	[2]="PARTITIONING_MAIN"
-	[3]="CRYPTSETUP"
-	[4]="LVMSETUP"
-	[5]="STAGE3"
-	[6]="MNTFS"
-	[7]="COPY_CONFIGS"
-	[8]="MAKECONF"
+	[1]="IPTABLES" # (IPTABLES experimental blueprint see src/PRE/IPTABLES.sh)
+	[2]="INIT"
+	[3]="PARTITIONING_MAIN"
+	[4]="CRYPTSETUP"
+	[5]="LVMSETUP"
+	[6]="STAGE3"
+	[7]="MNTFS"
+	[8]="COPY_CONFIGS"
+	[9]="MAKECONF"
 )
 
 declare -A PRE_GROUPS=(
-	[21]="1,2,3"
+	[21]="1,2"
 	[22]="3,4"
 	[23]="5,6"
-	[24]="7,8"
-	[26]="2,3,4,5,6,7,8"
-	[27]="1,2,3,4,5,6,7,8"
+	[24]="7,8,9"
+	[25]="2,3,4,5,6,7,8,9"
+	[26]="1,2,3,4,5,6,7,8,9"
 )
 
 run_all_pre() {
